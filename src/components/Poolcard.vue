@@ -121,7 +121,7 @@ div .btn-ghost {
   color: #ffffff;
   text-align: center;
   white-space: nowrap;
-  background-color: #ffffff00;
+  background-color: #f10a0a00;
   transition: width 0.6s ease;
 }
 </style>
