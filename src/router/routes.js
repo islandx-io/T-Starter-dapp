@@ -13,10 +13,16 @@ const routes = [
     path: "/transfer",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/Transfer.vue") }]
-  },{
+  },
+  {
     path: "/streaming",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/Streaming.vue") }]
+  },
+  {
+    path: "/pools",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ path: "", component: () => import("pages/Pools.vue") }]
   },
 
   // Always leave this as last one,
