@@ -81,7 +81,7 @@
               <div class="main-banner-box-layout1">
                 <div class="item-figure">
                   <img
-                    src="~assets/img/tstarter-rocket.svg"
+                    src="~assets/main/tstarter-rocket.svg"
                     width="60%"
                     alt="Illustration"
                   />
@@ -150,7 +150,7 @@
                 />
               </g>
             </svg>
-            <img src="~assets/img/flaticonrocket.svg" alt="rocket" />
+            <img src="~assets/logo/flaticonrocket.svg" alt="rocket" />
             <svg class="dash-right" width="100" height="20">
               <g fill="none" stroke-width="4">
                 <path
@@ -206,7 +206,7 @@
                 />
               </g>
             </svg>
-            <img src="~assets/img/flaticonrocket.svg" alt="rocket" />
+            <img src="~assets/logo/flaticonrocket.svg" alt="rocket" />
             <svg class="dash-right" width="100" height="20">
               <g fill="none" stroke-width="4">
                 <path
