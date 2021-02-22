@@ -1,4 +1,5 @@
 <template>
+<!-- And do not be conformed to this world, but be transformed by the renewing of your mind, that you may prove what is that good and acceptable and perfect will of God. - Romans 12:2 -NKJV -->
   <q-page padding>
     <title>T-STARTER - Pools</title>
     <section id="page-banner" class="page-banner bg-gradient-layout6 has-animation">

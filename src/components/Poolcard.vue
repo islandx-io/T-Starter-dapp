@@ -7,7 +7,9 @@
         </div>
         <div class="col-lg-6 col-sm-6 col-12" style="text-align: end;">
           <!-- FIXME should be h7 according to css, but errors with vue -->
-          <h6><i class="fa fa-circle" aria-hidden="true"></i> Live in 5 days</h6> 
+          <h6>
+            <i class="fa fa-circle" aria-hidden="true"></i> Live in 5 days
+          </h6>
         </div>
       </div>
       <h3 class="item-title">{{ title }}</h3>
@@ -28,13 +30,13 @@
         </div>
       </div>
       <h6 class="btn-pad-b">Sale progress</h6>
-      <div class="progress">
-        <q-linear-progress
+      <div class="progress"> 
+        <!-- <q-linear-progress
           size="25px"
           :value="progress"
           color="accent"
           class="progress-bar"
-        >
+        > 
           <div class="absolute-full flex flex-center">
             <q-badge
               color="white"
@@ -42,17 +44,17 @@
               :label="progressToPercentage"
             />
           </div>
-        </q-linear-progress>
-        <!-- <div
+        </q-linear-progress>  -->
+        <div
           class="progress-bar"
           role="progressbar"
-          style="width: 25%;"
-          aria-valuenow="25"
+          :style="{width: progressToPercentage}"
+          :aria-valuenow="progress"
           aria-valuemin="0"
-          aria-valuemax="100"
+          aria-valuemax="1"
         >
-          25%
-        </div> -->
+          {{progressToPercentage}}%
+        </div>
       </div>
       <div class="center btn-pad-t">
         <!-- <a href="#" class="item-btn btn-ghost">VIEW POOL</a> -->
@@ -73,12 +75,13 @@ export default {
       minimum: 0,
       maximum: 0.3,
       type: "Fixed",
-      progress: 0.5
+      access_type: 'Public',
+      progress: 0.75,
     };
   },
   computed: {
     progressToPercentage() {
-      return (this.progress * 100).toFixed(2) + "%";
+      return (this.progress * 100).toFixed(2) + '%';
     }
   }
 };
@@ -86,42 +89,4 @@ export default {
 
 // example scss or sass, remove later
 <style lang="scss" scoped>
-div .btn-ghost {
-  font-weight: 400;
-  font-size: 16px;
-  position: relative;
-  z-index: 2;
-  padding: 4px 20px;
-  border-radius: 4px;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  background-color: transparent;
-  border: 2px solid;
-  border-color: #571aff;
-  color: #571aff;
-  -webkit-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
-}
-
-.progress-bar {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  -ms-flex-pack: center;
-  justify-content: center;
-  color: #ffffff;
-  text-align: center;
-  white-space: nowrap;
-  background-color: #f10a0a00;
-  transition: width 0.6s ease;
-}
 </style>
