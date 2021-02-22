@@ -1,9 +1,10 @@
 <template>
-  <div class="col-lg-4 col-sm-6 col-12 all created">
+<!-- TODO class joined, featured, created, all -->
+  <div class="col-lg-4 col-sm-6 col-12" :class="filterClass">
     <div class="pricing-box-layout2">
       <div class="row">
         <div class="col-lg-6 col-sm-6 col-12">
-          <img src="~assets/prog-1.png" width="50px" alt="image" />
+          <img src="~assets/img/prog-1.png" width="50px" alt="image" />
         </div>
         <div class="col-lg-6 col-sm-6 col-12" style="text-align: end;">
           <!-- FIXME should be h7 according to css, but errors with vue -->
@@ -31,20 +32,6 @@
       </div>
       <h6 class="btn-pad-b">Sale progress</h6>
       <div class="progress"> 
-        <!-- <q-linear-progress
-          size="25px"
-          :value="progress"
-          color="accent"
-          class="progress-bar"
-        > 
-          <div class="absolute-full flex flex-center">
-            <q-badge
-              color="white"
-              text-color="accent"
-              :label="progressToPercentage"
-            />
-          </div>
-        </q-linear-progress>  -->
         <div
           class="progress-bar"
           role="progressbar"
@@ -53,7 +40,7 @@
           aria-valuemin="0"
           aria-valuemax="1"
         >
-          {{progressToPercentage}}%
+          {{progressToPercentage}}
         </div>
       </div>
       <div class="center btn-pad-t">
@@ -75,8 +62,9 @@ export default {
       minimum: 0,
       maximum: 0.3,
       type: "Fixed",
-      access_type: 'Public',
+      accessType: 'Public',
       progress: 0.75,
+      filterClass: 'created joined',
     };
   },
   computed: {
