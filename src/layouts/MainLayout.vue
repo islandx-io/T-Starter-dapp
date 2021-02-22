@@ -14,7 +14,8 @@
       <router-view />
     </q-page-container>
 
-    <q-footer elevated class="column">
+    <!-- <q-footer elevated class="column"> -->
+    <div>
       <div class="col-xl-4 row items-center justify-between ">
         <div class="col-sm-4">
           <h4>T-STARTER</h4>
@@ -36,7 +37,8 @@
         </div>
       </div>
       <p class="self-center">Copyright 2021. T-STARTER. All Rights Reserved</p>
-    </q-footer>
+    </div>
+    <!-- </q-footer> -->
   </q-layout>
 </template>
 
