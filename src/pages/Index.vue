@@ -1,4 +1,6 @@
 <template>
+  <!-- And do not be conformed to this world, but be transformed by the renewing of your mind, 
+that you may prove what is that good and acceptable and perfect will of God. - Romans 12:2 -NKJV -->
   <q-page>
     <!--=====================================-->
     <!--=         Main Banner Start         =-->
@@ -108,9 +110,7 @@
                   class="translate-bottom-75 opacity-animation transition-150 transition-delay-2400"
                 >
                   <div class="banner-btns">
-                    <a href="pools" class="item-btn btn-ghost btn-light-main"
-                      >VIEW ALL POOLS</a
-                    >
+                    <router-link to="/pools" class="item-btn btn-ghost btn-light-main" >VIEW ALL POOLS</router-link>
                   </div>
                 </div>
               </div>
@@ -231,7 +231,7 @@
         </div>
         <div class="center">
           <br /><br />
-          <a href="pools" class="item-btn btn-fill2">VIEW ALL POOLS</a>
+          <router-link to="/pools" class="item-btn btn-fill2" >VIEW ALL POOLS</router-link>
         </div>
       </div>
     </section>

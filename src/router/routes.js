@@ -24,6 +24,11 @@ const routes = [
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/Pools.vue") }]
   },
+  {
+    path: "/pools/:poolName",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ path: "", name: 'pools', component: () => import("pages/Pool.vue") }]
+  },
 
   // Always leave this as last one,
   // but you can also remove it

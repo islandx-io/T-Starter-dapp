@@ -1,5 +1,5 @@
 <template>
-<!-- TODO class joined, featured, created, all -->
+  <!-- TODO class joined, featured, created, all -->
   <div class="col-lg-4 col-sm-6 col-12" :class="filterClass">
     <div class="pricing-box-layout2">
       <div class="row">
@@ -31,21 +31,31 @@
         </div>
       </div>
       <h6 class="btn-pad-b">Sale progress</h6>
-      <div class="progress"> 
+      <div class="progress">
         <div
           class="progress-bar"
           role="progressbar"
-          :style="{width: progressToPercentage}"
+          :style="{ width: progressToPercentage }"
           :aria-valuenow="progress"
           aria-valuemin="0"
           aria-valuemax="1"
         >
-          {{progressToPercentage}}
+          {{ progressToPercentage }}
         </div>
       </div>
       <div class="center btn-pad-t">
         <!-- <a href="#" class="item-btn btn-ghost">VIEW POOL</a> -->
-        <q-btn class="item-btn btn-ghost" label="VIEW POOl" />
+        <!-- <q-btn
+          class="item-btn btn-ghost"
+          clickable
+          @click="goTo(poolID)"
+          label="VIEW POOl"
+        /> -->
+        <router-link
+          :to="{ name: 'pools', params: { poolName: poolID }}"
+          class="item-btn btn-ghost"
+          >VIEW POOL</router-link
+        >
       </div>
     </div>
   </div>
@@ -58,23 +68,23 @@ export default {
   data() {
     return {
       title: "The Unkown Project",
+      poolID: 1,
       price: 5000,
       minimum: 0,
       maximum: 0.3,
       type: "Fixed",
-      accessType: 'Public',
+      accessType: "Public",
       progress: 0.75,
-      filterClass: 'created joined',
+      filterClass: "created joined"
     };
   },
   computed: {
     progressToPercentage() {
-      return (this.progress * 100).toFixed(2) + '%';
+      return (this.progress * 100).toFixed(2) + "%";
     }
-  }
+  },
 };
 </script>
 
 // example scss or sass, remove later
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
