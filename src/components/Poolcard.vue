@@ -52,7 +52,7 @@
           label="VIEW POOl"
         /> -->
         <router-link
-          :to="{ name: 'pools', params: { poolName: poolID }}"
+          :to="{ name: 'pooldetails', params: { slug: slug, id: poolID }}"
           class="item-btn btn-ghost"
           >VIEW POOL</router-link
         >
@@ -68,6 +68,7 @@ export default {
   data() {
     return {
       title: "The Unkown Project",
+      slug: 'theunkownproject',
       poolID: 1,
       price: 5000,
       minimum: 0,
@@ -87,4 +88,6 @@ export default {
 </script>
 
 // example scss or sass, remove later
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+</style>
