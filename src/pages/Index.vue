@@ -3,7 +3,8 @@
     <!--=====================================-->
     <!--=         Main Banner Start         =-->
     <!--=====================================-->
-    <section class="main-banner-wrap-layout1 bg-gradient-layout1 has-animation">
+
+    <!-- <section class="main-banner-wrap-layout1 bg-gradient-layout1 has-animation">
       <ul class="animated-figure">
         <li>
           <div
@@ -118,7 +119,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
     <!--=====================================-->
     <!--=           Main Banner End         =-->
     <!--=====================================-->

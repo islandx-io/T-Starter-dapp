@@ -3,7 +3,9 @@
     <q-header elevated>
       <q-toolbar>
         <q-toolbar-title>
-          T-STARTER
+          <a href="/" class="default-logo">
+            <img src="~assets/logo/logo-light.svg" alt="logo" height="33px" />
+          </a>
         </q-toolbar-title>
 
         <login-button></login-button>
@@ -14,16 +16,16 @@
       <router-view />
     </q-page-container>
 
-    <!-- <q-footer elevated class="column"> -->
     <div>
       <div class="col-xl-4 row items-center justify-between ">
         <div class="col-sm-4">
-          <h4>T-STARTER</h4>
+          <a href="/" class="default-logo">
+            <img src="~assets/logo/logo-dark.svg" alt="logo" height="33px" />
+          </a>
           <p class="text-body1">
             The place to discover and back projects building on Telos
           </p>
         </div>
-        <!-- <div class="col"></div> -->
         <div class="col-sm-3">
           <p class="text-weight-bolder">Contact Us</p>
           <div class="row justify-start">
@@ -38,7 +40,6 @@
       </div>
       <p class="self-center">Copyright 2021. T-STARTER. All Rights Reserved</p>
     </div>
-    <!-- </q-footer> -->
   </q-layout>
 </template>
 
