@@ -21,7 +21,11 @@
         {{ tab }}
       </q-btn>
     </div>
-    <component v-if="isAuthenticated" v-bind:is="currentTabComponent" class="tab"></component>
+    <component
+      v-if="isAuthenticated"
+      v-bind:is="currentTabComponent"
+      class="tab"
+    ></component>
 
     <div v-if="isAuthenticated">
       hey

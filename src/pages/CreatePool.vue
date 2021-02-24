@@ -3,7 +3,7 @@
     <!-- content -->
     I'm creating a pool!
 
-    <q-input outlined v-model="poolName" label="Outlined" />
+    <q-input outlined v-model="poolName" label="Pool Name" />
 
     <div class="slug-widget">
       <div class="icon-wrapper wrapper">
@@ -26,6 +26,7 @@
 
 <script>
 import Slug from "slug";
+import _ from "lodash";
 Slug.defaults.mode = "rfc3986";
 
 export default {
@@ -46,7 +47,7 @@ export default {
   watch: {
     poolName: _.debounce(function() {
       this.slug = this.convertName();
-    }, 250) // debounce not to cause lag // TODO create API to check if unqiue & custom slug?
+    }, 500) // debounce not to cause lag // TODO create API to check if unqiue & custom slug?
   },
 };
 </script>
