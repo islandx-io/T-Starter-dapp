@@ -22,6 +22,7 @@
     "eosjs-ecc": "^4.0.7",
     "moment": "^2.27.0",
     "quasar": "^1.0.0",
+    "slug": "^4.0.2",
     "ual-anchor": "^0.5.1",
     "ual-ledger": "^0.3.0",
     "ual-scatter": "^0.3.0",
