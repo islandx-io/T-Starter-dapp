@@ -16,11 +16,11 @@
       <router-view />
     </q-page-container>
 
-    <div>
-      <div class="col-xl-4 row items-center justify-between ">
+    <section class="foot column items-center content-center justify-end">
+      <div class="foot-top col-xl-4 row items-center justify-between ">
         <div class="col-sm-4">
           <a href="/" class="default-logo">
-            <img src="~assets/logo/logo-dark.svg" alt="logo" height="33px" />
+            <img src="~assets/logo/logo-light.svg" alt="logo" height="33px" />
           </a>
           <p class="text-body1">
             The place to discover and back projects building on Telos
@@ -38,8 +38,8 @@
           </div>
         </div>
       </div>
-      <p class="self-center">Copyright 2021. T-STARTER. All Rights Reserved</p>
-    </div>
+      <p>Copyright 2021. T-STARTER. All Rights Reserved</p>
+    </section>
   </q-layout>
 </template>
 
@@ -51,3 +51,14 @@ export default {
   components: { LoginButton }
 };
 </script>
+
+<style lang="scss" scoped>
+.foot {
+  background-image: url("~assets/main/clouds-foot.png");
+  height: 450px;
+  color: $secondary;
+}
+.foot-top {
+  padding-bottom: 100px;
+}
+</style>
