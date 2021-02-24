@@ -18,66 +18,38 @@
       <h3 class="item-title ">{{ title }}</h3>
       <div class="text-h6">Total raise</div>
       <p class="item-price">{{ price }}</p>
+      <div class="row justify-between">
+        <div>
+          <div class="text-h6">Minimum</div>
+          <p class="item-value">{{ minimum }}</p>
+        </div>
+        <div>
+          <div class="text-h6">Maximum</div>
+          <p class="item-value">{{ maximum }}</p>
+        </div>
+        <div>
+          <div class="text-h6">Type</div>
+          <p class="item-value">{{ type }}</p>
+        </div>
+      </div>
     </q-card-section>
-
-    <!-- <q-card-section>
-      {{ lorem }}
-    </q-card-section> -->
+    <q-card-section>
+      <q-linear-progress :value="progress" color="primary" size="20px" rounded>
+        <div class="absolute-full flex flex-center">
+          <q-badge
+            rounded
+            color="primary"
+            text-color="white"
+            :label="progressLabel"
+          />
+        </div>
+      </q-linear-progress>
+    </q-card-section>
 
     <q-card-actions vertical align="center">
       <q-btn outline color="primary">VIEW POOL</q-btn>
     </q-card-actions>
   </q-card>
-  <!-- <div class="col-lg-4 col-sm-6 col-12" :class="filterClass">
-    <div class="pricing-box-layout2">
-      <div class="row">
-        <div class="col-lg-6 col-sm-6 col-12">
-          <img src="~assets/img/prog-1.png" width="50px" alt="image" />
-        </div>
-        <div class="col-lg-6 col-sm-6 col-12" style="text-align: end;"> -->
-
-  <!-- FIXME should be h7 according to css, but errors with vue -->
-
-  <!-- <h6>
-            <i class="fa fa-circle" aria-hidden="true"></i> Live in 5 days
-          </h6>
-        </div>
-      </div>
-      <h3 class="item-title">{{ title }}</h3>
-      <h6>Total raise</h6>
-      <p class="item-price">${{ price }}</p>
-      <div class="row">
-        <div class="col-lg-4 col-sm-6">
-          <h6>Minimum</h6>
-          <p class="item-values">{{ minimum }}</p>
-        </div>
-        <div class="col-lg-5 col-sm-6">
-          <h6>Maximum</h6>
-          <p class="item-values">{{ maximum }} ETH</p>
-        </div>
-        <div class="col-lg-3 col-sm-6">
-          <h6>Type</h6>
-          <p class="item-values">{{ type }}</p>
-        </div>
-      </div>
-      <h6 class="btn-pad-b">Sale progress</h6>
-      <div class="progress"> 
-        <div
-          class="progress-bar"
-          role="progressbar"
-          :style="{width: progressToPercentage}"
-          :aria-valuenow="progress"
-          aria-valuemin="0"
-          aria-valuemax="1"
-        >
-          {{progressToPercentage}}
-        </div>
-      </div>
-      <div class="center btn-pad-t">
-        <q-btn class="item-btn btn-ghost" label="VIEW POOl" />
-      </div>
-    </div>
-  </div> -->
 </template>
 
 <script>
@@ -92,26 +64,32 @@ export default {
       maximum: 0.3,
       type: "Fixed",
       accessType: "Public",
-      progress: 0.75,
+      progress: 0.4,
       filterClass: "created joined"
     };
   },
   computed: {
-    progressToPercentage() {
-      return (this.progress * 100).toFixed(2) + "%";
+    progressLabel() {
+      return this.progress * 100 + "%";
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.item-title {
+  margin-top: 0;
+}
 .item-price {
   line-height: 30px;
   font-size: 26px;
   color: $primary;
   margin-bottom: 10px;
 }
-.item-title {
-  margin-top: 0;
+.item-value {
+  line-height: 30px;
+  font-size: 20px;
+  color: $primary;
+  margin-bottom: 10px;
 }
 </style>
