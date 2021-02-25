@@ -101,16 +101,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("pools", ["getAllPools", "getPoolByID"]),
+    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     progressToPercentage() {
       return (this.progress * 100).toFixed(2) + "%";
     }
   },
   methods: {
     getPoolInfo: function() {
-      console.log("Mounted");
       const poolJSON = this.getPoolByID(this.poolID);
-      console.log(poolJSON);
 
       this.title = poolJSON.title;
       this.price = poolJSON.price;

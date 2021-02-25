@@ -55,10 +55,7 @@
         </div>
 
         <div class="row featuredContainer">
-          <Poolcard :poolID=1></Poolcard>
-          <Poolcard :poolID=1></Poolcard>
-          <Poolcard :poolID=1></Poolcard>
-          <Poolcard :poolID=1></Poolcard>
+          <Poolcard v-for="id in poolIDs" :key="id" :poolID="id"></Poolcard>
         </div>
       </div>
     </section>
@@ -67,8 +64,17 @@
 
 <script>
 import Poolcard from "src/components/Poolcard.vue";
+import { mapGetters, mapActions } from "vuex";
 export default {
-  components: { Poolcard }
-  // name: 'Pools',
+  components: { Poolcard },
+  data() {
+    return {
+    };
+  },
+  computed: {
+    ...mapGetters("pools", ["getAllPoolIDs"]),
+    poolIDs: function() {return this.getAllPoolIDs}
+  },
+  methods: {},
 };
 </script>

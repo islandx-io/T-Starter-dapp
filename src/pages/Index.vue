@@ -29,15 +29,13 @@ that you may prove what is that good and acceptable and perfect will of God. - R
     <section class="column items-center">
       <h2>Upcoming Pools</h2>
       <div class="q-pa-md row items-start justify-center q-gutter-md">
-        <Poolcard :poolID=1></Poolcard>
-        <Poolcard :poolID=2></Poolcard>
+        <Poolcard v-for="id in poolIDs" :key="id" :poolID="id"></Poolcard>
       </div>
     </section>
     <section class="column items-center">
       <h2>Featured Pools</h2>
       <div class="q-pa-md row items-start justify-center q-gutter-md">
-        <Poolcard :poolID=1></Poolcard>
-        <Poolcard :poolID=2></Poolcard>
+        <Poolcard v-for="id in poolIDs" :key="id" :poolID="id"></Poolcard>
       </div>
     </section>
     <div class="center">
@@ -225,9 +223,18 @@ that you may prove what is that good and acceptable and perfect will of God. - R
 
 <script>
 import Poolcard from "src/components/Poolcard.vue";
+import { mapGetters, mapActions } from "vuex";
 export default {
-  components: { Poolcard }
-  // name: "Index"
+  components: { Poolcard },
+  data() {
+    return {
+    };
+  },
+  computed: {
+    ...mapGetters("pools", ["getAllPoolIDs"]),
+    poolIDs: function() {return this.getAllPoolIDs}
+  },
+  methods: {},
 };
 </script>
 
