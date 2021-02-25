@@ -29,15 +29,15 @@ that you may prove what is that good and acceptable and perfect will of God. - R
     <section class="column items-center">
       <h2>Upcoming Pools</h2>
       <div class="q-pa-md row items-start justify-center q-gutter-md">
-        <Poolcard></Poolcard>
-        <Poolcard></Poolcard>
+        <Poolcard :poolID=1></Poolcard>
+        <Poolcard :poolID=2></Poolcard>
       </div>
     </section>
     <section class="column items-center">
       <h2>Featured Pools</h2>
       <div class="q-pa-md row items-start justify-center q-gutter-md">
-        <Poolcard></Poolcard>
-        <Poolcard></Poolcard>
+        <Poolcard :poolID=1></Poolcard>
+        <Poolcard :poolID=2></Poolcard>
       </div>
     </section>
     <div class="center">

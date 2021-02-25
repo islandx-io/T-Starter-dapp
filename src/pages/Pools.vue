@@ -55,10 +55,10 @@
         </div>
 
         <div class="row featuredContainer">
-          <Poolcard></Poolcard>
-          <Poolcard></Poolcard>
-          <Poolcard></Poolcard>
-          <Poolcard></Poolcard>
+          <Poolcard :poolID=1></Poolcard>
+          <Poolcard :poolID=1></Poolcard>
+          <Poolcard :poolID=1></Poolcard>
+          <Poolcard :poolID=1></Poolcard>
         </div>
       </div>
     </section>
