@@ -1,6 +1,6 @@
 <template>
   <!-- TODO class joined, featured, created, all -->
-  <q-card class="pool-card bg-secondary text-black" :class="filterClass">
+  <q-card class="card pool bg-secondary text-black" :class="filterClass">
     <q-item class="row items-center">
       <q-item-section avatar>
         <q-avatar>
@@ -91,31 +91,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pool-card {
-  padding: 20px 20px;
-  border-radius: 20px;
-  border-color: $secondary;
-  box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
+.pool {
   transition: all 0.3s ease-in-out;
 }
-.pool-card:hover {
+.pool:hover {
   transform: scale(1.05);
   z-index: 2;
-}
-.item-title {
-  margin-top: 0;
-}
-.item-price {
-  line-height: 30px;
-  font-size: 26px;
-  color: $primary;
-  margin-bottom: 10px;
-}
-.item-value {
-  line-height: 30px;
-  font-size: 20px;
-  color: $primary;
-  margin-bottom: 10px;
 }
 .progress-bar {
   display: flex;

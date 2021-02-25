@@ -9,8 +9,34 @@
 }
 
 // ----------------------------------------------
+// Text
+// ----------------------------------------------
+.item-title {
+  margin-top: 0;
+}
+.item-price {
+  line-height: 30px;
+  font-size: 26px;
+  color: $primary;
+  margin-bottom: 10px;
+}
+.item-value {
+  line-height: 30px;
+  font-size: 20px;
+  color: $primary;
+  margin-bottom: 10px;
+}
+
+// ----------------------------------------------
 // Classes
 // ----------------------------------------------
 body {
   background-color: $secondary;
+}
+
+.card {
+  padding: 20px 20px;
+  border-radius: $card-corner-radius;
+  border-color: $secondary;
+  box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
 }
