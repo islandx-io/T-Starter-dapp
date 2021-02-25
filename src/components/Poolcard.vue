@@ -33,14 +33,14 @@
         </div>
       </div>
     </q-card-section>
-    <q-card-section>
+    <!-- <q-card-section>
       <q-linear-progress :value="progress" color="primary" size="20px" rounded>
         <div class="absolute-full flex flex-center">
           <q-badge
             rounded
             color="primary"
             text-color="white"
-            :label="progressLabel"
+            :label="progressToPercentage"
           />
         </div>
       </q-linear-progress>
@@ -48,7 +48,29 @@
 
     <q-card-actions vertical align="center">
       <q-btn outline color="primary">VIEW POOL</q-btn>
-    </q-card-actions>
+    </q-card-actions> -->
+
+    <h6 class="btn-pad-b">Sale progress</h6>
+    <div class="progress">
+      <div
+        class="progress-bar"
+        role="progressbar"
+        :style="{ width: progressToPercentage }"
+        :aria-valuenow="progress"
+        aria-valuemin="0"
+        aria-valuemax="1"
+      >
+        {{ progressToPercentage }}
+      </div>
+    </div>
+
+    <div class="center btn-pad-t">
+      <router-link
+        :to="{ name: 'pooldetails', params: { slug: slug, id: poolID } }"
+        class="item-btn btn-ghost"
+        >VIEW POOL</router-link
+      >
+    </div>
   </q-card>
 </template>
 
@@ -59,6 +81,8 @@ export default {
   data() {
     return {
       title: "The Unkown Project",
+      slug: "theunkownproject",
+      poolID: 1,
       price: 5000,
       minimum: 0,
       maximum: 0.3,
@@ -69,9 +93,17 @@ export default {
     };
   },
   computed: {
-    progressLabel() {
-      return this.progress * 100 + "%";
+    progressToPercentage() {
+      return (this.progress * 100).toFixed(2) + "%";
     }
+  },
+  methods : {
+    getInfo: function()  {
+      console.log('Hi')
+    }
+  },
+  mounted() {
+    this.getInfo();
   }
 };
 </script>
@@ -91,5 +123,18 @@ export default {
   font-size: 20px;
   color: $primary;
   margin-bottom: 10px;
+}
+.progress-bar {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -ms-flex-pack: center;
+  justify-content: center;
+  color: #ffffff;
+  text-align: center;
+  white-space: nowrap;
+  background-color: #571aff;
+  transition: width 0.6s ease;
 }
 </style>
