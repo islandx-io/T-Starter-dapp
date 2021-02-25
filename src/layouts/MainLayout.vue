@@ -29,11 +29,11 @@
         <div class="col-sm-3">
           <p class="text-weight-bolder">Contact Us</p>
           <div class="row justify-start">
-            <q-btn type="a" href="#">
-              <q-icon size="sm" name="fab fa-medium-m" />
-            </q-btn>
-            <q-btn type="a" href="#">
+            <q-btn type="a" href="https://t.me/tstarterio">
               <q-icon size="sm" name="fab fa-telegram-plane" />
+            </q-btn>
+            <q-btn type="a" href="https://medium.com/@t-starter">
+              <q-icon size="sm" name="fab fa-medium-m" />
             </q-btn>
           </div>
         </div>

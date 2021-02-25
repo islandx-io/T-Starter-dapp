@@ -1,6 +1,6 @@
 <template>
   <!-- TODO class joined, featured, created, all -->
-  <q-card class="bg-secondary text-black" :class="filterClass">
+  <q-card class="pool-card bg-secondary text-black" :class="filterClass">
     <q-item class="row items-center">
       <q-item-section avatar>
         <q-avatar>
@@ -18,7 +18,7 @@
       <h3 class="item-title ">{{ title }}</h3>
       <div class="text-h6">Total raise</div>
       <p class="item-price">{{ price }}</p>
-      <div class="row justify-between">
+      <div class="q-col-gutter-xl row justify-between">
         <div>
           <div class="text-h6">Minimum</div>
           <p class="item-value">{{ minimum }}</p>
@@ -32,45 +32,27 @@
           <p class="item-value">{{ type }}</p>
         </div>
       </div>
-    </q-card-section>
-    <!-- <q-card-section>
-      <q-linear-progress :value="progress" color="primary" size="20px" rounded>
-        <div class="absolute-full flex flex-center">
-          <q-badge
-            rounded
-            color="primary"
-            text-color="white"
-            :label="progressToPercentage"
-          />
+      <div class="text-h6 q-pb-xs">Sale progress</div>
+      <div class="progress">
+        <div
+          class="progress-bar"
+          role="progressbar"
+          :style="{ width: progressToPercentage }"
+          :aria-valuenow="progress"
+          aria-valuemin="0"
+          aria-valuemax="1"
+        >
+          {{ progressToPercentage }}
         </div>
-      </q-linear-progress>
-    </q-card-section>
-
-    <q-card-actions vertical align="center">
-      <q-btn outline color="primary">VIEW POOL</q-btn>
-    </q-card-actions> -->
-
-    <h6 class="btn-pad-b">Sale progress</h6>
-    <div class="progress">
-      <div
-        class="progress-bar"
-        role="progressbar"
-        :style="{ width: progressToPercentage }"
-        :aria-valuenow="progress"
-        aria-valuemin="0"
-        aria-valuemax="1"
-      >
-        {{ progressToPercentage }}
       </div>
-    </div>
-
-    <div class="center btn-pad-t">
+    </q-card-section>
+    <q-card-actions vertical align="center">
       <router-link
         :to="{ name: 'pooldetails', params: { slug: slug, id: poolID } }"
-        class="item-btn btn-ghost"
-        >VIEW POOL</router-link
       >
-    </div>
+        <q-btn outline color="primary" class="item-btn">VIEW POOL</q-btn>
+      </router-link>
+    </q-card-actions>
   </q-card>
 </template>
 
@@ -94,12 +76,12 @@ export default {
   },
   computed: {
     progressToPercentage() {
-      return (this.progress * 100).toFixed(2) + "%";
+      return this.progress * 100 + "%";
     }
   },
-  methods : {
-    getInfo: function()  {
-      console.log('Hi')
+  methods: {
+    getInfo: function() {
+      console.log("Hi");
     }
   },
   mounted() {
@@ -109,6 +91,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.pool-card {
+  padding: 20px 20px;
+  border-radius: 20px;
+  border-color: $secondary;
+  box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease-in-out;
+}
+.pool-card:hover {
+  transform: scale(1.05);
+  z-index: 2;
+}
 .item-title {
   margin-top: 0;
 }
@@ -125,16 +118,21 @@ export default {
   margin-bottom: 10px;
 }
 .progress-bar {
-  display: -ms-flexbox;
   display: flex;
-  -ms-flex-direction: column;
   flex-direction: column;
-  -ms-flex-pack: center;
   justify-content: center;
-  color: #ffffff;
+  color: white;
   text-align: center;
-  white-space: nowrap;
-  background-color: #571aff;
+  background-color: $primary;
   transition: width 0.6s ease;
+}
+.progress {
+  color: $dark;
+  display: flex;
+  height: 1rem;
+  overflow: hidden;
+  font-size: 0.75rem;
+  background-color: #e9ecef;
+  border-radius: 0.25rem;
 }
 </style>
