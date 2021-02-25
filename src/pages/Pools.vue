@@ -1,66 +1,57 @@
 <template>
-  <q-page class="">
+  <q-page>
     <title>T-STARTER - Pools</title>
-    <section
-      id="page-banner"
-      class="page-banner bg-gradient-layout6 has-animation"
-    >
-      <div class="container">
-        <div class="breadcrumbs-area">
-          <h1>Pools</h1>
-        </div>
-      </div>
+    <section class="page-banner row content-center justify-center">
+      <h2 class="text-white">Pools</h2>
     </section>
 
-    <section
-      class="service-wrap-layout1 section-padding-md-equal bg-color-accent2 position-relative"
-      id="tokensale"
-    >
-      <div class="container">
-        <div class="isotope-wrap">
-          <div class="isotope-classes-tab isotop-btn-layout1">
-            <a href="/pools" class="current nav-item" data-filter=".all"
-              >All pools</a
-            >
-            <a href="/pools" class="nav-item" data-filter=".featured"
-              >Featured pools</a
-            >
-            <a href="/pools" class="nav-item" data-filter=".joined"
-              >Pools joined
-            </a>
-            <a href="/pools" class="nav-item" data-filter=".created"
-              >Pools created</a
-            >
-            <q-btn
-              class="current nav-item"
-              data-filter=".all"
-              label="All pools"
-            />
-            <q-btn
-              class="nav-item"
-              data-filter=".featured"
-              label="Featured pools"
-            />
-            <q-btn
-              class="nav-item"
-              data-filter=".joined"
-              label="Pools joined"
-            />
-            <q-btn
-              class="nav-item"
-              data-filter=".created"
-              label="Pools created"
-            />
-          </div>
-        </div>
+    <section>
+      <q-tabs
+        v-model="tab"
+        dense
+        class="text-grey"
+        active-color="primary"
+        indicator-color="primary"
+        align="justify"
+        narrow-indicator
+      >
+        <q-tab name="all-pools" label="ALL POOLS"></q-tab>
+        <q-tab name="featured-pools" label="FEATURED POOLS"></q-tab>
+        <q-tab name="joined-pools" label="POOLS JOINED"></q-tab>
+        <q-tab name="created-pools" label="POOLS CREATED"></q-tab>
+      </q-tabs>
 
-        <div class="row featuredContainer">
-          <Poolcard></Poolcard>
-          <Poolcard></Poolcard>
-          <Poolcard></Poolcard>
-          <Poolcard></Poolcard>
-        </div>
-      </div>
+      <q-separator></q-separator>
+
+      <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="all-pools">
+          <div class="row featuredContainer q-gutter-md">
+            <Poolcard />
+            <Poolcard />
+            <Poolcard />
+          </div>
+        </q-tab-panel>
+
+        <q-tab-panel name="featured-pools">
+          <div class="row featuredContainer q-gutter-md">
+            <Poolcard />
+            <Poolcard />
+          </div>
+        </q-tab-panel>
+
+        <q-tab-panel name="joined-pools">
+          <div class="row featuredContainer q-gutter-md">
+            <Poolcard />
+          </div>
+        </q-tab-panel>
+
+        <q-tab-panel name="created-pools">
+          <div class="row featuredContainer q-gutter-md">
+            <Poolcard />
+            <Poolcard />
+          </div>
+        </q-tab-panel>
+      </q-tab-panels>
     </section>
   </q-page>
 </template>
@@ -68,7 +59,19 @@
 <script>
 import Poolcard from "src/components/Poolcard.vue";
 export default {
-  components: { Poolcard }
+  components: { Poolcard },
   // name: 'Pools',
+  data() {
+    return {
+      tab: "all-pools"
+    };
+  }
 };
 </script>
+
+<style lang="scss" scoped>
+.page-banner {
+  background-image: url("~assets/index/clouds-head.png");
+  height: 200px;
+}
+</style>

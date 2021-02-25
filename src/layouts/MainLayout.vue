@@ -1,10 +1,10 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
-      <q-toolbar>
+      <q-toolbar class="text-black bg-secondary">
         <q-toolbar-title>
           <a href="/" class="default-logo">
-            <img src="~assets/logo/logo-light.svg" alt="logo" height="33px" />
+            <img src="~assets/logo/logo-dark.svg" alt="logo" height="33px" />
           </a>
         </q-toolbar-title>
 
@@ -53,6 +53,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.head {
+  color: $secondary;
+}
 .foot {
   background-image: url("~assets/main/clouds-foot.png");
   height: 450px;

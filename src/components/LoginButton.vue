@@ -3,7 +3,7 @@
     <div v-if="!isAuthenticated" class="q-px-md">
       <q-btn
         @click="showLogin = true"
-        color="secondary"
+        color="primary"
         text-color="black"
         label="Login"
       />
@@ -116,6 +116,5 @@ export default {
 
 <style lang="sass" scoped>
 .account-name
-    color: white
     font-size: 20px
 </style>
