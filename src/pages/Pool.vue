@@ -47,23 +47,28 @@
           >Details</q-btn
         >
         <q-btn
-          v-bind:class="['tab-button', { active: currentTab === 'About' }]"
-          v-on:click="currentTab = 'About'"
+          v-bind:class="['tab-button', { active: currentTab === 'Overview' }]"
+          v-on:click="currentTab = 'Overview'"
           >Overview</q-btn
         >
         <q-btn
           v-if="isAuthenticated"
-          v-bind:class="['tab-button', { active: currentTab === 'Allocations' }]"
+          v-bind:class="[
+            'tab-button',
+            { active: currentTab === 'Allocations' }
+          ]"
           v-on:click="currentTab = 'Allocations'"
           >Your Allocations</q-btn
         >
-
       </div>
       <q-card class="card">
-        <component
-          v-bind:is="currentTabComponent"
-          class="tab"
-        ></component>
+        <keep-alive>
+          <component
+            v-bind:is="currentTabComponent"
+            class="tab"
+            :poolObject="poolObject"
+          ></component>
+        </keep-alive>
       </q-card>
 
       <div>Params: {{ this.$route.params }} Query: {{ this.$route.query }}</div>
@@ -75,14 +80,14 @@
 
 // TODO reroute to this page if logged out
 <script>
-import tabAbout from "src/components/poolinfo/tab-about.vue";
+import tabOverview from "src/components/poolinfo/tab-overview.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
 import { mapGetters, mapActions } from "vuex";
 import { toSvg } from "jdenticon";
 
 export default {
-  components: { tabAbout, tabAllocations, tabDetails },
+  components: { tabOverview, tabAllocations, tabDetails },
   data() {
     return {
       //page info
@@ -101,7 +106,9 @@ export default {
       participants: 0,
       image_link: "",
       short_description: "Short description",
-      long_description: "Long description"
+      long_description: "Long description",
+      web_links: {},
+      poolObject: {}
     };
   },
   computed: {
@@ -119,9 +126,7 @@ export default {
   },
   methods: {
     getPoolInfo: function() {
-      console.log(this.poolID);
       const poolJSON = this.getPoolByID(this.poolID);
-      console.log(poolJSON);
 
       this.title = poolJSON.title;
       this.price = poolJSON.price;
@@ -133,9 +138,13 @@ export default {
       this.image_link = poolJSON.image_link;
       this.short_description = poolJSON.short_description;
       this.long_description = poolJSON.long_description;
+      this.web_links = poolJSON.web_links;
+      this.poolObject = poolJSON;
+      console.log(this.poolObject);
     }
   },
   mounted() {
+    //TODO if not in store, load chain?
     this.getPoolInfo();
   }
 };
