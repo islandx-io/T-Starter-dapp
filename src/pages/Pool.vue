@@ -9,14 +9,19 @@
         <q-item class="col column">
           <q-item-section class="col row items-center justify-left q-gutter-md">
             <q-avatar size="80px">
-              <img src="~assets/pools/prog-1.png" width="50px" alt="image" />
+              <img
+                v-if="image_link"
+                :src="image_link"
+                width="50px"
+                alt="image"
+              />
+              <div v-else v-html="identicon" />
             </q-avatar>
-            <div class="text-h3">The Worm Project</div>
+            <div class="text-h3">{{title}}</div>
           </q-item-section>
           <q-item-section>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut porta
-              fringilla euismod. Nulla nulla ligula, ornare a semper ut.
+              {{short_description}}
             </p>
           </q-item-section>
         </q-item>
@@ -36,6 +41,7 @@
         </q-item>
       </q-card>
       <div v-if="isAuthenticated" class="q-gutter-md">
+        
         <q-btn
           v-for="tab in tabs"
           v-bind:key="tab"
@@ -60,25 +66,74 @@
   </q-page>
 </template>
 
+<script
+  src="https://cdn.jsdelivr.net/npm/jdenticon@3.1.0/dist/jdenticon.min.js"
+  async
+  integrity="sha384-VngWWnG9GS4jDgsGEUNaoRQtfBGiIKZTiXwm9KpgAeaRn6Y/1tAFiyXqSzqC8Ga/"
+  crossorigin="anonymous"
+></script>
 <script>
 import tabAbout from "src/components/poolinfo/tab-about.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
 import { mapGetters, mapActions } from "vuex";
+import {toSvg} from "jdenticon";
 
 export default {
   components: { tabAbout, tabAllocations, tabDetails },
   data() {
     return {
       currentTab: "Details",
-      tabs: ["Details", "About", "Allocations"]
+      tabs: ["Details", "About", "Allocations"],
+
+      poolID: Number(this.$route.params.id),
+      title: "No Project",
+      slug: "no-project",
+      price: 0,
+      minimum: "TBA",
+      maximum: "TBA",
+      type: "Fixed",
+      accessType: "Private",
+      progress: 0,
+      participants: 0,
+      image_link: "",
+      short_description: "Short description",
+      long_description: "Long description",
     };
   },
   computed: {
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("pools", ["getPoolByID"]),
     currentTabComponent: function() {
       return "tab-" + this.currentTab.toLowerCase();
     },
-    ...mapGetters("account", ["isAuthenticated", "accountName"])
+    progressToPercentage() {
+      return this.progress * 100 + "%";
+    },
+    identicon() {
+      return toSvg(this.poolID, 80);
+    },
+  },
+  methods: {
+    getPoolInfo: function() {
+      console.log(this.poolID);
+      const poolJSON = this.getPoolByID(this.poolID);
+      console.log(poolJSON);
+
+      this.title = poolJSON.title;
+      this.price = poolJSON.price;
+      this.minimum = poolJSON.minimum_allocation_per_wallet;
+      this.maximum = poolJSON.max_eth_allocation;
+      this.type = poolJSON.type;
+      this.accessType = poolJSON.accessType;
+      this.participants = poolJSON.participants;
+      this.image_link = poolJSON.image_link;
+      this.short_description = poolJSON.short_description;
+      this.long_description = poolJSON.long_description;
+    }
+  },
+  mounted() {
+    this.getPoolInfo();
   }
 };
 </script>

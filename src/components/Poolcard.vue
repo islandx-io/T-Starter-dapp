@@ -4,7 +4,8 @@
     <q-item class="row items-center">
       <q-item-section avatar>
         <q-avatar>
-          <img src="~assets/pools/prog-1.png" width="50px" alt="image" />
+          <img v-if="image_link" :src="image_link" width="50px" alt="image" />
+          <div v-else v-html="identicon" />
         </q-avatar>
       </q-item-section>
       <q-item-section top>
@@ -59,6 +60,8 @@
 <script>
 import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
+import {toSvg} from "jdenticon";
+
 export default {
   name: "Poolcard",
   props: {
@@ -70,35 +73,41 @@ export default {
   },
   data() {
     return {
-      title: "The Unknown Project",
-      slug: "theunknownproject",
+      title: "No Project",
+      slug: "noproject",
       price: 0,
       minimum: "TBA",
       maximum: "TBA",
       type: "Fixed",
       accessType: "Private",
       progress: 0.4,
-      participants: 100,
-      filterClass: "created joined"
+      participants: 0,
+      image_link: "",
+      filterClass: "created joined",
     };
   },
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     progressToPercentage() {
       return this.progress * 100 + "%";
-    }
+    },
+    identicon() {
+      return toSvg(this.poolID, 40);
+    },
   },
   methods: {
     getPoolInfo: function() {
       const poolJSON = this.getPoolByID(this.poolID);
 
       this.title = poolJSON.title;
+      this.slug = poolJSON.slug;
       this.price = poolJSON.price;
-      this.minimum = poolJSON.minimum;
-      this.maximum = poolJSON.maximum;
+      this.minimum = poolJSON.minimum_allocation_per_wallet;
+      this.maximum = poolJSON.max_eth_allocation;
       this.type = poolJSON.type;
       this.accessType = poolJSON.accessType;
       this.participants = poolJSON.participants;
+      this.image_link = poolJSON.image_link;
     }
   },
   mounted() {
