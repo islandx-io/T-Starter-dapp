@@ -25,31 +25,21 @@
 
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="all-pools">
-          <div class="row featuredContainer q-gutter-md">
-            <Poolcard />
-            <Poolcard />
-            <Poolcard />
+          <div class="row  q-gutter-md">
+            <Poolcard v-for="id in poolIDs" :key="id" :poolID="id"></Poolcard>
           </div>
         </q-tab-panel>
 
         <q-tab-panel name="featured-pools">
-          <div class="row featuredContainer q-gutter-md">
-            <Poolcard />
-            <Poolcard />
-          </div>
+          <div class="row  q-gutter-md"></div>
         </q-tab-panel>
 
         <q-tab-panel name="joined-pools">
-          <div class="row featuredContainer q-gutter-md">
-            <Poolcard />
-          </div>
+          <div class="row  q-gutter-md"></div>
         </q-tab-panel>
 
         <q-tab-panel name="created-pools">
-          <div class="row featuredContainer q-gutter-md">
-            <Poolcard />
-            <Poolcard />
-          </div>
+          <div class="row  q-gutter-md"></div>
         </q-tab-panel>
       </q-tab-panels>
     </section>
@@ -58,14 +48,19 @@
 
 <script>
 import Poolcard from "src/components/Poolcard.vue";
+import { mapGetters, mapActions } from "vuex";
 export default {
   components: { Poolcard },
-  // name: 'Pools',
   data() {
-    return {
-      tab: "all-pools"
-    };
-  }
+    return {};
+  },
+  computed: {
+    ...mapGetters("pools", ["getAllPoolIDs"]),
+    poolIDs: function() {
+      return this.getAllPoolIDs;
+    }
+  },
+  methods: {}
 };
 </script>
 

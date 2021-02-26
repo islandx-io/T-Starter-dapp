@@ -28,8 +28,8 @@
           <p class="item-value">{{ maximum }}</p>
         </div>
         <div>
-          <div class="text-h6">Type</div>
-          <p class="item-value">{{ type }}</p>
+          <div class="text-h6">Access</div>
+          <p class="item-value">{{ accessType }}</p>
         </div>
       </div>
       <div class="text-h6 q-pb-xs">Sale progress</div>
@@ -57,35 +57,52 @@
 </template>
 
 <script>
+import { date } from "quasar";
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Poolcard",
-  props: {},
+  props: {
+    poolID: {
+      type: Number,
+      default: 0,
+      required: true
+    }
+  },
   data() {
     return {
-      title: "The Unkown Project",
-      slug: "theunkownproject",
-      poolID: 1,
-      price: 5000,
-      minimum: 0,
-      maximum: 0.3,
+      title: "The Unknown Project",
+      slug: "theunknownproject",
+      price: 0,
+      minimum: "TBA",
+      maximum: "TBA",
       type: "Fixed",
-      accessType: "Public",
+      accessType: "Private",
       progress: 0.4,
+      participants: 100,
       filterClass: "created joined"
     };
   },
   computed: {
+    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     progressToPercentage() {
       return this.progress * 100 + "%";
     }
   },
   methods: {
-    getInfo: function() {
-      console.log("Hi");
+    getPoolInfo: function() {
+      const poolJSON = this.getPoolByID(this.poolID);
+
+      this.title = poolJSON.title;
+      this.price = poolJSON.price;
+      this.minimum = poolJSON.minimum;
+      this.maximum = poolJSON.maximum;
+      this.type = poolJSON.type;
+      this.accessType = poolJSON.accessType;
+      this.participants = poolJSON.participants;
     }
   },
   mounted() {
-    this.getInfo();
+    this.getPoolInfo();
   }
 };
 </script>
