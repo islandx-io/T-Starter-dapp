@@ -17,11 +17,11 @@
               />
               <div v-else v-html="identicon" />
             </q-avatar>
-            <div class="text-h3">{{title}}</div>
+            <div class="text-h3">{{ title }}</div>
           </q-item-section>
           <q-item-section>
             <p>
-              {{short_description}}
+              {{ short_description }}
             </p>
           </q-item-section>
         </q-item>
@@ -40,20 +40,27 @@
           </div>
         </q-item>
       </q-card>
-      <div v-if="isAuthenticated" class="q-gutter-md">
-        
+      <div class="q-gutter-md">
         <q-btn
-          v-for="tab in tabs"
-          v-bind:key="tab"
-          v-bind:class="['tab-button', { active: currentTab === tab }]"
-          v-on:click="currentTab = tab"
+          v-bind:class="['tab-button', { active: currentTab === 'Details' }]"
+          v-on:click="currentTab = 'Details'"
+          >Details</q-btn
         >
-          {{ tab }}
-        </q-btn>
+        <q-btn
+          v-bind:class="['tab-button', { active: currentTab === 'About' }]"
+          v-on:click="currentTab = 'About'"
+          >Overview</q-btn
+        >
+        <q-btn
+          v-if="isAuthenticated"
+          v-bind:class="['tab-button', { active: currentTab === 'Allocations' }]"
+          v-on:click="currentTab = 'Allocations'"
+          >Your Allocations</q-btn
+        >
+
       </div>
       <q-card class="card">
         <component
-          v-if="isAuthenticated"
           v-bind:is="currentTabComponent"
           class="tab"
         ></component>
@@ -66,26 +73,22 @@
   </q-page>
 </template>
 
-<script
-  src="https://cdn.jsdelivr.net/npm/jdenticon@3.1.0/dist/jdenticon.min.js"
-  async
-  integrity="sha384-VngWWnG9GS4jDgsGEUNaoRQtfBGiIKZTiXwm9KpgAeaRn6Y/1tAFiyXqSzqC8Ga/"
-  crossorigin="anonymous"
-></script>
+// TODO reroute to this page if logged out
 <script>
 import tabAbout from "src/components/poolinfo/tab-about.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
 import { mapGetters, mapActions } from "vuex";
-import {toSvg} from "jdenticon";
+import { toSvg } from "jdenticon";
 
 export default {
   components: { tabAbout, tabAllocations, tabDetails },
   data() {
     return {
+      //page info
       currentTab: "Details",
-      tabs: ["Details", "About", "Allocations"],
 
+      //pool info
       poolID: Number(this.$route.params.id),
       title: "No Project",
       slug: "no-project",
@@ -98,7 +101,7 @@ export default {
       participants: 0,
       image_link: "",
       short_description: "Short description",
-      long_description: "Long description",
+      long_description: "Long description"
     };
   },
   computed: {
@@ -112,7 +115,7 @@ export default {
     },
     identicon() {
       return toSvg(this.poolID, 80);
-    },
+    }
   },
   methods: {
     getPoolInfo: function() {
