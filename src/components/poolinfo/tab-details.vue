@@ -1,15 +1,17 @@
 <template>
   <div>
     <div>Access type: {{ access_type }}</div>
-    <div>Sale open: {{ start_date }}</div>
-    <div>Private sale end: {{ end_private_date }}</div>
-    <div>Public sale end: {{ end_public_date }}</div>
+    <div>Sale open: {{ toDate(start_date) }}</div>
+    <div>Private sale end: {{ toDate(end_private_date) }}</div>
+    <div>Public sale end: {{ toDate(end_public_date) }}</div>
     <div>Min investement per wallet: {{ minimum_allocation_per_wallet }}</div>
     <div>Max investement per wallet: {{ max_eth_allocation }}</div>
   </div>
 </template>
 
 <script>
+import { date } from 'quasar';
+
 export default {
   name: "tab-details",
   props: {
@@ -30,6 +32,11 @@ export default {
   computed: {
     epochTimeToDate() {
       return "";
+    },
+  },
+  methods: {
+    toDate(timeStamp){
+      return date.formatDate(timeStamp, 'DD MMMM YYYY, HH:mm UTC');
     }
   },
   watch: {

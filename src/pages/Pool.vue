@@ -85,6 +85,7 @@ import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
 import { mapGetters, mapActions } from "vuex";
 import { toSvg } from "jdenticon";
+import { date } from 'quasar';
 
 export default {
   components: { tabOverview, tabAllocations, tabDetails },
@@ -122,9 +123,12 @@ export default {
     },
     identicon() {
       return toSvg(this.poolID, 80);
-    }
+    },
   },
   methods: {
+    toDate(timeStamp){
+      return date.formatDate(timeStamp, 'DD MMMM YYYY, HH:mm UTC');
+    },
     getPoolInfo: function() {
       const poolJSON = this.getPoolByID(this.poolID);
 

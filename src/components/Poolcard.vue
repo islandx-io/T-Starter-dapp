@@ -30,7 +30,7 @@
         </div>
         <div>
           <div class="text-h6">Access</div>
-          <p class="item-value">{{ accessType }}</p>
+          <p class="item-value">{{ access_type }}</p>
         </div>
       </div>
       <div class="text-h6 q-pb-xs">Sale progress</div>
@@ -79,7 +79,7 @@ export default {
       minimum: "TBA",
       maximum: "TBA",
       type: "Fixed",
-      accessType: "Private",
+      access_type: "Private",
       progress: 0.4,
       participants: 0,
       image_link: "",
@@ -105,7 +105,7 @@ export default {
       this.minimum = poolJSON.minimum_allocation_per_wallet;
       this.maximum = poolJSON.max_eth_allocation;
       this.type = poolJSON.type;
-      this.accessType = poolJSON.accessType;
+      this.access_type = poolJSON.access_type;
       this.participants = poolJSON.participants;
       this.image_link = poolJSON.image_link;
     }
