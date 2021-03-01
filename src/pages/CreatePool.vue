@@ -25,7 +25,8 @@
             v-model="owner"
             label="Owner address"
             lazy-rules
-            :rules="[ val => val && val.length > 0 || 'Please type something']">
+            :rules="[val => (val && val.length > 0) || 'Please type something']"
+          >
           </q-input>
         </div>
         <div class="q-pa-md">
@@ -36,14 +37,22 @@
         </div>
       </div>
       <div class="row">
-        <q-input color="primary" v-model="swap_ratio.contract" label="Token contract address">
+        <q-input
+          color="primary"
+          v-model="swap_ratio.contract"
+          label="Token contract address"
+        >
         </q-input>
       </div>
       <div class="row">
         <q-input color="primary" v-model="token_shorthand" label="Token">
         </q-input>
         To
-        <q-select v-model="base_token_name" :options="base_token_options" label="Standard" />
+        <q-select
+          v-model="base_token_name"
+          :options="base_token_options"
+          label="Standard"
+        />
       </div>
       <h3>Swap ratio</h3>
       <div class="row">
@@ -60,8 +69,18 @@
           </q-input>
         </div>
         <div>
-          <q-input color="primary" v-model="minimum_swap" label="minimum swap amount" > </q-input> 
-          <q-input color="primary" v-model="maximum_allocation" label="maximum swap per wallet" > </q-input>
+          <q-input
+            color="primary"
+            v-model="minimum_swap"
+            label="minimum swap amount"
+          >
+          </q-input>
+          <q-input
+            color="primary"
+            v-model="maximum_allocation"
+            label="maximum swap per wallet"
+          >
+          </q-input>
         </div>
       </div>
       <h3>Dates</h3>
@@ -156,13 +175,40 @@
         <q-input color="primary" v-model="avatar" label="Avatar image link">
         </q-input>
       </div>
+      <div class="q-pa-md" style="max-width: 500px">
+        <q-input v-model="tag_line" filled autogrow label="Tag line" />
+      </div>
+      <div class="q-pa-md" style="max-width: 500px">
+        <q-input v-model="description" filled autogrow label="Description" />
+      </div>
 
+      <!-- web links -->
+      <div>
+        <div class="row">
+          <q-input color="primary" v-model="site_name" label="Site Name">
+          </q-input>
+          <q-input color="primary" v-model="site_link" label="Link"> </q-input>
+        </div>
+
+        <q-btn round color="primary" icon="add" @click="addLinkField"/>
+      </div>
+
+      <!-- Whitelist -->
+      <div class="q-pa-md" style="max-width: 500px">
+        <q-input v-model="whitelist" filled autogrow label="Some whitelist thing" />
+      </div>
 
       <q-toggle v-model="accept" label="I accept the license and terms" />
 
       <div>
         <q-btn label="Submit" type="submit" color="primary" />
-        <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+        <q-btn
+          label="Reset"
+          type="reset"
+          color="primary"
+          flat
+          class="q-ml-sm"
+        />
       </div>
     </q-form>
   </q-page>
@@ -186,6 +232,8 @@ export default {
       token_shorthand: "START",
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
+      site_name: "twitter",
+      site_link: "https://www/twitter.com",
 
       //Static
       owner: "",
@@ -244,26 +292,27 @@ export default {
     toUnixTimestamp(timeStamp) {
       return date.formatDate(timeStamp, "X");
     },
-    onSubmit () {
+    onSubmit() {
       if (this.accept !== true) {
         this.$q.notify({
-          color: 'red-5',
-          textColor: 'white',
-          icon: 'warning',
-          message: 'You need to accept the license and terms first'
-        })
-      }
-      else {
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: "You need to accept the license and terms first"
+        });
+      } else {
         this.$q.notify({
-          color: 'green-4',
-          textColor: 'white',
-          icon: 'cloud_done',
-          message: 'Submitted'
-        })
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Submitted"
+        });
       }
     },
 
-    onReset () {
+    onReset() {},
+    addLinkField() {
+      console.log("adding a field")
     }
   },
 
