@@ -24,8 +24,10 @@ export default {
           return "warning";
         case "upcoming":
           return "accent";
+        case "loading":
+          return "blue-grey";
         default:
-          return "primary";
+          return "blue-grey";
       }
     },
     statusMessage() {

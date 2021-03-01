@@ -29,7 +29,7 @@
           </q-item-section>
           <status-countdown
             v-if="pool_status === 'upcoming'"
-            :deadline="new Date(new Date().getTime() + 86400000)"
+            :deadline="start_date"
           ></status-countdown>
         </q-item>
         <q-item class="col-6 row justify-center">
@@ -124,7 +124,8 @@ export default {
       short_description: "Short description",
       long_description: "Long description",
       web_links: {},
-      pool_status: "upcoming",
+      pool_status: "loading",
+      start_date: new Date(), // TODO Reconsider best init
       poolObject: {}
     };
   },
@@ -160,6 +161,9 @@ export default {
       this.long_description = poolJSON.long_description;
       this.web_links = poolJSON.web_links;
       this.pool_status = poolJSON.status.toLowerCase();
+      // TODO Check timezone
+      this.start_date = new Date(poolJSON.start_date * 1000); // (s -> ms)
+      // this.start_date = Date(poolJSON.start_date);
       this.poolObject = poolJSON;
     }
   },

@@ -41,13 +41,6 @@ export default {
     };
   },
   created() {
-    if (!this.deadline) {
-      throw new Error("Missing prop 'deadline'");
-    }
-    this.endDate = Math.trunc(this.deadline / 1000);
-    if (!this.endDate) {
-      throw new Error("Invalid value for the 'deadline' prop");
-    }
     interval = setInterval(() => {
       this.now = Math.trunc(new Date().getTime() / 1000);
     }, 1000); // Update the current time every second
@@ -68,6 +61,13 @@ export default {
   },
   watch: {
     now() {
+      if (!this.deadline) {
+        throw new Error("Missing prop 'deadline'");
+      }
+      this.endDate = Math.trunc(this.deadline / 1000);
+      if (!this.endDate) {
+        throw new Error("Invalid value for the 'deadline' prop");
+      }
       this.diff = this.endDate - this.now;
       if (this.diff <= 0 || this.reset) {
         this.diff = 0;
