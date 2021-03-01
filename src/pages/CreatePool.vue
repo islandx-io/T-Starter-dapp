@@ -174,6 +174,9 @@
         <q-input color="primary" v-model="title" label="Title"> </q-input>
         <q-input color="primary" v-model="avatar" label="Avatar image link">
         </q-input>
+        <q-avatar size="50px">
+          <img :src="avatar" width="20px" alt="image" />
+        </q-avatar>
       </div>
       <div class="q-pa-md" style="max-width: 500px">
         <q-input v-model="tag_line" filled autogrow label="Tag line" />
@@ -184,7 +187,13 @@
 
       <!-- web links -->
       <div>
-        <link-field v-for="(link, link_index) in web_links" :key="link_index" :link.sync="link" :index.sync="link_index" v-on:deleteThisLink='deleteThisLink'></link-field>
+        <link-field
+          v-for="(link, link_index) in web_links"
+          :key="link_index"
+          :link.sync="link"
+          :index.sync="link_index"
+          v-on:deleteThisLink="deleteThisLink"
+        ></link-field>
         <q-btn round color="primary" icon="add" @click="addLinkField" />
       </div>
 
@@ -279,7 +288,7 @@ export default {
         {
           key: "",
           value: ""
-        },
+        }
       ],
       whitelist: ["rory", "janet"],
 
@@ -321,11 +330,11 @@ export default {
     addLinkField() {
       console.log(this.web_links);
       // TODO check fields first
-      this.web_links.push({key: '', value:''})
+      this.web_links.push({ key: "", value: "" });
     },
     deleteThisLink(index) {
       console.log("Delete key:" + index);
-      this.$delete(this.web_links, index)
+      this.$delete(this.web_links, index);
       console.log(this.web_links);
     }
   },
