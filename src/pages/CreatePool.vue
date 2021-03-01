@@ -184,18 +184,18 @@
 
       <!-- web links -->
       <div>
-        <div class="row">
-          <q-input color="primary" v-model="site_name" label="Site Name">
-          </q-input>
-          <q-input color="primary" v-model="site_link" label="Link"> </q-input>
-        </div>
-
-        <q-btn round color="primary" icon="add" @click="addLinkField"/>
+        <link-field v-for="(link, link_index) in web_links" :key="link_index" :link.sync="link" :index.sync="link_index" v-on:deleteThisLink='deleteThisLink'></link-field>
+        <q-btn round color="primary" icon="add" @click="addLinkField" />
       </div>
 
       <!-- Whitelist -->
       <div class="q-pa-md" style="max-width: 500px">
-        <q-input v-model="whitelist" filled autogrow label="Some whitelist thing" />
+        <q-input
+          v-model="whitelist"
+          filled
+          autogrow
+          label="Some whitelist thing"
+        />
       </div>
 
       <q-toggle v-model="accept" label="I accept the license and terms" />
@@ -218,10 +218,11 @@
 import { date } from "quasar";
 import Slug from "slug";
 import _ from "lodash";
+import LinkField from "src/components/poolcreation/link-field.vue";
 Slug.defaults.mode = "rfc3986";
 
 export default {
-  // name: 'PageName',
+  components: { LinkField },
   data() {
     return {
       poolName: "",
@@ -232,8 +233,7 @@ export default {
       token_shorthand: "START",
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
-      site_name: "twitter",
-      site_link: "https://www/twitter.com",
+      link_index: -1,
 
       //Static
       owner: "",
@@ -257,23 +257,29 @@ export default {
         "T-Starter is a cross chain token swap platform created to help projects launch on the Telos blockchain",
       description:
         "T-Starter is the place to discover and back new projects coming to Telos. It offers users the oppotunity to become part of those projects very early in their life.",
+      // web_links: [
+      //   {
+      //     key: "github",
+      //     value: "https://github.com/orgs/T-Starter"
+      //   },
+      //   {
+      //     key: "medium",
+      //     value: "https://t-starter.medium.com"
+      //   },
+      //   {
+      //     key: "telegram",
+      //     value: "https://t.me/tstarterio"
+      //   },
+      //   {
+      //     key: "twitter",
+      //     value: "https://twitter.com/T_StarterToken"
+      //   }
+      // ],
       web_links: [
         {
-          key: "github",
-          value: "https://github.com/orgs/T-Starter"
+          key: "",
+          value: ""
         },
-        {
-          key: "medium",
-          value: "https://t-starter.medium.com"
-        },
-        {
-          key: "telegram",
-          value: "https://t.me/tstarterio"
-        },
-        {
-          key: "twitter",
-          value: "https://twitter.com/T_StarterToken"
-        }
       ],
       whitelist: ["rory", "janet"],
 
@@ -311,8 +317,16 @@ export default {
     },
 
     onReset() {},
+
     addLinkField() {
-      console.log("adding a field")
+      console.log(this.web_links);
+      // TODO check fields first
+      this.web_links.push({key: '', value:''})
+    },
+    deleteThisLink(index) {
+      console.log("Delete key:" + index);
+      this.$delete(this.web_links, index)
+      console.log(this.web_links);
     }
   },
 
