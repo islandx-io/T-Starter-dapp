@@ -22,11 +22,11 @@
       <div class="q-col-gutter-xl row justify-between">
         <div>
           <div class="text-h6">Minimum</div>
-          <p class="item-value">{{ minimum }}</p>
+          <p class="item-value">{{ parseFloat(minimum).toFixed(2) }}</p>
         </div>
         <div>
           <div class="text-h6">Maximum</div>
-          <p class="item-value">{{ maximum }}</p>
+          <p class="item-value">{{ parseFloat(maximum).toFixed(2) }}</p>
         </div>
         <div>
           <div class="text-h6">Access</div>
@@ -89,7 +89,7 @@ export default {
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     progressToPercentage() {
-      return this.progress * 100 + "%";
+      return (this.progress * 100).toFixed(2) + "%";
     },
     identicon() {
       return toSvg(this.poolID, 40);
@@ -108,7 +108,7 @@ export default {
       this.access_type = poolJSON.access_type;
       this.participants = poolJSON.participants;
       this.image_link = poolJSON.image_link;
-    }
+    },
   },
   mounted() {
     this.getPoolInfo();

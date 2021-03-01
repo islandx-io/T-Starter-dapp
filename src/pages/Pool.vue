@@ -119,7 +119,7 @@ export default {
       return "tab-" + this.currentTab.toLowerCase();
     },
     progressToPercentage() {
-      return this.progress * 100 + "%";
+      return (this.progress * 100).toFixed(2) + "%";
     },
     identicon() {
       return toSvg(this.poolID, 80);
