@@ -7,7 +7,7 @@
     >
       <q-card class="card row justify-between content-start">
         <q-item class="col column">
-          <q-item-section class="col row items-center justify-left q-gutter-md">
+          <q-item-section class="col row justify-left q-gutter-md">
             <q-avatar size="80px">
               <img
                 v-if="image_link"
@@ -17,7 +17,10 @@
               />
               <div v-else v-html="identicon" />
             </q-avatar>
-            <div class="text-h3">{{ title }}</div>
+            <div class="row q-gutter-md">
+              <div class="text-h3">{{ title }}</div>
+              <status-badge :poolStatus="pool_status"></status-badge>
+            </div>
           </q-item-section>
           <q-item-section>
             <p>
@@ -25,6 +28,7 @@
             </p>
           </q-item-section>
           <status-countdown
+            v-if="pool_status === 'upcoming'"
             :deadline="new Date(new Date().getTime() + 86400000)"
           ></status-countdown>
         </q-item>
@@ -84,6 +88,7 @@
 // TODO reroute to this page if logged out
 <script>
 import statusCountdown from "src/components/poolinfo/status-countdown";
+import statusBadge from "src/components/poolinfo/status-badge";
 import tabOverview from "src/components/poolinfo/tab-overview.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
@@ -92,7 +97,13 @@ import { toSvg } from "jdenticon";
 import { date } from "quasar";
 
 export default {
-  components: { tabOverview, tabAllocations, tabDetails, statusCountdown },
+  components: {
+    tabOverview,
+    tabAllocations,
+    tabDetails,
+    statusCountdown,
+    statusBadge
+  },
   data() {
     return {
       //page info
@@ -113,6 +124,7 @@ export default {
       short_description: "Short description",
       long_description: "Long description",
       web_links: {},
+      pool_status: "upcoming",
       poolObject: {}
     };
   },
@@ -147,6 +159,7 @@ export default {
       this.short_description = poolJSON.short_description;
       this.long_description = poolJSON.long_description;
       this.web_links = poolJSON.web_links;
+      this.pool_status = poolJSON.status.toLowerCase();
       this.poolObject = poolJSON;
     }
   },
