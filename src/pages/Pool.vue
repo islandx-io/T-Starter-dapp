@@ -19,6 +19,9 @@
               fringilla euismod. Nulla nulla ligula, ornare a semper ut.
             </p>
           </q-item-section>
+          <status-countdown
+            :deadline="new Date(new Date().getTime() + 86400000)"
+          ></status-countdown>
         </q-item>
         <q-item class="col-6 row justify-center">
           <div class="col join-pane column q-gutter-md">
@@ -61,13 +64,14 @@
 </template>
 
 <script>
+import statusCountdown from "src/components/poolinfo/status-countdown";
 import tabAbout from "src/components/poolinfo/tab-about.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  components: { tabAbout, tabAllocations, tabDetails },
+  components: { tabAbout, tabAllocations, tabDetails, statusCountdown },
   data() {
     return {
       currentTab: "Details",
