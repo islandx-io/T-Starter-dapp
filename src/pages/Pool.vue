@@ -102,7 +102,7 @@ export default {
       minimum: "TBA",
       maximum: "TBA",
       type: "Fixed",
-      accessType: "Private",
+      access_type: "Private",
       progress: 0,
       participants: 0,
       image_link: "",
@@ -137,14 +137,13 @@ export default {
       this.minimum = poolJSON.minimum_allocation_per_wallet;
       this.maximum = poolJSON.max_eth_allocation;
       this.type = poolJSON.type;
-      this.accessType = poolJSON.accessType;
+      this.access_type = poolJSON.access_type;
       this.participants = poolJSON.participants;
       this.image_link = poolJSON.image_link;
       this.short_description = poolJSON.short_description;
       this.long_description = poolJSON.long_description;
       this.web_links = poolJSON.web_links;
       this.poolObject = poolJSON;
-      console.log(this.poolObject);
     }
   },
   mounted() {
