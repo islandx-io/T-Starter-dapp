@@ -130,6 +130,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions("pools", ["getChainData"]),
     toDate(timeStamp) {
       return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
     },
@@ -148,10 +149,14 @@ export default {
       this.long_description = poolJSON.long_description;
       this.web_links = poolJSON.web_links;
       this.poolObject = poolJSON;
-    }
+    },
+    async loadChainData() {
+      await this.getChainData(this.poolID);
+    },
   },
   mounted() {
     //TODO if not in store, load chain?
+    this.loadChainData();
     this.getPoolInfo();
   }
 };
