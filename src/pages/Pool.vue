@@ -31,6 +31,10 @@
             v-if="pool_status === 'upcoming'"
             :deadline="start_date"
           ></status-countdown>
+          <status-countdown
+            v-else-if="pool_status === 'open'"
+            :deadline="end_public_date"
+          ></status-countdown>
         </q-item>
         <q-item class="col-6 row justify-center">
           <div class="col join-pane column q-gutter-md">
