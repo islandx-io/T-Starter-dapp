@@ -1,5 +1,16 @@
 <template>
-  <ul class="status-countdown">
+  <ul class="mini text-subtitle2" v-if="mini">
+    <li>
+      <p>{{ days }}d</p>
+    </li>
+    <li>
+      <p>{{ hours }}h</p>
+    </li>
+    <li>
+      <p>{{ minutes }}m</p>
+    </li>
+  </ul>
+  <ul class="countdown" v-else>
     <li>
       <!-- <li v-if="days > 0"> -->
       <p class="digit">{{ days | twoDigits }}</p>
@@ -23,13 +34,16 @@
 <script>
 let interval = null;
 export default {
-  name: "status-countdown",
+  name: "countdown",
   props: {
     deadline: {
       type: Number,
       required: true
     },
     reset: {
+      type: Boolean
+    },
+    mini: {
       type: Boolean
     }
   },
@@ -88,45 +102,60 @@ export default {
   }
 };
 </script>
-<style>
-.status-countdown {
+<style lang="scss" scoped>
+.countdown {
   padding: 0;
   margin: 0;
 }
-.status-countdown li {
+.countdown li {
   display: inline-block;
   margin: 0 8px;
   text-align: center;
   position: relative;
 }
-.status-countdown li p {
+.countdown li p {
   margin: 0;
 }
-.status-countdown li:after {
+.countdown li:after {
   content: ":";
   position: absolute;
   top: 0;
   right: -13px;
   font-size: 32px;
 }
-.status-countdown li:first-of-type {
+.countdown li:first-of-type {
   margin-left: 0;
 }
-.status-countdown li:last-of-type {
+.countdown li:last-of-type {
   margin-right: 0;
 }
-.status-countdown li:last-of-type:after {
+.countdown li:last-of-type:after {
   content: "";
 }
-.status-countdown .digit {
+.countdown .digit {
   font-size: 32px;
   font-weight: 600;
   line-height: 1.4;
   margin-bottom: 0;
 }
-.status-countdown .text {
+.countdown .text {
   text-transform: uppercase;
   margin-bottom: 0;
   font-size: 10px;
+}
+
+// .mini {
+//   color: $accent;
+// }
+.mini ul {
+  padding: 0;
+  margin: 0;
+}
+.mini li p {
+  margin: 0;
+}
+.mini li {
+  display: inline-block;
+  margin: 0 3px;
 }
 </style>

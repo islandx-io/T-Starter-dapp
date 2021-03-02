@@ -11,7 +11,7 @@ export default function() {
         access_type: "Public",
         progress: 0.75,
         participants: 100,
-        status: "Upcoming",
+        status: "closed",
         web_links: {
           website: "https://www.thissite.com",
           whitepaper: "",
@@ -35,17 +35,20 @@ export default function() {
         minimum_allocation_per_wallet: "0",
         minimum_raise: "582804",
 
+        // Upcoming
+        start_date: new Date("01 Apr 2021 00:00:00 UTC").valueOf(),
+        end_private_date: new Date("10 May 2021 10:00:00 UTC").valueOf(),
+        end_public_date: new Date("06 Jun 2021 03:04:05 UTC").valueOf(),
+
+        // Open
         // start_date: new Date("02 Jan 2019 03:04:05 UTC").valueOf(),
         // end_private_date: new Date("20 Mar 2021 15:00:00 UTC").valueOf(),
         // end_public_date: new Date("25 Mar 2021 03:04:05 UTC").valueOf(),
 
-        // start_date: new Date("01 Apr 2021 00:00:00 UTC").valueOf(),
-        // end_private_date: new Date("10 May 2021 10:00:00 UTC").valueOf(),
-        // end_public_date: new Date("06 Jun 2021 03:04:05 UTC").valueOf(),
-
-        start_date: new Date("02 Nov 2020 00:00:00 UTC").valueOf(),
-        end_private_date: new Date("25 Dec 2020 10:00:00 UTC").valueOf(),
-        end_public_date: new Date("06 Jan 2021 01:00:00 UTC").valueOf(),
+        // Closed
+        // start_date: new Date("02 Nov 2020 00:00:00 UTC").valueOf(),
+        // end_private_date: new Date("25 Dec 2020 10:00:00 UTC").valueOf(),
+        // end_public_date: new Date("06 Jan 2021 01:00:00 UTC").valueOf(),
 
         swap_amount: "1200000",
         swap_ratio: "0.000021"
