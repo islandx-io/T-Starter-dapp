@@ -26,7 +26,7 @@ export default {
   name: "status-countdown",
   props: {
     deadline: {
-      type: Date,
+      type: Number,
       required: true
     },
     reset: {
@@ -35,14 +35,14 @@ export default {
   },
   data() {
     return {
-      now: Math.trunc(new Date().getTime() / 1000), //  Current time (seconds)
+      now: Math.trunc(Date.now() / 1000), //  Current time (seconds)
       endDate: null, // Deadline (seconds)
       diff: 0 // Time difference (seconds)
     };
   },
   created() {
     interval = setInterval(() => {
-      this.now = Math.trunc(new Date().getTime() / 1000);
+      this.now = Math.trunc(Date.now() / 1000);
     }, 1000); // Update the current time every second
   },
   computed: {

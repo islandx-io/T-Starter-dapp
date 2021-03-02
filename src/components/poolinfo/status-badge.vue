@@ -14,18 +14,18 @@ export default {
   computed: {
     statusColor: function() {
       switch (this.poolStatus.toLowerCase()) {
+        case "loading":
+          return "blue-grey";
         case "open":
           return "primary";
         case "closed":
           return "warning";
+        case "upcoming":
+          return "accent";
         case "filled":
           return "positive";
         case "canceled":
           return "warning";
-        case "upcoming":
-          return "accent";
-        case "loading":
-          return "blue-grey";
         default:
           return "blue-grey";
       }

@@ -126,7 +126,10 @@ export default {
       web_links: {},
       pool_status: "loading",
       start_date: new Date(), // TODO Reconsider best init
-      poolObject: {}
+      end_private_date: new Date(),
+      end_public_date: new Date(),
+      poolObject: {},
+      polling: null
     };
   },
   computed: {
@@ -160,16 +163,33 @@ export default {
       this.short_description = poolJSON.short_description;
       this.long_description = poolJSON.long_description;
       this.web_links = poolJSON.web_links;
-      this.pool_status = poolJSON.status.toLowerCase();
-      // TODO Check timezone
-      this.start_date = new Date(poolJSON.start_date * 1000); // (s -> ms)
-      // this.start_date = Date(poolJSON.start_date);
+      // this.pool_status = poolJSON.status.toLowerCase();
+      // TODO Check timezone & date format
+      this.start_date = poolJSON.start_date;
+      this.end_public_date = poolJSON.end_public_date;
       this.poolObject = poolJSON;
+
+      // Update pool status
+      const currentDate = Date.now();
+      if (currentDate < this.start_date) {
+        this.pool_status = "upcoming";
+      } else if (currentDate > this.end_public_date) {
+        this.pool_status = "closed";
+      } else {
+        this.pool_status = "open";
+      }
+    },
+    pollPoolInfo() {
+      this.polling = setInterval(this.getPoolInfo, 3000);
     }
   },
   mounted() {
     //TODO if not in store, load chain?
     this.getPoolInfo();
+    this.pollPoolInfo();
+  },
+  beforeDestroy() {
+    clearInterval(this.polling);
   }
 };
 </script>
