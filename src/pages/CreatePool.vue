@@ -298,7 +298,7 @@
 <script>
 import { date } from "quasar";
 import Slug from "slug";
-import _ from "lodash";
+// import _ from "lodash";
 import LinkField from "src/components/poolcreation/link-field.vue";
 import { mapGetters, mapActions } from "vuex";
 Slug.defaults.mode = "rfc3986";
