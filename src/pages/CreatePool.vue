@@ -64,6 +64,7 @@
           lazy-rules
           :rules="[val => (val && val.length > 1) || 'Must specify the token']"
         >
+        {{toChainString(swap_ratio.quantity, 4, 'START')}}
         </q-input>
       </div>
       <!-- Quantities -->
@@ -254,6 +255,7 @@
       </div>
 
       <!-- web links -->
+      <h3>Websites</h3>
       <div>
         <link-field
           v-for="(link, link_index) in web_links"
@@ -320,7 +322,7 @@ export default {
       ), // TODO add to contract?
 
       //Static
-      owner: "",
+      // owner: "",
       pool_type: "Fixed",
       base_token: { sym: "8,PBTC", contract: "btc.ptokens" },
       swap_ratio: {
@@ -341,30 +343,30 @@ export default {
         "T-Starter is a cross chain token swap platform created to help projects launch on the Telos blockchain",
       description:
         "T-Starter is the place to discover and back new projects coming to Telos. It offers users the oppotunity to become part of those projects very early in their life.",
-      // web_links: [
-      //   {
-      //     key: "github",
-      //     value: "https://github.com/orgs/T-Starter"
-      //   },
-      //   {
-      //     key: "medium",
-      //     value: "https://t-starter.medium.com"
-      //   },
-      //   {
-      //     key: "telegram",
-      //     value: "https://t.me/tstarterio"
-      //   },
-      //   {
-      //     key: "twitter",
-      //     value: "https://twitter.com/T_StarterToken"
-      //   }
-      // ],
       web_links: [
         {
-          key: "",
-          value: ""
+          key: "github",
+          value: "https://github.com/orgs/T-Starter"
+        },
+        {
+          key: "medium",
+          value: "https://t-starter.medium.com"
+        },
+        {
+          key: "telegram",
+          value: "https://t.me/tstarterio"
+        },
+        {
+          key: "twitter",
+          value: "https://twitter.com/T_StarterToken"
         }
       ],
+      // web_links: [
+      //   {
+      //     key: "",
+      //     value: ""
+      //   }
+      // ],
       whitelist: ["rory", "janet"],
 
       //Dynamic
@@ -385,6 +387,10 @@ export default {
     // },
     toUnixTimestamp(timeStamp) {
       return date.formatDate(timeStamp, "X");
+    },
+    toChainString(number, decimals, symbol ) {
+      console.log(String(parseFloat(number).toFixed(decimals)) + String(' ' + symbol));
+      return String(parseFloat(number).toFixed(decimals)) + String(' ' + symbol);
     },
     checkTokenContract(val) {
       // simulating a delay
