@@ -3,10 +3,16 @@
     <q-header elevated>
       <q-toolbar class="text-black bg-secondary">
         <q-toolbar-title>
-          <a href="/" class="default-logo">
+          <router-link to="/" class="default-logo">
             <img src="~assets/logo/logo-dark.svg" alt="logo" height="33px" />
-          </a>
+          </router-link>
         </q-toolbar-title>
+
+        <router-link style="padding: 10px" to="/pools">Pools
+        </router-link>
+
+        <router-link to="/createpool" class="">Create Pool
+        </router-link>
 
         <login-button></login-button>
       </q-toolbar>
@@ -19,9 +25,9 @@
     <section class="foot column items-center content-center justify-end">
       <div class="foot-top col-xl-4 row items-center justify-between ">
         <div class="col-sm-4">
-          <a href="/" class="default-logo">
+          <router-link to="/" class="default-logo">
             <img src="~assets/logo/logo-light.svg" alt="logo" height="33px" />
-          </a>
+          </router-link>
           <p class="text-body1">
             The place to discover and back projects building on Telos
           </p>

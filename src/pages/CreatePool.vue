@@ -18,6 +18,7 @@
       </div>
     </div> -->
     <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+      <!-- tokens and adresses -->
       <div class="row">
         <div class="q-gutter-y-md column" style="max-width: 300px">
           <q-input
@@ -54,12 +55,14 @@
           label="Standard"
         />
       </div>
+      <!-- Swap ratio -->
       <h3>Swap ratio</h3>
       <div class="row">
         1 {{ base_token_name }} =
         <q-input color="primary" v-model="swap_ratio.quantity" label="Ratio">
         </q-input>
       </div>
+      <!-- Quantities -->
       <h3>Quantities</h3>
       <div class="class row">
         <div>
@@ -83,8 +86,8 @@
           </q-input>
         </div>
       </div>
-      <h3>Dates</h3>
 
+      <h3>Dates</h3>
       <!-- Date input -->
       <div class="row">
         <q-input filled v-model="pool_open">
@@ -170,6 +173,8 @@
         Public sale end
         <!-- {{ toUnixTimestamp(date) }} -->
       </div>
+
+      <!-- Pool name, image and descriptions -->
       <div class=" row">
         <q-input color="primary" v-model="title" label="Title"> </q-input>
         <q-input color="primary" v-model="avatar" label="Avatar image link">
@@ -207,8 +212,10 @@
         />
       </div>
 
+      <!-- T's and C's -->
       <q-toggle v-model="accept" label="I accept the license and terms" />
 
+      <!-- Submit -->
       <div>
         <q-btn label="Submit" type="submit" color="primary" />
         <q-btn
@@ -301,13 +308,15 @@ export default {
   computed: {},
 
   methods: {
-    convertName: function() {
-      return Slug(this.poolName);
-    },
+    // convertName: function() {
+    //   return Slug(this.poolName);
+    // },
     toUnixTimestamp(timeStamp) {
       return date.formatDate(timeStamp, "X");
     },
     onSubmit() {
+      // TODO Check links not empty
+      // TODO check if have permission to create pool. e.g. fuzzytestnet
       if (this.accept !== true) {
         this.$q.notify({
           color: "red-5",
@@ -329,7 +338,6 @@ export default {
 
     addLinkField() {
       console.log(this.web_links);
-      // TODO check fields first
       this.web_links.push({ key: "", value: "" });
     },
     deleteThisLink(index) {
@@ -340,15 +348,15 @@ export default {
   },
 
   watch: {
-    poolName: _.debounce(function() {
-      this.slug = this.convertName();
-    }, 500) // debounce not to cause lag // TODO use quasar's debouce. create API to check if unqiue & custom slug?
+    // poolName: _.debounce(function() {
+    //   this.slug = this.convertName();
+    // }, 500) // debounce not to cause lag // TODO use quasar's debouce. create API to check if unqiue & custom slug?
   }
 };
 </script>
 
 <style scoped>
-.slug-widget {
+/* .slug-widget {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -359,5 +367,5 @@ export default {
 .slug {
   background-color: rgb(209, 132, 16);
   padding: 3px 5px;
-}
+} */
 </style>
