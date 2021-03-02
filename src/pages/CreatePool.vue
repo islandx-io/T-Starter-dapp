@@ -20,20 +20,6 @@
     <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
       <!-- tokens and adresses -->
       <div class="row">
-        <!-- TODO owner should the the signed in account, remove this input -->
-        <!-- <div class="q-gutter-y-md column" style="max-width: 300px">
-          <q-input
-            color="primary"
-            v-model="owner"
-            label="Owner address"
-            :placeholder="accountName"
-            lazy-rules
-            :rules="[
-              val => (val && val.length == 12) || 'Must be 12 characters'
-            ]"
-          >
-          </q-input>
-        </div> -->
         <div class="q-pa-md">
           <div class="q-gutter-sm">
             Pool type:
@@ -52,7 +38,13 @@
         </q-input>
       </div>
       <div class="row">
-        <q-input color="primary" v-model="token_shorthand" label="Token">
+        <q-input
+          color="primary"
+          v-model="token_sybmol"
+          label="Token"
+          lazy-rules
+          :rules="[val => (val && val.length > 1) || 'Must specify the token']"
+        >
         </q-input>
         To
         <q-select
@@ -65,16 +57,38 @@
       <h3>Swap ratio</h3>
       <div class="row">
         1 {{ base_token_name }} =
-        <q-input color="primary" v-model="swap_ratio.quantity" label="Ratio">
+        <q-input
+          color="primary"
+          v-model="swap_ratio.quantity"
+          label="Ratio"
+          lazy-rules
+          :rules="[val => (val && val.length > 1) || 'Must specify the token']"
+        >
         </q-input>
       </div>
       <!-- Quantities -->
       <h3>Quantities</h3>
       <div class="class row">
         <div>
-          <q-input color="primary" v-model="soft_cap" label="Soft cap">
+          <q-input
+            color="primary"
+            v-model="soft_cap"
+            label="Soft cap"
+            lazy-rules
+            :rules="[
+              val => (val && val.length > 1) || 'Must specify the amount'
+            ]"
+          >
           </q-input>
-          <q-input color="primary" v-model="hard_cap" label="Hard cap">
+          <q-input
+            color="primary"
+            v-model="hard_cap"
+            label="Hard cap"
+            lazy-rules
+            :rules="[
+              val => (val && val.length > 1) || 'Must specify the amount'
+            ]"
+          >
           </q-input>
         </div>
         <div>
@@ -82,12 +96,20 @@
             color="primary"
             v-model="minimum_swap"
             label="minimum swap amount"
+            lazy-rules
+            :rules="[
+              val => (val && val.length > 1) || 'Must specify the amount'
+            ]"
           >
           </q-input>
           <q-input
             color="primary"
             v-model="maximum_allocation"
             label="maximum swap per wallet"
+            lazy-rules
+            :rules="[
+              val => (val && val.length > 1) || 'Must specify the amount'
+            ]"
           >
           </q-input>
         </div>
@@ -182,18 +204,53 @@
 
       <!-- Pool name, image and descriptions -->
       <div class=" row">
-        <q-input color="primary" v-model="title" label="Title"> </q-input>
-        <q-input color="primary" v-model="avatar" label="Avatar image link">
+        <!-- Title -->
+        <q-input
+          color="primary"
+          v-model="title"
+          label="Title"
+          lazy-rules
+          :rules="[val => (val && val.length > 1) || 'Must specify the amount']"
+        >
+        </q-input>
+        <!-- Image link -->
+        <q-input
+          color="primary"
+          v-model="avatar"
+          label="Avatar image link"
+          lazy-rules
+          :rules="[val => (val && val.length > 1) || 'Must specify the amount']"
+        >
         </q-input>
         <q-avatar size="50px">
           <img :src="avatar" width="20px" alt="image" />
         </q-avatar>
       </div>
       <div class="q-pa-md" style="max-width: 500px">
-        <q-input v-model="tag_line" filled autogrow label="Tag line" />
+        <!-- tag-line -->
+        <q-input
+          v-model="tag_line"
+          filled
+          autogrow
+          label="Tag line"
+          lazy-rules
+          :rules="[
+            val =>
+              (val && val.length > 1 && val.length < 230) ||
+              'Must specify'
+          ]"
+        />
       </div>
       <div class="q-pa-md" style="max-width: 500px">
-        <q-input v-model="description" filled autogrow label="Description" />
+        <!-- description -->
+        <q-input
+          v-model="description"
+          filled
+          autogrow
+          label="Description"
+          lazy-rules
+          :rules="[val => (val && val.length > 1) || 'Must specify']"
+        />
       </div>
 
       <!-- web links -->
@@ -247,14 +304,13 @@ Slug.defaults.mode = "rfc3986";
 export default {
   components: { LinkField },
   data() {
-    
     return {
       poolName: "",
       slug: "",
 
       base_token_name: "PETH",
       base_token_options: ["PETH", "PBTC", "USDT", "TLOS"],
-      token_shorthand: "START",
+      token_sybmol: "START",
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
       link_index: -1,
@@ -318,7 +374,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated","accountName"]),
+    ...mapGetters("account", ["isAuthenticated", "accountName"])
     // owner: accountName,
   },
 
@@ -349,7 +405,7 @@ export default {
           // as having an error, but there will not be any
           // error message displayed below the input
           // (only in browser console)
-        }, 5000);
+        }, 3000);
       });
     },
     onSubmit() {
@@ -372,8 +428,7 @@ export default {
       }
     },
 
-    onReset() {
-    },
+    onReset() {},
 
     addLinkField() {
       console.log(this.web_links);
@@ -390,7 +445,7 @@ export default {
     // poolName: _.debounce(function() {
     //   this.slug = this.convertName();
     // }, 500) // debounce not to cause lag // TODO use quasar's debouce. create API to check if unqiue & custom slug?
-  },
+  }
 };
 </script>
 

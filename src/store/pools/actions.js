@@ -22,8 +22,8 @@ export const getChainData = async function({ commit }, id) {
 export const getCurrency = async function({ commit }, address) {
   try {
     const rpc = this.$api.getRpc();
-    // console.log(await rpc.get_account(address));
-    console.log(await rpc.get_info(address));
+    console.log(await rpc.get_account(address));
+    console.log(await rpc.get_currency_balance(address, "fuzzytestnet"));
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
