@@ -20,16 +20,20 @@
     <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
       <!-- tokens and adresses -->
       <div class="row">
-        <div class="q-gutter-y-md column" style="max-width: 300px">
+        <!-- TODO owner should the the signed in account, remove this input -->
+        <!-- <div class="q-gutter-y-md column" style="max-width: 300px">
           <q-input
             color="primary"
             v-model="owner"
             label="Owner address"
+            :placeholder="accountName"
             lazy-rules
-            :rules="[val => (val && val.length > 0) || 'Please type something']"
+            :rules="[
+              val => (val && val.length == 12) || 'Must be 12 characters'
+            ]"
           >
           </q-input>
-        </div>
+        </div> -->
         <div class="q-pa-md">
           <div class="q-gutter-sm">
             Pool type:
@@ -42,6 +46,8 @@
           color="primary"
           v-model="swap_ratio.contract"
           label="Token contract address"
+          lazy-rules
+          :rules="[checkTokenContract]"
         >
         </q-input>
       </div>
@@ -235,11 +241,13 @@ import { date } from "quasar";
 import Slug from "slug";
 import _ from "lodash";
 import LinkField from "src/components/poolcreation/link-field.vue";
+import { mapGetters, mapActions } from "vuex";
 Slug.defaults.mode = "rfc3986";
 
 export default {
   components: { LinkField },
   data() {
+    
     return {
       poolName: "",
       slug: "",
@@ -250,6 +258,10 @@ export default {
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
       link_index: -1,
+      contract_creation_date: date.formatDate(
+        Date.now(),
+        "YYYY-MM-DDTHH:mm:ss"
+      ), // TODO add to contract?
 
       //Static
       owner: "",
@@ -305,14 +317,40 @@ export default {
       participants: 72
     };
   },
-  computed: {},
+  computed: {
+    ...mapGetters("account", ["isAuthenticated","accountName"]),
+    // owner: accountName,
+  },
 
   methods: {
+    ...mapActions("pools", ["getCurrency"]),
     // convertName: function() {
     //   return Slug(this.poolName);
     // },
     toUnixTimestamp(timeStamp) {
       return date.formatDate(timeStamp, "X");
+    },
+    checkTokenContract(val) {
+      // simulating a delay
+
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          this.getCurrency(val);
+          // call
+          //  resolve(true)
+          //     --> content is valid
+          //  resolve(false)
+          //     --> content is NOT valid, no error message
+          //  resolve(error_message)
+          //     --> content is NOT valid, we have error message
+          resolve(!!val || "* Required");
+
+          // calling reject(...) will also mark the input
+          // as having an error, but there will not be any
+          // error message displayed below the input
+          // (only in browser console)
+        }, 5000);
+      });
     },
     onSubmit() {
       // TODO Check links not empty
@@ -334,7 +372,8 @@ export default {
       }
     },
 
-    onReset() {},
+    onReset() {
+    },
 
     addLinkField() {
       console.log(this.web_links);
@@ -351,7 +390,7 @@ export default {
     // poolName: _.debounce(function() {
     //   this.slug = this.convertName();
     // }, 500) // debounce not to cause lag // TODO use quasar's debouce. create API to check if unqiue & custom slug?
-  }
+  },
 };
 </script>
 
