@@ -34,11 +34,19 @@ export default function() {
         min_swap_level: "582804",
         minimum_allocation_per_wallet: "0",
         minimum_raise: "582804",
-        start_date: 1613663539499,
-        // start_date: 1615363842000,
-        end_private_date: 1616363842000,
-        // end_public_date: 1614663586191,
-        end_public_date: 1617363842000,
+
+        // start_date: new Date("02 Jan 2019 03:04:05 UTC").valueOf(),
+        // end_private_date: new Date("20 Mar 2021 15:00:00 UTC").valueOf(),
+        // end_public_date: new Date("25 Mar 2021 03:04:05 UTC").valueOf(),
+
+        // start_date: new Date("01 Apr 2021 00:00:00 UTC").valueOf(),
+        // end_private_date: new Date("10 May 2021 10:00:00 UTC").valueOf(),
+        // end_public_date: new Date("06 Jun 2021 03:04:05 UTC").valueOf(),
+
+        start_date: new Date("02 Nov 2020 00:00:00 UTC").valueOf(),
+        end_private_date: new Date("25 Dec 2020 10:00:00 UTC").valueOf(),
+        end_public_date: new Date("06 Jan 2021 01:00:00 UTC").valueOf(),
+
         swap_amount: "1200000",
         swap_ratio: "0.000021"
       },

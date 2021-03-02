@@ -150,6 +150,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions("pools", ["updatePoolStatus"]),
     toDate(timeStamp) {
       return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
     },
@@ -167,30 +168,22 @@ export default {
       this.short_description = poolJSON.short_description;
       this.long_description = poolJSON.long_description;
       this.web_links = poolJSON.web_links;
-      // this.pool_status = poolJSON.status.toLowerCase();
+      this.pool_status = poolJSON.status.toLowerCase();
       // TODO Check timezone & date format
       this.start_date = poolJSON.start_date;
       this.end_public_date = poolJSON.end_public_date;
       this.poolObject = poolJSON;
-
-      // Update pool status
-      const currentDate = Date.now();
-      if (currentDate < this.start_date) {
-        this.pool_status = "upcoming";
-      } else if (currentDate > this.end_public_date) {
-        this.pool_status = "closed";
-      } else {
-        this.pool_status = "open";
-      }
-    },
-    pollPoolInfo() {
-      this.polling = setInterval(this.getPoolInfo, 3000);
     }
   },
-  mounted() {
+  async mounted() {
     //TODO if not in store, load chain?
+    this.updatePoolStatus(this.poolID);
     this.getPoolInfo();
-    this.pollPoolInfo();
+    // Start polling
+    this.polling = setInterval(() => {
+      this.updatePoolStatus(this.poolID);
+      this.getPoolInfo();
+    }, 60000);
   },
   beforeDestroy() {
     clearInterval(this.polling);

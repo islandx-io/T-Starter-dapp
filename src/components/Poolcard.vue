@@ -11,7 +11,7 @@
       <q-item-section top>
         <div class="text-accent row items-center">
           <q-icon name="circle" color="accent" size="15px" />
-          <div class="text-caption">Live in 5 days</div>
+          <poolcard-status></poolcard-status>
         </div>
       </q-item-section>
     </q-item>
@@ -60,7 +60,8 @@
 <script>
 import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
-import {toSvg} from "jdenticon";
+import { toSvg } from "jdenticon";
+import poolcardStatus from "src/components/PoolcardStatus";
 
 export default {
   name: "Poolcard",
@@ -71,6 +72,7 @@ export default {
       required: true
     }
   },
+  components: { poolcardStatus },
   data() {
     return {
       title: "No Project",
@@ -83,7 +85,7 @@ export default {
       progress: 0.4,
       participants: 0,
       image_link: "",
-      filterClass: "created joined",
+      filterClass: "created joined"
     };
   },
   computed: {
@@ -93,7 +95,7 @@ export default {
     },
     identicon() {
       return toSvg(this.poolID, 40);
-    },
+    }
   },
   methods: {
     getPoolInfo: function() {
@@ -108,7 +110,7 @@ export default {
       this.access_type = poolJSON.access_type;
       this.participants = poolJSON.participants;
       this.image_link = poolJSON.image_link;
-    },
+    }
   },
   mounted() {
     this.getPoolInfo();
