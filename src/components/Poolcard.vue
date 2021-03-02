@@ -9,9 +9,13 @@
         </q-avatar>
       </q-item-section>
       <q-item-section top>
-        <div class="text-accent row items-center">
-          <q-icon name="circle" color="accent" size="15px" />
-          <div class="text-caption">Live in 5 days</div>
+        <div class="text-accent column items-end">
+          <status-badge :poolStatus="pool_status"></status-badge>
+          <status-countdown
+            v-if="pool_status === 'upcoming'"
+            :deadline="start_date"
+            mini
+          ></status-countdown>
         </div>
       </q-item-section>
     </q-item>
@@ -60,7 +64,9 @@
 <script>
 import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
-import {toSvg} from "jdenticon";
+import { toSvg } from "jdenticon";
+import statusBadge from "src/components/poolinfo/status-badge";
+import statusCountdown from "src/components/poolinfo/status-countdown";
 
 export default {
   name: "Poolcard",
@@ -71,6 +77,7 @@ export default {
       required: true
     }
   },
+  components: { statusBadge, statusCountdown },
   data() {
     return {
       title: "No Project",
@@ -84,6 +91,9 @@ export default {
       participants: 0,
       image_link: "",
       filterClass: "created joined",
+      pool_status: "loading",
+      start_date: new Date(),
+      polling: null
     };
   },
   computed: {
@@ -93,9 +103,10 @@ export default {
     },
     identicon() {
       return toSvg(this.poolID, 40);
-    },
+    }
   },
   methods: {
+    ...mapActions("pools", ["updatePoolStatus"]),
     getPoolInfo: function() {
       const poolJSON = this.getPoolByID(this.poolID);
 
@@ -108,10 +119,21 @@ export default {
       this.access_type = poolJSON.access_type;
       this.participants = poolJSON.participants;
       this.image_link = poolJSON.image_link;
-    },
+      this.pool_status = poolJSON.status;
+      this.start_date = poolJSON.start_date;
+    }
   },
   mounted() {
+    this.updatePoolStatus(this.poolID);
     this.getPoolInfo();
+    // Start polling every 2min for any updates
+    this.polling = setInterval(() => {
+      this.updatePoolStatus(this.poolID);
+      this.getPoolInfo();
+    }, 120000);
+  },
+  beforeDestroy() {
+    clearInterval(this.polling);
   }
 };
 </script>

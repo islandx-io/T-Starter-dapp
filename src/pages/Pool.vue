@@ -7,39 +7,76 @@
     >
       <q-card class="card row justify-between content-start">
         <q-item class="col column">
-          <q-item-section class="col row items-center justify-left q-gutter-md">
+          <q-item-section class="col row justify-left q-gutter-md">
             <q-avatar size="80px">
               <img
-                v-if="image_link"
-                :src="image_link"
+                v-if="pool.image_link"
+                :src="pool.image_link"
                 width="50px"
                 alt="image"
               />
               <div v-else v-html="identicon" />
             </q-avatar>
-            <div class="text-h3">{{ title }}</div>
+            <div class="row q-gutter-md">
+              <div class="text-h3">{{ pool.title }}</div>
+              <status-badge :poolStatus="pool.status"></status-badge>
+            </div>
           </q-item-section>
           <q-item-section>
             <p>
-              {{ short_description }}
+              {{ pool.short_description }}
             </p>
           </q-item-section>
-          <status-countdown
-            :deadline="new Date(new Date().getTime() + 86400000)"
-          ></status-countdown>
+          <q-item-section>
+            <div
+              class="row justify-between items-center"
+              v-if="pool.status === 'upcoming'"
+            >
+              <div>Opens in:</div>
+              <status-countdown :deadline="pool.start_date"></status-countdown>
+            </div>
+            <div
+              class="row justify-between items-center"
+              v-else-if="pool.status === 'open'"
+            >
+              <div>Closes in:</div>
+              <status-countdown
+                :deadline="pool.end_public_date"
+              ></status-countdown>
+            </div>
+          </q-item-section>
+
+          <q-btn
+            :to="{ name: 'joinpool', params: {} }"
+            :color="pool.status === 'upcoming' ? 'grey-4' : 'primary'"
+            label="Join pool"
+            :disable="pool.status === 'upcoming'"
+            v-if="pool.status !== 'closed'"
+          />
         </q-item>
         <q-item class="col-6 row justify-center">
           <div class="col join-pane column q-gutter-md">
-            <div class="row justify-between items-center">
-              <div class="text-h6">Total raise</div>
-              <p class="item-price">300000</p>
+            <div class="row justify-between">
+              <div>Hard cap:</div>
+              <p>{{ pool.price }}</p>
+            </div>
+            <div class="row justify-between">
+              <div>Soft cap:</div>
+              <p>{{ pool.minimum_raise }}</p>
+            </div>
+            <div class="row justify-between">
+              <div>Swap ratio:</div>
+              <p>1 ETH = {{ pool.swap_amount }} TOKENS</p>
+            </div>
+            <div class="row justify-between" v-if="pool.status === 'open'">
+              <div>Participants:</div>
+              <p>{{ pool.participants }}</p>
+            </div>
+            <div class="row justify-between" v-if="pool.status === 'open'">
+              <div>Sale progress:</div>
+              <p>{{ pool.progress }}</p>
             </div>
             <q-btn outline label="View on bloks.io" />
-            <q-btn
-              :to="{ name: 'joinpool', params: {} }"
-              color="primary"
-              label="Join pool"
-            />
           </div>
         </q-item>
       </q-card>
@@ -69,7 +106,7 @@
           <component
             v-bind:is="currentTabComponent"
             class="tab"
-            :poolObject="poolObject"
+            :poolObject="pool"
           ></component>
         </keep-alive>
       </q-card>
@@ -84,6 +121,7 @@
 // TODO reroute to this page if logged out
 <script>
 import statusCountdown from "src/components/poolinfo/status-countdown";
+import statusBadge from "src/components/poolinfo/status-badge";
 import tabOverview from "src/components/poolinfo/tab-overview.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
@@ -92,7 +130,13 @@ import { toSvg } from "jdenticon";
 import { date } from "quasar";
 
 export default {
-  components: { tabOverview, tabAllocations, tabDetails, statusCountdown },
+  components: {
+    tabOverview,
+    tabAllocations,
+    tabDetails,
+    statusCountdown,
+    statusBadge
+  },
   data() {
     return {
       //page info
@@ -100,20 +144,35 @@ export default {
 
       //pool info
       poolID: Number(this.$route.params.id),
-      title: "No Project",
-      slug: "no-project",
-      price: 0,
-      minimum: "TBA",
-      maximum: "TBA",
-      type: "Fixed",
-      access_type: "Private",
-      progress: 0,
-      participants: 0,
-      image_link: "",
-      short_description: "Short description",
-      long_description: "Long description",
-      web_links: {},
-      poolObject: {}
+      pool: {
+        title: "No Project",
+        slug: "no-project",
+        price: 0,
+        swap_ratio: 0,
+        swap_amount: 0,
+        type: "Fixed",
+        access_type: "Private",
+        progress: 0,
+        participants: 0,
+        image_link: "",
+        short_description: "Short description",
+        long_description: "Long description",
+        web_links: {},
+        status: "loading",
+        start_date: new Date(), // TODO Reconsider best init
+        end_private_date: new Date(),
+        end_public_date: new Date(),
+        white_listed_addresses: {},
+        contract_address: "",
+        token_address: "",
+        inverse_swap_ratio: 0,
+        max_eth_allocation: 0,
+        maximum_allocation_per_wallet: "0",
+        min_swap_level: "0",
+        minimum_allocation_per_wallet: "0",
+        minimum_raise: "0"
+      },
+      polling: null
     };
   },
   computed: {
@@ -131,33 +190,30 @@ export default {
   },
   methods: {
     ...mapActions("pools", ["getChainData"]),
+    ...mapActions("pools", ["updatePoolStatus"]),
     toDate(timeStamp) {
       return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
     },
     getPoolInfo: function() {
-      const poolJSON = this.getPoolByID(this.poolID);
-
-      this.title = poolJSON.title;
-      this.price = poolJSON.price;
-      this.minimum = poolJSON.minimum_allocation_per_wallet;
-      this.maximum = poolJSON.max_eth_allocation;
-      this.type = poolJSON.type;
-      this.access_type = poolJSON.access_type;
-      this.participants = poolJSON.participants;
-      this.image_link = poolJSON.image_link;
-      this.short_description = poolJSON.short_description;
-      this.long_description = poolJSON.long_description;
-      this.web_links = poolJSON.web_links;
-      this.poolObject = poolJSON;
+      this.pool = this.getPoolByID(this.poolID);
     },
     async loadChainData() {
       await this.getChainData(this.poolID);
-    },
+    }
   },
-  mounted() {
+  async mounted() {
     //TODO if not in store, load chain?
     this.loadChainData();
+    this.updatePoolStatus(this.poolID);
     this.getPoolInfo();
+    // Start polling
+    this.polling = setInterval(() => {
+      this.updatePoolStatus(this.poolID);
+      this.getPoolInfo();
+    }, 60000);
+  },
+  beforeDestroy() {
+    clearInterval(this.polling);
   }
 };
 </script>
