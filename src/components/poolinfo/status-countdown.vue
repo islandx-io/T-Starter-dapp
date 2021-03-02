@@ -1,32 +1,21 @@
 <template>
-  <ul class="mini text-subtitle2" v-if="mini">
-    <li>
-      <p>{{ days }}d</p>
-    </li>
-    <li>
-      <p>{{ hours }}h</p>
-    </li>
-    <li>
-      <p>{{ minutes }}m</p>
-    </li>
+  <ul class="c-mini text-subtitle2" v-if="mini">
+    <li>{{ days }}d</li>
+    <li>{{ hours }}h</li>
+    <li>{{ minutes }}m</li>
   </ul>
-  <ul class="countdown" v-else>
+  <ul class="c-large text-subtitle2" v-else>
     <li>
-      <!-- <li v-if="days > 0"> -->
-      <p class="digit">{{ days | twoDigits }}</p>
-      <p class="text">{{ days > 1 ? "days" : "day" }}</p>
+      <div>{{ days }}d</div>
     </li>
     <li>
-      <p class="digit">{{ hours | twoDigits }}</p>
-      <p class="text">{{ hours > 1 ? "hours" : "hour" }}</p>
+      <div>{{ hours }}h</div>
     </li>
     <li>
-      <p class="digit">{{ minutes | twoDigits }}</p>
-      <p class="text">min</p>
+      <div>{{ minutes }}m</div>
     </li>
     <li>
-      <p class="digit">{{ seconds | twoDigits }}</p>
-      <p class="text">Sec</p>
+      <div>{{ seconds }}s</div>
     </li>
   </ul>
 </template>
@@ -34,7 +23,7 @@
 <script>
 let interval = null;
 export default {
-  name: "countdown",
+  name: "status-countdown",
   props: {
     deadline: {
       type: Number,
@@ -103,58 +92,63 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.countdown {
+.c-large {
   padding: 0;
   margin: 0;
+  color: $primary;
+  font-weight: 200px;
 }
-.countdown li {
+.c-large li {
   display: inline-block;
-  margin: 0 8px;
-  text-align: center;
-  position: relative;
+  margin: 0 3px;
 }
-.countdown li p {
-  margin: 0;
+.c-large li div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  width: 40px;
+  border: 2px solid $primary;
+  border-radius: 50%;
 }
-.countdown li:after {
-  content: ":";
+.c-large li:after {
   position: absolute;
   top: 0;
   right: -13px;
   font-size: 32px;
 }
-.countdown li:first-of-type {
+.c-large li:first-of-type {
   margin-left: 0;
 }
-.countdown li:last-of-type {
+.c-large li:last-of-type {
   margin-right: 0;
 }
-.countdown li:last-of-type:after {
+.c-large li:last-of-type:after {
   content: "";
 }
-.countdown .digit {
-  font-size: 32px;
-  font-weight: 600;
-  line-height: 1.4;
-  margin-bottom: 0;
-}
-.countdown .text {
-  text-transform: uppercase;
-  margin-bottom: 0;
-  font-size: 10px;
-}
+// .c-large .digit {
+//   font-size: 32px;
+//   font-weight: 600;
+//   line-height: 1.4;
+//   margin-bottom: 0;
+// }
+// .c-large .text {
+//   text-transform: uppercase;
+//   margin-bottom: 0;
+//   font-size: 10px;
+// }
 
-// .mini {
+// .c-mini {
 //   color: $accent;
 // }
-.mini ul {
+.c-mini ul {
   padding: 0;
   margin: 0;
 }
-.mini li p {
-  margin: 0;
-}
-.mini li {
+// .c-mini li p {
+//   margin: 0;
+// }
+.c-mini li {
   display: inline-block;
   margin: 0 3px;
 }
