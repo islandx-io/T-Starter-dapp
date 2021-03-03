@@ -193,8 +193,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["getChainPoolByID"]),
-    ...mapActions("pools", ["updatePoolStatus"]),
+    ...mapActions("pools", ["getChainPoolByID","updatePoolStatus"]),
     toDate(timeStamp) {
       return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
     },

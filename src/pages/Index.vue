@@ -49,14 +49,20 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   components: { Poolcard },
   data() {
-    return {
-    };
+    return {};
   },
   computed: {
     ...mapGetters("pools", ["getAllPoolIDs"]),
-    poolIDs: function() {return this.getAllPoolIDs}
+    poolIDs: function() {
+      return this.getAllPoolIDs;
+    }
   },
-  methods: {},
+  methods: {
+    ...mapActions("pools", ["getAllChainPools"]),
+  },
+  async mounted() {
+    await this.getAllChainPools();
+  }
 };
 </script>
 
