@@ -66,7 +66,7 @@
             </div>
             <div class="row justify-between">
               <div>Swap ratio:</div>
-              <p>1 ETH = {{ pool.swap_ratio.quantity }} TOKENS</p>
+              <p>1 {{getBaseSymbol}} = {{ pool.swap_ratio.quantity }}</p>
             </div>
             <div class="row justify-between" v-if="pool.status === 'open'">
               <div>Participants:</div>
@@ -182,6 +182,11 @@ export default {
     },
     identicon() {
       return toSvg(this.poolID, 80);
+    },
+    getBaseSymbol() {
+      let str = this.pool.base_token.sym;
+      let idx = str.indexOf(',')+1;
+      return str.slice(idx);
     }
   },
   methods: {
