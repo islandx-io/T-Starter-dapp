@@ -40,7 +40,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
           :key="'featured-' + id"
           :poolID="id"
         ></Poolcard>
-        <router-link to="/pools">
+        <router-link to="/pools" class="col-12">
           <q-btn outline color="accent">VIEW ALL POOLS</q-btn>
         </router-link>
       </section>
