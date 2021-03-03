@@ -2,9 +2,9 @@
 export const getChainPoolByID = async function({ commit }, id) {
   try {
     const tableResults = await this.$api.getTableRows({
-      code: "pools.start", // Contract that we target //FIXME process.env.CONTRACT_ADDRESS
-      scope: "pools.start", // Account that owns the data
-      table: "pools.index", // Table name
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target //FIXME process.env.CONTRACT_ADDRESS
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: process.env.CONTRACT_TABLE, // Table name
       lower_bound: id, // Table primary key value
       limit: 1, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data

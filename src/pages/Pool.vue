@@ -109,9 +109,9 @@
         </keep-alive>
       </q-card>
 
-      <div>Params: {{ this.$route.params }} Query: {{ this.$route.query }}</div>
+      <!-- <div>Params: {{ this.$route.params }} Query: {{ this.$route.query }}</div>
       <div v-if="isAuthenticated">{{ accountName }} is authenticated</div>
-      <div v-else>Please login to do a transfer!</div>
+      <div v-else>Please login to do a transfer!</div> -->
     </div>
   </q-page>
 </template>
