@@ -1,4 +1,6 @@
-export const getChainData = async function({ commit }, id) {
+import { date } from "quasar";
+
+export const getChainPoolByID = async function({ commit }, id) {
   try {
     const tableResults = await this.$api.getTableRows({
       code: "pools.start", // Contract that we target
@@ -11,8 +13,14 @@ export const getChainData = async function({ commit }, id) {
     });
     console.log(tableResults);
 
-    const poolTable = tableResults.rows[tableResults.rows.length -1];
-    commit("updatePoolOnState", {poolTable, id});
+    const poolTable = tableResults.rows[tableResults.rows.length - 1];
+
+    //check dates are unix
+    poolTable.pool_open = Number(date.formatDate(poolTable.pool_open, "X"));
+    poolTable.private_end = Number(date.formatDate(poolTable.private_end, "X"));
+    poolTable.public_end = Number(date.formatDate(poolTable.public_end, "X"));
+
+    commit("updatePoolOnState", { poolTable, id });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -28,14 +36,15 @@ export const getCurrency = async function({ commit }, address) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
+
 export const updatePoolStatus = async function({ commit, getters }, poolID) {
   const pool = getters.getPoolByID(poolID);
   // console.log({ pool: pool });
   var poolStatus = "loading";
   const currentDate = Date.now();
-  if (currentDate < pool.start_date) {
+  if (currentDate < pool.pool_open) {
     poolStatus = "upcoming";
-  } else if (currentDate > pool.end_public_date) {
+  } else if (currentDate > pool.public_end) {
     poolStatus = "closed";
   } else {
     poolStatus = "open";

@@ -10,8 +10,8 @@
           <q-item-section class="col row justify-left q-gutter-md">
             <q-avatar size="80px">
               <img
-                v-if="pool.image_link"
-                :src="pool.image_link"
+                v-if="pool.avatar"
+                :src="pool.avatar"
                 width="50px"
                 alt="image"
               />
@@ -24,7 +24,7 @@
           </q-item-section>
           <q-item-section>
             <p>
-              {{ pool.short_description }}
+              {{ pool.tag_line }}
             </p>
           </q-item-section>
           <q-item-section>
@@ -33,7 +33,7 @@
               v-if="pool.status === 'upcoming'"
             >
               <div>Opens in:</div>
-              <status-countdown :deadline="pool.start_date"></status-countdown>
+              <status-countdown :deadline="pool.pool_open"></status-countdown>
             </div>
             <div
               class="row justify-between items-center"
@@ -41,7 +41,7 @@
             >
               <div>Closes in:</div>
               <status-countdown
-                :deadline="pool.end_public_date"
+                :deadline="pool.public_end"
               ></status-countdown>
             </div>
           </q-item-section>
@@ -58,15 +58,15 @@
           <div class="col join-pane column q-gutter-md">
             <div class="row justify-between">
               <div>Hard cap:</div>
-              <p>{{ pool.price }}</p>
+              <p>{{ pool.hard_cap }}</p>
             </div>
             <div class="row justify-between">
               <div>Soft cap:</div>
-              <p>{{ pool.minimum_raise }}</p>
+              <p>{{ pool.soft_cap }}</p>
             </div>
             <div class="row justify-between">
               <div>Swap ratio:</div>
-              <p>1 ETH = {{ pool.swap_amount }} TOKENS</p>
+              <p>1 ETH = {{ pool.swap_ratio.quantity }} TOKENS</p>
             </div>
             <div class="row justify-between" v-if="pool.status === 'open'">
               <div>Participants:</div>
@@ -145,32 +145,28 @@ export default {
       //pool info
       poolID: Number(this.$route.params.id),
       pool: {
-        title: "No Project",
-        slug: "no-project",
-        price: 0,
-        swap_ratio: 0,
-        swap_amount: 0,
+        title: "Loading",
+        slug: "loading",
+        soft_cap: 0,
+        hard_cap: 0,
+        swap_ratio: {"quantity":"5000000.0000 START","contract":"token.start"},
         type: "Fixed",
         access_type: "Private",
         progress: 0,
         participants: 0,
-        image_link: "",
-        short_description: "Short description",
-        long_description: "Long description",
+        avatar: "",
+        tag_line: "Loading",
+        description: "Loading",
         web_links: {},
         status: "loading",
-        start_date: new Date(), // TODO Reconsider best init
-        end_private_date: new Date(),
-        end_public_date: new Date(),
+        pool_open: new Date(), // TODO Reconsider best init
+        private_end: new Date(),
+        public_end: new Date(),
         white_listed_addresses: {},
         contract_address: "",
         token_address: "",
-        inverse_swap_ratio: 0,
-        max_eth_allocation: 0,
-        maximum_allocation_per_wallet: "0",
-        min_swap_level: "0",
-        minimum_allocation_per_wallet: "0",
-        minimum_raise: "0"
+        maximum_allocation: "0",
+        minimum_swap: "0",
       },
       polling: null
     };
@@ -189,7 +185,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["getChainData"]),
+    ...mapActions("pools", ["getChainPoolByID"]),
     ...mapActions("pools", ["updatePoolStatus"]),
     toDate(timeStamp) {
       return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
@@ -198,12 +194,12 @@ export default {
       this.pool = this.getPoolByID(this.poolID);
     },
     async loadChainData() {
-      await this.getChainData(this.poolID);
+      await this.getChainPoolByID(this.poolID);
     }
   },
   async mounted() {
-    //TODO if not in store, load chain?
-    this.loadChainData();
+    // get data from chain, write to store, get from store
+    await this.loadChainData();
     this.updatePoolStatus(this.poolID);
     this.getPoolInfo();
     // Start polling

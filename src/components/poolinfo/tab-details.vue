@@ -1,11 +1,11 @@
 <template>
   <div>
     <div>Access type: {{ access_type }}</div>
-    <div>Sale open: {{ toDate(start_date) }}</div>
-    <div>Private sale end: {{ toDate(end_private_date) }}</div>
-    <div>Public sale end: {{ toDate(end_public_date) }}</div>
-    <div>Min investement per wallet: {{ minimum_allocation_per_wallet }}</div>
-    <div>Max investement per wallet: {{ max_eth_allocation }}</div>
+    <div>Sale open: {{ toDate(pool_open) }}</div>
+    <div>Private sale end: {{ toDate(private_end) }}</div>
+    <div>Public sale end: {{ toDate(public_end) }}</div>
+    <div>Min investement per wallet: {{ minimum_swap }}</div>
+    <div>Max investement per wallet: {{ maximum_allocation }}</div>
   </div>
 </template>
 
@@ -22,11 +22,11 @@ export default {
   data() {
     return {
       access_type: "Loading",
-      start_date: "Loading",
-      end_private_date: "Loading",
-      end_public_date: "Loading",
-      minimum_allocation_per_wallet: "Loading",
-      max_eth_allocation: "Loading"
+      pool_open: "Loading",
+      private_end: "Loading",
+      public_end: "Loading",
+      minimum_swap: "Loading",
+      maximum_allocation: "Loading"
     };
   },
   computed: {
@@ -42,12 +42,12 @@ export default {
   watch: {
     // to reload info if changed
     poolObject: function() {
-      this.access_type = this.poolObject.access_type,
-      this.start_date = this.poolObject.start_date,
-      this.end_private_date = this.poolObject.end_private_date,
-      this.end_public_date = this.poolObject.end_public_date,
-      this.minimum_allocation_per_wallet = this.poolObject.minimum_allocation_per_wallet,
-      this.max_eth_allocation = this.poolObject.max_eth_allocation
+      // this.access_type = this.poolObject.access_type,
+      this.pool_open = this.poolObject.pool_open,
+      this.private_end = this.poolObject.private_end,
+      this.public_end = this.poolObject.public_end,
+      this.minimum_swap = this.poolObject.minimum_swap,
+      this.maximum_allocation = this.poolObject.maximum_allocation
     }
   }
 };

@@ -8,7 +8,7 @@
         <a :href="link">{{key}}</a>
       </li>
     </div>
-    <div>{{long_description}}</div>
+    <div>{{description}}</div>
 
   </div>  
 </template>
@@ -25,7 +25,7 @@ export default {
     return {
       title: this.poolObject.title,
       web_links: this.poolObject.web_links,
-      long_description: this.poolObject.long_description
+      description: this.poolObject.description
     }
   }
 }
