@@ -4,8 +4,8 @@
       {{title}}
     </div> 
     <div>
-      <li v-for="(link, key) in web_links" :key="link.id">
-        <a :href="link">{{key}}</a>
+      <li v-for="(link) in web_links" :key="link.id">
+        <a :href="link.value">{{link.key}}</a>
       </li>
     </div>
     <div>{{description}}</div>
