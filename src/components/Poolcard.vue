@@ -24,12 +24,12 @@
       <div class="text-h6">Total raise</div>
       <p class="item-price">{{ price }}</p>
       <div class="q-col-gutter-xl row justify-between">
-        <div>
+        <!-- <div>
           <div class="text-h6">Minimum</div>
           <p class="item-value">{{ parseFloat(minimum).toFixed(2) }}</p>
-        </div>
+        </div> -->
         <div>
-          <div class="text-h6">Maximum</div>
+          <div class="text-h6">Hard cap</div>
           <p class="item-value">{{ parseFloat(maximum).toFixed(2) }}</p>
         </div>
         <div>
@@ -141,6 +141,7 @@ export default {
 <style lang="scss" scoped>
 .pool {
   transition: all 0.3s ease-in-out;
+  min-width: 300px;
 }
 .pool:hover {
   transform: scale(1.05);

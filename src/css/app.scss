@@ -40,3 +40,12 @@ body {
   border-color: $secondary;
   box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
 }
+
+.toolbar,
+.header-container,
+.body-container,
+.footer-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 10px 20px;
+}

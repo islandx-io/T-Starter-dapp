@@ -2,44 +2,49 @@
   <!-- And do not be conformed to this world, but be transformed by the renewing of your mind, 
 that you may prove what is that good and acceptable and perfect will of God. - Romans 12:2 -NKJV -->
   <q-page>
-    <section class="banner-main row reverse-wrap content-center">
-      <div class="banner-container">
+    <section class="space-bg">
+      <div class="header-container row reverse-wrap justify-between">
         <div class="column justify-evenly">
-          <h2 class="banner-title">
+          <h2>
             The place to discover and<br />
-            <span class="banner-title-accent">back projects</span>
+            <span>back projects</span>
             building on Telos
           </h2>
+          <router-link to="/pools">
+            <q-btn outline color="secondary">VIEW ALL POOLS</q-btn>
+          </router-link>
         </div>
+        <div class="rocket col row justify-center">
+          <img
+            class="col q-pt-md"
+            src="~assets/index/tstarter-rocket.svg"
+            width="80%"
+            alt="Illustration"
+          />
+        </div>
+      </div>
+    </section>
+    <div class="body-container">
+      <section class="row justify-center q-gutter-md">
+        <h2 class="col-12 text-center">Upcoming Pools</h2>
+        <Poolcard
+          class="col"
+          v-for="id in poolIDs"
+          :key="'upcoming-' + id"
+          :poolID="id"
+        ></Poolcard>
+        <h2 class="col-12 text-center q-pt-xl">Featured Pools</h2>
+        <Poolcard
+          class="col"
+          v-for="id in poolIDs"
+          :key="'featured-' + id"
+          :poolID="id"
+        ></Poolcard>
         <router-link to="/pools">
-          <q-btn outline color="secondary">VIEW ALL POOLS</q-btn>
+          <q-btn outline color="accent">VIEW ALL POOLS</q-btn>
         </router-link>
-      </div>
-      <div class="banner-rocket col row justify-center">
-        <img
-          src="~assets/index/tstarter-rocket.svg"
-          width="60%"
-          alt="Illustration"
-        />
-      </div>
-    </section>
-    <section class="column items-center">
-      <h2>Upcoming Pools</h2>
-      <div class="q-pa-md row items-start justify-center q-gutter-md">
-        <Poolcard v-for="id in poolIDs" :key="id" :poolID="id"></Poolcard>
-      </div>
-    </section>
-    <section class="column items-center">
-      <h2>Featured Pools</h2>
-      <div class="q-pa-md row items-start justify-center q-gutter-md">
-        <Poolcard v-for="id in poolIDs" :key="id" :poolID="id"></Poolcard>
-      </div>
-    </section>
-    <section class="column items-center">
-      <router-link to="/pools">
-        <q-btn outline color="accent">VIEW ALL POOLS</q-btn>
-      </router-link>
-    </section>
+      </section>
+    </div>
   </q-page>
 </template>
 
@@ -49,35 +54,36 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   components: { Poolcard },
   data() {
-    return {
-    };
+    return {};
   },
   computed: {
     ...mapGetters("pools", ["getAllPoolIDs"]),
-    poolIDs: function() {return this.getAllPoolIDs}
+    poolIDs: function() {
+      return this.getAllPoolIDs;
+    }
   },
-  methods: {},
+  methods: {}
 };
 </script>
 
 <style lang="scss" scoped>
-.banner-main {
+.space-bg {
   background-image: url("~assets/index/clouds-head.png");
   height: 550px;
 }
-.banner-container {
-  padding-left: 50px;
-}
-.banner-title {
+.header-container h2 {
   color: $secondary;
   line-height: 60px;
   font-family: poppins-regular;
+  margin-top: 0px;
 }
-.banner-title-accent {
+.header-container h2 span {
   color: $accent;
 }
-.banner-rocket {
-  min-width: 400px;
-  max-width: 600px;
+.rocket {
+  min-width: 250px;
+}
+.rocket img {
+  max-width: 300px;
 }
 </style>

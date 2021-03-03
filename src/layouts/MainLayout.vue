@@ -1,20 +1,38 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar class="text-black bg-secondary">
+  <q-layout view="hhh Lpr lff">
+    <q-header elevated reveal class="head">
+      <q-toolbar class="toolbar text-black">
         <q-toolbar-title>
           <router-link to="/" class="default-logo">
             <img src="~assets/logo/logo-dark.svg" alt="logo" height="33px" />
           </router-link>
         </q-toolbar-title>
-
-        <router-link style="padding: 10px" to="/pools">Pools
-        </router-link>
-
-        <router-link to="/createpool" class="">Create Pool
-        </router-link>
-
-        <login-button></login-button>
+        <div class="gt-sm row">
+          <router-link class="q-pr-md" to="/pools"
+            ><q-btn outline color="primary">Pools</q-btn></router-link
+          >
+          <router-link to="/createpool" class=""
+            ><q-btn outline color="primary">Create Pool</q-btn></router-link
+          >
+          <login-button></login-button>
+        </div>
+        <q-btn-dropdown class="lt-md" icon="menu" align="right">
+          <q-list class="column items-end">
+            <q-item clickable v-close-popup>
+              <router-link to="/pools"
+                ><q-btn outline color="primary">Pools</q-btn></router-link
+              >
+            </q-item>
+            <q-item clickable v-close-popup>
+              <router-link to="/createpool"
+                ><q-btn outline color="primary">Create Pool</q-btn></router-link
+              >
+            </q-item>
+            <q-item clickable v-close-popup>
+              <login-button></login-button>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </q-toolbar>
     </q-header>
 
@@ -60,7 +78,8 @@ export default {
 
 <style lang="scss" scoped>
 .head {
-  color: $secondary;
+  background-color: $secondary;
+  color: $dark;
 }
 .foot {
   background-image: url("~assets/main/clouds-foot.png");
