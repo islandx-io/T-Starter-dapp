@@ -10,3 +10,10 @@ const getPoolState = (state, id) => {
 export const setPoolStatus = (state, { id, status }) => {
   getPoolState(state, id).status = status;
 };
+
+export const updatePoolOnState = (state, {poolTable, id}) => {
+    if (!poolTable) {
+      return;
+    }
+    state.pools.find(el => el.id === id); //FIXME
+  };

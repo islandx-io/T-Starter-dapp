@@ -1,18 +1,18 @@
 export const getChainData = async function({ commit }, id) {
   try {
     const tableResults = await this.$api.getTableRows({
-      code: "btc.ptokens", // Contract that we target
-      scope: "btc.ptokens", // Account that owns the data
-      table: "accounts", // Table name
-      // lower_bound: id, // Table primary key value
-      limit: 10, // Maximum number of rows that we want to get
+      code: "pools.start", // Contract that we target
+      scope: "pools.start", // Account that owns the data
+      table: "pools.index", // Table name
+      lower_bound: id, // Table primary key value
+      limit: 1, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
     console.log(tableResults);
 
-    //   const profile = tableResults.rows[0];
-    // commit("setProfile", profile);
+    const poolTable = tableResults.rows[tableResults.rows.length -1];
+    commit("updatePoolOnState", {poolTable, id});
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

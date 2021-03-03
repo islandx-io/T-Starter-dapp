@@ -64,7 +64,7 @@
           lazy-rules
           :rules="[val => (val && val.length > 1) || 'Must specify the token']"
         >
-        {{toChainString(swap_ratio.quantity, 4, 'START')}}
+        {{toChainString(swap_ratio.quantity, 4, token_sybmol)}}
         </q-input>
       </div>
       <!-- Quantities -->
@@ -411,18 +411,18 @@ export default {
           // as having an error, but there will not be any
           // error message displayed below the input
           // (only in browser console)
-        }, 3000);
+        }, 1000);
       });
     },
     onSubmit() {
       // TODO Check links not empty
       // TODO check if have permission to create pool. e.g. fuzzytestnet
-      if (this.accept !== true) {
+      if (this.accept !== true || !this.isAuthenticated) {
         this.$q.notify({
           color: "red-5",
           textColor: "white",
           icon: "warning",
-          message: "You need to accept the license and terms first"
+          message: "You need to login and accept the license and terms first"
         });
       } else {
         this.$q.notify({
