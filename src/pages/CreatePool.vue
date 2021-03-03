@@ -386,7 +386,7 @@ export default {
     //   return Slug(this.poolName);
     // },
     toUnixTimestamp(timeStamp) {
-      return date.formatDate(timeStamp, "X");
+      return new Date(timeStamp).valueOf();
     },
     toChainString(number, decimals, symbol ) {
       console.log(String(parseFloat(number).toFixed(decimals)) + String(' ' + symbol));

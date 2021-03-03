@@ -16,9 +16,11 @@ export const getChainPoolByID = async function({ commit }, id) {
     const poolTable = tableResults.rows[tableResults.rows.length - 1];
 
     //check dates are unix
-    poolTable.pool_open = Number(date.formatDate(poolTable.pool_open, "X"));
-    poolTable.private_end = Number(date.formatDate(poolTable.private_end, "X"));
-    poolTable.public_end = Number(date.formatDate(poolTable.public_end, "X"));
+    poolTable.pool_open = new Date(poolTable.pool_open).valueOf();
+    poolTable.private_end = new Date(poolTable.private_end).valueOf();
+    poolTable.public_end = new Date(poolTable.public_end).valueOf();
+    // poolTable.private_end = Number(date.formatDate(poolTable.private_end, "X"));
+    // poolTable.public_end = Number(date.formatDate(poolTable.public_end, "X"));
 
     commit("updatePoolOnState", { poolTable, id });
   } catch (error) {

@@ -1,9 +1,9 @@
 <template>
   <div>
     <div>Access type: {{ access_type }}</div>
-    <div>Sale open: {{ toDate(pool_open) }}</div>
-    <div>Private sale end: {{ toDate(private_end) }}</div>
-    <div>Public sale end: {{ toDate(public_end) }}</div>
+    <div>Sale open: {{ toDate(poolObject.pool_open) }}</div>
+    <div>Private sale end: {{ toDate(poolObject.private_end) }}</div>
+    <div>Public sale end: {{ toDate(poolObject.public_end) }}</div>
     <div>Min investement per wallet: {{ minimum_swap }}</div>
     <div>Max investement per wallet: {{ maximum_allocation }}</div>
   </div>
@@ -30,9 +30,6 @@ export default {
     };
   },
   computed: {
-    epochTimeToDate() {
-      return "";
-    },
   },
   methods: {
     toDate(timeStamp){
@@ -41,14 +38,14 @@ export default {
   },
   watch: {
     // to reload info if changed
-    poolObject: function() {
-      // this.access_type = this.poolObject.access_type,
-      this.pool_open = this.poolObject.pool_open,
-      this.private_end = this.poolObject.private_end,
-      this.public_end = this.poolObject.public_end,
-      this.minimum_swap = this.poolObject.minimum_swap,
-      this.maximum_allocation = this.poolObject.maximum_allocation
-    }
+    // poolObject: function() {
+    //   // this.access_type = this.poolObject.access_type,
+    //   this.pool_open = this.poolObject.pool_open,
+    //   this.private_end = this.poolObject.private_end,
+    //   this.public_end = this.poolObject.public_end,
+    //   this.minimum_swap = this.poolObject.minimum_swap,
+    //   this.maximum_allocation = this.poolObject.maximum_allocation
+    // }
   }
 };
 </script>

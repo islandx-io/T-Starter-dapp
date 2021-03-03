@@ -106,7 +106,7 @@
           <component
             v-bind:is="currentTabComponent"
             class="tab"
-            :poolObject="pool"
+            :poolObject.sync="pool"
           ></component>
         </keep-alive>
       </q-card>
