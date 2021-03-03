@@ -159,9 +159,9 @@ export default {
         description: "Loading",
         web_links: {},
         status: "loading",
-        pool_open: new Date(), // TODO Reconsider best init
-        private_end: new Date(),
-        public_end: new Date(),
+        pool_open: "Loading", // TODO Reconsider best init
+        private_end: "Loading",
+        public_end: "Loading",
         white_listed_addresses: {},
         contract_address: "",
         token_address: "",
