@@ -147,9 +147,9 @@ export default {
       pool: {
         title: "Loading",
         slug: "loading",
-        soft_cap: 0,
-        hard_cap: 0,
-        swap_ratio: {"quantity":"5000000.0000 START","contract":"token.start"},
+        soft_cap: "Loading",
+        hard_cap: "Loading",
+        swap_ratio: {"quantity":"Loading","contract":"token.start"},
         type: "Fixed",
         access_type: "Private",
         progress: 0,
@@ -167,6 +167,7 @@ export default {
         token_address: "",
         maximum_allocation: "0",
         minimum_swap: "0",
+        base_token: {"sym":"8,Loading","contract":"btc.ptokens"}
       },
       polling: null
     };
