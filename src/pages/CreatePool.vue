@@ -53,7 +53,6 @@
           :options="base_token_options.map(a => a.sym)"
           label="Standard"
         />
-        {{ swapRatio }}
       </div>
       <!-- Swap ratio -->
       <h3>Swap ratio</h3>
@@ -145,7 +144,7 @@
             </q-icon>
           </template>
         </q-input>
-        Sale start
+        Sale start {{pool_open}}
       </div>
       <!-- Date input -->
       <div class="row">
@@ -375,7 +374,6 @@ export default {
       //Static
       // owner: "",
       pool_type: "fixed",
-      // base_token: { sym: "8,PBTC", contract: "btc.ptokens" },
       swap_ratio: {
         quantity: "5000000",
         contract: "token.start"
@@ -384,9 +382,9 @@ export default {
       hard_cap: "50.0",
       minimum_swap: "0.001",
       maximum_allocation: "2.50000",
-      pool_open: "2021-03-01T17:00:00",
-      private_end: "2021-03-02T05:00:00",
-      public_end: "2021-03-02T17:00:00",
+      pool_open: Date.now(),
+      private_end: Date.now(),
+      public_end: Date.now(),
       title: "T-Starter",
       avatar:
         "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
@@ -527,13 +525,10 @@ export default {
           name: "updatepool",
           data: {
             id: 9,
-            // owner: this.accountName,
-            // pool_type: this.pool_type,
             title: this.title,
             avatar: this.avatar,
             tag_line: this.tag_line,
             description: this.description,
-            // status: "draft",
             base_token: this.getBaseToken,
             swap_ratio: this.swapRatio,
             soft_cap: this.toChainString(
@@ -569,7 +564,7 @@ export default {
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
-    onSubmit() {
+    async onSubmit() {
       // TODO Check and clean links not empty
       // TODO check if have permission to create pool. e.g. fuzzytestnet
       if (this.accept !== true || !this.isAuthenticated) {
@@ -581,8 +576,8 @@ export default {
         });
       } else {
         this.checkLinks();
-        // this.createNewPool();
-        this.updateNewPool();
+        // await this.createNewPool();
+        await this.updateNewPool();
         this.$q.notify({
           color: "green-4",
           textColor: "white",
