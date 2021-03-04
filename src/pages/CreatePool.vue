@@ -34,6 +34,7 @@
           label="Token contract address"
           lazy-rules
           :rules="[checkTokenContract]"
+          debounce="1000"
         >
         </q-input>
       </div>
@@ -64,7 +65,7 @@
           lazy-rules
           :rules="[val => (val && val.length > 1) || 'Must specify the token']"
         >
-        {{toChainString(swap_ratio.quantity, token_decimals, token_symbol)}}
+          {{ toChainString(swap_ratio.quantity, token_decimals, token_symbol) }}
         </q-input>
       </div>
       <!-- Quantities -->
@@ -236,9 +237,7 @@
           label="Tag line"
           lazy-rules
           :rules="[
-            val =>
-              (val && val.length > 1 && val.length < 230) ||
-              'Must specify'
+            val => (val && val.length > 1 && val.length < 230) || 'Must specify'
           ]"
         />
       </div>
@@ -389,33 +388,37 @@ export default {
     toUnixTimestamp(timeStamp) {
       return new Date(timeStamp).valueOf();
     },
-    toChainString(number, decimals, symbol ) {
-      console.log(String(parseFloat(number).toFixed(decimals)) + String(' ' + symbol));
-      return String(parseFloat(number).toFixed(decimals)) + String(' ' + symbol);
+    toChainString(number, decimals, symbol) {
+      console.log(
+        String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
+      );
+      return (
+        String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
+      );
     },
-    checkTokenContract(val) {
+    async checkTokenContract(val) {
       // simulating a delay
+      let payload = { address: val, token_symbol: this.token_symbol };
+      this.token_decimals = await this.getTokenPrecision(payload);
+      console.log(this.token_decimals);
 
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          let payload = {address: val , token_symbol: this.token_symbol}
-          this.token_decimals = this.getTokenPrecision(payload);
-          console.log(this.token_decimals)
-          // call
-          //  resolve(true)
-          //     --> content is valid
-          //  resolve(false)
-          //     --> content is NOT valid, no error message
-          //  resolve(error_message)
-          //     --> content is NOT valid, we have error message
-          resolve(!!val || "* Required");
+      // return new Promise((resolve, reject) => {
+      //   setTimeout(() => {
+      //     // call
+      //     //  resolve(true)
+      //     //     --> content is valid
+      //     //  resolve(false)
+      //     //     --> content is NOT valid, no error message
+      //     //  resolve(error_message)
+      //     //     --> content is NOT valid, we have error message
+      //     resolve(!!val || "* Required");
 
-          // calling reject(...) will also mark the input
-          // as having an error, but there will not be any
-          // error message displayed below the input
-          // (only in browser console)
-        }, 1000);
-      });
+      //     // calling reject(...) will also mark the input
+      //     // as having an error, but there will not be any
+      //     // error message displayed below the input
+      //     // (only in browser console)
+      //   }, 1000);
+      // });
     },
     onSubmit() {
       // TODO Check links not empty

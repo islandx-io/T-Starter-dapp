@@ -84,10 +84,9 @@ export const getTokenPrecision = async function(
     console.log(supply.max_supply);
     let commaidx = supply.max_supply.indexOf(".") + 1;
     let spaceidx = supply.max_supply.indexOf(" ");
-    const precision = await supply.max_supply.slice(commaidx, spaceidx).length;
+    const precision = supply.max_supply.slice(commaidx, spaceidx).length;
     // console.log(precision);
-    return 3;
-
+    return precision;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
