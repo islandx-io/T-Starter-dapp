@@ -26,7 +26,7 @@ const routes = [
   },
   {
     // TODO decide on how slugs and IDs will be handled
-    path: "/pools/:slug-:id",
+    path: "/pools/:id",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", name: 'pooldetails', component: () => import("pages/Pool.vue") },
                 { path: "join", name: 'joinpool', component: () => import("pages/Join.vue") }]

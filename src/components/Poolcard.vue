@@ -4,7 +4,7 @@
     <q-item class="row items-center">
       <q-item-section avatar>
         <q-avatar>
-          <img v-if="image_link" :src="image_link" width="50px" alt="image" />
+          <img v-if="avatar" :src="avatar" width="50px" alt="image" />
           <div v-else v-html="identicon" />
         </q-avatar>
       </q-item-section>
@@ -13,7 +13,7 @@
           <status-badge :poolStatus="pool_status"></status-badge>
           <status-countdown
             v-if="pool_status === 'upcoming'"
-            :deadline="start_date"
+            :deadline="pool_open"
             mini
           ></status-countdown>
         </div>
@@ -53,7 +53,7 @@
     </q-card-section>
     <q-card-actions vertical align="center">
       <router-link
-        :to="{ name: 'pooldetails', params: { slug: slug, id: poolID } }"
+        :to="{ name: 'pooldetails', params: {id: poolID } }"
       >
         <q-btn outline color="primary" class="item-btn">VIEW POOL</q-btn>
       </router-link>
@@ -80,8 +80,8 @@ export default {
   components: { statusBadge, statusCountdown },
   data() {
     return {
-      title: "No Project",
-      slug: "noproject",
+      title: "Loading",
+      slug: "loading",
       price: 0,
       minimum: "TBA",
       maximum: "TBA",
@@ -89,10 +89,10 @@ export default {
       access_type: "Private",
       progress: 0.4,
       participants: 0,
-      image_link: "",
+      avatar: "",
       filterClass: "created joined",
       pool_status: "loading",
-      start_date: new Date(),
+      pool_open: new Date(),
       polling: null
     };
   },
@@ -113,14 +113,14 @@ export default {
       this.title = poolJSON.title;
       this.slug = poolJSON.slug;
       this.price = poolJSON.price;
-      this.minimum = poolJSON.minimum_allocation_per_wallet;
-      this.maximum = poolJSON.max_eth_allocation;
+      this.minimum = poolJSON.minimum_swap; 
+      this.maximum = poolJSON.maximum_allocation;
       this.type = poolJSON.type;
-      this.access_type = poolJSON.access_type;
+      // this.access_type = poolJSON.access_type;
       this.participants = poolJSON.participants;
-      this.image_link = poolJSON.image_link;
+      this.avatar = poolJSON.avatar;
       this.pool_status = poolJSON.status;
-      this.start_date = poolJSON.start_date;
+      this.pool_open = poolJSON.pool_open;
     }
   },
   mounted() {
