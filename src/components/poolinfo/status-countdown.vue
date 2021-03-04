@@ -92,6 +92,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+// Large
 .c-large {
   padding: 0;
   margin: 0;
@@ -126,28 +127,12 @@ export default {
 .c-large li:last-of-type:after {
   content: "";
 }
-// .c-large .digit {
-//   font-size: 32px;
-//   font-weight: 600;
-//   line-height: 1.4;
-//   margin-bottom: 0;
-// }
-// .c-large .text {
-//   text-transform: uppercase;
-//   margin-bottom: 0;
-//   font-size: 10px;
-// }
 
-// .c-mini {
-//   color: $accent;
-// }
-.c-mini ul {
-  padding: 0;
-  margin: 0;
+// Mini
+.c-mini {
+  padding: 0px;
+  margin: 5px 0 0 0;
 }
-// .c-mini li p {
-//   margin: 0;
-// }
 .c-mini li {
   display: inline-block;
   margin: 0 3px;

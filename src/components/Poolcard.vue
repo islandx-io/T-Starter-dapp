@@ -4,42 +4,40 @@
     class="router-link pool-card row"
     :to="{ name: 'pooldetails', params: { id: poolID } }"
   >
-    <q-card flat class="col bg-secondary text-black" :class="filterClass">
-      <q-item class="row items-center">
-        <q-item-section avatar>
-          <q-avatar>
-            <img v-if="avatar" :src="avatar" width="50px" alt="image" />
+    <q-card flat class="col bg-secondary text-black">
+      <q-item>
+        <q-item-section top>
+          <q-avatar :size="avatar_size.toString() + 'px'">
+            <img v-if="avatar" :src="avatar" width="100px" alt="image" />
             <div v-else v-html="identicon" />
           </q-avatar>
         </q-item-section>
-        <q-item-section top>
-          <div class="text-accent column items-end">
-            <status-badge :poolStatus="pool_status"></status-badge>
+        <q-item-section top side>
+          <div class="text-accent column items-center justify-between">
+            <status-badge :poolStatus="pool_status" />
             <status-countdown
               v-if="pool_status === 'upcoming'"
               :deadline="pool_open"
               mini
-            ></status-countdown>
+            />
           </div>
         </q-item-section>
       </q-item>
-      <q-card-section>
-        <h3 class="item-title ">{{ title }}</h3>
-        <div class="q-col-gutter-xl row justify-between">
-          <!-- <div>
-          <div class="text-h6">Minimum</div>
-          <p class="item-value">{{ parseFloat(minimum).toFixed(2) }}</p>
-        </div> -->
+      <q-card-section class="title-section">
+        <h3 class="title">{{ title }}</h3>
+      </q-card-section>
+      <q-card-section class="row content-end">
+        <div class="col-12 row justify-between">
           <div>
             <div class="text-h6">Hard cap</div>
-            <p class="item-value">{{ parseFloat(maximum).toFixed(2) }}</p>
+            <p class="info-value">{{ parseFloat(maximum).toFixed(2) }}</p>
           </div>
           <div>
             <div class="text-h6">Access</div>
-            <p class="item-value">{{ access_type }}</p>
+            <p class="info-value">{{ access_type }}</p>
           </div>
         </div>
-        <div v-if="['upcoming', 'closed'].includes(pool_status)">
+        <div class="col-12" v-if="['open', 'closed'].includes(pool_status)">
           <div class="text-h6 q-pb-xs">Sale progress</div>
           <div class="progress-bar">
             <div
@@ -77,6 +75,7 @@ export default {
   components: { statusBadge, statusCountdown },
   data() {
     return {
+      avatar_size: 60, // (px)
       title: "Loading",
       slug: "loading",
       price: 0,
@@ -87,7 +86,6 @@ export default {
       progress: 0.4,
       participants: 0,
       avatar: "",
-      filterClass: "created joined",
       pool_status: "loading",
       pool_open: new Date(),
       polling: null
@@ -99,7 +97,7 @@ export default {
       return this.progress * 100 + "%";
     },
     identicon() {
-      return toSvg(this.poolID, 40);
+      return toSvg(this.poolID, this.avatar_size);
     }
   },
   methods: {
@@ -166,5 +164,19 @@ export default {
   text-align: center;
   background-color: $primary;
   transition: width 0.6s ease;
+}
+
+.pool-card .title-section {
+  min-height: 48px;
+}
+.pool-card .title {
+  margin: 0;
+  padding: 0;
+}
+.pool-card .info-value {
+  line-height: 30px;
+  font-size: 20px;
+  color: $primary;
+  margin-bottom: 10px;
 }
 </style>

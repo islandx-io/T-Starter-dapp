@@ -3,15 +3,15 @@
     <q-header elevated reveal class="head">
       <q-toolbar class="toolbar text-black">
         <q-toolbar-title>
-          <router-link to="/" class="default-logo">
+          <router-link to="/" class="router-link default-logo">
             <img src="~assets/logo/logo-dark.svg" alt="logo" height="33px" />
           </router-link>
         </q-toolbar-title>
         <div class="gt-sm row">
-          <router-link class="q-pr-md" to="/pools"
+          <router-link to="/pools" class="router-link q-pr-md"
             ><q-btn outline color="primary">View Pools</q-btn></router-link
           >
-          <router-link to="/createpool" class=""
+          <router-link to="/createpool" class="router-link"
             ><q-btn outline color="primary">Create Pool</q-btn></router-link
           >
           <login-button></login-button>
@@ -19,12 +19,12 @@
         <q-btn-dropdown class="lt-md" icon="menu" align="right">
           <q-list class="column items-end">
             <q-item clickable v-close-popup>
-              <router-link to="/pools"
+              <router-link to="/pools" class="router-link"
                 ><q-btn outline color="primary">View Pools</q-btn></router-link
               >
             </q-item>
             <q-item clickable v-close-popup>
-              <router-link to="/createpool"
+              <router-link to="/createpool" class="router-link"
                 ><q-btn outline color="primary">Create Pool</q-btn></router-link
               >
             </q-item>
@@ -44,7 +44,7 @@
       <div class="footer-container row items-end justify-center">
         <div class="col-12 row justify-between ">
           <div class="col-sm-4">
-            <router-link to="/" class="default-logo">
+            <router-link to="/" class="router-link default-logo">
               <img src="~assets/logo/logo-light.svg" alt="logo" height="33px" />
             </router-link>
             <p class="text-body1">

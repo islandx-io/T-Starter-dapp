@@ -2,7 +2,7 @@
   <!-- And do not be conformed to this world, but be transformed by the renewing of your mind, 
 that you may prove what is that good and acceptable and perfect will of God. - Romans 12:2 -NKJV -->
   <q-page>
-    <section class="space-bg">
+    <section class="space-bg row content-center">
       <div class="header-container row reverse-wrap justify-between">
         <div class="column justify-evenly">
           <h2>
@@ -10,7 +10,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             <span>back projects</span>
             building on Telos
           </h2>
-          <router-link to="/pools">
+          <router-link class="router-link " to="/pools">
             <q-btn outline color="secondary">VIEW ALL POOLS</q-btn>
           </router-link>
         </div>
@@ -40,14 +40,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
           :key="'featured-' + id"
           :poolID="id"
         ></Poolcard>
-        <h2 class="col-12 text-center q-pt-xl">Closed Pools</h2>
-        <Poolcard
-          class="col"
-          v-for="id in closedPools"
-          :key="'closed-' + id"
-          :poolID="id"
-        ></Poolcard>
-        <router-link to="/pools" class="col-12 text-center">
+        <router-link to="/pools" class="router-link col-12 text-center">
           <q-btn outline color="accent">VIEW ALL POOLS</q-btn>
         </router-link>
       </section>
