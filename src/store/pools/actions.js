@@ -110,3 +110,8 @@ export const updatePoolStatus = async function({ commit, getters }, poolID) {
     status: poolStatus
   });
 };
+
+
+export const createPoolOnChain = async function({ commit, getters }, poolObject) {
+  
+};
