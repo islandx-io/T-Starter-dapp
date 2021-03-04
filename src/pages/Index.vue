@@ -29,18 +29,25 @@ that you may prove what is that good and acceptable and perfect will of God. - R
         <h2 class="col-12 text-center">Upcoming Pools</h2>
         <Poolcard
           class="col"
-          v-for="id in poolIDs"
+          v-for="id in upcomingPools"
           :key="'upcoming-' + id"
           :poolID="id"
         ></Poolcard>
         <h2 class="col-12 text-center q-pt-xl">Featured Pools</h2>
         <Poolcard
           class="col"
-          v-for="id in poolIDs"
+          v-for="id in featuredPools"
           :key="'featured-' + id"
           :poolID="id"
         ></Poolcard>
-        <router-link to="/pools" class="col-12">
+        <h2 class="col-12 text-center q-pt-xl">Closed Pools</h2>
+        <Poolcard
+          class="col"
+          v-for="id in closedPools"
+          :key="'closed-' + id"
+          :poolID="id"
+        ></Poolcard>
+        <router-link to="/pools" class="col-12 text-center">
           <q-btn outline color="accent">VIEW ALL POOLS</q-btn>
         </router-link>
       </section>
@@ -57,8 +64,14 @@ export default {
     return {};
   },
   computed: {
-    ...mapGetters("pools", ["getAllPoolIDs"]),
-    poolIDs: function() {
+    ...mapGetters("pools", ["getAllPoolIDs", "getPoolIDsByStatus"]),
+    upcomingPools: function() {
+      return this.getPoolIDsByStatus("upcoming");
+    },
+    closedPools: function() {
+      return this.getPoolIDsByStatus("closed");
+    },
+    featuredPools: function() {
       return this.getAllPoolIDs;
     }
   },

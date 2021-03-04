@@ -9,7 +9,7 @@
         </q-toolbar-title>
         <div class="gt-sm row">
           <router-link class="q-pr-md" to="/pools"
-            ><q-btn outline color="primary">Pools</q-btn></router-link
+            ><q-btn outline color="primary">View Pools</q-btn></router-link
           >
           <router-link to="/createpool" class=""
             ><q-btn outline color="primary">Create Pool</q-btn></router-link
@@ -20,7 +20,7 @@
           <q-list class="column items-end">
             <q-item clickable v-close-popup>
               <router-link to="/pools"
-                ><q-btn outline color="primary">Pools</q-btn></router-link
+                ><q-btn outline color="primary">View Pools</q-btn></router-link
               >
             </q-item>
             <q-item clickable v-close-popup>

@@ -52,9 +52,7 @@
       </div>
     </q-card-section>
     <q-card-actions vertical align="center">
-      <router-link
-        :to="{ name: 'pooldetails', params: {id: poolID } }"
-      >
+      <router-link :to="{ name: 'pooldetails', params: { id: poolID } }">
         <q-btn outline color="primary" class="item-btn">VIEW POOL</q-btn>
       </router-link>
     </q-card-actions>
@@ -113,7 +111,7 @@ export default {
       this.title = poolJSON.title;
       this.slug = poolJSON.slug;
       this.price = poolJSON.price;
-      this.minimum = poolJSON.minimum_swap; 
+      this.minimum = poolJSON.minimum_swap;
       this.maximum = poolJSON.maximum_allocation;
       this.type = poolJSON.type;
       // this.access_type = poolJSON.access_type;
@@ -142,6 +140,7 @@ export default {
 .pool {
   transition: all 0.3s ease-in-out;
   min-width: 300px;
+  max-width: 600px;
 }
 .pool:hover {
   transform: scale(1.05);
