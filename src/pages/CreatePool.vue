@@ -40,7 +40,7 @@
       <div class="row">
         <q-input
           color="primary"
-          v-model="token_sybmol"
+          v-model="token_symbol"
           label="Token"
           lazy-rules
           :rules="[val => (val && val.length > 1) || 'Must specify the token']"
@@ -64,7 +64,7 @@
           lazy-rules
           :rules="[val => (val && val.length > 1) || 'Must specify the token']"
         >
-        {{toChainString(swap_ratio.quantity, 4, token_sybmol)}}
+        {{toChainString(swap_ratio.quantity, token_decimals, token_symbol)}}
         </q-input>
       </div>
       <!-- Quantities -->
@@ -312,7 +312,8 @@ export default {
 
       base_token_name: "PETH",
       base_token_options: ["PETH", "PBTC", "USDT", "TLOS"],
-      token_sybmol: "START",
+      token_symbol: "STAR",
+      token_decimals: 1,
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
       link_index: -1,
@@ -381,7 +382,7 @@ export default {
   },
 
   methods: {
-    ...mapActions("pools", ["getCurrency"]),
+    ...mapActions("pools", ["getCurrency", "getTokenPrecision"]),
     // convertName: function() {
     //   return Slug(this.poolName);
     // },
@@ -397,7 +398,9 @@ export default {
 
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          this.getCurrency(val);
+          let payload = {address: val , token_symbol: this.token_symbol}
+          this.token_decimals = this.getTokenPrecision(payload);
+          console.log(this.token_decimals)
           // call
           //  resolve(true)
           //     --> content is valid

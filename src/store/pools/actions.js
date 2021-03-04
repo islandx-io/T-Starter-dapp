@@ -2,9 +2,9 @@
 export const getChainPoolByID = async function({ commit }, id) {
   try {
     const tableResults = await this.$api.getTableRows({
-      code: "pools.start", // Contract that we target //FIXME process.env.CONTRACT_ADDRESS
-      scope: "pools.start", // Account that owns the data
-      table: "pools.index", // Table name
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: process.env.CONTRACT_TABLE, // Table name
       lower_bound: id, // Table primary key value
       limit: 1, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data
@@ -25,41 +25,69 @@ export const getChainPoolByID = async function({ commit }, id) {
   }
 };
 
-// // get all pools from chain, populate store
-// export const getAllChainPools = async function({ commit }) {
-//   try {
-//     const tableResults = await this.$api.getTableRows({
-//       code: "pools.start", // Contract that we target
-//       scope: "pools.start", // Account that owns the data
-//       table: "pools.index", // Table name
-//       lower_bound: id, // Table primary key value
-//       limit: 1, // Maximum number of rows that we want to get
-//       reverse: false, // Optional: Get reversed data
-//       show_payer: false // Optional: Show ram payer
-//     });
-//     console.log(tableResults);
+// get all pools from chain, populate store
+export const getAllChainPools = async function({ commit }) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: process.env.CONTRACT_TABLE, // Table name
+      limit: 10, // Maximum number of rows that we want to get
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
 
-//     const poolTable = tableResults.rows[tableResults.rows.length - 1];
+    tableResults.rows.forEach((pool, index) => {
+      console.log(pool);
+      let id = pool.id;
 
-//     //check dates are unix
-//     poolTable.pool_open = new Date(poolTable.pool_open).valueOf();
-//     poolTable.private_end = new Date(poolTable.private_end).valueOf();
-//     poolTable.public_end = new Date(poolTable.public_end).valueOf();
-//     // poolTable.private_end = Number(date.formatDate(poolTable.private_end, "X"));
-//     // poolTable.public_end = Number(date.formatDate(poolTable.public_end, "X"));
+      //check dates are unix
+      pool.pool_open = new Date(pool.pool_open).valueOf();
+      pool.private_end = new Date(pool.private_end).valueOf();
+      pool.public_end = new Date(pool.public_end).valueOf();
 
-//     commit("updatePoolOnState", { poolTable, id });
-//   } catch (error) {
-//     commit("general/setErrorMsg", error.message || error, { root: true });
-//   }
-// };
+      const poolTable = pool;
+
+      commit("updatePoolOnState", { poolTable, id });
+    });
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
 
 // Test function for reading address
-export const getCurrency = async function({ commit }, address) {
+export const getCurrency = async function({ commit }, payload) {
+  const rpc = this.$api.getRpc();
+  // console.log(await rpc.get_account(address));
+  // console.log(await rpc.get_currency_balance(address, "fuzzytestnet"));
+};
+
+// gets the precision of Token
+export const getTokenPrecision = async function(
+  { commit, getters },
+  token_info
+) {
   try {
     const rpc = this.$api.getRpc();
-    console.log(await rpc.get_account(address));
-    console.log(await rpc.get_currency_balance(address, "fuzzytestnet"));
+
+    const tableResults = await this.$api.getTableRows({
+      code: token_info.address, // Contract that we target
+      scope: token_info.token_symbol, // Account that owns the data
+      table: "stat", // Table name
+      limit: 10, // Maximum number of rows that we want to get
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+
+    console.log(tableResults.rows[tableResults.rows.length - 1]);
+    let supply = tableResults.rows[tableResults.rows.length - 1];
+    console.log(supply.max_supply);
+    let commaidx = supply.max_supply.indexOf(".") + 1;
+    let spaceidx = supply.max_supply.indexOf(" ");
+    const precision = await supply.max_supply.slice(commaidx, spaceidx).length;
+    // console.log(precision);
+    return 3;
+
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

@@ -40,9 +40,7 @@
               v-else-if="pool.status === 'open'"
             >
               <div>Closes in:</div>
-              <status-countdown
-                :deadline="pool.public_end"
-              ></status-countdown>
+              <status-countdown :deadline="pool.public_end"></status-countdown>
             </div>
           </q-item-section>
 
@@ -66,7 +64,7 @@
             </div>
             <div class="row justify-between">
               <div>Swap ratio:</div>
-              <p>1 {{getBaseSymbol}} = {{ pool.swap_ratio.quantity }}</p>
+              <p>1 {{ getBaseSymbol }} = {{ pool.swap_ratio.quantity }}</p>
             </div>
             <div class="row justify-between" v-if="pool.status === 'open'">
               <div>Participants:</div>
@@ -111,9 +109,9 @@
         </keep-alive>
       </q-card>
 
-      <div>Params: {{ this.$route.params }} Query: {{ this.$route.query }}</div>
+      <!-- <div>Params: {{ this.$route.params }} Query: {{ this.$route.query }}</div>
       <div v-if="isAuthenticated">{{ accountName }} is authenticated</div>
-      <div v-else>Please login to do a transfer!</div>
+      <div v-else>Please login to do a transfer!</div> -->
     </div>
   </q-page>
 </template>
@@ -149,7 +147,7 @@ export default {
         slug: "loading",
         soft_cap: "Loading",
         hard_cap: "Loading",
-        swap_ratio: {"quantity":"Loading","contract":"token.start"},
+        swap_ratio: { quantity: "Loading", contract: "token.start" },
         type: "Fixed",
         access_type: "Private",
         progress: 0,
@@ -167,7 +165,7 @@ export default {
         token_address: "",
         maximum_allocation: "0",
         minimum_swap: "0",
-        base_token: {"sym":"8,Loading","contract":"btc.ptokens"}
+        base_token: { sym: "8,Loading", contract: "btc.ptokens" }
       },
       polling: null
     };
@@ -185,14 +183,17 @@ export default {
       return toSvg(this.poolID, 80);
     },
     getBaseSymbol() {
-      let str = this.pool.base_token.sym;
-      let idx = str.indexOf(',')+1;
-      return str.slice(idx);
+      try {
+        let str = this.pool.base_token.sym;
+        let idx = str.indexOf(",") + 1;
+        return str.slice(idx);
+      } catch (error) {
+        return "Error";
+      }
     }
   },
   methods: {
-    ...mapActions("pools", ["getChainPoolByID"]),
-    ...mapActions("pools", ["updatePoolStatus"]),
+    ...mapActions("pools", ["getChainPoolByID","updatePoolStatus"]),
     toDate(timeStamp) {
       return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
     },

@@ -64,7 +64,14 @@ export default {
       return this.getAllPoolIDs;
     }
   },
-  methods: {}
+  methods: {
+    ...mapActions("pools", ["getAllChainPools"]),
+
+  },
+  async mounted() {
+    await this.getAllChainPools();
+
+  }
 };
 </script>
 

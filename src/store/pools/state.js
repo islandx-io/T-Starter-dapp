@@ -3,7 +3,7 @@ export default function() {
     // test pools
     pools: [
       {
-        id: 1,
+        id: 7,
         title: "The Lekker Project",
         slug: "lekkerman",
         price: 10000000,
@@ -12,12 +12,12 @@ export default function() {
         progress: 0.75,
         participants: 100,
         status: "closed",
-        web_links: {
+        web_links: [{
           website: "https://www.thissite.com",
           whitepaper: "",
           twitter: "https://www.twitter.com",
           telegram: "https://www.telegram.com"
-        },
+        }],
         white_listed_addresses: {},
         avatar:
           "https://en.gravatar.com/userimage/49006266/c2a582608aa64ce391d6092f7b384900.jpeg",
@@ -25,7 +25,7 @@ export default function() {
           "This is a very lekker project that you should put all your dogecoins into",
         description:
           "#Project ##Make this markdownable? How would one do that?",
-        contract_address: "0x33891316e3b032afbd926597aC78c34Ba545900e",
+        owner: "0x33891316e3b032afbd926597aC78c34Ba545900e",
         token_address: "0xD478161C952357F05f0292B56012Cd8457F1cfbF",
         maximum_allocation: "10684.000000000002",
         minimum_swap: "0",
@@ -51,7 +51,7 @@ export default function() {
         swap_ratio: "0.000021"
       },
       {
-        id: 3,
+        id: 6,
         title: "The Do Project",
         slug: "do-it",
         price: 9001,
@@ -87,7 +87,7 @@ export default function() {
         swap_ratio: "0.000021"
       },
       {
-        id: 2,
+        id: 5,
         title: "The Better Project",
         slug: "betterboi",
         price: 501400,
