@@ -1,5 +1,7 @@
 <template>
-  <q-badge :color="statusColor">{{ statusMessage }}</q-badge>
+  <div :class="poolStatus + '-badge'">
+    <div>{{ statusMessage }}</div>
+  </div>
 </template>
 
 <script>
@@ -7,32 +9,40 @@ export default {
   name: "status-badge",
   props: {
     poolStatus: {
-      type: String, //
+      type: String,
       required: true
     }
   },
   computed: {
-    statusColor: function() {
-      switch (this.poolStatus.toLowerCase()) {
-        case "loading":
-          return "blue-grey";
-        case "open":
-          return "primary";
-        case "closed":
-          return "warning";
-        case "upcoming":
-          return "accent";
-        case "filled":
-          return "positive";
-        case "canceled":
-          return "warning";
-        default:
-          return "blue-grey";
-      }
-    },
     statusMessage() {
       return this.poolStatus[0].toUpperCase() + this.poolStatus.slice(1);
     }
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.base-badge {
+  border-radius: 15px;
+  max-height: 30px;
+  padding: 5px 10px;
+  color: white;
+  font-weight: bolder;
+}
+.upcoming-badge {
+  @extend .base-badge;
+  background-color: $accent;
+}
+.open-badge {
+  @extend .base-badge;
+  background-color: $positive;
+}
+.closed-badge {
+  @extend .base-badge;
+  background-color: $warning;
+}
+.loading-badge {
+  @extend .base-badge;
+  background-color: $loading;
+}
+</style>

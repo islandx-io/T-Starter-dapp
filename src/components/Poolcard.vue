@@ -1,62 +1,61 @@
 <template>
   <!-- TODO class joined, featured, created, all -->
-  <q-card class="card pool bg-secondary text-black" :class="filterClass">
-    <q-item class="row items-center">
-      <q-item-section avatar>
-        <q-avatar>
-          <img v-if="avatar" :src="avatar" width="50px" alt="image" />
-          <div v-else v-html="identicon" />
-        </q-avatar>
-      </q-item-section>
-      <q-item-section top>
-        <div class="text-accent column items-end">
-          <status-badge :poolStatus="pool_status"></status-badge>
-          <status-countdown
-            v-if="pool_status === 'upcoming'"
-            :deadline="pool_open"
-            mini
-          ></status-countdown>
-        </div>
-      </q-item-section>
-    </q-item>
-    <q-card-section>
-      <h3 class="item-title ">{{ title }}</h3>
-      <div class="text-h6">Total raise</div>
-      <p class="item-price">{{ price }}</p>
-      <div class="q-col-gutter-xl row justify-between">
-        <!-- <div>
+  <router-link
+    class="router-link pool-card row"
+    :to="{ name: 'pooldetails', params: { id: poolID } }"
+  >
+    <q-card flat class="col bg-secondary text-black" :class="filterClass">
+      <q-item class="row items-center">
+        <q-item-section avatar>
+          <q-avatar>
+            <img v-if="avatar" :src="avatar" width="50px" alt="image" />
+            <div v-else v-html="identicon" />
+          </q-avatar>
+        </q-item-section>
+        <q-item-section top>
+          <div class="text-accent column items-end">
+            <status-badge :poolStatus="pool_status"></status-badge>
+            <status-countdown
+              v-if="pool_status === 'upcoming'"
+              :deadline="pool_open"
+              mini
+            ></status-countdown>
+          </div>
+        </q-item-section>
+      </q-item>
+      <q-card-section>
+        <h3 class="item-title ">{{ title }}</h3>
+        <div class="q-col-gutter-xl row justify-between">
+          <!-- <div>
           <div class="text-h6">Minimum</div>
           <p class="item-value">{{ parseFloat(minimum).toFixed(2) }}</p>
         </div> -->
-        <div>
-          <div class="text-h6">Hard cap</div>
-          <p class="item-value">{{ parseFloat(maximum).toFixed(2) }}</p>
+          <div>
+            <div class="text-h6">Hard cap</div>
+            <p class="item-value">{{ parseFloat(maximum).toFixed(2) }}</p>
+          </div>
+          <div>
+            <div class="text-h6">Access</div>
+            <p class="item-value">{{ access_type }}</p>
+          </div>
         </div>
-        <div>
-          <div class="text-h6">Access</div>
-          <p class="item-value">{{ access_type }}</p>
+        <div v-if="['upcoming', 'closed'].includes(pool_status)">
+          <div class="text-h6 q-pb-xs">Sale progress</div>
+          <div class="progress-bar">
+            <div
+              role="progressbar"
+              :style="{ width: progressToPercentage }"
+              :aria-valuenow="progress"
+              aria-valuemin="0"
+              aria-valuemax="1"
+            >
+              {{ progressToPercentage }}
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="text-h6 q-pb-xs">Sale progress</div>
-      <div class="progress">
-        <div
-          class="progress-bar"
-          role="progressbar"
-          :style="{ width: progressToPercentage }"
-          :aria-valuenow="progress"
-          aria-valuemin="0"
-          aria-valuemax="1"
-        >
-          {{ progressToPercentage }}
-        </div>
-      </div>
-    </q-card-section>
-    <q-card-actions vertical align="center">
-      <router-link :to="{ name: 'pooldetails', params: { id: poolID } }">
-        <q-btn outline color="primary" class="item-btn">VIEW POOL</q-btn>
-      </router-link>
-    </q-card-actions>
-  </q-card>
+      </q-card-section>
+    </q-card>
+  </router-link>
 </template>
 
 <script>
@@ -97,7 +96,7 @@ export default {
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     progressToPercentage() {
-      return (this.progress * 100).toFixed(2) + "%";
+      return this.progress * 100 + "%";
     },
     identicon() {
       return toSvg(this.poolID, 40);
@@ -137,25 +136,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pool {
+.pool-card {
   transition: all 0.3s ease-in-out;
   min-width: 300px;
   max-width: 600px;
+  padding: 10px;
+  border-radius: $card-corner-radius;
+  border-color: $secondary;
+  box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
 }
-.pool:hover {
+.pool-card:hover {
   transform: scale(1.05);
   z-index: 2;
 }
 .progress-bar {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: white;
-  text-align: center;
-  background-color: $primary;
-  transition: width 0.6s ease;
-}
-.progress {
   color: $dark;
   display: flex;
   height: 1rem;
@@ -163,5 +157,14 @@ export default {
   font-size: 0.75rem;
   background-color: #e9ecef;
   border-radius: 0.25rem;
+}
+.progress-bar div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  background-color: $primary;
+  transition: width 0.6s ease;
 }
 </style>
