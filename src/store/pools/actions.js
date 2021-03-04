@@ -39,16 +39,16 @@ export const getAllChainPools = async function({ commit }) {
 
     tableResults.rows.forEach((pool, index) => {
       console.log(pool);
-      let id = pool.id
+      let id = pool.id;
 
       //check dates are unix
       pool.pool_open = new Date(pool.pool_open).valueOf();
       pool.private_end = new Date(pool.private_end).valueOf();
       pool.public_end = new Date(pool.public_end).valueOf();
 
-      const poolTable = pool
+      const poolTable = pool;
 
-      commit("updatePoolOnState", { poolTable, id});
+      commit("updatePoolOnState", { poolTable, id });
     });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -57,27 +57,41 @@ export const getAllChainPools = async function({ commit }) {
 
 // Test function for reading address
 export const getCurrency = async function({ commit }, payload) {
+  const rpc = this.$api.getRpc();
+  // console.log(await rpc.get_account(address));
+  // console.log(await rpc.get_currency_balance(address, "fuzzytestnet"));
+};
+
+// gets the precision of Token
+export const getTokenPrecision = async function(
+  { commit, getters },
+  token_info
+) {
   try {
     const rpc = this.$api.getRpc();
-    // console.log(await rpc.get_account(address));
-    // console.log(await rpc.get_currency_balance(address, "fuzzytestnet"));
 
     const tableResults = await this.$api.getTableRows({
-      code: payload.address, // Contract that we target
-      scope: payload.token_symbol, // Account that owns the data
+      code: token_info.address, // Contract that we target
+      scope: token_info.token_symbol, // Account that owns the data
       table: "stat", // Table name
       limit: 10, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
+
     console.log(tableResults.rows[tableResults.rows.length - 1]);
+    let supply = tableResults.rows[tableResults.rows.length - 1];
+    console.log(supply.max_supply);
+    let commaidx = supply.max_supply.indexOf(".") + 1;
+    let spaceidx = supply.max_supply.indexOf(" ");
+    const precision = await supply.max_supply.slice(commaidx, spaceidx).length;
+    // console.log(precision);
+    return 3;
+
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
-
-
-
 
 export const updatePoolStatus = async function({ commit, getters }, poolID) {
   const pool = getters.getPoolByID(poolID);
