@@ -20,7 +20,7 @@ module.exports = function(/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
-    boot: ["ual", "hyperion", "api"],
+    boot: ["ual", "hyperion", "api", "poolinfo"],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: ["app.scss"],
@@ -51,7 +51,7 @@ module.exports = function(/* ctx */) {
         NETWORK_EXPLORER: process.env.NETWORK_EXPLORER,
         HYPERION_ENDPOINT: process.env.HYPERION_ENDPOINT,
         CONTRACT_ADDRESS: process.env.CONTRACT_ADDRESS,
-        CONTRACT_TABLE: process.env.CONTRACT_TABLE,
+        CONTRACT_TABLE: process.env.CONTRACT_TABLE
       },
 
       // transpile: false,

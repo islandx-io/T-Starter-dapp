@@ -81,16 +81,7 @@ export default {
   components: { statusBadge, statusCountdown },
   data() {
     return {
-      pool: {
-        title: "Loading",
-        hard_cap: "Loading",
-        access_type: "Private",
-        avatar: "",
-        status: "loading",
-        pool_open: "Loading",
-        private_end: "Loading",
-        public_end: "Loading"
-      },
+      pool: this.$defaultPoolInfo,
       avatar_size: 60, // (px)
       polling: null
     };
