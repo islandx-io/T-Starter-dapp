@@ -461,7 +461,7 @@ export default {
   },
 
   methods: {
-    ...mapActions("pools", ["getCurrency", "getTokenPrecision"]),
+    ...mapActions("pools", ["getChainAccountInfo", "getTokenPrecision"]),
     // convertName: function() {
     //   return Slug(this.poolName);
     // },

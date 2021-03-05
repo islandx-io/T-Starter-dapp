@@ -18,6 +18,7 @@
           v-model="owner"
           label="owner"
           lazy-rules
+          :rules="[getChainAccountInfo]"
           debounce="500"
         >
         </q-input>
@@ -56,17 +57,18 @@ export default {
     return {
       id: -1,
       owner: "fuzzytestnet",
-      pool_type: 'fixed'
+      pool_type: "fixed"
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     admin_address() {
-      return process.env.ADMIN_ADDRESS
-    },
+      return process.env.ADMIN_ADDRESS;
+    }
   },
 
   methods: {
+    ...mapActions("pools", ["getChainAccountInfo"]),
     async createChainPool() {
       const actions = [
         {
@@ -82,8 +84,8 @@ export default {
       const transaction = await this.$store.$api.signTransaction(actions);
     },
     async onSubmit() {
-      // TODO check if have permission to create pool. e.g. admin
-      if (!this.isAuthenticated || !this.admin_address) {
+      // TODO check if have permission to create pool. e.g. pools.start
+      if (!this.isAuthenticated || this.accountName !== this.admin_address) {
         this.$q.notify({
           color: "red-5",
           textColor: "white",
@@ -101,13 +103,11 @@ export default {
       }
     },
 
-    onReset() {},
+    onReset() {}
   },
 
-  watch: {
-  }
+  watch: {}
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

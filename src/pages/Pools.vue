@@ -65,15 +65,17 @@ export default {
   },
   computed: {
     ...mapGetters("pools", ["getAllPoolIDs"]),
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
     poolIDs: function() {
       return this.getAllPoolIDs;
     }
   },
   methods: {
-    ...mapActions("pools", ["getAllChainPools"])
+    ...mapActions("pools", ["getAllChainPools", "getCreatedChainPools"])
   },
   async mounted() {
     await this.getAllChainPools();
+    await this.getCreatedChainPools(this.accountName);
   }
 };
 </script>

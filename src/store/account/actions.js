@@ -88,9 +88,9 @@ export const getUserProfile = async function({ commit }, accountName) {
       index_position: 1,
       key_type: "i64",
       lower_bound: accountName,
-      upper_bound: accountName
+      upper_bound: accountName,
     });
-
+    // console.log(profileResult);
     const profile = profileResult.rows[0];
     commit("setProfile", profile);
   } catch (error) {

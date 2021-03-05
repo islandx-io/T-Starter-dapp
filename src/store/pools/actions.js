@@ -56,9 +56,9 @@ export const getAllChainPools = async function({ commit }) {
 };
 
 // Test function for reading address
-export const getCurrency = async function({ commit }, payload) {
+export const getChainAccountInfo = async function({ commit }, address) {
   const rpc = this.$api.getRpc();
-  // console.log(await rpc.get_account(address));
+  console.log(await rpc.get_account(address));
   // console.log(await rpc.get_currency_balance(address, "fuzzytestnet"));
 };
 
@@ -111,7 +111,11 @@ export const updatePoolStatus = async function({ commit, getters }, poolID) {
   });
 };
 
-
-export const createPoolOnChain = async function({ commit, getters }, poolObject) {
-  
+// Get pool info from chain by id, put into store
+export const getCreatedChainPools = async function({ commit }, owner) {
+  try {
+    console.log(owner);
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
 };
