@@ -8,46 +8,52 @@
       <q-item>
         <q-item-section top>
           <q-avatar :size="avatar_size.toString() + 'px'">
-            <img v-if="avatar" :src="avatar" width="100px" alt="image" />
+            <img
+              v-if="pool.avatar"
+              :src="pool.avatar"
+              width="100px"
+              alt="image"
+            />
             <div v-else v-html="identicon" />
           </q-avatar>
         </q-item-section>
         <q-item-section top side>
           <div class="text-accent column items-center justify-between">
-            <status-badge :poolStatus="pool_status" />
+            <status-badge :poolStatus="pool.status" />
             <status-countdown
-              v-if="pool_status === 'upcoming'"
-              :deadline="pool_open"
+              v-if="pool.status === 'upcoming'"
+              :deadline="pool.pool_open"
               mini
             />
           </div>
         </q-item-section>
       </q-item>
       <q-card-section class="title-section">
-        <h3 class="title">{{ title }}</h3>
+        <h3 class="title">{{ pool.title }}</h3>
       </q-card-section>
       <q-card-section class="row content-end">
         <div class="col-12 row justify-between">
           <div>
             <div class="text-h6">Hard cap</div>
-            <p class="info-value">{{ parseFloat(hard_cap).toFixed(2) }}</p>
+            <p class="info-value">{{ parseFloat(pool.hard_cap).toFixed(2) }}</p>
           </div>
           <div>
             <div class="text-h6">Access</div>
-            <p class="info-value">{{ access_type }}</p>
+            <p class="info-value">{{ pool.access_type }}</p>
           </div>
         </div>
-        <div class="col-12" v-if="['open', 'closed'].includes(pool_status)">
+        <div class="col-12" v-if="['open', 'closed'].includes(pool.status)">
           <div class="text-h6 q-pb-xs">Sale progress</div>
           <div class="progress-bar">
             <div
               role="progressbar"
               :style="{ width: progressToPercentage }"
-              :aria-valuenow="progress"
+              :aria-valuenow="pool.progress"
               aria-valuemin="0"
               aria-valuemax="1"
             >
-              {{ progressToPercentage }}
+              {{ pool.progress }}
+              <!-- {{ progressToPercentage }} -->
             </div>
           </div>
         </div>
@@ -75,26 +81,24 @@ export default {
   components: { statusBadge, statusCountdown },
   data() {
     return {
+      pool: {
+        title: "Loading",
+        hard_cap: "Loading",
+        access_type: "Private",
+        avatar: "",
+        status: "loading",
+        pool_open: "Loading",
+        private_end: "Loading",
+        public_end: "Loading"
+      },
       avatar_size: 60, // (px)
-      title: "Loading",
-      slug: "loading",
-      hard_cap: 0,
-      minimum: "TBA",
-      maximum: "TBA",
-      type: "Fixed",
-      access_type: "Private",
-      progress: 0.4,
-      participants: 0,
-      avatar: "",
-      pool_status: "loading",
-      pool_open: new Date(),
       polling: null
     };
   },
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     progressToPercentage() {
-      return this.progress * 100 + "%";
+      return this.pool.progress * 100 + "%";
     },
     identicon() {
       return toSvg(this.poolID, this.avatar_size);
@@ -103,19 +107,12 @@ export default {
   methods: {
     ...mapActions("pools", ["updatePoolStatus"]),
     getPoolInfo: function() {
-      const poolJSON = this.getPoolByID(this.poolID);
-
-      this.title = poolJSON.title;
-      this.slug = poolJSON.slug;
-      this.hard_cap = poolJSON.hard_cap;
-      this.minimum = poolJSON.minimum_swap;
-      this.maximum = poolJSON.maximum_allocation;
-      this.type = poolJSON.type;
-      // this.access_type = poolJSON.access_type;
-      this.participants = poolJSON.participants;
-      this.avatar = poolJSON.avatar;
-      this.pool_status = poolJSON.status;
-      this.pool_open = poolJSON.pool_open;
+      this.pool = this.getPoolByID(this.poolID);
+      if (this.pool.private_end >= this.pool.public_end) {
+        this.pool.access_type = "Private";
+      } else {
+        this.pool.access_type = "Public";
+      }
     }
   },
   mounted() {

@@ -2,11 +2,11 @@
   <!-- And do not be conformed to this world, but be transformed by the renewing of your mind, 
 that you may prove what is that good and acceptable and perfect will of God. - Romans 12:2 -NKJV -->
   <q-page>
-    <section class="space-bg row content-center">
+    <section class="space-bg row content-start">
       <div class="header-container row reverse-wrap justify-between">
-        <div class="column justify-evenly">
+        <div class="column justify-start">
           <h2>
-            The place to discover and<br />
+            The place to discover and
             <span>back projects</span>
             building on Telos
           </h2>
@@ -14,7 +14,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             <q-btn outline color="secondary">VIEW ALL POOLS</q-btn>
           </router-link>
         </div>
-        <div class="rocket col row justify-center">
+        <div class="gt-sm rocket col row justify-center">
           <img
             class="col q-pt-md"
             src="~assets/index/tstarter-rocket.svg"
@@ -82,11 +82,16 @@ export default {
   background-image: url("~assets/index/clouds-head.png");
   height: 550px;
 }
+.header-container {
+  padding-top: 50px;
+}
 .header-container h2 {
   color: $secondary;
   line-height: 60px;
   font-family: poppins-regular;
   margin-top: 0px;
+  margin-bottom: 15px;
+  max-width: 600px;
 }
 .header-container h2 span {
   color: $accent;
@@ -96,5 +101,8 @@ export default {
 }
 .rocket img {
   max-width: 300px;
+}
+.body-container {
+  padding-top: 50px;
 }
 </style>
