@@ -13,7 +13,7 @@ const defaultPoolInfo = {
   description: "Loading",
   web_links: {},
   status: "loading",
-  pool_open: "Loading", // TODO Reconsider best init
+  pool_open: "Loading",
   private_end: "Loading",
   public_end: "Loading",
   white_listed_addresses: {},

@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO class joined, featured, created, all -->
   <router-link
     class="router-link pool-card row"
     :to="{ name: 'pooldetails', params: { id: poolID } }"
@@ -31,7 +30,7 @@
       <q-card-section class="title-section">
         <h3 class="title">{{ pool.title }}</h3>
       </q-card-section>
-      <q-card-section class="row content-end">
+      <q-card-section class="bottom-section row content-end">
         <div class="col-12 row justify-between">
           <div>
             <div class="text-h6">Hard cap</div>
@@ -43,7 +42,7 @@
           </div>
         </div>
         <div class="col-12" v-if="['open', 'closed'].includes(pool.status)">
-          <div class="text-h6 q-pb-xs">Sale progress</div>
+          <div class="text-h6 q-py-xs">Sale progress</div>
           <div class="progress-bar">
             <div
               role="progressbar"
@@ -96,22 +95,18 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["updatePoolStatus"]),
+    ...mapActions("pools", ["updatePoolSettings"]),
     getPoolInfo: function() {
+      console.log([this.poolID, this.pool.avatar]);
       this.pool = this.getPoolByID(this.poolID);
-      if (this.pool.private_end >= this.pool.public_end) {
-        this.pool.access_type = "Private";
-      } else {
-        this.pool.access_type = "Public";
-      }
     }
   },
   mounted() {
-    this.updatePoolStatus(this.poolID);
+    this.updatePoolSettings(this.poolID);
     this.getPoolInfo();
     // Start polling every 2min for any updates
     this.polling = setInterval(() => {
-      this.updatePoolStatus(this.poolID);
+      this.updatePoolSettings(this.poolID);
       this.getPoolInfo();
     }, 120000);
   },
@@ -134,6 +129,9 @@ export default {
 .pool-card:hover {
   transform: scale(1.05);
   z-index: 2;
+}
+.pool-card .bottom-section {
+  padding-bottom: 8px;
 }
 .progress-bar {
   color: $dark;
@@ -165,6 +163,6 @@ export default {
   line-height: 30px;
   font-size: 20px;
   color: $primary;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 </style>
