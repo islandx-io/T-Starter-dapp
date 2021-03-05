@@ -30,7 +30,7 @@
         <div class="col-12 row justify-between">
           <div>
             <div class="text-h6">Hard cap</div>
-            <p class="info-value">{{ parseFloat(maximum).toFixed(2) }}</p>
+            <p class="info-value">{{ parseFloat(hard_cap).toFixed(2) }}</p>
           </div>
           <div>
             <div class="text-h6">Access</div>
@@ -78,7 +78,7 @@ export default {
       avatar_size: 60, // (px)
       title: "Loading",
       slug: "loading",
-      price: 0,
+      hard_cap: 0,
       minimum: "TBA",
       maximum: "TBA",
       type: "Fixed",
@@ -107,7 +107,7 @@ export default {
 
       this.title = poolJSON.title;
       this.slug = poolJSON.slug;
-      this.price = poolJSON.price;
+      this.hard_cap = poolJSON.hard_cap;
       this.minimum = poolJSON.minimum_swap;
       this.maximum = poolJSON.maximum_allocation;
       this.type = poolJSON.type;
