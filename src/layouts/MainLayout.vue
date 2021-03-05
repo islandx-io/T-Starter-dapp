@@ -12,7 +12,9 @@
             ><q-btn outline color="primary">View Pools</q-btn></router-link
           >
           <router-link to="/createpool" class="router-link"
-            ><q-btn outline color="primary">Create Pool</q-btn></router-link
+            ><q-btn v-if="accountName === admin_address" outline color="primary"
+              >Create Pool</q-btn
+            ></router-link
           >
           <login-button></login-button>
         </div>
@@ -71,10 +73,18 @@
 
 <script>
 import LoginButton from "components/LoginButton.vue";
+import { mapGetters, mapActions } from "vuex";
+
 
 export default {
   name: "MainLayout",
-  components: { LoginButton }
+  components: { LoginButton },
+  computed: {
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    admin_address() {
+      return process.env.ADMIN_ADDRESS
+    },
+  }
 };
 </script>
 

@@ -81,7 +81,7 @@ export const getTokenPrecision = async function(
 
     console.log(tableResults.rows[tableResults.rows.length - 1]);
     let supply = tableResults.rows[tableResults.rows.length - 1];
-    console.log(supply.max_supply);
+    // console.log(supply.max_supply);
     let commaidx = supply.max_supply.indexOf(".") + 1;
     let spaceidx = supply.max_supply.indexOf(" ");
     const precision = supply.max_supply.slice(commaidx, spaceidx).length;

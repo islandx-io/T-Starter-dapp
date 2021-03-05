@@ -331,9 +331,9 @@
 import { date } from "quasar";
 import Slug from "slug";
 // import _ from "lodash";
-import LinkField from "src/components/poolcreation/link-field.vue";
+// import LinkField from "src/components/poolcreation/link-field.vue";
 import { mapGetters, mapActions } from "vuex";
-import { accountName } from "src/store/account/getters";
+// import { accountName } from "src/store/account/getters";
 Slug.defaults.mode = "rfc3986";
 
 export default {
@@ -440,7 +440,7 @@ export default {
         el => el.sym === this.base_token_symbol
       );
     },
-    getBaseToken() {
+    BaseTokenToChain() {
       let BaseObj = this.selected_base_token;
       let obj = {
         sym: BaseObj.decimals + "," + BaseObj.sym,
@@ -483,7 +483,7 @@ export default {
       // simulating a delay
       let payload = { address: val, token_symbol: this.token_symbol };
       this.token_decimals = await this.getTokenPrecision(payload);
-      console.log(this.token_decimals);
+      // console.log(this.token_decimals);
 
       // return new Promise((resolve, reject) => {
       //   setTimeout(() => {
@@ -504,7 +504,7 @@ export default {
       // });
     },
     checkLinks() {},
-    async createNewPool() {
+    async createChainPool() {
       const actions = [
         {
           account: process.env.CONTRACT_ADDRESS,
@@ -518,7 +518,7 @@ export default {
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
-    async updateNewPool() {
+    async updateChainPool() {
       const actions = [
         {
           account: process.env.CONTRACT_ADDRESS,
@@ -529,7 +529,7 @@ export default {
             avatar: this.avatar,
             tag_line: this.tag_line,
             description: this.description,
-            base_token: this.getBaseToken,
+            base_token: this.BaseTokenToChain,
             swap_ratio: this.swapRatio,
             soft_cap: this.toChainString(
               this.soft_cap,
@@ -576,8 +576,8 @@ export default {
         });
       } else {
         this.checkLinks();
-        // await this.createNewPool();
-        await this.updateNewPool();
+        // await this.createChainPool();
+        await this.updateChainPool();
         this.$q.notify({
           color: "green-4",
           textColor: "white",
