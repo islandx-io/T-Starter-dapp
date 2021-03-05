@@ -23,7 +23,7 @@
         <div class="q-pa-md">
           <div class="q-gutter-sm">
             Pool type:
-            <q-radio v-model="pool_type" val="Fixed" label="Fixed" />
+            <q-radio v-model="pool_type" val="fixed" label="Fixed" />
           </div>
         </div>
       </div>
@@ -34,6 +34,7 @@
           label="Token contract address"
           lazy-rules
           :rules="[checkTokenContract]"
+          debounce="1000"
         >
         </q-input>
       </div>
@@ -48,15 +49,15 @@
         </q-input>
         To
         <q-select
-          v-model="base_token_name"
-          :options="base_token_options"
+          v-model="base_token_symbol"
+          :options="base_token_options.map(a => a.sym)"
           label="Standard"
         />
       </div>
       <!-- Swap ratio -->
       <h3>Swap ratio</h3>
       <div class="row">
-        1 {{ base_token_name }} =
+        1 {{ base_token_symbol }} =
         <q-input
           color="primary"
           v-model="swap_ratio.quantity"
@@ -64,7 +65,7 @@
           lazy-rules
           :rules="[val => (val && val.length > 1) || 'Must specify the token']"
         >
-        {{toChainString(swap_ratio.quantity, token_decimals, token_symbol)}}
+          {{ toChainString(swap_ratio.quantity, token_decimals, token_symbol) }}
         </q-input>
       </div>
       <!-- Quantities -->
@@ -143,7 +144,7 @@
             </q-icon>
           </template>
         </q-input>
-        Sale start
+        Sale start {{pool_open}}
       </div>
       <!-- Date input -->
       <div class="row">
@@ -236,9 +237,7 @@
           label="Tag line"
           lazy-rules
           :rules="[
-            val =>
-              (val && val.length > 1 && val.length < 230) ||
-              'Must specify'
+            val => (val && val.length > 1 && val.length < 230) || 'Must specify'
           ]"
         />
       </div>
@@ -257,14 +256,47 @@
       <!-- web links -->
       <h3>Websites</h3>
       <div>
-        <link-field
+        <!-- <link-field
           v-for="(link, link_index) in web_links"
           :key="link_index"
           :link.sync="link"
           :index.sync="link_index"
           v-on:deleteThisLink="deleteThisLink"
         ></link-field>
-        <q-btn round color="primary" icon="add" @click="addLinkField" />
+        <q-btn round color="primary" icon="add" @click="addLinkField" /> -->
+
+        <div class="row">
+          <q-input
+            outlined
+            v-model="web_links[0].value"
+            :label="capitalize(web_links[0].key)"
+          />
+          <q-input
+            outlined
+            v-model="web_links[1].value"
+            :label="capitalize(web_links[1].key)"
+          />
+          <q-input
+            outlined
+            v-model="web_links[2].value"
+            :label="capitalize(web_links[2].key)"
+          />
+          <q-input
+            outlined
+            v-model="web_links[3].value"
+            :label="capitalize(web_links[3].key)"
+          />
+          <q-input
+            outlined
+            v-model="web_links[4].value"
+            :label="capitalize(web_links[4].key)"
+          />
+          <q-input
+            outlined
+            v-model="web_links[5].value"
+            :label="capitalize(web_links[5].key)"
+          />
+        </div>
       </div>
 
       <!-- Whitelist -->
@@ -301,17 +333,34 @@ import Slug from "slug";
 // import _ from "lodash";
 import LinkField from "src/components/poolcreation/link-field.vue";
 import { mapGetters, mapActions } from "vuex";
+import { accountName } from "src/store/account/getters";
 Slug.defaults.mode = "rfc3986";
 
 export default {
-  components: { LinkField },
+  // components: { LinkField },
   data() {
     return {
-      poolName: "",
-      slug: "",
+      // poolName: "",
+      // slug: "",
 
-      base_token_name: "PETH",
-      base_token_options: ["PETH", "PBTC", "USDT", "TLOS"],
+      base_token_symbol: "PBTC",
+      base_token_options: [
+        {
+          sym: "PBTC",
+          decimals: 8,
+          contract: "btc.ptokens"
+        },
+        {
+          sym: "PETH",
+          decimals: 9,
+          contract: "eth.ptokens"
+        },
+        {
+          sym: "TLOS",
+          decimals: 4,
+          contract: "eosio.token"
+        }
+      ],
       token_symbol: "STAR",
       token_decimals: 1,
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
@@ -324,19 +373,18 @@ export default {
 
       //Static
       // owner: "",
-      pool_type: "Fixed",
-      base_token: { sym: "8,PBTC", contract: "btc.ptokens" },
+      pool_type: "fixed",
       swap_ratio: {
-        quantity: "5000000.0000 START",
+        quantity: "5000000",
         contract: "token.start"
       },
-      soft_cap: "5.00000000 PBTC",
-      hard_cap: "50.00000000 PBTC",
-      minimum_swap: "0.00100000 PBTC",
-      maximum_allocation: "2.50000000 PBTC",
-      pool_open: "2021-03-01T17:00:00",
-      private_end: "2021-03-02T05:00:00",
-      public_end: "2021-03-02T17:00:00",
+      soft_cap: "5.0",
+      hard_cap: "50.0",
+      minimum_swap: "0.001",
+      maximum_allocation: "2.50000",
+      pool_open: Date.now(),
+      private_end: Date.now(),
+      public_end: Date.now(),
       title: "T-Starter",
       avatar:
         "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
@@ -345,6 +393,10 @@ export default {
       description:
         "T-Starter is the place to discover and back new projects coming to Telos. It offers users the oppotunity to become part of those projects very early in their life.",
       web_links: [
+        {
+          key: "website",
+          value: "https://tstarter.io"
+        },
         {
           key: "github",
           value: "https://github.com/orgs/T-Starter"
@@ -360,6 +412,10 @@ export default {
         {
           key: "twitter",
           value: "https://twitter.com/T_StarterToken"
+        },
+        {
+          key: "whitepaper",
+          value: "https://whitepaper.com"
         }
       ],
       // web_links: [
@@ -372,13 +428,36 @@ export default {
 
       //Dynamic
       remaining_offer: "3501234.5670 START",
-      total_raise: "14.98765433 PBTC",
-      participants: 72
+      total_raise: "0 PBTC",
+      participants: 0
     };
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"])
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
     // owner: accountName,
+    selected_base_token() {
+      return this.base_token_options.find(
+        el => el.sym === this.base_token_symbol
+      );
+    },
+    getBaseToken() {
+      let BaseObj = this.selected_base_token;
+      let obj = {
+        sym: BaseObj.decimals + "," + BaseObj.sym,
+        contract: BaseObj.contract
+      };
+      return obj;
+    },
+    swapRatio() {
+      return {
+        quantity: this.toChainString(
+          this.swap_ratio.quantity,
+          this.token_decimals,
+          this.token_symbol
+        ),
+        contract: this.swap_ratio.contract
+      };
+    }
   },
 
   methods: {
@@ -386,39 +465,107 @@ export default {
     // convertName: function() {
     //   return Slug(this.poolName);
     // },
+    capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    },
     toUnixTimestamp(timeStamp) {
       return new Date(timeStamp).valueOf();
     },
-    toChainString(number, decimals, symbol ) {
-      console.log(String(parseFloat(number).toFixed(decimals)) + String(' ' + symbol));
-      return String(parseFloat(number).toFixed(decimals)) + String(' ' + symbol);
+    toChainString(number, decimals, symbol) {
+      console.log(
+        String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
+      );
+      return (
+        String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
+      );
     },
-    checkTokenContract(val) {
+    async checkTokenContract(val) {
       // simulating a delay
+      let payload = { address: val, token_symbol: this.token_symbol };
+      this.token_decimals = await this.getTokenPrecision(payload);
+      console.log(this.token_decimals);
 
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          let payload = {address: val , token_symbol: this.token_symbol}
-          this.token_decimals = this.getTokenPrecision(payload);
-          console.log(this.token_decimals)
-          // call
-          //  resolve(true)
-          //     --> content is valid
-          //  resolve(false)
-          //     --> content is NOT valid, no error message
-          //  resolve(error_message)
-          //     --> content is NOT valid, we have error message
-          resolve(!!val || "* Required");
+      // return new Promise((resolve, reject) => {
+      //   setTimeout(() => {
+      //     // call
+      //     //  resolve(true)
+      //     //     --> content is valid
+      //     //  resolve(false)
+      //     //     --> content is NOT valid, no error message
+      //     //  resolve(error_message)
+      //     //     --> content is NOT valid, we have error message
+      //     resolve(!!val || "* Required");
 
-          // calling reject(...) will also mark the input
-          // as having an error, but there will not be any
-          // error message displayed below the input
-          // (only in browser console)
-        }, 1000);
-      });
+      //     // calling reject(...) will also mark the input
+      //     // as having an error, but there will not be any
+      //     // error message displayed below the input
+      //     // (only in browser console)
+      //   }, 1000);
+      // });
     },
-    onSubmit() {
-      // TODO Check links not empty
+    checkLinks() {},
+    async createNewPool() {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "newpool",
+          data: {
+            id: 9,
+            owner: this.accountName,
+            pool_type: this.pool_type
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+    async updateNewPool() {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "updatepool",
+          data: {
+            id: 9,
+            title: this.title,
+            avatar: this.avatar,
+            tag_line: this.tag_line,
+            description: this.description,
+            base_token: this.getBaseToken,
+            swap_ratio: this.swapRatio,
+            soft_cap: this.toChainString(
+              this.soft_cap,
+              this.selected_base_token.decimals,
+              this.selected_base_token.sym
+            ),
+            hard_cap: this.toChainString(
+              this.hard_cap,
+              this.selected_base_token.decimals,
+              this.selected_base_token.sym
+            ),
+            minimum_swap: this.toChainString(
+              this.minimum_swap,
+              this.selected_base_token.decimals,
+              this.selected_base_token.sym
+            ),
+            maximum_allocation: this.toChainString(
+              this.maximum_allocation,
+              this.selected_base_token.decimals,
+              this.selected_base_token.sym
+            ),
+            remaining_offer: "3501234.5670 START",
+            total_raise: "14.98765433 PBTC",
+            participants: 0,
+            pool_open: this.pool_open,
+            private_end: this.private_end,
+            public_end: this.public_end,
+            whitelist: this.whitelist,
+            web_links: this.web_links
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+    async onSubmit() {
+      // TODO Check and clean links not empty
       // TODO check if have permission to create pool. e.g. fuzzytestnet
       if (this.accept !== true || !this.isAuthenticated) {
         this.$q.notify({
@@ -428,6 +575,9 @@ export default {
           message: "You need to login and accept the license and terms first"
         });
       } else {
+        this.checkLinks();
+        // await this.createNewPool();
+        await this.updateNewPool();
         this.$q.notify({
           color: "green-4",
           textColor: "white",
