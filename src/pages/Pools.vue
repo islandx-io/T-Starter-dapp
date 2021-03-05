@@ -5,7 +5,7 @@
       <h2 class="text-white">Pools</h2>
     </section>
 
-    <section>
+    <section class="body-container">
       <q-tabs
         v-model="tab"
         dense
@@ -23,11 +23,16 @@
 
       <q-separator></q-separator>
 
-      <q-tab-panels v-model="tab" animated swipeable>
-        <q-tab-panel name="all-pools">
-          <div class="row  q-gutter-md">
-            <Poolcard v-for="id in poolIDs" :key="id" :poolID="id"></Poolcard>
-          </div>
+      <q-tab-panels
+        v-model="tab"
+        animated
+        swipeable
+        class="tab-panel-container"
+      >
+        <q-tab-panel name="all-pools" class="row  q-gutter-md">
+          <!-- <div class="col row  q-gutter-md"> -->
+          <Poolcard v-for="id in poolIDs" :key="id" :poolID="id"></Poolcard>
+          <!-- </div> -->
         </q-tab-panel>
 
         <q-tab-panel name="featured-pools">
@@ -65,12 +70,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["getAllChainPools"]),
-
+    ...mapActions("pools", ["getAllChainPools"])
   },
   async mounted() {
     await this.getAllChainPools();
-
   }
 };
 </script>
@@ -79,5 +82,8 @@ export default {
 .page-banner {
   background-image: url("~assets/index/clouds-head.png");
   height: 200px;
+}
+.tab-panel-container {
+  background-color: $secondary;
 }
 </style>
