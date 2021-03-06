@@ -39,7 +39,7 @@ const routes = [
   {
     path: "/updatepool/:id",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/UpdatePool.vue") }]
+    children: [{ path: "", name:"updatepool", component: () => import("pages/UpdatePool.vue") }]
   },
 
   // Always leave this as last one,

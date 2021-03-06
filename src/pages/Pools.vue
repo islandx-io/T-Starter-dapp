@@ -46,7 +46,9 @@
         </q-tab-panel>
 
         <q-tab-panel name="created-pools">
-          <div class="row  q-gutter-md"></div>
+          <div class="row  q-gutter-md">
+            <Poolcard v-for="id in createdPoolIDs" :key="id" :poolID="id" :created="true"></Poolcard>
+          </div>
         </q-tab-panel>
       </q-tab-panels>
     </section>
@@ -64,18 +66,20 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("pools", ["getAllPoolIDs"]),
+    ...mapGetters("pools", ["getAllPoolIDs", "getCreatedPoolIDs"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
-    poolIDs: function() {
+    poolIDs() {
       return this.getAllPoolIDs;
+    },
+    createdPoolIDs() {
+      return this.getCreatedPoolIDs(this.accountName);
     }
   },
   methods: {
-    ...mapActions("pools", ["getAllChainPools", "getCreatedChainPools"])
+    ...mapActions("pools", ["getAllChainPools"])
   },
   async mounted() {
     await this.getAllChainPools();
-    await this.getCreatedChainPools(this.accountName);
   }
 };
 </script>

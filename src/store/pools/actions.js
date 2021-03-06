@@ -111,7 +111,7 @@ export const updatePoolStatus = async function({ commit, getters }, poolID) {
   });
 };
 
-// Get pool info from chain by id, put into store
+// Get pools created from chain
 export const getCreatedChainPools = async function({ commit }, owner) {
   try {
     console.log(owner);
@@ -119,3 +119,5 @@ export const getCreatedChainPools = async function({ commit }, owner) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
+
+

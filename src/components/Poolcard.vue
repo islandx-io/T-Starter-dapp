@@ -51,6 +51,12 @@
             </div>
           </div>
         </div>
+        <!-- if owner of pool -->
+        <div v-if="created === true">
+          <router-link :to="{ name: 'updatepool', params: { id: poolID } }" class="router-link q-pr-md"
+            ><q-btn outline color="primary">Update pool</q-btn></router-link
+          >
+        </div>
       </q-card-section>
     </q-card>
   </router-link>
@@ -70,6 +76,10 @@ export default {
       type: Number,
       default: 0,
       required: true
+    },
+    created: {
+      default: false,
+      required: false
     }
   },
   components: { statusBadge, statusCountdown },
