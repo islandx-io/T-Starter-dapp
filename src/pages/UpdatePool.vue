@@ -23,14 +23,14 @@
         <div class="q-pa-md">
           <div class="q-gutter-sm">
             Pool type:
-            <q-radio v-model="pool_type" val="fixed" label="Fixed" />
+            <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
           </div>
         </div>
       </div>
       <div class="row">
         <q-input
           color="primary"
-          v-model="swap_ratio.contract"
+          v-model="pool.swap_ratio.contract"
           label="Token contract address"
           lazy-rules
           :rules="[checkTokenContract]"
@@ -60,12 +60,12 @@
         1 {{ base_token_symbol }} =
         <q-input
           color="primary"
-          v-model="swap_ratio.quantity"
+          v-model="pool.swap_ratio.quantity"
           label="Ratio"
           lazy-rules
           :rules="[val => (val && val.length > 1) || 'Must specify the token']"
         >
-          {{ toChainString(swap_ratio.quantity, token_decimals, token_symbol) }}
+          {{ toChainString(pool.swap_ratio.quantity, token_decimals, token_symbol) }}
         </q-input>
       </div>
       <!-- Quantities -->
@@ -74,7 +74,7 @@
         <div>
           <q-input
             color="primary"
-            v-model="soft_cap"
+            v-model="pool.soft_cap"
             label="Soft cap"
             lazy-rules
             :rules="[
@@ -84,7 +84,7 @@
           </q-input>
           <q-input
             color="primary"
-            v-model="hard_cap"
+            v-model="pool.hard_cap"
             label="Hard cap"
             lazy-rules
             :rules="[
@@ -96,7 +96,7 @@
         <div>
           <q-input
             color="primary"
-            v-model="minimum_swap"
+            v-model="pool.minimum_swap"
             label="minimum swap amount"
             lazy-rules
             :rules="[
@@ -106,7 +106,7 @@
           </q-input>
           <q-input
             color="primary"
-            v-model="maximum_allocation"
+            v-model="pool.maximum_allocation"
             label="maximum swap per wallet"
             lazy-rules
             :rules="[
@@ -120,11 +120,11 @@
       <h3>Dates</h3>
       <!-- Date input -->
       <div class="row">
-        <q-input filled v-model="pool_open">
+        <q-input filled v-model="pool.pool_open">
           <template v-slot:prepend>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-date v-model="pool_open" mask="YYYY-MM-DD HH:mm">
+                <q-date v-model="pool.pool_open" mask="YYYY-MM-DD HH:mm">
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="Close" color="primary" flat />
                   </div>
@@ -135,7 +135,7 @@
           <template v-slot:append>
             <q-icon name="access_time" class="cursor-pointer">
               <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-time v-model="pool_open" mask="YYYY-MM-DD HH:mm" format24h>
+                <q-time v-model="pool.pool_open" mask="YYYY-MM-DD HH:mm" format24h>
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="Close" color="primary" flat />
                   </div>
@@ -144,15 +144,15 @@
             </q-icon>
           </template>
         </q-input>
-        Sale start {{pool_open}}
+        Sale start {{ pool.pool_open }}
       </div>
       <!-- Date input -->
       <div class="row">
-        <q-input filled v-model="private_end">
+        <q-input filled v-model="pool.private_end">
           <template v-slot:prepend>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-date v-model="private_end" mask="YYYY-MM-DD HH:mm">
+                <q-date v-model="pool.private_end" mask="YYYY-MM-DD HH:mm">
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="Close" color="primary" flat />
                   </div>
@@ -163,7 +163,7 @@
           <template v-slot:append>
             <q-icon name="access_time" class="cursor-pointer">
               <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-time v-model="private_end" mask="YYYY-MM-DD HH:mm" format24h>
+                <q-time v-model="pool.private_end" mask="YYYY-MM-DD HH:mm" format24h>
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="Close" color="primary" flat />
                   </div>
@@ -176,11 +176,11 @@
       </div>
       <!-- Date input -->
       <div class="row">
-        <q-input filled v-model="public_end">
+        <q-input filled v-model="pool.public_end">
           <template v-slot:prepend>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-date v-model="public_end" mask="YYYY-MM-DD HH:mm">
+                <q-date v-model="pool.public_end" mask="YYYY-MM-DD HH:mm">
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="Close" color="primary" flat />
                   </div>
@@ -191,7 +191,7 @@
           <template v-slot:append>
             <q-icon name="access_time" class="cursor-pointer">
               <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-time v-model="public_end" mask="YYYY-MM-DD HH:mm" format24h>
+                <q-time v-model="pool.public_end" mask="YYYY-MM-DD HH:mm" format24h>
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="Close" color="primary" flat />
                   </div>
@@ -209,7 +209,7 @@
         <!-- Title -->
         <q-input
           color="primary"
-          v-model="title"
+          v-model="pool.title"
           label="Title"
           lazy-rules
           :rules="[val => (val && val.length > 1) || 'Must specify the amount']"
@@ -218,20 +218,20 @@
         <!-- Image link -->
         <q-input
           color="primary"
-          v-model="avatar"
+          v-model="pool.avatar"
           label="Avatar image link"
           lazy-rules
           :rules="[val => (val && val.length > 1) || 'Must specify the amount']"
         >
         </q-input>
         <q-avatar size="50px">
-          <img :src="avatar" width="20px" alt="image" />
+          <img :src="pool.avatar" width="20px" alt="image" />
         </q-avatar>
       </div>
       <div class="q-pa-md" style="max-width: 500px">
         <!-- tag-line -->
         <q-input
-          v-model="tag_line"
+          v-model="pool.tag_line"
           filled
           autogrow
           label="Tag line"
@@ -244,7 +244,7 @@
       <div class="q-pa-md" style="max-width: 500px">
         <!-- description -->
         <q-input
-          v-model="description"
+          v-model="pool.description"
           filled
           autogrow
           label="Description"
@@ -257,52 +257,52 @@
       <h3>Websites</h3>
       <div>
         <!-- <link-field
-          v-for="(link, link_index) in web_links"
+          v-for="(link, link_index) in pool.web_links"
           :key="link_index"
           :link.sync="link"
           :index.sync="link_index"
           v-on:deleteThisLink="deleteThisLink"
         ></link-field>
         <q-btn round color="primary" icon="add" @click="addLinkField" /> -->
-
-        <div class="row">
+        {{pool.web_links}}
+        <!-- <div class="row">
           <q-input
             outlined
-            v-model="web_links[0].value"
-            :label="capitalize(web_links[0].key)"
+            v-model="pool.web_links[0].value"
+            :label="capitalize(pool.web_links[0].key)"
           />
           <q-input
             outlined
-            v-model="web_links[1].value"
-            :label="capitalize(web_links[1].key)"
+            v-model="pool.web_links[1].value"
+            :label="capitalize(pool.web_links[1].key)"
           />
           <q-input
             outlined
-            v-model="web_links[2].value"
-            :label="capitalize(web_links[2].key)"
+            v-model="pool.web_links[2].value"
+            :label="capitalize(pool.web_links[2].key)"
           />
           <q-input
             outlined
-            v-model="web_links[3].value"
-            :label="capitalize(web_links[3].key)"
+            v-model="pool.web_links[3].value"
+            :label="capitalize(pool.web_links[3].key)"
           />
           <q-input
             outlined
-            v-model="web_links[4].value"
-            :label="capitalize(web_links[4].key)"
+            v-model="pool.web_links[4].value"
+            :label="capitalize(pool.web_links[4].key)"
           />
           <q-input
             outlined
-            v-model="web_links[5].value"
-            :label="capitalize(web_links[5].key)"
+            v-model="pool.web_links[5].value"
+            :label="capitalize(pool.web_links[5].key)"
           />
-        </div>
+        </div> -->
       </div>
 
       <!-- Whitelist -->
       <div class="q-pa-md" style="max-width: 500px">
         <q-input
-          v-model="whitelist"
+          v-model="pool.whitelist"
           filled
           autogrow
           label="Some whitelist thing"
@@ -329,19 +329,68 @@
 
 <script>
 import { date } from "quasar";
-import Slug from "slug";
-// import _ from "lodash";
 // import LinkField from "src/components/poolcreation/link-field.vue";
 import { mapGetters, mapActions } from "vuex";
-// import { accountName } from "src/store/account/getters";
-Slug.defaults.mode = "rfc3986";
 
 export default {
   // components: { LinkField },
   data() {
     return {
-      // poolName: "",
-      // slug: "",
+      poolID: Number(this.$route.params.id),
+      pool: {
+        owner: "",
+        pool_type: "fixed",
+        swap_ratio: {
+          quantity: "5000000",
+          contract: "token.start"
+        },
+        soft_cap: "5.0",
+        hard_cap: "50.0",
+        minimum_swap: "0.001",
+        maximum_allocation: "2.50000",
+        pool_open: Date.now(),
+        private_end: Date.now(),
+        public_end: Date.now(),
+        title: "T-Starter",
+        avatar:
+          "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
+        tag_line:
+          "T-Starter is a cross chain token swap platform created to help projects launch on the Telos blockchain",
+        description:
+          "T-Starter is the place to discover and back new projects coming to Telos. It offers users the oppotunity to become part of those projects very early in their life.",
+        web_links: [
+          {
+            key: "website",
+            value: "https://tstarter.io"
+          },
+          {
+            key: "github",
+            value: "https://github.com/orgs/T-Starter"
+          },
+          {
+            key: "medium",
+            value: "https://t-starter.medium.com"
+          },
+          {
+            key: "telegram",
+            value: "https://t.me/tstarterio"
+          },
+          {
+            key: "twitter",
+            value: "https://twitter.com/T_StarterToken"
+          },
+          {
+            key: "whitepaper",
+            value: "https://whitepaper.com"
+          }
+        ],
+        whitelist: ["rory", "janet"],
+
+        //Dynamic
+        remaining_offer: "3501234.5670 START",
+        total_raise: "0 PBTC",
+        participants: 0
+      },
 
       base_token_symbol: "PBTC",
       base_token_options: [
@@ -366,74 +415,12 @@ export default {
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
       link_index: -1,
-      contract_creation_date: date.formatDate(
-        Date.now(),
-        "YYYY-MM-DDTHH:mm:ss"
-      ), // TODO add to contract?
-
-      //Static
-      // owner: "",
-      pool_type: "fixed",
-      swap_ratio: {
-        quantity: "5000000",
-        contract: "token.start"
-      },
-      soft_cap: "5.0",
-      hard_cap: "50.0",
-      minimum_swap: "0.001",
-      maximum_allocation: "2.50000",
-      pool_open: Date.now(),
-      private_end: Date.now(),
-      public_end: Date.now(),
-      title: "T-Starter",
-      avatar:
-        "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
-      tag_line:
-        "T-Starter is a cross chain token swap platform created to help projects launch on the Telos blockchain",
-      description:
-        "T-Starter is the place to discover and back new projects coming to Telos. It offers users the oppotunity to become part of those projects very early in their life.",
-      web_links: [
-        {
-          key: "website",
-          value: "https://tstarter.io"
-        },
-        {
-          key: "github",
-          value: "https://github.com/orgs/T-Starter"
-        },
-        {
-          key: "medium",
-          value: "https://t-starter.medium.com"
-        },
-        {
-          key: "telegram",
-          value: "https://t.me/tstarterio"
-        },
-        {
-          key: "twitter",
-          value: "https://twitter.com/T_StarterToken"
-        },
-        {
-          key: "whitepaper",
-          value: "https://whitepaper.com"
-        }
-      ],
-      // web_links: [
-      //   {
-      //     key: "",
-      //     value: ""
-      //   }
-      // ],
-      whitelist: ["rory", "janet"],
-
-      //Dynamic
-      remaining_offer: "3501234.5670 START",
-      total_raise: "0 PBTC",
-      participants: 0
+      contract_creation_date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss") // TODO add to contract?
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("pools", ["getPoolByID"]),
     // owner: accountName,
     selected_base_token() {
       return this.base_token_options.find(
@@ -451,17 +438,22 @@ export default {
     swapRatio() {
       return {
         quantity: this.toChainString(
-          this.swap_ratio.quantity,
+          this.pool.swap_ratio.quantity,
           this.token_decimals,
           this.token_symbol
         ),
-        contract: this.swap_ratio.contract
+        contract: this.pool.swap_ratio.contract
       };
     }
   },
 
   methods: {
-    ...mapActions("pools", ["getChainAccountInfo", "getTokenPrecision"]),
+    ...mapActions("pools", [
+      "getChainAccountInfo",
+      "getTokenPrecision",
+      "getChainPoolByID",
+      "updatePoolStatus"
+    ]),
     // convertName: function() {
     //   return Slug(this.poolName);
     // },
@@ -472,12 +464,15 @@ export default {
       return new Date(timeStamp).valueOf();
     },
     toChainString(number, decimals, symbol) {
-      console.log(
-        String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
-      );
       return (
         String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
       );
+    },
+    getPoolInfo() {
+      this.pool = this.getPoolByID(this.poolID);
+    },
+    async loadChainData() {
+      await this.getChainPoolByID(this.poolID);
     },
     async checkTokenContract(val) {
       // simulating a delay
@@ -504,20 +499,6 @@ export default {
       // });
     },
     checkLinks() {},
-    async createChainPool() {
-      const actions = [
-        {
-          account: process.env.CONTRACT_ADDRESS,
-          name: "newpool",
-          data: {
-            id: 9,
-            owner: this.accountName,
-            pool_type: this.pool_type
-          }
-        }
-      ];
-      const transaction = await this.$store.$api.signTransaction(actions);
-    },
     async updateChainPool() {
       const actions = [
         {
@@ -525,40 +506,40 @@ export default {
           name: "updatepool",
           data: {
             id: 9,
-            title: this.title,
-            avatar: this.avatar,
-            tag_line: this.tag_line,
-            description: this.description,
+            title: this.pool.title,
+            avatar: this.pool.avatar,
+            tag_line: this.pool.tag_line,
+            description: this.pool.description,
             base_token: this.BaseTokenToChain,
             swap_ratio: this.swapRatio,
             soft_cap: this.toChainString(
-              this.soft_cap,
+              this.pool.soft_cap,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
             hard_cap: this.toChainString(
-              this.hard_cap,
+              this.pool.hard_cap,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
             minimum_swap: this.toChainString(
-              this.minimum_swap,
+              this.pool.minimum_swap,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
             maximum_allocation: this.toChainString(
-              this.maximum_allocation,
+              this.pool.maximum_allocation,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
             remaining_offer: "3501234.5670 START",
             total_raise: "14.98765433 PBTC",
             participants: 0,
-            pool_open: this.pool_open,
-            private_end: this.private_end,
-            public_end: this.public_end,
-            whitelist: this.whitelist,
-            web_links: this.web_links
+            pool_open: this.pool.pool_open,
+            private_end: this.pool.private_end,
+            public_end: this.pool.public_end,
+            whitelist: this.pool.whitelist,
+            web_links: this.pool.web_links
           }
         }
       ];
@@ -576,7 +557,6 @@ export default {
         });
       } else {
         this.checkLinks();
-        // await this.createChainPool();
         await this.updateChainPool();
         this.$q.notify({
           color: "green-4",
@@ -590,14 +570,18 @@ export default {
     onReset() {},
 
     addLinkField() {
-      console.log(this.web_links);
-      this.web_links.push({ key: "", value: "" });
+      console.log(this.pool.web_links);
+      this.pool.web_links.push({ key: "", value: "" });
     },
     deleteThisLink(index) {
       console.log("Delete key:" + index);
-      this.$delete(this.web_links, index);
-      console.log(this.web_links);
+      this.$delete(this.pool.web_links, index);
+      console.log(this.pool.web_links);
     }
+  },
+  async mounted() {
+    await this.loadChainData();
+    this.getPoolInfo();
   },
 
   watch: {

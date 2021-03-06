@@ -10,9 +10,9 @@ export const getChainPoolByID = async function({ commit }, id) {
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
-    console.log(tableResults);
-
+    
     const poolTable = tableResults.rows[tableResults.rows.length - 1];
+    console.log(poolTable);
 
     //check dates are unix
     poolTable.pool_open = new Date(poolTable.pool_open).valueOf();

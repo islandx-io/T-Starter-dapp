@@ -161,7 +161,6 @@ export default {
         private_end: "Loading",
         public_end: "Loading",
         white_listed_addresses: {},
-        contract_address: "",
         token_address: "",
         maximum_allocation: "0",
         minimum_swap: "0",
