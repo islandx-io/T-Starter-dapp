@@ -265,7 +265,7 @@
           v-on:deleteThisLink="deleteThisLink"
         ></link-field>
         <q-btn round color="primary" icon="add" @click="addLinkField" /> -->
-        {{ pool.web_links }}
+        {{ pool.web_links}}
 
         {{ webLinks }}
         <div class="row">
@@ -484,8 +484,17 @@ export default {
       this.pool.minimum_swap = this.fromChainString(this.pool.minimum_swap);
       this.pool.maximum_allocation = this.fromChainString(this.pool.maximum_allocation);
 
+      this.populateWebLinks();
+
     },
-    populateWebLinks() {},
+    populateWebLinks() {
+      this.webLinks.find(el => el.key === "website").value = this.pool.web_links.filter(el => el.key === "website").map(a => a.value)
+      this.webLinks.find(el => el.key === "github").value = this.pool.web_links.filter(el => el.key === "github").map(a => a.value)
+      this.webLinks.find(el => el.key === "medium").value = this.pool.web_links.filter(el => el.key === "medium").map(a => a.value)
+      this.webLinks.find(el => el.key === "telegram").value = this.pool.web_links.filter(el => el.key === "telegram").map(a => a.value)
+      this.webLinks.find(el => el.key === "twitter").value = this.pool.web_links.filter(el => el.key === "twitter").map(a => a.value)
+      this.webLinks.find(el => el.key === "whitepaper").value = this.pool.web_links.filter(el => el.key === "whitepaper").map(a => a.value)
+    },
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
     },
@@ -554,7 +563,7 @@ export default {
             private_end: this.pool.private_end,
             public_end: this.pool.public_end,
             whitelist: this.pool.whitelist,
-            web_links: this.pool.web_links
+            web_links: this.webLinks
           }
         }
       ];
