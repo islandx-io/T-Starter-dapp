@@ -26,7 +26,7 @@ export const getChainPoolByID = async function({ commit }, id) {
 };
 
 // get all pools from chain, populate store
-export const getAllChainPools = async function({ commit }) {
+export const getAllChainPools = async function({ commit, dispatch }) {
   try {
     const tableResults = await this.$api.getTableRows({
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
@@ -38,7 +38,7 @@ export const getAllChainPools = async function({ commit }) {
     });
 
     tableResults.rows.forEach((pool, index) => {
-      console.log(pool);
+      // console.log(pool);
       let id = pool.id;
 
       //check dates are unix
@@ -49,6 +49,7 @@ export const getAllChainPools = async function({ commit }) {
       const poolTable = pool;
 
       commit("updatePoolOnState", { poolTable, id });
+      dispatch("updatePoolSettings", id);
     });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -110,7 +111,7 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
   commit({
     type: "setPoolStatus",
     id: poolID,
-    status: poolStatus
+    pool_status: poolStatus
   });
 
   // Update access type

@@ -19,7 +19,7 @@
             </q-avatar>
             <div class="row q-gutter-md">
               <div class="text-h3">{{ pool.title }}</div>
-              <status-badge :poolStatus="pool.status"></status-badge>
+              <status-badge :poolStatus="pool.pool_status"></status-badge>
             </div>
           </q-item-section>
           <q-item-section>
@@ -30,14 +30,14 @@
           <q-item-section>
             <div
               class="row justify-between items-center"
-              v-if="pool.status === 'upcoming'"
+              v-if="pool.pool_status === 'upcoming'"
             >
               <div>Opens in:</div>
               <status-countdown :deadline="pool.pool_open"></status-countdown>
             </div>
             <div
               class="row justify-between items-center"
-              v-else-if="pool.status === 'open'"
+              v-else-if="pool.pool_status === 'open'"
             >
               <div>Closes in:</div>
               <status-countdown :deadline="pool.public_end"></status-countdown>
@@ -46,10 +46,10 @@
 
           <q-btn
             :to="{ name: 'joinpool', params: {} }"
-            :color="pool.status === 'upcoming' ? 'grey-4' : 'primary'"
+            :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
             label="Join pool"
-            :disable="pool.status === 'upcoming'"
-            v-if="pool.status !== 'closed'"
+            :disable="pool.pool_status === 'upcoming'"
+            v-if="pool.pool_status !== 'closed'"
           />
         </q-item>
         <q-item class="col-6 row justify-center">
@@ -66,11 +66,11 @@
               <div>Swap ratio:</div>
               <p>1 {{ getBaseSymbol }} = {{ pool.swap_ratio.quantity }}</p>
             </div>
-            <div class="row justify-between" v-if="pool.status === 'open'">
+            <div class="row justify-between" v-if="pool.pool_status === 'open'">
               <div>Participants:</div>
               <p>{{ pool.participants }}</p>
             </div>
-            <div class="row justify-between" v-if="pool.status === 'open'">
+            <div class="row justify-between" v-if="pool.pool_status === 'open'">
               <div>Sale progress:</div>
               <p>{{ pool.progress }}</p>
             </div>

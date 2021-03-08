@@ -18,9 +18,9 @@
         </q-item-section>
         <q-item-section top side>
           <div class="text-accent column items-center justify-between">
-            <status-badge :poolStatus="pool.status" />
+            <status-badge :poolStatus="pool.pool_status" />
             <status-countdown
-              v-if="pool.status === 'upcoming'"
+              v-if="pool.pool_status === 'upcoming'"
               :deadline="pool.pool_open"
               mini
             />
@@ -41,7 +41,10 @@
             <p class="info-value">{{ pool.access_type }}</p>
           </div>
         </div>
-        <div class="col-12" v-if="['open', 'closed'].includes(pool.status)">
+        <div
+          class="col-12"
+          v-if="['open', 'closed'].includes(pool.pool_status)"
+        >
           <div class="text-h6 q-py-xs">Sale progress</div>
           <div class="progress-bar">
             <div
@@ -106,17 +109,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["updatePoolSettings"]),
     getPoolInfo: function() {
       this.pool = this.getPoolByID(this.poolID);
     }
   },
   mounted() {
-    this.updatePoolSettings(this.poolID);
     this.getPoolInfo();
     // Start polling every 2min for any updates
     this.polling = setInterval(() => {
-      this.updatePoolSettings(this.poolID);
       this.getPoolInfo();
     }, 120000);
   },
