@@ -65,7 +65,13 @@
           lazy-rules
           :rules="[val => (val && val.length > 1) || 'Must specify the token']"
         >
-          {{ toChainString(pool.swap_ratio.quantity, token_decimals, token_symbol) }}
+          {{
+            toChainString(
+              pool.swap_ratio.quantity,
+              token_decimals,
+              token_symbol
+            )
+          }}
         </q-input>
       </div>
       <!-- Quantities -->
@@ -135,7 +141,11 @@
           <template v-slot:append>
             <q-icon name="access_time" class="cursor-pointer">
               <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-time v-model="pool.pool_open" mask="YYYY-MM-DD HH:mm" format24h>
+                <q-time
+                  v-model="pool.pool_open"
+                  mask="YYYY-MM-DD HH:mm"
+                  format24h
+                >
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="Close" color="primary" flat />
                   </div>
@@ -163,7 +173,11 @@
           <template v-slot:append>
             <q-icon name="access_time" class="cursor-pointer">
               <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-time v-model="pool.private_end" mask="YYYY-MM-DD HH:mm" format24h>
+                <q-time
+                  v-model="pool.private_end"
+                  mask="YYYY-MM-DD HH:mm"
+                  format24h
+                >
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="Close" color="primary" flat />
                   </div>
@@ -191,7 +205,11 @@
           <template v-slot:append>
             <q-icon name="access_time" class="cursor-pointer">
               <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-time v-model="pool.public_end" mask="YYYY-MM-DD HH:mm" format24h>
+                <q-time
+                  v-model="pool.public_end"
+                  mask="YYYY-MM-DD HH:mm"
+                  format24h
+                >
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="Close" color="primary" flat />
                   </div>
@@ -264,39 +282,41 @@
           v-on:deleteThisLink="deleteThisLink"
         ></link-field>
         <q-btn round color="primary" icon="add" @click="addLinkField" /> -->
-        {{pool.web_links}}
-        <!-- <div class="row">
+        {{ pool.web_links }}
+
+        {{ webLinks }}
+        <div class="row">
           <q-input
             outlined
-            v-model="pool.web_links[0].value"
-            :label="capitalize(pool.web_links[0].key)"
+            v-model="webLinks[0].value"
+            :label="capitalize(webLinks[0].key)"
           />
           <q-input
             outlined
-            v-model="pool.web_links[1].value"
-            :label="capitalize(pool.web_links[1].key)"
+            v-model="webLinks[1].value"
+            :label="capitalize(webLinks[1].key)"
           />
           <q-input
             outlined
-            v-model="pool.web_links[2].value"
-            :label="capitalize(pool.web_links[2].key)"
+            v-model="webLinks[2].value"
+            :label="capitalize(webLinks[2].key)"
           />
           <q-input
             outlined
-            v-model="pool.web_links[3].value"
-            :label="capitalize(pool.web_links[3].key)"
+            v-model="webLinks[3].value"
+            :label="capitalize(webLinks[3].key)"
           />
           <q-input
             outlined
-            v-model="pool.web_links[4].value"
-            :label="capitalize(pool.web_links[4].key)"
+            v-model="webLinks[4].value"
+            :label="capitalize(webLinks[4].key)"
           />
           <q-input
             outlined
-            v-model="pool.web_links[5].value"
-            :label="capitalize(pool.web_links[5].key)"
+            v-model="webLinks[5].value"
+            :label="capitalize(webLinks[5].key)"
           />
-        </div> -->
+        </div>
       </div>
 
       <!-- Whitelist -->
@@ -358,32 +378,7 @@ export default {
           "T-Starter is a cross chain token swap platform created to help projects launch on the Telos blockchain",
         description:
           "T-Starter is the place to discover and back new projects coming to Telos. It offers users the oppotunity to become part of those projects very early in their life.",
-        web_links: [
-          {
-            key: "website",
-            value: "https://tstarter.io"
-          },
-          {
-            key: "github",
-            value: "https://github.com/orgs/T-Starter"
-          },
-          {
-            key: "medium",
-            value: "https://t-starter.medium.com"
-          },
-          {
-            key: "telegram",
-            value: "https://t.me/tstarterio"
-          },
-          {
-            key: "twitter",
-            value: "https://twitter.com/T_StarterToken"
-          },
-          {
-            key: "whitepaper",
-            value: "https://whitepaper.com"
-          }
-        ],
+        web_links: [],
         whitelist: ["rory", "janet"],
 
         //Dynamic
@@ -391,6 +386,8 @@ export default {
         total_raise: "0 PBTC",
         participants: 0
       },
+
+
 
       base_token_symbol: "PBTC",
       base_token_options: [
@@ -410,7 +407,7 @@ export default {
           contract: "eosio.token"
         }
       ],
-      token_symbol: "STAR",
+      token_symbol: "",
       token_decimals: 1,
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
@@ -444,7 +441,35 @@ export default {
         ),
         contract: this.pool.swap_ratio.contract
       };
-    }
+    },
+    webLinks() {
+      return [
+        {
+          key: "website",
+          value: this.pool.web_links[0].value
+        },
+        {
+          key: "github",
+          value: ""
+        },
+        {
+          key: "medium",
+          value: ""
+        },
+        {
+          key: "telegram",
+          value: ""
+        },
+        {
+          key: "twitter",
+          value: ""
+        },
+        {
+          key: "whitepaper",
+          value: ""
+        }
+      ];
+    },
   },
 
   methods: {
@@ -471,6 +496,7 @@ export default {
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
+    populateWebLinks() {},
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
     },
@@ -505,7 +531,7 @@ export default {
           account: process.env.CONTRACT_ADDRESS,
           name: "updatepool",
           data: {
-            id: 9,
+            id: this.poolID,
             title: this.pool.title,
             avatar: this.pool.avatar,
             tag_line: this.pool.tag_line,

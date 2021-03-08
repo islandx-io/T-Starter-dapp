@@ -5,16 +5,6 @@
       <div>
         <q-input
           color="primary"
-          v-model="id"
-          label="ID"
-          lazy-rules
-          debounce="500"
-        >
-        </q-input>
-      </div>
-      <div>
-        <q-input
-          color="primary"
           v-model="owner"
           label="owner"
           lazy-rules
@@ -55,7 +45,7 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   data() {
     return {
-      id: -1,
+      // id: -1,
       owner: "fuzzytestnet",
       pool_type: "fixed"
     };
@@ -75,7 +65,7 @@ export default {
           account: process.env.CONTRACT_ADDRESS,
           name: "newpool",
           data: {
-            id: this.id,
+            // id: this.id,
             owner: this.accountName,
             pool_type: this.pool_type
           }
