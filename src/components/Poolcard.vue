@@ -54,8 +54,7 @@
               aria-valuemin="0"
               aria-valuemax="1"
             >
-              {{ pool.progress }}
-              <!-- {{ progressToPercentage }} -->
+              {{ progressToPercentage }}
             </div>
           </div>
         </div>
@@ -95,7 +94,14 @@ export default {
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     progressToPercentage() {
-      return this.pool.progress * 100 + "%";
+      var progress = Number(this.pool.progress);
+      if (isNaN(progress)) progress = 0;
+      if (progress <= 0) {
+        progress = "";
+      } else {
+        progress = progress * 100 + "%";
+      }
+      return progress;
     },
     identicon() {
       return toSvg(this.poolID, this.avatar_size);
@@ -110,7 +116,10 @@ export default {
   },
   methods: {
     getPoolInfo: function() {
-      this.pool = this.getPoolByID(this.poolID);
+      const pool = this.getPoolByID(this.poolID);
+      if (pool !== undefined) {
+        this.pool = pool;
+      }
     }
   },
   mounted() {

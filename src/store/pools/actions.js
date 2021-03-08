@@ -108,21 +108,25 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
   } else {
     poolStatus = "open";
   }
-  commit({
-    type: "setPoolStatus",
-    id: poolID,
-    pool_status: poolStatus
-  });
 
   // Update access type
   var access_type = "Public";
   if (pool.private_end >= pool.public_end) {
     access_type = "Private";
   }
+
+  // Update progress
+  const total_raise = this.$fromChainString(pool.total_raise);
+  const hard_cap = this.$fromChainString(pool.hard_cap);
+  var progress = 0;
+  if (hard_cap !== 0) progress = total_raise / hard_cap;
+
   commit({
-    type: "setPoolAccessType",
+    type: "setPoolSettings",
     id: poolID,
-    access_type: access_type
+    pool_status: poolStatus,
+    access_type: access_type,
+    progress: progress
   });
 };
 
