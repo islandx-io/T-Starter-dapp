@@ -32,7 +32,7 @@ export const getAllChainPools = async function({ commit }) {
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: process.env.CONTRACT_TABLE, // Table name
-      limit: 10, // Maximum number of rows that we want to get
+      limit: 100, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
@@ -74,7 +74,7 @@ export const getTokenPrecision = async function(
       code: token_info.address, // Contract that we target
       scope: token_info.token_symbol, // Account that owns the data
       table: "stat", // Table name
-      limit: 10, // Maximum number of rows that we want to get
+      limit: 1, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });

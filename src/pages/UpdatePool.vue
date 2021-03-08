@@ -16,7 +16,7 @@
           v-model="pool.swap_ratio.contract"
           label="Token contract address"
           lazy-rules
-          :rules="[val => (!!val) && checkTokenContract]"
+          :rules="[checkTokenContract]"
           debounce="1000"
         >
         </q-input>
@@ -472,8 +472,7 @@ export default {
 
     },
     getTokenSymbolFromPool() {
-      console.log(this.pool.swap_ratio.quantity)
-      let idx = this.pool.swap_ratio.quantity.indexOf(' ')
+      let idx = this.pool.swap_ratio.quantity.indexOf(' ')+1
       this.token_symbol = this.pool.swap_ratio.quantity.slice(idx)
     },
     BaseTokenFromChain() {
@@ -495,7 +494,7 @@ export default {
       // simulating a delay
       let payload = { address: val, token_symbol: this.token_symbol };
       this.token_decimals = await this.getTokenPrecision(payload);
-      // console.log(this.token_decimals);
+      console.log(this.token_decimals);
 
       // return new Promise((resolve, reject) => {
       //   setTimeout(() => {
