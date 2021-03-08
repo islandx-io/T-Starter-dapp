@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-form v-if="(this.accountName === this.pool.owner)" @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+    <q-form v-if="(this.accountName === this.pool.owner)" @submit="onSubmit" @reset="onReset" @publish="onPublish" class="q-gutter-md">
       <!-- tokens and adresses -->
       <div class="row">
         <div class="q-pa-md">
@@ -16,7 +16,7 @@
           v-model="pool.swap_ratio.contract"
           label="Token contract address"
           lazy-rules
-          :rules="[checkTokenContract]"
+          :rules="[val => (!!val) && checkTokenContract]"
           debounce="1000"
         >
         </q-input>
@@ -315,7 +315,8 @@
 
       <!-- Submit -->
       <div>
-        <q-btn label="Submit" type="submit" color="primary" />
+        <q-btn label="Update" type="submit" color="primary" />
+        <q-btn label="Publish" @click="onPublish" color="primary" />
         <q-btn
           label="Reset"
           type="reset"
@@ -454,6 +455,7 @@ export default {
     },
     getPoolInfo() {
       this.pool = JSON.parse(JSON.stringify(this.getPoolByID(this.poolID))); //make deep copy
+      this.getTokenSymbolFromPool();
       // pool to numbers
       this.pool.swap_ratio.quantity = this.fromChainString(this.pool.swap_ratio.quantity);
       this.pool.soft_cap = this.fromChainString(this.pool.soft_cap);
@@ -462,12 +464,17 @@ export default {
       this.pool.maximum_allocation = this.fromChainString(this.pool.maximum_allocation);
 
       this.populateWebLinks();
-      this.BaseTokenFromChain();
+      this.BaseTokenFromChain();      
 
       this.pool.pool_open = this.toDateString(this.pool.pool_open)
       this.pool.private_end = this.toDateString(this.pool.private_end)
       this.pool.public_end = this.toDateString(this.pool.public_end)
 
+    },
+    getTokenSymbolFromPool() {
+      console.log(this.pool.swap_ratio.quantity)
+      let idx = this.pool.swap_ratio.quantity.indexOf(' ')
+      this.token_symbol = this.pool.swap_ratio.quantity.slice(idx)
     },
     BaseTokenFromChain() {
       let idx = this.pool.base_token.sym.indexOf(',')+1
@@ -555,6 +562,18 @@ export default {
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
+    async publishPool() {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "publishpool",
+          data: {
+            pool_id: this.poolID
+          }
+        },
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
     async onSubmit() {
       // TODO Check and clean links not empty
       // TODO check if have permission to create pool. e.g. fuzzytestnet
@@ -576,7 +595,9 @@ export default {
         });
       }
     },
-
+    async onPublish() {
+      await this.publishPool();
+    },
     onReset() {},
 
     // addLinkField() {
