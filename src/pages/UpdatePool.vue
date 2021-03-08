@@ -137,7 +137,7 @@
             </q-icon>
           </template>
         </q-input>
-        Sale start {{ pool.pool_open }}
+        Sale start
       </div>
       <!-- Date input -->
       <div class="row">
@@ -265,9 +265,7 @@
           v-on:deleteThisLink="deleteThisLink"
         ></link-field>
         <q-btn round color="primary" icon="add" @click="addLinkField" /> -->
-        {{ pool.web_links}}
-
-        {{ webLinks }}
+        
         <div class="row">
           <q-input
             outlined
@@ -466,6 +464,9 @@ export default {
     toUnixTimestamp(timeStamp) {
       return new Date(timeStamp).valueOf();
     },
+    toDateString(timestamp){
+      return date.formatDate(timestamp, 'YYYY-MM-DD HH:mm')
+    },
     toChainString(number, decimals, symbol) {
       return (
         String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
@@ -486,6 +487,10 @@ export default {
 
       this.populateWebLinks();
       this.BaseTokenFromChain();
+
+      this.pool.pool_open = this.toDateString(this.pool.pool_open)
+      this.pool.private_end = this.toDateString(this.pool.private_end)
+      this.pool.public_end = this.toDateString(this.pool.public_end)
 
     },
     BaseTokenFromChain() {
