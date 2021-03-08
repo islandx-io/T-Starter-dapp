@@ -3,7 +3,7 @@
     class="router-link pool-card row"
     :to="{ name: 'pooldetails', params: { id: poolID } }"
   >
-    <q-card flat class="col bg-secondary text-black">
+    <q-card flat class="col bg-secondary text-black relative-position">
       <q-item>
         <q-item-section top>
           <q-avatar :size="avatar_size.toString() + 'px'">
@@ -34,7 +34,7 @@
         <div class="col-12 row justify-between">
           <div>
             <div class="text-h6">Hard cap</div>
-            <p class="info-value">{{ parseFloat(pool.hard_cap).toFixed(2) }}</p>
+            <p class="info-value">{{ hardCap }}</p>
           </div>
           <div>
             <div class="text-h6">Access</div>
@@ -57,6 +57,10 @@
           </div>
         </div>
       </q-card-section>
+
+      <q-inner-loading :showing="poolID === -1">
+        <q-spinner-puff size="50px" color="primary" />
+      </q-inner-loading>
     </q-card>
   </router-link>
 </template>
@@ -92,12 +96,18 @@ export default {
     },
     identicon() {
       return toSvg(this.poolID, this.avatar_size);
+    },
+    hardCap() {
+      if (this.pool.hard_cap === "Loading") {
+        return this.pool.hard_cap;
+      } else {
+        return parseFloat(this.pool.hard_cap).toFixed(2);
+      }
     }
   },
   methods: {
     ...mapActions("pools", ["updatePoolSettings"]),
     getPoolInfo: function() {
-      console.log([this.poolID, this.pool.avatar]);
       this.pool = this.getPoolByID(this.poolID);
     }
   },

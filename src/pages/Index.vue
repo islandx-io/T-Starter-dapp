@@ -33,12 +33,22 @@ that you may prove what is that good and acceptable and perfect will of God. - R
           :key="'upcoming-' + id"
           :poolID="id"
         ></Poolcard>
+        <Poolcard
+          class="col"
+          v-if="upcomingPools.length === 0"
+          :poolID="-1"
+        ></Poolcard>
         <h2 class="col-12 text-center q-pt-xl">Featured Pools</h2>
         <Poolcard
           class="col"
           v-for="id in featuredPools"
           :key="'featured-' + id"
           :poolID="id"
+        ></Poolcard>
+        <Poolcard
+          class="col"
+          v-if="featuredPools.length === 0"
+          :poolID="-1"
         ></Poolcard>
         <router-link to="/pools" class="router-link col-12 text-center">
           <q-btn outline color="accent">VIEW ALL POOLS</q-btn>

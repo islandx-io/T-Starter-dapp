@@ -5,7 +5,7 @@ const defaultPoolInfo = {
   hard_cap: "Loading",
   swap_ratio: { quantity: "Loading", contract: "token.start" },
   type: "Fixed",
-  access_type: "Private",
+  access_type: "Loading",
   progress: 0,
   participants: 0,
   avatar: "",
