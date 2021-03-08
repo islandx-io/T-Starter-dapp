@@ -1,22 +1,5 @@
 <template>
   <q-page>
-    <!-- <q-input outlined v-model="poolName" label="Pool Name" />
-
-    <div class="slug-widget">
-      <div class="icon-wrapper wrapper">
-        <i class="fa fa-link"></i>
-      </div>
-
-      <div class="url-wrapper wrapper">
-        <span class="root-url">http://tstarter.io</span>
-        <span class="subdirectory-url">/pools/</span>
-        <span class="slug" v-show="slug">{{ slug }}</span>
-      </div>
-
-      <div class="button-wrapper wrapper">
-        <button class="button is-small">Edit</button>
-      </div>
-    </div> -->
     <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
       <!-- tokens and adresses -->
       <div class="row">
@@ -44,7 +27,7 @@
           v-model="token_symbol"
           label="Token"
           lazy-rules
-          :rules="[val => (val && val.length > 1) || 'Must specify the token']"
+          :rules="[val => (!!val) || 'Must specify the token']"
         >
         </q-input>
         To
@@ -63,7 +46,7 @@
           v-model="pool.swap_ratio.quantity"
           label="Ratio"
           lazy-rules
-          :rules="[val => (val && val.length > 1) || 'Must specify the token']"
+          :rules="[val => (!!val) || 'Must specify the token']"
         >
           {{
             toChainString(
@@ -84,7 +67,7 @@
             label="Soft cap"
             lazy-rules
             :rules="[
-              val => (val && val.length > 1) || 'Must specify the amount'
+              val => (!!val) || 'Must specify the amount'
             ]"
           >
           </q-input>
@@ -94,7 +77,7 @@
             label="Hard cap"
             lazy-rules
             :rules="[
-              val => (val && val.length > 1) || 'Must specify the amount'
+              val => (!!val) || 'Must specify the amount'
             ]"
           >
           </q-input>
@@ -106,7 +89,7 @@
             label="minimum swap amount"
             lazy-rules
             :rules="[
-              val => (val && val.length > 1) || 'Must specify the amount'
+              val => (!!val) || 'Must specify the amount'
             ]"
           >
           </q-input>
@@ -116,7 +99,7 @@
             label="maximum swap per wallet"
             lazy-rules
             :rules="[
-              val => (val && val.length > 1) || 'Must specify the amount'
+              val => (!!val) || 'Must specify the amount'
             ]"
           >
           </q-input>
@@ -351,6 +334,7 @@
 import { date } from "quasar";
 // import LinkField from "src/components/poolcreation/link-field.vue";
 import { mapGetters, mapActions } from "vuex";
+import { extend } from 'quasar'
 
 export default {
   // components: { LinkField },
@@ -361,13 +345,13 @@ export default {
         owner: "",
         pool_type: "fixed",
         swap_ratio: {
-          quantity: "5000000",
+          quantity: 0,
           contract: "token.start"
         },
-        soft_cap: "5.0",
-        hard_cap: "50.0",
-        minimum_swap: "0.001",
-        maximum_allocation: "2.50000",
+        soft_cap: 0,
+        hard_cap: 0,
+        minimum_swap: 0,
+        maximum_allocation: 0,
         pool_open: Date.now(),
         private_end: Date.now(),
         public_end: Date.now(),
@@ -387,6 +371,32 @@ export default {
         participants: 0
       },
 
+      webLinks: [
+        {
+          key: "website",
+          value: ""
+        },
+        {
+          key: "github",
+          value: ""
+        },
+        {
+          key: "medium",
+          value: ""
+        },
+        {
+          key: "telegram",
+          value: ""
+        },
+        {
+          key: "twitter",
+          value: ""
+        },
+        {
+          key: "whitepaper",
+          value: ""
+        }
+      ],
 
 
       base_token_symbol: "PBTC",
@@ -412,7 +422,6 @@ export default {
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
       link_index: -1,
-      contract_creation_date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss") // TODO add to contract?
     };
   },
   computed: {
@@ -442,34 +451,6 @@ export default {
         contract: this.pool.swap_ratio.contract
       };
     },
-    webLinks() {
-      return [
-        {
-          key: "website",
-          value: this.pool.web_links[0].value
-        },
-        {
-          key: "github",
-          value: ""
-        },
-        {
-          key: "medium",
-          value: ""
-        },
-        {
-          key: "telegram",
-          value: ""
-        },
-        {
-          key: "twitter",
-          value: ""
-        },
-        {
-          key: "whitepaper",
-          value: ""
-        }
-      ];
-    },
   },
 
   methods: {
@@ -479,9 +460,6 @@ export default {
       "getChainPoolByID",
       "updatePoolStatus"
     ]),
-    // convertName: function() {
-    //   return Slug(this.poolName);
-    // },
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
@@ -493,8 +471,19 @@ export default {
         String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
       );
     },
+    fromChainString(str){
+      let idx = str.indexOf(' ')
+      return Number(str.slice(0,idx));
+    },
     getPoolInfo() {
-      this.pool = this.getPoolByID(this.poolID);
+      this.pool = JSON.parse(JSON.stringify(this.getPoolByID(this.poolID))); //make deep copy
+      // pool to numbers
+      this.pool.swap_ratio.quantity = this.fromChainString(this.pool.swap_ratio.quantity);
+      this.pool.soft_cap = this.fromChainString(this.pool.soft_cap);
+      this.pool.hard_cap = this.fromChainString(this.pool.hard_cap);
+      this.pool.minimum_swap = this.fromChainString(this.pool.minimum_swap);
+      this.pool.maximum_allocation = this.fromChainString(this.pool.maximum_allocation);
+
     },
     populateWebLinks() {},
     async loadChainData() {
@@ -610,25 +599,9 @@ export default {
     this.getPoolInfo();
   },
 
-  watch: {
-    // poolName: _.debounce(function() {
-    //   this.slug = this.convertName();
-    // }, 500) // debounce not to cause lag // TODO use quasar's debouce. create API to check if unqiue & custom slug?
-  }
+  watch: {}
 };
 </script>
 
 <style scoped>
-/* .slug-widget {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-.wrapper {
-  margin-left: 8px;
-}
-.slug {
-  background-color: rgb(209, 132, 16);
-  padding: 3px 5px;
-} */
 </style>
