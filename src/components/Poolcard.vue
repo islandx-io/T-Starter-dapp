@@ -1,53 +1,58 @@
 <template>
-  <!-- TODO class joined, featured, created, all -->
   <router-link
     class="router-link pool-card row"
     :to="{ name: 'pooldetails', params: { id: poolID } }"
   >
-    <q-card flat class="col bg-secondary text-black">
+    <q-card flat class="col bg-secondary text-black relative-position">
       <q-item>
         <q-item-section top>
           <q-avatar :size="avatar_size.toString() + 'px'">
-            <img v-if="avatar" :src="avatar" width="100px" alt="image" />
+            <img
+              v-if="pool.avatar"
+              :src="pool.avatar"
+              width="100px"
+              alt="image"
+            />
             <div v-else v-html="identicon" />
           </q-avatar>
         </q-item-section>
         <q-item-section top side>
           <div class="text-accent column items-center justify-between">
-            <status-badge :poolStatus="pool_status" />
+            <status-badge :poolStatus="pool.status" />
             <status-countdown
-              v-if="pool_status === 'upcoming'"
-              :deadline="pool_open"
+              v-if="pool.status === 'upcoming'"
+              :deadline="pool.pool_open"
               mini
             />
           </div>
         </q-item-section>
       </q-item>
       <q-card-section class="title-section">
-        <h3 class="title">{{ title }}</h3>
+        <h3 class="title">{{ pool.title }}</h3>
       </q-card-section>
-      <q-card-section class="row content-end">
+      <q-card-section class="bottom-section row content-end">
         <div class="col-12 row justify-between">
           <div>
             <div class="text-h6">Hard cap</div>
-            <p class="info-value">{{ parseFloat(hard_cap).toFixed(2) }}</p>
+            <p class="info-value">{{ hardCap }}</p>
           </div>
           <div>
             <div class="text-h6">Access</div>
-            <p class="info-value">{{ access_type }}</p>
+            <p class="info-value">{{ pool.access_type }}</p>
           </div>
         </div>
-        <div class="col-12" v-if="['open', 'closed'].includes(pool_status)">
-          <div class="text-h6 q-pb-xs">Sale progress</div>
+        <div class="col-12" v-if="['open', 'closed'].includes(pool.status)">
+          <div class="text-h6 q-py-xs">Sale progress</div>
           <div class="progress-bar">
             <div
               role="progressbar"
               :style="{ width: progressToPercentage }"
-              :aria-valuenow="progress"
+              :aria-valuenow="pool.progress"
               aria-valuemin="0"
               aria-valuemax="1"
             >
-              {{ progressToPercentage }}
+              {{ pool.progress }}
+              <!-- {{ progressToPercentage }} -->
             </div>
           </div>
         </div>
@@ -58,6 +63,10 @@
           >
         </div>
       </q-card-section>
+
+      <q-inner-loading :showing="poolID === -1">
+        <q-spinner-puff size="50px" color="primary" />
+      </q-inner-loading>
     </q-card>
   </router-link>
 </template>
@@ -85,55 +94,39 @@ export default {
   components: { statusBadge, statusCountdown },
   data() {
     return {
+      pool: this.$defaultPoolInfo,
       avatar_size: 60, // (px)
-      title: "Loading",
-      slug: "loading",
-      hard_cap: 0,
-      minimum: "TBA",
-      maximum: "TBA",
-      type: "Fixed",
-      access_type: "Private",
-      progress: 0.4,
-      participants: 0,
-      avatar: "",
-      pool_status: "loading",
-      pool_open: new Date(),
       polling: null
     };
   },
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     progressToPercentage() {
-      return this.progress * 100 + "%";
+      return this.pool.progress * 100 + "%";
     },
     identicon() {
       return toSvg(this.poolID, this.avatar_size);
+    },
+    hardCap() {
+      if (this.pool.hard_cap === "Loading") {
+        return this.pool.hard_cap;
+      } else {
+        return parseFloat(this.pool.hard_cap).toFixed(2);
+      }
     }
   },
   methods: {
-    ...mapActions("pools", ["updatePoolStatus"]),
+    ...mapActions("pools", ["updatePoolSettings"]),
     getPoolInfo: function() {
-      const poolJSON = this.getPoolByID(this.poolID);
-
-      this.title = poolJSON.title;
-      this.slug = poolJSON.slug;
-      this.hard_cap = poolJSON.hard_cap;
-      this.minimum = poolJSON.minimum_swap;
-      this.maximum = poolJSON.maximum_allocation;
-      this.type = poolJSON.type;
-      // this.access_type = poolJSON.access_type;
-      this.participants = poolJSON.participants;
-      this.avatar = poolJSON.avatar;
-      this.pool_status = poolJSON.status;
-      this.pool_open = poolJSON.pool_open;
+      this.pool = this.getPoolByID(this.poolID);
     }
   },
   mounted() {
-    this.updatePoolStatus(this.poolID);
+    this.updatePoolSettings(this.poolID);
     this.getPoolInfo();
     // Start polling every 2min for any updates
     this.polling = setInterval(() => {
-      this.updatePoolStatus(this.poolID);
+      this.updatePoolSettings(this.poolID);
       this.getPoolInfo();
     }, 120000);
   },
@@ -156,6 +149,9 @@ export default {
 .pool-card:hover {
   transform: scale(1.05);
   z-index: 2;
+}
+.pool-card .bottom-section {
+  padding-bottom: 8px;
 }
 .progress-bar {
   color: $dark;
@@ -187,6 +183,6 @@ export default {
   line-height: 30px;
   font-size: 20px;
   color: $primary;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 </style>

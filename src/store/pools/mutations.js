@@ -2,9 +2,13 @@ export const setPoolStatus = (state, { id, status }) => {
   state.pools.find(el => el.id === id).status = status;
 };
 
+export const setPoolAccessType = (state, { id, access_type }) => {
+  state.pools.find(el => el.id === id).access_type = access_type;
+};
+
 export const updatePoolOnState = (state, { poolTable, id }) => {
   if (!poolTable) {
-    console.log('[ERROR] No pool table')
+    console.log("[ERROR] No pool table");
     return;
   }
 
@@ -12,7 +16,7 @@ export const updatePoolOnState = (state, { poolTable, id }) => {
   if (state.pools.map(a => a.id).includes(id)) {
     state.pools[state.pools.findIndex(el => el.id === id)] = poolTable; //TODO only update with new values, rather than rewrite state
     // console.log(poolTable);
-  } else {    
+  } else {
     state.pools.push(poolTable);
     // console.log(poolTable);
   }

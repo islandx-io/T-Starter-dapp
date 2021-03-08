@@ -10,7 +10,7 @@ export const getChainPoolByID = async function({ commit }, id) {
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
-    
+
     const poolTable = tableResults.rows[tableResults.rows.length - 1];
     console.log(poolTable);
 
@@ -92,9 +92,12 @@ export const getTokenPrecision = async function(
   }
 };
 
-export const updatePoolStatus = async function({ commit, getters }, poolID) {
+export const updatePoolSettings = async function({ commit, getters }, poolID) {
   const pool = getters.getPoolByID(poolID);
-  // console.log({ pool: pool });
+
+  // TODO Call within the getAllChainPools action
+
+  // Update status
   var poolStatus = "loading";
   const currentDate = Date.now();
   if (currentDate < pool.pool_open) {
@@ -109,6 +112,17 @@ export const updatePoolStatus = async function({ commit, getters }, poolID) {
     id: poolID,
     status: poolStatus
   });
+
+  // Update access type
+  var access_type = "Public";
+  if (pool.private_end >= pool.public_end) {
+    access_type = "Private";
+  }
+  commit({
+    type: "setPoolAccessType",
+    id: poolID,
+    access_type: access_type
+  });
 };
 
 // Get pools created from chain
@@ -120,4 +134,7 @@ export const getCreatedChainPools = async function({ commit }, owner) {
   }
 };
 
-
+export const createPoolOnChain = async function(
+  { commit, getters },
+  poolObject
+) {};

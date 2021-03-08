@@ -142,30 +142,7 @@ export default {
 
       //pool info
       poolID: Number(this.$route.params.id),
-      pool: {
-        title: "Loading",
-        slug: "loading",
-        soft_cap: "Loading",
-        hard_cap: "Loading",
-        swap_ratio: { quantity: "Loading", contract: "token.start" },
-        type: "Fixed",
-        access_type: "Private",
-        progress: 0,
-        participants: 0,
-        avatar: "",
-        tag_line: "Loading",
-        description: "Loading",
-        web_links: {},
-        status: "loading",
-        pool_open: "Loading", // TODO Reconsider best init
-        private_end: "Loading",
-        public_end: "Loading",
-        white_listed_addresses: {},
-        token_address: "",
-        maximum_allocation: "0",
-        minimum_swap: "0",
-        base_token: { sym: "8,Loading", contract: "btc.ptokens" }
-      },
+      pool: this.$defaultPoolInfo,
       polling: null
     };
   },
@@ -192,7 +169,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["getChainPoolByID","updatePoolStatus"]),
+    ...mapActions("pools", ["getChainPoolByID", "updatePoolSettings"]),
     toDate(timeStamp) {
       return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
     },
@@ -206,11 +183,11 @@ export default {
   async mounted() {
     // get data from chain, write to store, get from store
     await this.loadChainData();
-    this.updatePoolStatus(this.poolID);
+    this.updatePoolSettings(this.poolID);
     this.getPoolInfo();
     // Start polling
     this.polling = setInterval(() => {
-      this.updatePoolStatus(this.poolID);
+      this.updatePoolSettings(this.poolID);
       this.getPoolInfo();
     }, 60000);
   },
