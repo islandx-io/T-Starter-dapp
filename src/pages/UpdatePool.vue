@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+    <q-form v-if="(this.accountName === this.pool.owner)" @submit="onSubmit" @reset="onReset" class="q-gutter-md">
       <!-- tokens and adresses -->
       <div class="row">
         <div class="q-pa-md">
@@ -265,7 +265,7 @@
           v-on:deleteThisLink="deleteThisLink"
         ></link-field>
         <q-btn round color="primary" icon="add" @click="addLinkField" /> -->
-        
+
         <div class="row">
           <q-input
             outlined
@@ -325,6 +325,8 @@
         />
       </div>
     </q-form>
+
+    <div v-else> You are not the owner of this pool</div>
   </q-page>
 </template>
 
@@ -332,42 +334,13 @@
 import { date } from "quasar";
 // import LinkField from "src/components/poolcreation/link-field.vue";
 import { mapGetters, mapActions } from "vuex";
-import { extend } from 'quasar'
 
 export default {
   // components: { LinkField },
   data() {
     return {
       poolID: Number(this.$route.params.id),
-      pool: {
-        owner: "",
-        pool_type: "fixed",
-        swap_ratio: {
-          quantity: 0,
-          contract: "token.start"
-        },
-        soft_cap: 0,
-        hard_cap: 0,
-        minimum_swap: 0,
-        maximum_allocation: 0,
-        pool_open: Date.now(),
-        private_end: Date.now(),
-        public_end: Date.now(),
-        title: "T-Starter",
-        avatar:
-          "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
-        tag_line:
-          "T-Starter is a cross chain token swap platform created to help projects launch on the Telos blockchain",
-        description:
-          "T-Starter is the place to discover and back new projects coming to Telos. It offers users the oppotunity to become part of those projects very early in their life.",
-        web_links: [],
-        whitelist: ["rory", "janet"],
-
-        //Dynamic
-        remaining_offer: "3501234.5670 START",
-        total_raise: "0 PBTC",
-        participants: 0
-      },
+      pool: this.$defaultPoolInfo,
 
       webLinks: [
         {
@@ -426,6 +399,9 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID"]),
     // owner: accountName,
+    admin_address() {
+      return process.env.ADMIN_ADDRESS;
+    },
     selected_base_token() {
       return this.base_token_options.find(
         el => el.sym === this.base_token_symbol
@@ -603,15 +579,15 @@ export default {
 
     onReset() {},
 
-    addLinkField() {
-      console.log(this.pool.web_links);
-      this.pool.web_links.push({ key: "", value: "" });
-    },
-    deleteThisLink(index) {
-      console.log("Delete key:" + index);
-      this.$delete(this.pool.web_links, index);
-      console.log(this.pool.web_links);
-    }
+    // addLinkField() {
+    //   console.log(this.pool.web_links);
+    //   this.pool.web_links.push({ key: "", value: "" });
+    // },
+    // deleteThisLink(index) {
+    //   console.log("Delete key:" + index);
+    //   this.$delete(this.pool.web_links, index);
+    //   console.log(this.pool.web_links);
+    // }
   },
   async mounted() {
     await this.loadChainData();
