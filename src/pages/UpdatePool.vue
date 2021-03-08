@@ -485,7 +485,12 @@ export default {
       this.pool.maximum_allocation = this.fromChainString(this.pool.maximum_allocation);
 
       this.populateWebLinks();
+      this.BaseTokenFromChain();
 
+    },
+    BaseTokenFromChain() {
+      let idx = this.pool.base_token.sym.indexOf(',')+1
+      this.base_token_symbol = this.pool.base_token.sym.slice(idx)
     },
     populateWebLinks() {
       this.webLinks.find(el => el.key === "website").value = this.pool.web_links.filter(el => el.key === "website").map(a => a.value)
@@ -556,7 +561,7 @@ export default {
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            remaining_offer: "3501234.5670 START",
+            remaining_offer: "3501234.5670 START", //TODO set these amounts
             total_raise: "14.98765433 PBTC",
             participants: 0,
             pool_open: this.pool.pool_open,
