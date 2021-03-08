@@ -4,7 +4,7 @@
   <q-page>
     <section class="header-bg" />
     <div class="body-container">
-      <q-card class="card row justify-between content-start">
+      <q-card class="card row justify-between content-start q-mb-lg">
         <div class="join-pane col column">
           <q-item>
             <q-item-section top class="col-shrink">
@@ -88,7 +88,61 @@
           </div>
         </q-item>
       </q-card>
-      <section class="q-gutter-md">
+      <q-card class="body-container card">
+        <q-tabs
+          v-model="tab"
+          dense
+          class="text-grey"
+          active-color="primary"
+          indicator-color="primary"
+          align="left"
+          narrow-indicator
+        >
+          <q-tab name="details" label="DETAILS"></q-tab>
+          <q-tab name="overview" label="OVERVIEW"></q-tab>
+          <q-tab name="allocations" label="YOUR ALLOCATIONS"></q-tab>
+        </q-tabs>
+
+        <q-separator></q-separator>
+
+        <q-tab-panels
+          v-model="tab"
+          animated
+          swipeable
+          class="tab-panel-container"
+        >
+          <q-tab-panel name="details" class="details-tab" @mousedown.stop>
+            <div>
+              <p>Type:</p>
+              <p>{{ pool.access_type }}</p>
+            </div>
+            <div>
+              <p>Sale open:</p>
+              <p>{{ toDate(pool.pool_open) }}</p>
+            </div>
+            <div v-if="pool.access_type === 'Private'">
+              <p>Private sale end:</p>
+              <p>{{ toDate(pool.private_end) }}</p>
+            </div>
+            <div>
+              <p>Public sale end:</p>
+              <p>{{ toDate(pool.public_end) }}</p>
+            </div>
+            <div>
+              <p>Minimum allocation:</p>
+              <p>{{ pool.minimum_swap }}</p>
+            </div>
+            <div>
+              <p>Maximum allocation:</p>
+              <p>{{ pool.maximum_allocation }}</p>
+            </div>
+          </q-tab-panel>
+
+          <q-tab-panel name="overview"> </q-tab-panel>
+
+          <q-tab-panel name="allocations"> </q-tab-panel>
+        </q-tab-panels>
+        <!-- <section class="q-py-md q-gutter-md">
         <q-btn
           v-bind:class="['tab-button', { active: currentTab === 'Details' }]"
           v-on:click="currentTab = 'Details'"
@@ -107,9 +161,9 @@
           ]"
           v-on:click="currentTab = 'Allocations'"
           >Your Allocations</q-btn
-        >
-      </section>
-      <q-card class="card">
+        > -->
+      </q-card>
+      <!-- <q-card class="card">
         <keep-alive>
           <component
             v-bind:is="currentTabComponent"
@@ -117,7 +171,7 @@
             :poolObject.sync="pool"
           ></component>
         </keep-alive>
-      </q-card>
+      </q-card> -->
     </div>
 
     <!-- <div>Params: {{ this.$route.params }} Query: {{ this.$route.query }}</div>
@@ -139,16 +193,17 @@ import { date } from "quasar";
 
 export default {
   components: {
-    tabOverview,
-    tabAllocations,
-    tabDetails,
+    // tabOverview,
+    // tabAllocations,
+    // tabDetails,
     statusCountdown,
     statusBadge
   },
   data() {
     return {
       //page info
-      currentTab: "Details",
+      tab: "details",
+      // currentTab: "Details",
 
       //pool info
       poolID: Number(this.$route.params.id),
@@ -159,9 +214,9 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID"]),
-    currentTabComponent: function() {
-      return "tab-" + this.currentTab.toLowerCase();
-    },
+    // currentTabComponent: function() {
+    //   return "tab-" + this.currentTab.toLowerCase();
+    // },
     progressToPercentage() {
       return (this.progress * 100).toFixed(2) + "%";
     },
@@ -230,5 +285,28 @@ export default {
 }
 .active {
   color: $primary;
+}
+.details-tab div {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.details-tab div p {
+  min-width: 200px;
+}
+.details-tab div p + p {
+  color: $primary;
+  font-size: 20px;
+  flex-grow: 4;
+  // min-width: 500px;
+  display: flex;
+  @media screen and (max-width: 550px) {
+    justify-content: flex-start;
+  }
+  @media screen and (min-width: 580px) {
+    justify-content: flex-end;
+  }
 }
 </style>

@@ -82,7 +82,4 @@ export default {
 .header-bg {
   height: 200px;
 }
-.tab-panel-container {
-  background-color: $secondary;
-}
 </style>

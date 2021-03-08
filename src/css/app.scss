@@ -28,6 +28,7 @@ body {
   border-radius: $card-corner-radius;
   border-color: $secondary;
   box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
+  background-color: $secondary;
 }
 
 .toolbar,
@@ -42,4 +43,8 @@ body {
 .header-bg {
   background-image: url("~assets/index/clouds-head.png");
   height: 550px;
+}
+
+.tab-panel-container {
+  background-color: $secondary;
 }
