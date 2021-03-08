@@ -99,7 +99,7 @@ export default {
       if (progress <= 0) {
         progress = "";
       } else {
-        progress = progress * 100 + "%";
+        progress = progress.toFixed(2) * 100 + "%";
       }
       return progress;
     },

@@ -75,7 +75,7 @@ export default {
       return this.getPoolIDsByStatus("closed");
     },
     featuredPools: function() {
-      return this.getAllPoolIDs;
+      return this.getAllPoolIDs; // TODO Change to featured pools
     }
   },
   methods: {
