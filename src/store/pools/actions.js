@@ -110,9 +110,13 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
   }
 
   // Update access type
-  var access_type = "Public";
-  if (currentDate < pool.private_end) {
+  var access_type = "Private";
+  if (pool.private_end >= pool.public_end) {
     access_type = "Private";
+  } else if (pool.private_end <= pool.pool_open) {
+    access_type = "Public";
+  } else if (currentDate > pool.private_end) {
+    access_type = "Public";
   }
 
   // Update progress
@@ -131,7 +135,10 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
 };
 
 // Get pools created from chain
-export const getCreatedChainPools = async function({ commit, dispatch }, owner) {
+export const getCreatedChainPools = async function(
+  { commit, dispatch },
+  owner
+) {
   try {
     const tableResults = await this.$api.getTableRows({
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
