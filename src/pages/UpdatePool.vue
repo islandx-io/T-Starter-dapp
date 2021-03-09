@@ -213,7 +213,7 @@
           v-model="pool.title"
           label="Title"
           lazy-rules
-          :rules="[val => (val && val.length > 1) || 'Must specify the amount']"
+          :rules="[val => (val && val.length > 1) || 'Must specify the title']"
         >
         </q-input>
         <!-- Image link -->
@@ -222,7 +222,7 @@
           v-model="pool.avatar"
           label="Avatar image link"
           lazy-rules
-          :rules="[val => (val && val.length > 1) || 'Must specify the amount']"
+          :rules="[val => (val && val.length > 1) || 'Must specify the image link']"
         >
         </q-input>
         <q-avatar size="50px">

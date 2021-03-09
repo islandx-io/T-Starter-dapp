@@ -131,7 +131,7 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
 };
 
 // Get pools created from chain
-export const getCreatedChainPools = async function({ commit }, owner) {
+export const getCreatedChainPools = async function({ commit, dispatch }, owner) {
   try {
     const tableResults = await this.$api.getTableRows({
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
@@ -158,6 +158,7 @@ export const getCreatedChainPools = async function({ commit }, owner) {
       const poolTable = pool;
 
       commit("updatePoolOnState", { poolTable, id });
+      dispatch("updatePoolSettings", id);
     });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
