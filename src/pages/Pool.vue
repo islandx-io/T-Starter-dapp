@@ -175,7 +175,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["getChainPoolByID", "updatePoolSettings"]),
+    ...mapActions("pools", ["getChainPoolByID"]),
     toDate(timeStamp) {
       return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
     },
@@ -189,11 +189,9 @@ export default {
   async mounted() {
     // get data from chain, write to store, get from store
     await this.loadChainData();
-    this.updatePoolSettings(this.poolID);
     this.getPoolInfo();
     // Start polling
     this.polling = setInterval(() => {
-      this.updatePoolSettings(this.poolID);
       this.getPoolInfo();
     }, 60000);
   },

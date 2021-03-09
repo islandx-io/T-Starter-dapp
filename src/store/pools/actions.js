@@ -1,5 +1,5 @@
 // Get pool info from chain by id, put into store
-export const getChainPoolByID = async function({ commit }, id) {
+export const getChainPoolByID = async function({ commit, dispatch }, id) {
   try {
     const tableResults = await this.$api.getTableRows({
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
@@ -20,6 +20,7 @@ export const getChainPoolByID = async function({ commit }, id) {
     poolTable.public_end = new Date(poolTable.public_end).valueOf();
 
     commit("updatePoolOnState", { poolTable, id });
+    dispatch("updatePoolSettings", id);
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
