@@ -2,14 +2,47 @@
   <q-page>
     <!-- content -->
     <q-form>
-      <q-input
-        color="primary"
+      <div>{{ pool.title }}</div>
+      <div>
+        Minimum:
+        {{ $fromChainString(pool.minimum_swap) + " " + BaseTokenSymbol }}
+      </div>
+      <div>
+        Maximum:
+        {{ $fromChainString(pool.maximum_allocation) + " " + BaseTokenSymbol }}
+      </div>
+      <div>Balance: TODO</div>
+
+      <!-- Input with max button -->
+      <div class="row">
+        <q-input color="primary"
         v-model="amount"
+        filled
         label="Amount"
         lazy-rules
-        :rules="[val => !!val || 'Must specify the amount']"
-      ></q-input>
+        :rules="[
+          val =>
+            (!!val && val > pool.minimum_swap) || 'Must be larger than minimum'
+        ]">
+          <template v-slot:append>
+            <div class="row items-center justify-end">
+              <q-btn label="Max" @click="setMax" color="primary" />
+            </div>
+          </template>
+        </q-input>
+      </div>
+      <div>
+        1 {{ BaseTokenSymbol }} =
+        {{ $fromChainString(pool.swap_ratio.quantity) }} {{ TokenSymbol }}
+      </div>
+      <div>To {{ amount * $fromChainString(pool.swap_ratio.quantity) }}</div>
+      <div>
+        Remaining {{ $fromChainString(pool.remaining_offer).toFixed(0) }}
+        {{ TokenSymbol }}
+      </div>
       <q-btn label="Join Pool" @click="onSubmit" color="primary" />
+
+      
     </q-form>
   </q-page>
 </template>
@@ -23,37 +56,54 @@ export default {
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
       amount: 0,
+      base_token_symbol: ""
     };
   },
 
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    BaseTokenSymbol() {
+      let idx = this.pool.base_token.sym.indexOf(",") + 1;
+      return this.pool.base_token.sym.slice(idx);
+    },
+    TokenSymbol() {
+      let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
+      return this.pool.swap_ratio.quantity.slice(idx);
+    },
+    
   },
 
   methods: {
-    ...mapActions("pools", ["getChainPoolByID"]),
+    ...mapActions("pools", ["getChainPoolByID", "getChainAccountInfo"]),
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
+    setMax() {
+      this.amount = 10;
+    },
+    checkAllowed() {
+      // TODO check if pool joinable, private, public, balance,
+    },
+
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
     },
-    async joinPool() {
+    async joinPoolTransaction() {
       const actions = [
         {
           account: process.env.CONTRACT_ADDRESS,
           name: "joinpool",
           data: {
             account: this.accountName,
-            pool_id: this.poolID,
+            pool_id: this.poolID
           }
-        },
+        }
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
     async onSubmit() {
-      if ( !this.isAuthenticated) {
+      if (!this.isAuthenticated) {
         this.$q.notify({
           color: "red-5",
           textColor: "white",
@@ -61,7 +111,8 @@ export default {
           message: "You need to login first"
         });
       } else {
-        await this.joinPool();
+        this.checkAllowed();
+        await this.joinPoolTransaction();
         this.$q.notify({
           color: "green-4",
           textColor: "white",
@@ -69,11 +120,17 @@ export default {
           message: "Submitted"
         });
       }
-    },
+    }
   },
   async mounted() {
     await this.loadChainData();
     this.getPoolInfo();
+    let payload = {
+      address: this.pool.base_token.contract,
+      sym: this.BaseTokenSymbol,
+      accountName: this.accountName
+    };
+    this.getChainAccountInfo(payload);
   }
 };
 </script>

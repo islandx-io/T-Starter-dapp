@@ -58,9 +58,13 @@ export const getAllChainPools = async function({ commit, dispatch }) {
 };
 
 // Test function for reading address
-export const getChainAccountInfo = async function({ commit }, address) {
+export const getChainAccountInfo = async function({ commit }, payload) {
   const rpc = this.$api.getRpc();
-  console.log(await rpc.get_account(address));
+  console.log(payload)
+  console.log(await rpc.get_account(payload.address));
+  console.log(await rpc.get_account(payload.accountName));
+  console.log(await rpc.get_currency_balance(payload.address, payload.accountName, payload.sym));
+
   // console.log(await rpc.get_currency_balance(address, "fuzzytestnet"));
 };
 
@@ -198,6 +202,7 @@ export const getJoinedChainPools = async function({ commit, getters, dispatch },
     });
 
     return pool_id_list
+
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
