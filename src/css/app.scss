@@ -61,3 +61,11 @@ h6 {
 .tab-panel-container {
   background-color: $secondary;
 }
+
+.poolcard-container {
+  display: grid;
+  grid-gap: 20px;
+  align-items: stretch;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-rows: min-content;
+}

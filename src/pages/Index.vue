@@ -27,29 +27,23 @@ that you may prove what is that good and acceptable and perfect will of God. - R
     <div class="body-container">
       <section class="row justify-center q-gutter-md">
         <h2 class="col-12 text-center">Upcoming Pools</h2>
-        <Poolcard
-          class="col"
-          v-for="id in upcomingPools"
-          :key="'upcoming-' + id"
-          :poolID="id"
-        ></Poolcard>
-        <Poolcard
-          class="col"
-          v-if="upcomingPools.length === 0"
-          :poolID="-1"
-        ></Poolcard>
+        <div class="poolcard-container col" v-if="upcomingPools.length !== 0">
+          <Poolcard
+            v-for="id in upcomingPools"
+            :key="'upcoming-' + id"
+            :poolID="id"
+          />
+        </div>
+        <Poolcard v-else class="col-shrink" :poolID="-1" />
         <h2 class="col-12 text-center q-pt-xl">Featured Pools</h2>
-        <Poolcard
-          class="col"
-          v-for="id in featuredPools"
-          :key="'featured-' + id"
-          :poolID="id"
-        ></Poolcard>
-        <Poolcard
-          class="col"
-          v-if="featuredPools.length === 0"
-          :poolID="-1"
-        ></Poolcard>
+        <div class="poolcard-container col" v-if="featuredPools.length !== 0">
+          <Poolcard
+            v-for="id in featuredPools"
+            :key="'featured-' + id"
+            :poolID="id"
+          />
+        </div>
+        <Poolcard class="col-shrink" v-else :poolID="-1" />
         <router-link to="/pools" class="router-link col-12 text-center">
           <q-btn outline color="accent">VIEW ALL POOLS</q-btn>
         </router-link>
