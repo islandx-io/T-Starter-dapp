@@ -54,7 +54,6 @@ li {
 a {
   display: flex;
   text-decoration: none;
-  // text-decoration-color: none;
   color: $primary;
   align-items: stretch;
   padding-right: 12px;

@@ -2,27 +2,27 @@
   <div class="details-tab">
     <div>
       <p>Type:</p>
-      <p>{{ pool.access_type }}</p>
+      <h5>{{ pool.access_type }}</h5>
     </div>
     <div>
       <p>Sale open:</p>
-      <p>{{ this.$toDate(pool.pool_open) }}</p>
+      <h5>{{ this.$toDate(pool.pool_open) }}</h5>
     </div>
     <div v-if="pool.access_type === 'Private'">
       <p>Private sale end:</p>
-      <p>{{ this.$toDate(pool.private_end) }}</p>
+      <h5>{{ this.$toDate(pool.private_end) }}</h5>
     </div>
     <div>
       <p>Public sale end:</p>
-      <p>{{ this.$toDate(pool.public_end) }}</p>
+      <h5>{{ this.$toDate(pool.public_end) }}</h5>
     </div>
     <div>
       <p>Minimum allocation:</p>
-      <p>{{ pool.minimum_swap }}</p>
+      <h5>{{ pool.minimum_swap }}</h5>
     </div>
     <div>
       <p>Maximum allocation:</p>
-      <p>{{ pool.maximum_allocation }}</p>
+      <h5>{{ pool.maximum_allocation }}</h5>
     </div>
   </div>
 </template>
@@ -52,11 +52,8 @@ export default {
 .details-tab div p {
   min-width: 200px;
 }
-.details-tab div p + p {
-  color: $primary;
-  font-size: 20px;
+.details-tab div h5 {
   flex-grow: 4;
-  // min-width: 500px;
   display: flex;
   @media screen and (max-width: 550px) {
     justify-content: flex-start;

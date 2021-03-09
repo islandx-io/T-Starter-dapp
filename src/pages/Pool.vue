@@ -23,7 +23,8 @@
                 <div>
                   <div class="text-h3 q-pb-md q-pt-sm">{{ pool.title }}</div>
                   <p>
-                    Contract: <a href="#">{{ pool.swap_ratio.contract }}</a>
+                    Contract:
+                    <a :href="contractURL">{{ pool.swap_ratio.contract }}</a>
                   </p>
                 </div>
                 <status-badge :poolStatus="pool.pool_status"></status-badge>
@@ -66,26 +67,27 @@
           <div class="border col column ">
             <div class="row justify-between">
               <div>Hard cap:</div>
-              <p>{{ pool.hard_cap }}</p>
-              <!-- TODO Format decimal places -->
+              <h5>{{ toCap(pool.hard_cap) }}</h5>
             </div>
             <div class="row justify-between">
               <div>Soft cap:</div>
-              <p>{{ pool.soft_cap }}</p>
+              <h5>{{ toCap(pool.soft_cap) }}</h5>
             </div>
             <div class="row justify-between">
               <div>Swap ratio:</div>
-              <p>1 {{ getBaseSymbol }} = {{ pool.swap_ratio.quantity }}</p>
+              <h5>
+                {{ swapRatio }}
+              </h5>
             </div>
             <div class="row justify-between" v-if="pool.pool_status === 'open'">
               <div>Participants:</div>
-              <p>{{ pool.participants }}</p>
+              <h5>{{ pool.participants }}</h5>
             </div>
             <div class="row justify-between" v-if="pool.pool_status === 'open'">
               <div>Sale progress:</div>
-              <p>{{ pool.progress }}</p>
+              <h5>{{ pool.progress }}</h5>
             </div>
-            <q-btn outline label="View on bloks.io" />
+            <!-- <q-btn outline label="View on bloks.io" /> -->
           </div>
         </q-item>
       </q-card>
@@ -164,11 +166,25 @@ export default {
     identicon() {
       return toSvg(this.poolID, 80);
     },
-    getBaseSymbol() {
+    contractURL() {
+      let contractName = this.pool.swap_ratio.contract;
+      if (contractName === "Loading" || contractName === "") return "#";
+      else {
+        try {
+          return `${process.env.NETWORK_EXPLORER}/account/${contractName}`;
+        } catch (error) {
+          return "Error";
+        }
+      }
+    },
+    swapRatio() {
       try {
-        let str = this.pool.base_token.sym;
-        let idx = str.indexOf(",") + 1;
-        return str.slice(idx);
+        if (this.pool.swap_ratio.quantity === "Loading") return "Loading";
+        else {
+          let baseSym = this.pool.base_token.sym.split(",")[1];
+          let [quantity, sym] = this.pool.swap_ratio.quantity.split(" ");
+          return `1 ${baseSym} = ${parseFloat(quantity).toFixed(0)} ${sym}`;
+        }
       } catch (error) {
         return "Error";
       }
@@ -178,6 +194,14 @@ export default {
     ...mapActions("pools", ["getChainPoolByID"]),
     toDate(timeStamp) {
       return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
+    },
+    toCap(str) {
+      if (typeof str !== "string") return str;
+      else if (!str.includes(" ")) return str;
+      else {
+        let [amount, sym] = str.split(" ");
+        return parseFloat(amount).toFixed(2) + " " + sym;
+      }
     },
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
@@ -211,7 +235,7 @@ export default {
   min-width: 350px;
 }
 .token-info {
-  min-width: 400px;
+  min-width: 180px;
 }
 .token-info .border {
   border: 1px solid gray;
@@ -223,6 +247,10 @@ export default {
   background-color: white;
 }
 .active {
+  color: $primary;
+}
+a {
+  text-decoration: none;
   color: $primary;
 }
 </style>
