@@ -60,7 +60,9 @@
         </div>
         <!-- if owner of pool -->
         <div v-if="created === true">
-          <router-link :to="{ name: 'updatepool', params: { id: poolID } }" class="router-link q-pr-md"
+          <router-link
+            :to="{ name: 'updatepool', params: { id: poolID } }"
+            class="router-link q-pr-md"
             ><q-btn outline color="primary">Update pool</q-btn></router-link
           >
         </div>
@@ -120,7 +122,11 @@ export default {
       if (this.pool.hard_cap === "Loading") {
         return this.pool.hard_cap;
       } else {
-        return parseFloat(this.pool.hard_cap).toFixed(2);
+        return (
+          parseFloat(this.pool.hard_cap).toFixed(2) +
+          " " +
+          this.pool.base_token.sym.split(",")[1]
+        );
       }
     }
   },
