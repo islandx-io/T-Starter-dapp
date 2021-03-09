@@ -20,6 +20,7 @@ export const getChainPoolByID = async function({ commit }, id) {
     poolTable.public_end = new Date(poolTable.public_end).valueOf();
 
     commit("updatePoolOnState", { poolTable, id });
+    dispatch("updatePoolSettings", id);
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -185,12 +186,11 @@ export const getJoinedChainPools = async function({ commit, getters, dispatch },
 
     let pool_id_list = []
     tableResults.rows.forEach((pool, index) => {
-      console.log(pool);
+      // console.log(pool);
       let pool_id = pool.pool_id;
       pool_id_list.push(pool_id);
 
-      // commit("updatePoolOnState", { poolTable, pool_id });
-      // dispatch("updatePoolSettings", pool_id);
+      dispatch("getChainPoolByID", pool_id);
     });
     console.log(pool_id_list);
     return pool_id_list;
