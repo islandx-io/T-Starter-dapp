@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page>
     <!-- content -->
     I'm joining this pool {{$route.params}}
   </q-page>
@@ -7,6 +7,16 @@
 
 <script>
 export default {
-  // name: 'PageName',
+  data() {
+    return {
+
+    }
+  },
+  computed: {
+
+  },
+  methods: {
+
+  },
 }
 </script>

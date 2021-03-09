@@ -495,26 +495,13 @@ export default {
       let payload = { address: val, token_symbol: this.token_symbol };
       this.token_decimals = await this.getTokenPrecision(payload);
       console.log(this.token_decimals);
-
-      // return new Promise((resolve, reject) => {
-      //   setTimeout(() => {
-      //     // call
-      //     //  resolve(true)
-      //     //     --> content is valid
-      //     //  resolve(false)
-      //     //     --> content is NOT valid, no error message
-      //     //  resolve(error_message)
-      //     //     --> content is NOT valid, we have error message
-      //     resolve(!!val || "* Required");
-
-      //     // calling reject(...) will also mark the input
-      //     // as having an error, but there will not be any
-      //     // error message displayed below the input
-      //     // (only in browser console)
-      //   }, 1000);
-      // });
     },
-    checkLinks() {},
+    checkLinks() {
+      console.log(this.webLinks.filter(el => el.value[0] !== ""))
+      console.log(this.webLinks.filter(el => el.value !== ""))
+      this.webLinks = this.webLinks.filter(el => el.value[0] !== "");
+      console.log(this.webLinks)
+    },
     async updateChainPool() {
       const actions = [
         {
