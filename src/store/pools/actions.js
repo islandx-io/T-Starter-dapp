@@ -111,7 +111,7 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
 
   // Update access type
   var access_type = "Public";
-  if (pool.private_end >= pool.public_end) {
+  if (currentDate < pool.private_end) {
     access_type = "Private";
   }
 
