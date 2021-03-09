@@ -32,7 +32,7 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: process.env.CONTRACT_TABLE, // Table name
-      limit: 10, // Maximum number of rows that we want to get
+      limit: 100, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
@@ -75,7 +75,7 @@ export const getTokenPrecision = async function(
       code: token_info.address, // Contract that we target
       scope: token_info.token_symbol, // Account that owns the data
       table: "stat", // Table name
-      limit: 10, // Maximum number of rows that we want to get
+      limit: 1, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
@@ -133,7 +133,32 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
 // Get pools created from chain
 export const getCreatedChainPools = async function({ commit }, owner) {
   try {
-    console.log(owner);
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: process.env.CONTRACT_TABLE, // Table name
+      limit: 100,
+      index_position: 2,
+      key_type: "i64",
+      lower_bound: owner,
+      upper_bound: owner,
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+
+    tableResults.rows.forEach((pool, index) => {
+      console.log(pool);
+      let id = pool.id;
+
+      //check dates are unix
+      pool.pool_open = new Date(pool.pool_open).valueOf();
+      pool.private_end = new Date(pool.private_end).valueOf();
+      pool.public_end = new Date(pool.public_end).valueOf();
+
+      const poolTable = pool;
+
+      commit("updatePoolOnState", { poolTable, id });
+    });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

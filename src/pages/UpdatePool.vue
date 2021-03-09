@@ -1,23 +1,6 @@
 <template>
   <q-page>
-    <!-- <q-input outlined v-model="poolName" label="Pool Name" />
-
-    <div class="slug-widget">
-      <div class="icon-wrapper wrapper">
-        <i class="fa fa-link"></i>
-      </div>
-
-      <div class="url-wrapper wrapper">
-        <span class="root-url">http://tstarter.io</span>
-        <span class="subdirectory-url">/pools/</span>
-        <span class="slug" v-show="slug">{{ slug }}</span>
-      </div>
-
-      <div class="button-wrapper wrapper">
-        <button class="button is-small">Edit</button>
-      </div>
-    </div> -->
-    <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+    <q-form v-if="(this.accountName === this.pool.owner)" @submit="onSubmit" @reset="onReset" @publish="onPublish" class="q-gutter-md">
       <!-- tokens and adresses -->
       <div class="row">
         <div class="q-pa-md">
@@ -44,7 +27,7 @@
           v-model="token_symbol"
           label="Token"
           lazy-rules
-          :rules="[val => (val && val.length > 1) || 'Must specify the token']"
+          :rules="[val => (!!val) || 'Must specify the token']"
         >
         </q-input>
         To
@@ -63,7 +46,7 @@
           v-model="pool.swap_ratio.quantity"
           label="Ratio"
           lazy-rules
-          :rules="[val => (val && val.length > 1) || 'Must specify the token']"
+          :rules="[val => (!!val) || 'Must specify the token']"
         >
           {{
             toChainString(
@@ -84,7 +67,7 @@
             label="Soft cap"
             lazy-rules
             :rules="[
-              val => (val && val.length > 1) || 'Must specify the amount'
+              val => (!!val) || 'Must specify the amount'
             ]"
           >
           </q-input>
@@ -94,7 +77,7 @@
             label="Hard cap"
             lazy-rules
             :rules="[
-              val => (val && val.length > 1) || 'Must specify the amount'
+              val => (!!val) || 'Must specify the amount'
             ]"
           >
           </q-input>
@@ -106,7 +89,7 @@
             label="minimum swap amount"
             lazy-rules
             :rules="[
-              val => (val && val.length > 1) || 'Must specify the amount'
+              val => (!!val) || 'Must specify the amount'
             ]"
           >
           </q-input>
@@ -116,7 +99,7 @@
             label="maximum swap per wallet"
             lazy-rules
             :rules="[
-              val => (val && val.length > 1) || 'Must specify the amount'
+              val => (!!val) || 'Must specify the amount'
             ]"
           >
           </q-input>
@@ -154,7 +137,7 @@
             </q-icon>
           </template>
         </q-input>
-        Sale start {{ pool.pool_open }}
+        Sale start
       </div>
       <!-- Date input -->
       <div class="row">
@@ -282,9 +265,7 @@
           v-on:deleteThisLink="deleteThisLink"
         ></link-field>
         <q-btn round color="primary" icon="add" @click="addLinkField" /> -->
-        {{ pool.web_links }}
 
-        {{ webLinks }}
         <div class="row">
           <q-input
             outlined
@@ -334,7 +315,8 @@
 
       <!-- Submit -->
       <div>
-        <q-btn label="Submit" type="submit" color="primary" />
+        <q-btn label="Update" type="submit" color="primary" />
+        <q-btn label="Publish" @click="onPublish" color="primary" />
         <q-btn
           label="Reset"
           type="reset"
@@ -344,6 +326,8 @@
         />
       </div>
     </q-form>
+
+    <div v-else> You are not the owner of this pool</div>
   </q-page>
 </template>
 
@@ -357,36 +341,34 @@ export default {
   data() {
     return {
       poolID: Number(this.$route.params.id),
-      pool: {
-        owner: "",
-        pool_type: "fixed",
-        swap_ratio: {
-          quantity: "5000000",
-          contract: "token.start"
+      pool: this.$defaultPoolInfo,
+
+      webLinks: [
+        {
+          key: "website",
+          value: ""
         },
-        soft_cap: "5.0",
-        hard_cap: "50.0",
-        minimum_swap: "0.001",
-        maximum_allocation: "2.50000",
-        pool_open: Date.now(),
-        private_end: Date.now(),
-        public_end: Date.now(),
-        title: "T-Starter",
-        avatar:
-          "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
-        tag_line:
-          "T-Starter is a cross chain token swap platform created to help projects launch on the Telos blockchain",
-        description:
-          "T-Starter is the place to discover and back new projects coming to Telos. It offers users the oppotunity to become part of those projects very early in their life.",
-        web_links: [],
-        whitelist: ["rory", "janet"],
-
-        //Dynamic
-        remaining_offer: "3501234.5670 START",
-        total_raise: "0 PBTC",
-        participants: 0
-      },
-
+        {
+          key: "github",
+          value: ""
+        },
+        {
+          key: "medium",
+          value: ""
+        },
+        {
+          key: "telegram",
+          value: ""
+        },
+        {
+          key: "twitter",
+          value: ""
+        },
+        {
+          key: "whitepaper",
+          value: ""
+        }
+      ],
 
 
       base_token_symbol: "PBTC",
@@ -412,13 +394,15 @@ export default {
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
       link_index: -1,
-      contract_creation_date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss") // TODO add to contract?
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID"]),
     // owner: accountName,
+    admin_address() {
+      return process.env.ADMIN_ADDRESS;
+    },
     selected_base_token() {
       return this.base_token_options.find(
         el => el.sym === this.base_token_symbol
@@ -442,34 +426,6 @@ export default {
         contract: this.pool.swap_ratio.contract
       };
     },
-    webLinks() {
-      return [
-        {
-          key: "website",
-          value: this.pool.web_links[0].value
-        },
-        {
-          key: "github",
-          value: ""
-        },
-        {
-          key: "medium",
-          value: ""
-        },
-        {
-          key: "telegram",
-          value: ""
-        },
-        {
-          key: "twitter",
-          value: ""
-        },
-        {
-          key: "whitepaper",
-          value: ""
-        }
-      ];
-    },
   },
 
   methods: {
@@ -479,24 +435,58 @@ export default {
       "getChainPoolByID",
       "updatePoolStatus"
     ]),
-    // convertName: function() {
-    //   return Slug(this.poolName);
-    // },
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
     toUnixTimestamp(timeStamp) {
       return new Date(timeStamp).valueOf();
     },
+    toDateString(timestamp){
+      return date.formatDate(timestamp, 'YYYY-MM-DD HH:mm')
+    },
     toChainString(number, decimals, symbol) {
       return (
         String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
       );
     },
-    getPoolInfo() {
-      this.pool = this.getPoolByID(this.poolID);
+    fromChainString(str){
+      let idx = str.indexOf(' ')
+      return Number(str.slice(0,idx));
     },
-    populateWebLinks() {},
+    getPoolInfo() {
+      this.pool = JSON.parse(JSON.stringify(this.getPoolByID(this.poolID))); //make deep copy
+      this.getTokenSymbolFromPool();
+      // pool to numbers
+      this.pool.swap_ratio.quantity = this.fromChainString(this.pool.swap_ratio.quantity);
+      this.pool.soft_cap = this.fromChainString(this.pool.soft_cap);
+      this.pool.hard_cap = this.fromChainString(this.pool.hard_cap);
+      this.pool.minimum_swap = this.fromChainString(this.pool.minimum_swap);
+      this.pool.maximum_allocation = this.fromChainString(this.pool.maximum_allocation);
+
+      this.populateWebLinks();
+      this.BaseTokenFromChain();      
+
+      this.pool.pool_open = this.toDateString(this.pool.pool_open)
+      this.pool.private_end = this.toDateString(this.pool.private_end)
+      this.pool.public_end = this.toDateString(this.pool.public_end)
+
+    },
+    getTokenSymbolFromPool() {
+      let idx = this.pool.swap_ratio.quantity.indexOf(' ')+1
+      this.token_symbol = this.pool.swap_ratio.quantity.slice(idx)
+    },
+    BaseTokenFromChain() {
+      let idx = this.pool.base_token.sym.indexOf(',')+1
+      this.base_token_symbol = this.pool.base_token.sym.slice(idx)
+    },
+    populateWebLinks() {
+      this.webLinks.find(el => el.key === "website").value = this.pool.web_links.filter(el => el.key === "website").map(a => a.value)
+      this.webLinks.find(el => el.key === "github").value = this.pool.web_links.filter(el => el.key === "github").map(a => a.value)
+      this.webLinks.find(el => el.key === "medium").value = this.pool.web_links.filter(el => el.key === "medium").map(a => a.value)
+      this.webLinks.find(el => el.key === "telegram").value = this.pool.web_links.filter(el => el.key === "telegram").map(a => a.value)
+      this.webLinks.find(el => el.key === "twitter").value = this.pool.web_links.filter(el => el.key === "twitter").map(a => a.value)
+      this.webLinks.find(el => el.key === "whitepaper").value = this.pool.web_links.filter(el => el.key === "whitepaper").map(a => a.value)
+    },
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
     },
@@ -504,27 +494,14 @@ export default {
       // simulating a delay
       let payload = { address: val, token_symbol: this.token_symbol };
       this.token_decimals = await this.getTokenPrecision(payload);
-      // console.log(this.token_decimals);
-
-      // return new Promise((resolve, reject) => {
-      //   setTimeout(() => {
-      //     // call
-      //     //  resolve(true)
-      //     //     --> content is valid
-      //     //  resolve(false)
-      //     //     --> content is NOT valid, no error message
-      //     //  resolve(error_message)
-      //     //     --> content is NOT valid, we have error message
-      //     resolve(!!val || "* Required");
-
-      //     // calling reject(...) will also mark the input
-      //     // as having an error, but there will not be any
-      //     // error message displayed below the input
-      //     // (only in browser console)
-      //   }, 1000);
-      // });
+      console.log(this.token_decimals);
     },
-    checkLinks() {},
+    checkLinks() {
+      console.log(this.webLinks.filter(el => el.value[0] !== ""))
+      console.log(this.webLinks.filter(el => el.value !== ""))
+      this.webLinks = this.webLinks.filter(el => el.value[0] !== "");
+      console.log(this.webLinks)
+    },
     async updateChainPool() {
       const actions = [
         {
@@ -558,16 +535,28 @@ export default {
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            remaining_offer: "3501234.5670 START",
+            remaining_offer: "3501234.5670 START", //TODO set these amounts
             total_raise: "14.98765433 PBTC",
             participants: 0,
             pool_open: this.pool.pool_open,
             private_end: this.pool.private_end,
             public_end: this.pool.public_end,
             whitelist: this.pool.whitelist,
-            web_links: this.pool.web_links
+            web_links: this.webLinks
           }
         }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+    async publishPool() {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "publishpool",
+          data: {
+            pool_id: this.poolID
+          }
+        },
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
@@ -592,43 +581,29 @@ export default {
         });
       }
     },
-
+    async onPublish() {
+      await this.publishPool();
+    },
     onReset() {},
 
-    addLinkField() {
-      console.log(this.pool.web_links);
-      this.pool.web_links.push({ key: "", value: "" });
-    },
-    deleteThisLink(index) {
-      console.log("Delete key:" + index);
-      this.$delete(this.pool.web_links, index);
-      console.log(this.pool.web_links);
-    }
+    // addLinkField() {
+    //   console.log(this.pool.web_links);
+    //   this.pool.web_links.push({ key: "", value: "" });
+    // },
+    // deleteThisLink(index) {
+    //   console.log("Delete key:" + index);
+    //   this.$delete(this.pool.web_links, index);
+    //   console.log(this.pool.web_links);
+    // }
   },
   async mounted() {
     await this.loadChainData();
     this.getPoolInfo();
   },
 
-  watch: {
-    // poolName: _.debounce(function() {
-    //   this.slug = this.convertName();
-    // }, 500) // debounce not to cause lag // TODO use quasar's debouce. create API to check if unqiue & custom slug?
-  }
+  watch: {}
 };
 </script>
 
 <style scoped>
-/* .slug-widget {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-.wrapper {
-  margin-left: 8px;
-}
-.slug {
-  background-color: rgb(209, 132, 16);
-  padding: 3px 5px;
-} */
 </style>
