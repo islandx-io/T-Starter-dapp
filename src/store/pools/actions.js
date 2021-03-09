@@ -207,3 +207,36 @@ export const getJoinedChainPools = async function({ commit, getters, dispatch },
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
+
+
+export const getFeaturedChainPools = async function({ commit, getters, dispatch }) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: 'settings', // Table name
+      limit: 100,
+      index_position: 1,
+      key_type: "i64",
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+    console.log("Featured pools:")
+    let pool_id_list = []
+    tableResults.rows[0].featured_pools.forEach((id, index) => {
+      let pool_id = id;
+      pool_id_list.push(pool_id);
+    });
+    pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
+    console.log(pool_id_list);
+
+    pool_id_list.forEach((pool_id) => {
+      dispatch("getChainPoolByID", pool_id);
+    });
+
+    return pool_id_list
+
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};

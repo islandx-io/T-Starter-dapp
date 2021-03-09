@@ -37,7 +37,7 @@
 
         <q-tab-panel name="featured-pools">
           <div class="row  q-gutter-md">
-            <Poolcard v-for="id in poolIDs" :key="id" :poolID="id"></Poolcard>
+            <Poolcard v-for="id in featuredIDs" :key="id" :poolID="id"></Poolcard>
           </div>
         </q-tab-panel>
 
@@ -66,6 +66,7 @@ export default {
     return {
       tab: "all-pools",
       joinedIDs: [],
+      featuredIDs: [],
     };
   },
   computed: {
@@ -79,13 +80,14 @@ export default {
     },
   },
   methods: {
-    ...mapActions("pools", ["getAllChainPools", 'getCreatedChainPools', 'getJoinedChainPools']),
+    ...mapActions("pools", ["getAllChainPools", 'getCreatedChainPools', 'getJoinedChainPools', 'getFeaturedChainPools']),
     
   },
   async mounted() {
     await this.getAllChainPools();
     await this.getCreatedChainPools(this.accountName);
     this.joinedIDs = await this.getJoinedChainPools(this.accountName);
+    this.featuredIDs = await this.getFeaturedChainPools();
   }
 };
 </script>

@@ -51,7 +51,7 @@ export default {
     return {
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
-      balance: 10,
+      balance: 1,
       amount: 0,
       base_token_symbol: ""
     };
