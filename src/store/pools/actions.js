@@ -189,11 +189,15 @@ export const getJoinedChainPools = async function({ commit, getters, dispatch },
       // console.log(pool);
       let pool_id = pool.pool_id;
       pool_id_list.push(pool_id);
+    });
+    pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
+    console.log(pool_id_list);
 
+    pool_id_list.forEach((pool_id) => {
       dispatch("getChainPoolByID", pool_id);
     });
-    console.log(pool_id_list);
-    return pool_id_list;
+
+    return pool_id_list
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
