@@ -67,6 +67,7 @@
             <div class="row justify-between">
               <div>Hard cap:</div>
               <p>{{ pool.hard_cap }}</p>
+              <!-- TODO Format decimal places -->
             </div>
             <div class="row justify-between">
               <div>Soft cap:</div>
@@ -111,34 +112,12 @@
           swipeable
           class="tab-panel-container"
         >
-          <q-tab-panel name="details" class="details-tab" @mousedown.stop>
-            <div>
-              <p>Type:</p>
-              <p>{{ pool.access_type }}</p>
-            </div>
-            <div>
-              <p>Sale open:</p>
-              <p>{{ toDate(pool.pool_open) }}</p>
-            </div>
-            <div v-if="pool.access_type === 'Private'">
-              <p>Private sale end:</p>
-              <p>{{ toDate(pool.private_end) }}</p>
-            </div>
-            <div>
-              <p>Public sale end:</p>
-              <p>{{ toDate(pool.public_end) }}</p>
-            </div>
-            <div>
-              <p>Minimum allocation:</p>
-              <p>{{ pool.minimum_swap }}</p>
-            </div>
-            <div>
-              <p>Maximum allocation:</p>
-              <p>{{ pool.maximum_allocation }}</p>
-            </div>
+          <q-tab-panel name="details" @mousedown.stop>
+            <tab-details :pool="pool" />
           </q-tab-panel>
-
-          <q-tab-panel name="overview"> </q-tab-panel>
+          <q-tab-panel name="overview" @mousedown.stop>
+            <tab-overview :pool="pool" />
+          </q-tab-panel>
 
           <q-tab-panel name="allocations"> </q-tab-panel>
         </q-tab-panels>
@@ -193,16 +172,16 @@ import { date } from "quasar";
 
 export default {
   components: {
-    // tabOverview,
+    tabOverview,
     // tabAllocations,
-    // tabDetails,
+    tabDetails,
     statusCountdown,
     statusBadge
   },
   data() {
     return {
       //page info
-      tab: "details",
+      tab: "overview",
       // currentTab: "Details",
 
       //pool info
@@ -285,28 +264,5 @@ export default {
 }
 .active {
   color: $primary;
-}
-.details-tab div {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 500;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.details-tab div p {
-  min-width: 200px;
-}
-.details-tab div p + p {
-  color: $primary;
-  font-size: 20px;
-  flex-grow: 4;
-  // min-width: 500px;
-  display: flex;
-  @media screen and (max-width: 550px) {
-    justify-content: flex-start;
-  }
-  @media screen and (min-width: 580px) {
-    justify-content: flex-end;
-  }
 }
 </style>
