@@ -66,7 +66,7 @@ export default {
           name: "newpool",
           data: {
             // id: this.id,
-            owner: this.accountName,
+            owner: this.owner,
             pool_type: this.pool_type
           }
         }

@@ -2,7 +2,7 @@
   <div>
     <div v-if="pool.web_links !== 'Loading'">
       <li v-for="link in pool.web_links" :key="link.id">
-        <a :href="link.value">
+        <a :href="link.value" v-if="link.value != ''">
           <q-icon size="xs" :name="iconName(link.key)" />
           {{ link.key }}</a
         >
