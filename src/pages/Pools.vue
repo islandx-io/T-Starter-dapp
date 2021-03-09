@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <title>T-STARTER - Pools</title>
-    <section class="page-banner row content-center justify-center">
+    <section class="header-bg row content-center justify-center">
       <h2 class="text-white">Pools</h2>
     </section>
 
@@ -85,11 +85,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.page-banner {
-  background-image: url("~assets/index/clouds-head.png");
+.header-bg {
   height: 200px;
-}
-.tab-panel-container {
-  background-color: $secondary;
 }
 </style>

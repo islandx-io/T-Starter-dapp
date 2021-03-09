@@ -15,19 +15,20 @@ body {
   background-color: $secondary;
 }
 
+// ----------------------------------------------
+// Classes
+// ----------------------------------------------
 .router-link {
   text-decoration: none;
   color: inherit;
 }
 
-// ----------------------------------------------
-// Classes
-// ----------------------------------------------
 .card {
   padding: 20px 20px;
   border-radius: $card-corner-radius;
   border-color: $secondary;
   box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
+  background-color: $secondary;
 }
 
 .toolbar,
@@ -37,4 +38,13 @@ body {
   max-width: 1080px;
   margin: 0 auto;
   padding: 10px 20px;
+}
+
+.header-bg {
+  background-image: url("~assets/index/clouds-head.png");
+  height: 550px;
+}
+
+.tab-panel-container {
+  background-color: $secondary;
 }

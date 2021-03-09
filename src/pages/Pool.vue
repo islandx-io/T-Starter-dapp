@@ -1,62 +1,73 @@
 <template>
   <!-- NOTE lifecycle hooks of the component will not be called -->
   <!-- TODO Page not found -->
-  <q-page class="row justify-center q-gutter-md">
-    <div
-      class="col content column justify-start items-stretch content-stretch q-gutter-md"
-    >
-      <q-card class="card row justify-between content-start">
-        <q-item class="col column">
-          <q-item-section class="col row justify-left q-gutter-md">
-            <q-avatar size="80px">
-              <img
-                v-if="pool.avatar"
-                :src="pool.avatar"
-                width="50px"
-                alt="image"
-              />
-              <div v-else v-html="identicon" />
-            </q-avatar>
-            <div class="row q-gutter-md">
-              <div class="text-h3">{{ pool.title }}</div>
-              <status-badge :poolStatus="pool.status"></status-badge>
-            </div>
-          </q-item-section>
-          <q-item-section>
+  <q-page>
+    <section class="header-bg" />
+    <div class="body-container">
+      <q-card class="card row justify-between content-start q-mb-lg">
+        <div class="join-pane col column">
+          <q-item>
+            <q-item-section top class="col-shrink">
+              <q-avatar size="80px">
+                <img
+                  v-if="pool.avatar"
+                  :src="pool.avatar"
+                  width="100px"
+                  alt="image"
+                />
+                <div v-else v-html="identicon" />
+              </q-avatar>
+            </q-item-section>
+            <q-item-section top class="q-pl-sm">
+              <div class="row justify-between content-start items-start">
+                <div>
+                  <div class="text-h3 q-pb-md q-pt-sm">{{ pool.title }}</div>
+                  <p>
+                    Contract: <a href="#">{{ pool.swap_ratio.contract }}</a>
+                  </p>
+                </div>
+                <status-badge :poolStatus="pool.pool_status"></status-badge>
+              </div>
+            </q-item-section>
+          </q-item>
+          <q-item>
             <p>
               {{ pool.tag_line }}
             </p>
-          </q-item-section>
-          <q-item-section>
+          </q-item>
+          <q-item>
             <div
-              class="row justify-between items-center"
-              v-if="pool.status === 'upcoming'"
+              class="col row justify-between items-center"
+              v-if="pool.pool_status === 'upcoming'"
             >
               <div>Opens in:</div>
               <status-countdown :deadline="pool.pool_open"></status-countdown>
             </div>
             <div
-              class="row justify-between items-center"
-              v-else-if="pool.status === 'open'"
+              class="col row justify-between items-center"
+              v-else-if="pool.pool_status === 'open'"
             >
               <div>Closes in:</div>
               <status-countdown :deadline="pool.public_end"></status-countdown>
             </div>
-          </q-item-section>
-
-          <q-btn
-            :to="{ name: 'joinpool', params: {} }"
-            :color="pool.status === 'upcoming' ? 'grey-4' : 'primary'"
-            label="Join pool"
-            :disable="pool.status === 'upcoming'"
-            v-if="pool.status !== 'closed'"
-          />
-        </q-item>
-        <q-item class="col-6 row justify-center">
-          <div class="col join-pane column q-gutter-md">
+          </q-item>
+          <q-item>
+            <q-btn
+              class="col"
+              :to="{ name: 'joinpool', params: {} }"
+              :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
+              label="Join pool"
+              :disable="pool.pool_status === 'upcoming'"
+              v-if="pool.pool_status !== 'closed'"
+            />
+          </q-item>
+        </div>
+        <q-item class="token-info col">
+          <div class="border col column ">
             <div class="row justify-between">
               <div>Hard cap:</div>
               <p>{{ pool.hard_cap }}</p>
+              <!-- TODO Format decimal places -->
             </div>
             <div class="row justify-between">
               <div>Soft cap:</div>
@@ -66,11 +77,11 @@
               <div>Swap ratio:</div>
               <p>1 {{ getBaseSymbol }} = {{ pool.swap_ratio.quantity }}</p>
             </div>
-            <div class="row justify-between" v-if="pool.status === 'open'">
+            <div class="row justify-between" v-if="pool.pool_status === 'open'">
               <div>Participants:</div>
               <p>{{ pool.participants }}</p>
             </div>
-            <div class="row justify-between" v-if="pool.status === 'open'">
+            <div class="row justify-between" v-if="pool.pool_status === 'open'">
               <div>Sale progress:</div>
               <p>{{ pool.progress }}</p>
             </div>
@@ -78,7 +89,39 @@
           </div>
         </q-item>
       </q-card>
-      <div class="q-gutter-md">
+      <q-card class="body-container card">
+        <q-tabs
+          v-model="tab"
+          dense
+          class="text-grey"
+          active-color="primary"
+          indicator-color="primary"
+          align="left"
+          narrow-indicator
+        >
+          <q-tab name="details" label="DETAILS"></q-tab>
+          <q-tab name="overview" label="OVERVIEW"></q-tab>
+          <q-tab name="allocations" label="YOUR ALLOCATIONS"></q-tab>
+        </q-tabs>
+
+        <q-separator></q-separator>
+
+        <q-tab-panels
+          v-model="tab"
+          animated
+          swipeable
+          class="tab-panel-container"
+        >
+          <q-tab-panel name="details" @mousedown.stop>
+            <tab-details :pool="pool" />
+          </q-tab-panel>
+          <q-tab-panel name="overview" @mousedown.stop>
+            <tab-overview :pool="pool" />
+          </q-tab-panel>
+
+          <q-tab-panel name="allocations"> </q-tab-panel>
+        </q-tab-panels>
+        <!-- <section class="q-py-md q-gutter-md">
         <q-btn
           v-bind:class="['tab-button', { active: currentTab === 'Details' }]"
           v-on:click="currentTab = 'Details'"
@@ -97,9 +140,9 @@
           ]"
           v-on:click="currentTab = 'Allocations'"
           >Your Allocations</q-btn
-        >
-      </div>
-      <q-card class="card">
+        > -->
+      </q-card>
+      <!-- <q-card class="card">
         <keep-alive>
           <component
             v-bind:is="currentTabComponent"
@@ -107,12 +150,12 @@
             :poolObject.sync="pool"
           ></component>
         </keep-alive>
-      </q-card>
+      </q-card> -->
+    </div>
 
-      <!-- <div>Params: {{ this.$route.params }} Query: {{ this.$route.query }}</div>
+    <!-- <div>Params: {{ this.$route.params }} Query: {{ this.$route.query }}</div>
       <div v-if="isAuthenticated">{{ accountName }} is authenticated</div>
       <div v-else>Please login to do a transfer!</div> -->
-    </div>
   </q-page>
 </template>
 
@@ -130,7 +173,7 @@ import { date } from "quasar";
 export default {
   components: {
     tabOverview,
-    tabAllocations,
+    // tabAllocations,
     tabDetails,
     statusCountdown,
     statusBadge
@@ -138,7 +181,8 @@ export default {
   data() {
     return {
       //page info
-      currentTab: "Details",
+      tab: "overview",
+      // currentTab: "Details",
 
       //pool info
       poolID: Number(this.$route.params.id),
@@ -149,9 +193,9 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID"]),
-    currentTabComponent: function() {
-      return "tab-" + this.currentTab.toLowerCase();
-    },
+    // currentTabComponent: function() {
+    //   return "tab-" + this.currentTab.toLowerCase();
+    // },
     progressToPercentage() {
       return (this.progress * 100).toFixed(2) + "%";
     },
@@ -198,13 +242,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.content {
-  max-width: 1000px;
+.header-bg {
+  height: 120px;
+  margin-bottom: -50px;
+  background-position-y: 50%;
 }
 .join-pane {
+  min-width: 350px;
+}
+.token-info {
+  min-width: 400px;
+}
+.token-info .border {
   border: 1px solid gray;
   border-radius: $card-corner-radius;
   padding: 20px;
+  margin: 0;
 }
 .tab-button {
   background-color: white;

@@ -18,9 +18,9 @@
         </q-item-section>
         <q-item-section top side>
           <div class="text-accent column items-center justify-between">
-            <status-badge :poolStatus="pool.status" />
+            <status-badge :poolStatus="pool.pool_status" />
             <status-countdown
-              v-if="pool.status === 'upcoming'"
+              v-if="pool.pool_status === 'upcoming'"
               :deadline="pool.pool_open"
               mini
             />
@@ -41,7 +41,10 @@
             <p class="info-value">{{ pool.access_type }}</p>
           </div>
         </div>
-        <div class="col-12" v-if="['open', 'closed'].includes(pool.status)">
+        <div
+          class="col-12"
+          v-if="['open', 'closed'].includes(pool.pool_status)"
+        >
           <div class="text-h6 q-py-xs">Sale progress</div>
           <div class="progress-bar">
             <div
@@ -51,8 +54,7 @@
               aria-valuemin="0"
               aria-valuemax="1"
             >
-              {{ pool.progress }}
-              <!-- {{ progressToPercentage }} -->
+              {{ progressToPercentage }}
             </div>
           </div>
         </div>
@@ -102,7 +104,14 @@ export default {
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     progressToPercentage() {
-      return this.pool.progress * 100 + "%";
+      var progress = Number(this.pool.progress);
+      if (isNaN(progress)) progress = 0;
+      if (progress <= 0) {
+        progress = "";
+      } else {
+        progress = progress.toFixed(2) * 100 + "%";
+      }
+      return progress;
     },
     identicon() {
       return toSvg(this.poolID, this.avatar_size);
@@ -116,17 +125,17 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["updatePoolSettings"]),
     getPoolInfo: function() {
-      this.pool = this.getPoolByID(this.poolID);
+      const pool = this.getPoolByID(this.poolID);
+      if (pool !== undefined) {
+        this.pool = pool;
+      }
     }
   },
   mounted() {
-    this.updatePoolSettings(this.poolID);
     this.getPoolInfo();
     // Start polling every 2min for any updates
     this.polling = setInterval(() => {
-      this.updatePoolSettings(this.poolID);
       this.getPoolInfo();
     }, 120000);
   },

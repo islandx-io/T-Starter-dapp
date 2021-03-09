@@ -2,7 +2,7 @@
   <!-- And do not be conformed to this world, but be transformed by the renewing of your mind, 
 that you may prove what is that good and acceptable and perfect will of God. - Romans 12:2 -NKJV -->
   <q-page>
-    <section class="space-bg row content-start">
+    <section class="header-bg row content-start">
       <div class="header-container row reverse-wrap justify-between">
         <div class="column justify-start">
           <h2>
@@ -75,7 +75,7 @@ export default {
       return this.getPoolIDsByStatus("closed");
     },
     featuredPools: function() {
-      return this.getAllPoolIDs;
+      return this.getAllPoolIDs; // TODO Change to featured pools
     }
   },
   methods: {
@@ -88,8 +88,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.space-bg {
-  background-image: url("~assets/index/clouds-head.png");
+.header-bg {
+  // background-image: $header-background-url;
   height: 550px;
 }
 .header-container {

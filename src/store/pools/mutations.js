@@ -1,9 +1,11 @@
-export const setPoolStatus = (state, { id, status }) => {
-  state.pools.find(el => el.id === id).status = status;
-};
-
-export const setPoolAccessType = (state, { id, access_type }) => {
-  state.pools.find(el => el.id === id).access_type = access_type;
+export const setPoolSettings = (
+  state,
+  { id, pool_status, access_type, progress }
+) => {
+  var pool = state.pools.find(el => el.id === id);
+  pool.pool_status = pool_status;
+  pool.access_type = access_type;
+  pool.progress = progress;
 };
 
 export const updatePoolOnState = (state, { poolTable, id }) => {

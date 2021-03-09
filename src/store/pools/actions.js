@@ -26,7 +26,7 @@ export const getChainPoolByID = async function({ commit }, id) {
 };
 
 // get all pools from chain, populate store
-export const getAllChainPools = async function({ commit }) {
+export const getAllChainPools = async function({ commit, dispatch }) {
   try {
     const tableResults = await this.$api.getTableRows({
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
@@ -38,7 +38,7 @@ export const getAllChainPools = async function({ commit }) {
     });
 
     tableResults.rows.forEach((pool, index) => {
-      console.log(pool);
+      // console.log(pool);
       let id = pool.id;
 
       //check dates are unix
@@ -49,6 +49,7 @@ export const getAllChainPools = async function({ commit }) {
       const poolTable = pool;
 
       commit("updatePoolOnState", { poolTable, id });
+      dispatch("updatePoolSettings", id);
     });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -107,21 +108,25 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
   } else {
     poolStatus = "open";
   }
-  commit({
-    type: "setPoolStatus",
-    id: poolID,
-    status: poolStatus
-  });
 
   // Update access type
   var access_type = "Public";
-  if (pool.private_end >= pool.public_end) {
+  if (currentDate < pool.private_end) {
     access_type = "Private";
   }
+
+  // Update progress
+  const total_raise = this.$fromChainString(pool.total_raise);
+  const hard_cap = this.$fromChainString(pool.hard_cap);
+  var progress = 0;
+  if (hard_cap !== 0) progress = total_raise / hard_cap;
+
   commit({
-    type: "setPoolAccessType",
+    type: "setPoolSettings",
     id: poolID,
-    access_type: access_type
+    pool_status: poolStatus,
+    access_type: access_type,
+    progress: progress
   });
 };
 
