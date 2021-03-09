@@ -41,13 +41,13 @@ that you may prove what is that good and acceptable and perfect will of God. - R
         <h2 class="col-12 text-center q-pt-xl">Featured Pools</h2>
         <Poolcard
           class="col"
-          v-for="id in featuredPools"
+          v-for="id in featuredIDs"
           :key="'featured-' + id"
           :poolID="id"
         ></Poolcard>
         <Poolcard
           class="col"
-          v-if="featuredPools.length === 0"
+          v-if="featuredIDs.length === 0"
           :poolID="-1"
         ></Poolcard>
         <router-link to="/pools" class="router-link col-12 text-center">
@@ -64,7 +64,9 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   components: { Poolcard },
   data() {
-    return {};
+    return {
+      featuredIDs: [],
+    };
   },
   computed: {
     ...mapGetters("pools", ["getAllPoolIDs", "getPoolIDsByStatus"]),
@@ -74,15 +76,13 @@ export default {
     closedPools: function() {
       return this.getPoolIDsByStatus("closed");
     },
-    featuredPools: function() {
-      return this.getAllPoolIDs; // TODO Change to featured pools
-    }
   },
   methods: {
-    ...mapActions("pools", ["getAllChainPools"])
+    ...mapActions("pools", ["getAllChainPools", "getFeaturedChainPools"])
   },
   async mounted() {
     await this.getAllChainPools();
+    this.featuredIDs = await this.getFeaturedChainPools();
   }
 };
 </script>
