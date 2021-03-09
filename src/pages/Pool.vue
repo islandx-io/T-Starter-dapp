@@ -119,43 +119,12 @@
             <tab-overview :pool="pool" />
           </q-tab-panel>
 
-          <q-tab-panel name="allocations"> </q-tab-panel>
+          <q-tab-panel name="allocations">
+            <tab-allocations :pool="pool"
+          /></q-tab-panel>
         </q-tab-panels>
-        <!-- <section class="q-py-md q-gutter-md">
-        <q-btn
-          v-bind:class="['tab-button', { active: currentTab === 'Details' }]"
-          v-on:click="currentTab = 'Details'"
-          >Details</q-btn
-        >
-        <q-btn
-          v-bind:class="['tab-button', { active: currentTab === 'Overview' }]"
-          v-on:click="currentTab = 'Overview'"
-          >Overview</q-btn
-        >
-        <q-btn
-          v-if="isAuthenticated"
-          v-bind:class="[
-            'tab-button',
-            { active: currentTab === 'Allocations' }
-          ]"
-          v-on:click="currentTab = 'Allocations'"
-          >Your Allocations</q-btn
-        > -->
       </q-card>
-      <!-- <q-card class="card">
-        <keep-alive>
-          <component
-            v-bind:is="currentTabComponent"
-            class="tab"
-            :poolObject.sync="pool"
-          ></component>
-        </keep-alive>
-      </q-card> -->
     </div>
-
-    <!-- <div>Params: {{ this.$route.params }} Query: {{ this.$route.query }}</div>
-      <div v-if="isAuthenticated">{{ accountName }} is authenticated</div>
-      <div v-else>Please login to do a transfer!</div> -->
   </q-page>
 </template>
 
@@ -173,18 +142,14 @@ import { date } from "quasar";
 export default {
   components: {
     tabOverview,
-    // tabAllocations,
+    tabAllocations,
     tabDetails,
     statusCountdown,
     statusBadge
   },
   data() {
     return {
-      //page info
-      tab: "overview",
-      // currentTab: "Details",
-
-      //pool info
+      tab: "details",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
       polling: null
@@ -193,9 +158,6 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID"]),
-    // currentTabComponent: function() {
-    //   return "tab-" + this.currentTab.toLowerCase();
-    // },
     progressToPercentage() {
       return (this.progress * 100).toFixed(2) + "%";
     },
