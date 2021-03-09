@@ -46,17 +46,7 @@
           v-if="['open', 'closed'].includes(pool.pool_status)"
         >
           <div class="text-h6 q-py-xs">Sale progress</div>
-          <div class="progress-bar">
-            <div
-              role="progressbar"
-              :style="{ width: progressToPercentage }"
-              :aria-valuenow="pool.progress"
-              aria-valuemin="0"
-              aria-valuemax="1"
-            >
-              {{ progressToPercentage }}
-            </div>
-          </div>
+          <status-progress :progress="pool.progress" />
         </div>
         <!-- if owner of pool -->
         <div v-if="created === true">
@@ -76,11 +66,11 @@
 </template>
 
 <script>
-import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
 import { toSvg } from "jdenticon";
 import statusBadge from "src/components/poolinfo/status-badge";
 import statusCountdown from "src/components/poolinfo/status-countdown";
+import statusProgress from "src/components/poolinfo/status-progress";
 
 export default {
   name: "Poolcard",
@@ -95,7 +85,7 @@ export default {
       required: false
     }
   },
-  components: { statusBadge, statusCountdown },
+  components: { statusBadge, statusCountdown, statusProgress },
   data() {
     return {
       pool: this.$defaultPoolInfo,
@@ -105,16 +95,7 @@ export default {
   },
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
-    progressToPercentage() {
-      var progress = Number(this.pool.progress);
-      if (isNaN(progress)) progress = 0;
-      if (progress <= 0) {
-        progress = "";
-      } else {
-        progress = progress.toFixed(2) * 100 + "%";
-      }
-      return progress;
-    },
+
     identicon() {
       return toSvg(this.poolID, this.avatar_size);
     },
@@ -167,24 +148,6 @@ export default {
 }
 .pool-card .bottom-section {
   padding-bottom: 8px;
-}
-.progress-bar {
-  color: $dark;
-  display: flex;
-  height: 1rem;
-  overflow: hidden;
-  font-size: 0.75rem;
-  background-color: #e9ecef;
-  border-radius: 0.25rem;
-}
-.progress-bar div {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: white;
-  text-align: center;
-  background-color: $primary;
-  transition: width 0.6s ease;
 }
 
 .pool-card .title-section {

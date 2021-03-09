@@ -19,6 +19,19 @@ const chainToSym = function(str) {
   }
 };
 
+const formatChain = function(str, decimals) {
+  try {
+    if (!str.includes(" ")) return str;
+    else {
+      let [qty, sym] = str.split(" ");
+      qty = parseFloat(qty).toFixed(decimals);
+      return `${qty} ${sym}`;
+    }
+  } catch (error) {
+    return str;
+  }
+};
+
 const toChainString = function(number, decimals, symbol) {
   return String(parseFloat(number).toFixed(decimals)) + String(" " + symbol);
 };
@@ -32,6 +45,7 @@ export default ({ Vue, store }) => {
   Vue.prototype.$chainToQty = chainToQty;
   Vue.prototype.$toChainString = toChainString;
   Vue.prototype.$chainToSym = chainToSym;
+  Vue.prototype.$formatChain = formatChain;
   Vue.prototype.$toDate = toDate;
   store["$chainToQty"] = chainToQty;
   store["$toChainString"] = toChainString;

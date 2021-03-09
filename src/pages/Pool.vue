@@ -64,32 +64,36 @@
           </q-item>
         </div>
         <q-item class="token-info col">
-          <div class="border col column ">
+          <div class="border col column justify-between">
             <div class="row justify-between">
-              <div>Hard cap:</div>
+              <h6>Hard cap:</h6>
               <h5>{{ toCap(pool.hard_cap) }}</h5>
             </div>
             <div class="row justify-between">
-              <div>Soft cap:</div>
+              <h6>Soft cap:</h6>
               <h5>{{ toCap(pool.soft_cap) }}</h5>
             </div>
             <div class="row justify-between">
-              <div>Swap ratio:</div>
+              <h6>Swap ratio:</h6>
               <h5>
                 {{ swapRatio }}
               </h5>
             </div>
-            <div class="row justify-between" v-if="pool.pool_status === 'open'">
-              <div>Participants:</div>
+            <div class="row justify-between">
+              <h6>Participants:</h6>
               <h5>{{ pool.participants }}</h5>
             </div>
-            <div class="row justify-between" v-if="pool.pool_status === 'open'">
-              <div>Sale progress:</div>
+            <div class="row justify-between">
+              <h6>Sale progress:</h6>
               <h5>{{ progressLabel }}</h5>
             </div>
-            <!-- <q-btn outline label="View on bloks.io" /> -->
+            <status-progress :progress="pool.progress" />
           </div>
         </q-item>
+
+        <q-inner-loading :showing="pool.title === 'Loading'">
+          <q-spinner-puff size="50px" color="primary" />
+        </q-inner-loading>
       </q-card>
       <q-card class="body-container card">
         <q-tabs
@@ -125,6 +129,10 @@
             <tab-allocations :pool="pool"
           /></q-tab-panel>
         </q-tab-panels>
+
+        <q-inner-loading :showing="pool.title === 'Loading'">
+          <q-spinner-puff size="50px" color="primary" />
+        </q-inner-loading>
       </q-card>
     </div>
   </q-page>
@@ -137,6 +145,7 @@ import statusBadge from "src/components/poolinfo/status-badge";
 import tabOverview from "src/components/poolinfo/tab-overview.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
+import statusProgress from "src/components/poolinfo/status-progress";
 import { mapGetters, mapActions } from "vuex";
 import { toSvg } from "jdenticon";
 import { date } from "quasar";
@@ -147,7 +156,8 @@ export default {
     tabAllocations,
     tabDetails,
     statusCountdown,
-    statusBadge
+    statusBadge,
+    statusProgress
   },
   data() {
     return {
@@ -190,9 +200,12 @@ export default {
       }
     },
     progressLabel() {
-      let totalRaise = this.$chainToQty(this.pool.total_raise, 0);
-      let hardCap = this.$chainToQty(this.pool.hard_cap, 0);
-      return `${totalRaise} / ${hardCap}`;
+      if (this.pool.total_raise === "Loading") return "Loading";
+      else {
+        let totalRaise = this.$chainToQty(this.pool.total_raise, 0);
+        let hardCap = this.$chainToQty(this.pool.hard_cap, 0);
+        return `${totalRaise} / ${hardCap}`;
+      }
     }
   },
   methods: {
