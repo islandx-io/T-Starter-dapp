@@ -85,7 +85,7 @@
             </div>
             <div class="row justify-between" v-if="pool.pool_status === 'open'">
               <div>Sale progress:</div>
-              <h5>{{ pool.progress }}</h5>
+              <h5>{{ progressLabel }}</h5>
             </div>
             <!-- <q-btn outline label="View on bloks.io" /> -->
           </div>
@@ -188,6 +188,11 @@ export default {
       } catch (error) {
         return "Error";
       }
+    },
+    progressLabel() {
+      let totalRaise = this.$chainToQty(this.pool.total_raise, 0);
+      let hardCap = this.$chainToQty(this.pool.hard_cap, 0);
+      return `${totalRaise} / ${hardCap}`;
     }
   },
   methods: {

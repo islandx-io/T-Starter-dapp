@@ -121,8 +121,8 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
   }
 
   // Update progress
-  const total_raise = this.$fromChainString(pool.total_raise);
-  const hard_cap = this.$fromChainString(pool.hard_cap);
+  const total_raise = this.$chainToQty(pool.total_raise);
+  const hard_cap = this.$chainToQty(pool.hard_cap);
   var progress = 0;
   if (hard_cap !== 0) progress = total_raise / hard_cap;
 
