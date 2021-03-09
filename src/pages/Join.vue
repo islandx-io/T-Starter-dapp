@@ -11,19 +11,17 @@
         Maximum:
         {{ $fromChainString(pool.maximum_allocation) + " " + BaseTokenSymbol }}
       </div>
-      <div>Balance: TODO</div>
+      <div>Balance: {{ balance }} TODO</div>
 
       <!-- Input with max button -->
       <div class="row">
-        <q-input color="primary"
-        v-model="amount"
-        filled
-        label="Amount"
-        lazy-rules
-        :rules="[
-          val =>
-            (!!val && val > pool.minimum_swap) || 'Must be larger than minimum'
-        ]">
+        <q-input
+          color="primary"
+          v-model="amount"
+          filled
+          label="Amount"
+          :rules="[validateInput]"
+        >
           <template v-slot:append>
             <div class="row items-center justify-end">
               <q-btn label="Max" @click="setMax" color="primary" />
@@ -41,8 +39,6 @@
         {{ TokenSymbol }}
       </div>
       <q-btn label="Join Pool" @click="onSubmit" color="primary" />
-
-      
     </q-form>
   </q-page>
 </template>
@@ -55,6 +51,7 @@ export default {
     return {
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
+      balance: 10,
       amount: 0,
       base_token_symbol: ""
     };
@@ -70,8 +67,7 @@ export default {
     TokenSymbol() {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
       return this.pool.swap_ratio.quantity.slice(idx);
-    },
-    
+    }
   },
 
   methods: {
@@ -79,16 +75,31 @@ export default {
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
-    setMax() {
-      this.amount = 10;
+
+    validateInput(val) {
+      return (
+        (val >= this.$fromChainString(this.pool.minimum_swap) &&
+          val <= this.$fromChainString(this.pool.maximum_allocation)) ||
+        `Must be between minimum and mximum`
+      );
     },
+
+    setMax() {
+      if (this.balance >= this.$fromChainString(this.pool.maximum_allocation)) {
+        this.amount = this.$fromChainString(this.pool.maximum_allocation);
+      } else {
+        this.amount = this.balance;
+      }
+    },
+
     checkAllowed() {
-      // TODO check if pool joinable, private, public, balance,
+      // TODO check if whitelisted, joinable, private, public, balance (start tokens),
     },
 
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
     },
+
     async joinPoolTransaction() {
       const actions = [
         {
@@ -102,6 +113,7 @@ export default {
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
+
     async onSubmit() {
       if (!this.isAuthenticated) {
         this.$q.notify({
@@ -122,6 +134,7 @@ export default {
       }
     }
   },
+
   async mounted() {
     await this.loadChainData();
     this.getPoolInfo();
