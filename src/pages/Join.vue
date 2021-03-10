@@ -5,11 +5,11 @@
       <div>{{ pool.title }}</div>
       <div>
         Minimum:
-        {{ $fromChainString(pool.minimum_swap) + " " + BaseTokenSymbol }}
+        {{ $chainToQty(pool.minimum_swap) + " " + BaseTokenSymbol }}
       </div>
       <div>
         Maximum:
-        {{ $fromChainString(pool.maximum_allocation) + " " + BaseTokenSymbol }}
+        {{ $chainToQty(pool.maximum_allocation) + " " + BaseTokenSymbol }}
       </div>
       <div>Balance: {{ balance }} TODO</div>
 
@@ -31,11 +31,11 @@
       </div>
       <div>
         1 {{ BaseTokenSymbol }} =
-        {{ $fromChainString(pool.swap_ratio.quantity) }} {{ TokenSymbol }}
+        {{ $chainToQty(pool.swap_ratio.quantity) }} {{ TokenSymbol }}
       </div>
-      <div>To {{ amount * $fromChainString(pool.swap_ratio.quantity) }}</div>
+      <div>To {{ amount * $chainToQty(pool.swap_ratio.quantity) }}</div>
       <div>
-        Remaining {{ $fromChainString(pool.remaining_offer).toFixed(0) }}
+        Remaining {{ $chainToQty(pool.remaining_offer).toFixed(0) }}
         {{ TokenSymbol }}
       </div>
       <q-btn label="Join Pool" @click="onSubmit" color="primary" />
@@ -78,15 +78,15 @@ export default {
 
     validateInput(val) {
       return (
-        (val >= this.$fromChainString(this.pool.minimum_swap) &&
-          val <= this.$fromChainString(this.pool.maximum_allocation)) ||
+        (val >= this.$chainToQty(this.pool.minimum_swap) &&
+          val <= this.$chainToQty(this.pool.maximum_allocation)) ||
         `Must be between minimum and mximum`
       );
     },
 
     setMax() {
-      if (this.balance >= this.$fromChainString(this.pool.maximum_allocation)) {
-        this.amount = this.$fromChainString(this.pool.maximum_allocation);
+      if (this.balance >= this.$chainToQty(this.pool.maximum_allocation)) {
+        this.amount = this.$chainToQty(this.pool.maximum_allocation);
       } else {
         this.amount = this.balance;
       }
