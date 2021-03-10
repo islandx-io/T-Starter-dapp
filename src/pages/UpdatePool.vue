@@ -450,19 +450,15 @@ export default {
         String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
       );
     },
-    fromChainString(str){
-      let idx = str.indexOf(' ')
-      return Number(str.slice(0,idx));
-    },
     getPoolInfo() {
       this.pool = JSON.parse(JSON.stringify(this.getPoolByID(this.poolID))); //make deep copy
       this.getTokenSymbolFromPool();
       // pool to numbers
-      this.pool.swap_ratio.quantity = this.fromChainString(this.pool.swap_ratio.quantity);
-      this.pool.soft_cap = this.fromChainString(this.pool.soft_cap);
-      this.pool.hard_cap = this.fromChainString(this.pool.hard_cap);
-      this.pool.minimum_swap = this.fromChainString(this.pool.minimum_swap);
-      this.pool.maximum_allocation = this.fromChainString(this.pool.maximum_allocation);
+      this.pool.swap_ratio.quantity = this.$chainToQty(this.pool.swap_ratio.quantity);
+      this.pool.soft_cap = this.$chainToQty(this.pool.soft_cap);
+      this.pool.hard_cap = this.$chainToQty(this.pool.hard_cap);
+      this.pool.minimum_swap = this.$chainToQty(this.pool.minimum_swap);
+      this.pool.maximum_allocation = this.$chainToQty(this.pool.maximum_allocation);
 
       this.populateWebLinks();
       this.BaseTokenFromChain();      
