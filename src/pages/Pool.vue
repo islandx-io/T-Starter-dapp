@@ -58,9 +58,13 @@
               :to="{ name: 'joinpool', params: {} }"
               :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
               label="Join pool"
-              :disable="pool.pool_status === 'upcoming'"
+              :disable="pool.pool_status === 'upcoming' || !isAuthenticated"
               v-if="pool.pool_status !== 'closed'"
-            />
+            >
+            </q-btn>
+            <q-tooltip v-if="!isAuthenticated">
+              Connect wallet
+            </q-tooltip>
           </q-item>
         </div>
         <q-item class="token-info col">
@@ -230,10 +234,10 @@ export default {
   },
   async mounted() {
     // if rerouting with tab
-    if (this.$route.query.tab == 'allocations') {
-      this.tab = 'allocations'
+    if (this.$route.query.tab == "allocations") {
+      this.tab = "allocations";
     } else {
-      this.tab = 'details'
+      this.tab = "details";
     }
     // get data from chain, write to store, get from store
     await this.loadChainData();

@@ -1,11 +1,12 @@
 <template>
   <q-page>
     <!-- content -->
-    <q-form @submit="onSubmit" >
-      <router-link
+    <q-form @submit="onSubmit">
+      <q-btn
         :to="{ name: 'pooldetails', params: { id: poolID } }"
-        class="router-link q-pr-md"
-        ><q-btn outline color="primary">Back</q-btn></router-link
+        outline
+        color="primary"
+        >Back</q-btn
       >
       <div>{{ pool.title }}</div>
       <div>
@@ -16,7 +17,7 @@
         Maximum:
         {{ $chainToQty(pool.maximum_allocation) }} {{ BaseTokenSymbol }}
       </div>
-      <div>Balance: {{ balance }} {{BaseTokenSymbol}}</div>
+      <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
 
       <!-- Input with max button -->
       <div class="row">
@@ -46,7 +47,18 @@
         Remaining {{ $chainToQty(pool.remaining_offer).toFixed(0) }}
         {{ TokenSymbol }}
       </div>
-      <q-btn label="Join Pool" type="submit" color="primary" />
+      <q-item>
+        <q-btn
+          class="col"
+          label="Join Pool"
+          type="submit"
+          color="primary"
+          :disable="!isAuthenticated"
+        />
+        <q-tooltip v-if="!isAuthenticated">
+          Connect wallet
+        </q-tooltip>
+      </q-item>
     </q-form>
   </q-page>
 </template>
@@ -154,7 +166,11 @@ export default {
           icon: "cloud_done",
           message: "Submitted"
         });
-        this.$router.push({ name: 'pooldetails', params: { id: this.poolID }, query: { tab: 'allocations' } })
+        this.$router.push({
+          name: "pooldetails",
+          params: { id: this.poolID },
+          query: { tab: "allocations" }
+        });
       }
     }
   },

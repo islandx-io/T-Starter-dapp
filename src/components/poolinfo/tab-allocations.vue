@@ -1,7 +1,5 @@
 <template>
   <div>
-    Date || Amount (base) || Token bought || % of pool || amount START staked ||
-    chain transaction address
     <q-table
       title="Allocation History"
       :data="data"

@@ -327,7 +327,7 @@
       </div>
     </q-form>
 
-    <div v-else> You are not the owner of this pool</div>
+    <div v-else>You are not the owner of this pool</div>
   </q-page>
 </template>
 
@@ -337,7 +337,7 @@ import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  components: { },
+  components: {},
 
   data() {
     return {
@@ -475,36 +475,18 @@ export default {
       this.base_token_symbol = this.pool.base_token.sym.slice(idx);
     },
     populateWebLinks() {
-      this.webLinks.find(
-        el => el.key === "website"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "website")
-        .map(a => a.value);
-      this.webLinks.find(
-        el => el.key === "github"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "github")
-        .map(a => a.value);
-      this.webLinks.find(
-        el => el.key === "medium"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "medium")
-        .map(a => a.value);
-      this.webLinks.find(
-        el => el.key === "telegram"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "telegram")
-        .map(a => a.value);
-      this.webLinks.find(
-        el => el.key === "twitter"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "twitter")
-        .map(a => a.value);
-      this.webLinks.find(
-        el => el.key === "whitepaper"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "whitepaper")
-        .map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find(el => el.key === "website").value = this.pool.web_links.filter(el => el.key === "website").map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find( el => el.key === "github" ).value = this.pool.web_links.filter(el => el.key === "github").map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find( el => el.key === "medium" ).value = this.pool.web_links.filter(el => el.key === "medium").map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find( el => el.key === "telegram" ).value = this.pool.web_links.filter(el => el.key === "telegram").map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find( el => el.key === "twitter" ).value = this.pool.web_links.filter(el => el.key === "twitter").map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find( el => el.key === "whitepaper" ).value = this.pool.web_links.filter(el => el.key === "whitepaper").map(a => a.value);
     },
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
@@ -521,7 +503,6 @@ export default {
       console.log(this.cleanedWebLinks);
     },
     async updateChainPool() {
-      console.log(this.pool.pool_open);
       const actions = [
         {
           account: process.env.CONTRACT_ADDRESS,

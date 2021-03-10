@@ -63,13 +63,7 @@ export const getChainAccountInfo = async function({ commit }, payload) {
   console.log(payload);
   console.log(await rpc.get_account(payload.address));
   console.log(await rpc.get_account(payload.accountName));
-  console.log(
-    await rpc.get_currency_balance(
-      payload.address,
-      payload.accountName,
-      payload.sym
-    )
-  );
+  console.log( await rpc.get_currency_balance( payload.address, payload.accountName, payload.sym ) );
   console.log(await rpc.get_currency_stats(payload.address, payload.sym));
 
   // console.log(await rpc.get_currency_balance(address, "fuzzytestnet"));
