@@ -343,6 +343,7 @@ export default {
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
 
+      cleanedWebLinks: [],
       webLinks: [
         {
           key: "website",
@@ -497,10 +498,10 @@ export default {
       console.log(this.token_decimals);
     },
     checkLinks() {
-      console.log(this.webLinks.filter(el => el.value[0] !== ""))
-      console.log(this.webLinks.filter(el => el.value !== ""))
-      this.webLinks = this.webLinks.filter(el => el.value[0] !== "");
-      console.log(this.webLinks)
+      // console.log(this.webLinks.filter(el => el.value[0] != ""))
+      console.log(this.webLinks.filter(el => el.value != ""))
+      this.cleanedWebLinks = this.webLinks.filter(el => el.value != "");
+      console.log(this.cleanedWebLinks)
     },
     async updateChainPool() {
       const actions = [
@@ -542,7 +543,7 @@ export default {
             private_end: this.pool.private_end,
             public_end: this.pool.public_end,
             whitelist: this.pool.whitelist,
-            web_links: this.webLinks
+            web_links: this.cleanedWebLinks
           }
         }
       ];

@@ -181,7 +181,7 @@ export default {
   data() {
     return {
       //page info
-      tab: "overview",
+      tab: "details",
       // currentTab: "Details",
 
       //pool info

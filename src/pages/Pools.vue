@@ -37,12 +37,14 @@
 
         <q-tab-panel name="featured-pools">
           <div class="row  q-gutter-md">
-            <Poolcard v-for="id in poolIDs" :key="id" :poolID="id"></Poolcard>
+            <Poolcard v-for="id in featuredIDs" :key="id" :poolID="id"></Poolcard>
           </div>
         </q-tab-panel>
 
         <q-tab-panel name="joined-pools">
-          <div class="row  q-gutter-md"></div>
+          <div class="row  q-gutter-md">
+            <Poolcard v-for="id in joinedIDs" :key="id" :poolID="id"></Poolcard>
+          </div>
         </q-tab-panel>
 
         <q-tab-panel name="created-pools">
@@ -62,7 +64,9 @@ export default {
   components: { Poolcard },
   data() {
     return {
-      tab: "all-pools"
+      tab: "all-pools",
+      joinedIDs: [],
+      featuredIDs: [],
     };
   },
   computed: {
@@ -73,14 +77,17 @@ export default {
     },
     createdPoolIDs() {
       return this.getCreatedPoolIDs(this.accountName);
-    }
+    },
   },
   methods: {
-    ...mapActions("pools", ["getAllChainPools", 'getCreatedChainPools'])
+    ...mapActions("pools", ["getAllChainPools", 'getCreatedChainPools', 'getJoinedChainPools', 'getFeaturedChainPools']),
+    
   },
   async mounted() {
     await this.getAllChainPools();
     await this.getCreatedChainPools(this.accountName);
+    this.joinedIDs = await this.getJoinedChainPools(this.accountName);
+    this.featuredIDs = await this.getFeaturedChainPools();
   }
 };
 </script>
