@@ -30,8 +30,8 @@
         </q-input>
       </div>
       <div>
-        1 {{ BaseTokenSymbol }} =
-        {{ $chainToQty(pool.swap_ratio.quantity) }} {{ TokenSymbol }}
+        1 {{ BaseTokenSymbol }} = {{ $chainToQty(pool.swap_ratio.quantity) }}
+        {{ TokenSymbol }}
       </div>
       <div>To {{ amount * $chainToQty(pool.swap_ratio.quantity) }}</div>
       <div>
@@ -71,7 +71,11 @@ export default {
   },
 
   methods: {
-    ...mapActions("pools", ["getChainPoolByID", "getChainAccountInfo"]),
+    ...mapActions("pools", [
+      "getChainPoolByID",
+      "getChainAccountInfo",
+      "getBalanceFromChain"
+    ]),
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
@@ -82,6 +86,15 @@ export default {
           val <= this.$chainToQty(this.pool.maximum_allocation)) ||
         `Must be between minimum and mximum`
       );
+    },
+
+    async getBalance() {
+      let payload = {
+        address: this.pool.base_token.contract,
+        sym: this.BaseTokenSymbol,
+        accountName: this.accountName
+      };
+      this.balance = this.$chainToQty((await this.getBalanceFromChain(payload))[0]);
     },
 
     setMax() {
@@ -138,12 +151,7 @@ export default {
   async mounted() {
     await this.loadChainData();
     this.getPoolInfo();
-    let payload = {
-      address: this.pool.base_token.contract,
-      sym: this.BaseTokenSymbol,
-      accountName: this.accountName
-    };
-    this.getChainAccountInfo(payload);
+    this.getBalance();
   }
 };
 </script>
