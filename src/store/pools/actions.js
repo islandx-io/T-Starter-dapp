@@ -81,7 +81,7 @@ export const getBalanceFromChain = async function({ commit }, payload) {
     const rpc = this.$api.getRpc();
     console.log(await rpc.get_currency_balance(payload.address, payload.accountName, payload.sym));
     return await rpc.get_currency_balance(payload.address,payload.accountName,payload.sym);
-    
+
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -201,33 +201,41 @@ export const getJoinedChainPools = async function(
   user
 ) {
   try {
-    const tableResults = await this.$api.getTableRows({
-      code: process.env.CONTRACT_ADDRESS, // Contract that we target
-      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-      table: "poolaccounts", // Table name
-      limit: 100,
-      index_position: 3,
-      key_type: "i64",
-      lower_bound: user,
-      upper_bound: user,
-      reverse: false, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
-    });
-
-    let pool_id_list = [];
-    tableResults.rows.forEach((pool, index) => {
-      // console.log(pool);
-      let pool_id = pool.pool_id;
-      pool_id_list.push(pool_id);
-    });
-    pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
-    console.log(pool_id_list);
-
-    pool_id_list.forEach(pool_id => {
-      dispatch("getChainPoolByID", pool_id);
-    });
-
-    return pool_id_list;
+    if (user !== null) {
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: "poolaccounts", // Table name
+        limit: 100,
+        index_position: 3,
+        key_type: "i64",
+        lower_bound: user,
+        upper_bound: user,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+  
+      console.log("Joined pools:")
+      console.log(tableResults.rows)
+      let pool_id_list = [];
+      tableResults.rows.forEach((pool, index) => {
+        // console.log(pool);
+        let pool_id = pool.pool_id;
+        pool_id_list.push(pool_id);
+      });
+      pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
+      console.log(pool_id_list);
+  
+      pool_id_list.forEach(pool_id => {
+        dispatch("getChainPoolByID", pool_id);
+      });
+  
+      return pool_id_list;
+    }
+    else {
+      return;
+    }
+    
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
