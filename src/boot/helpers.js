@@ -39,7 +39,7 @@ const toChainString = function(number, decimals, symbol) {
 
 const toDate = function(timeStamp) {
   if (timeStamp === "Loading") return timeStamp;
-  else return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
+  else return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm");
 };
 
 export default ({ Vue, store }) => {

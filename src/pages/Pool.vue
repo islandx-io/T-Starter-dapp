@@ -210,9 +210,6 @@ export default {
   },
   methods: {
     ...mapActions("pools", ["getChainPoolByID"]),
-    toDate(timeStamp) {
-      return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
-    },
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
