@@ -1,6 +1,5 @@
 <template>
   <q-page>
-    <title>T-STARTER - Pools</title>
     <section class="header-bg row content-center justify-center">
       <h2 class="text-white">Pools</h2>
     </section>

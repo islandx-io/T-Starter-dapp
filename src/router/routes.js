@@ -28,8 +28,18 @@ const routes = [
     // TODO decide on how slugs and IDs will be handled
     path: "/pools/:id",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", name: 'pooldetails', component: () => import("pages/Pool.vue") },
-                { path: "join", name: 'joinpool', component: () => import("pages/Join.vue") }]
+    children: [
+      {
+        path: "",
+        name: "pooldetails",
+        component: () => import("pages/Pool.vue")
+      },
+      {
+        path: "join",
+        name: "joinpool",
+        component: () => import("pages/Join.vue")
+      }
+    ]
   },
   {
     path: "/createpool",
@@ -39,7 +49,13 @@ const routes = [
   {
     path: "/updatepool/:id",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", name:"updatepool", component: () => import("pages/UpdatePool.vue") }]
+    children: [
+      {
+        path: "",
+        name: "updatepool",
+        component: () => import("pages/UpdatePool.vue")
+      }
+    ]
   },
 
   // Always leave this as last one,
