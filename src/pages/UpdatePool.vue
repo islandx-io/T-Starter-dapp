@@ -1,6 +1,12 @@
 <template>
   <q-page>
-    <q-form v-if="(this.accountName === this.pool.owner)" @submit="onSubmit" @reset="onReset" @publish="onPublish" class="q-gutter-md">
+    <q-form
+      v-if="this.accountName === this.pool.owner"
+      @submit="onSubmit"
+      @reset="onReset"
+      @publish="onPublish"
+      class="q-gutter-md"
+    >
       <!-- tokens and adresses -->
       <div class="row">
         <div class="q-pa-md">
@@ -27,7 +33,7 @@
           v-model="token_symbol"
           label="Token"
           lazy-rules
-          :rules="[val => (!!val) || 'Must specify the token']"
+          :rules="[val => !!val || 'Must specify the token']"
         >
         </q-input>
         To
@@ -46,7 +52,7 @@
           v-model="pool.swap_ratio.quantity"
           label="Ratio"
           lazy-rules
-          :rules="[val => (!!val) || 'Must specify the token']"
+          :rules="[val => !!val || 'Must specify the token']"
         >
           {{
             $toChainString(
@@ -66,9 +72,7 @@
             v-model="pool.soft_cap"
             label="Soft cap"
             lazy-rules
-            :rules="[
-              val => (!!val) || 'Must specify the amount'
-            ]"
+            :rules="[val => !!val || 'Must specify the amount']"
           >
           </q-input>
           <q-input
@@ -76,9 +80,7 @@
             v-model="pool.hard_cap"
             label="Hard cap"
             lazy-rules
-            :rules="[
-              val => (!!val) || 'Must specify the amount'
-            ]"
+            :rules="[val => !!val || 'Must specify the amount']"
           >
           </q-input>
         </div>
@@ -88,9 +90,7 @@
             v-model="pool.minimum_swap"
             label="minimum swap amount"
             lazy-rules
-            :rules="[
-              val => (!!val) || 'Must specify the amount'
-            ]"
+            :rules="[val => !!val || 'Must specify the amount']"
           >
           </q-input>
           <q-input
@@ -98,9 +98,7 @@
             v-model="pool.maximum_allocation"
             label="maximum swap per wallet"
             lazy-rules
-            :rules="[
-              val => (!!val) || 'Must specify the amount'
-            ]"
+            :rules="[val => !!val || 'Must specify the amount']"
           >
           </q-input>
         </div>
@@ -222,7 +220,9 @@
           v-model="pool.avatar"
           label="Avatar image link"
           lazy-rules
-          :rules="[val => (val && val.length > 1) || 'Must specify the image link']"
+          :rules="[
+            val => (val && val.length > 1) || 'Must specify the image link'
+          ]"
         >
         </q-input>
         <q-avatar size="50px">
@@ -337,7 +337,8 @@ import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  // components: { LinkField },
+  components: { },
+
   data() {
     return {
       poolID: Number(this.$route.params.id),
@@ -371,7 +372,6 @@ export default {
         }
       ],
 
-
       base_token_symbol: "PBTC",
       base_token_options: [
         {
@@ -394,7 +394,7 @@ export default {
       token_decimals: 1,
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
-      link_index: -1,
+      link_index: -1
     };
   },
   computed: {
@@ -426,7 +426,7 @@ export default {
         ),
         contract: this.pool.swap_ratio.contract
       };
-    },
+    }
   },
 
   methods: {
@@ -442,42 +442,69 @@ export default {
     toUnixTimestamp(timeStamp) {
       return new Date(timeStamp).valueOf();
     },
-    toDateString(timestamp){
-      return date.formatDate(timestamp, 'YYYY-MM-DD HH:mm')
+    toDateString(timestamp) {
+      return date.formatDate(timestamp, "YYYY-MM-DD HH:mm");
     },
     getPoolInfo() {
       this.pool = JSON.parse(JSON.stringify(this.getPoolByID(this.poolID))); //make deep copy
       this.getTokenSymbolFromPool();
       // pool to numbers
-      this.pool.swap_ratio.quantity = this.$chainToQty(this.pool.swap_ratio.quantity);
+      this.pool.swap_ratio.quantity = this.$chainToQty(
+        this.pool.swap_ratio.quantity
+      );
       this.pool.soft_cap = this.$chainToQty(this.pool.soft_cap);
       this.pool.hard_cap = this.$chainToQty(this.pool.hard_cap);
       this.pool.minimum_swap = this.$chainToQty(this.pool.minimum_swap);
-      this.pool.maximum_allocation = this.$chainToQty(this.pool.maximum_allocation);
+      this.pool.maximum_allocation = this.$chainToQty(
+        this.pool.maximum_allocation
+      );
 
       this.populateWebLinks();
-      this.BaseTokenFromChain();      
+      this.BaseTokenFromChain();
 
-      this.pool.pool_open = this.toDateString(this.pool.pool_open)
-      this.pool.private_end = this.toDateString(this.pool.private_end)
-      this.pool.public_end = this.toDateString(this.pool.public_end)
-
+      this.pool.pool_open = this.toDateString(this.pool.pool_open);
+      this.pool.private_end = this.toDateString(this.pool.private_end);
+      this.pool.public_end = this.toDateString(this.pool.public_end);
     },
     getTokenSymbolFromPool() {
-      let idx = this.pool.swap_ratio.quantity.indexOf(' ')+1
-      this.token_symbol = this.pool.swap_ratio.quantity.slice(idx)
+      let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
+      this.token_symbol = this.pool.swap_ratio.quantity.slice(idx);
     },
     BaseTokenFromChain() {
-      let idx = this.pool.base_token.sym.indexOf(',')+1
-      this.base_token_symbol = this.pool.base_token.sym.slice(idx)
+      let idx = this.pool.base_token.sym.indexOf(",") + 1;
+      this.base_token_symbol = this.pool.base_token.sym.slice(idx);
     },
     populateWebLinks() {
-      this.webLinks.find(el => el.key === "website").value = this.pool.web_links.filter(el => el.key === "website").map(a => a.value)
-      this.webLinks.find(el => el.key === "github").value = this.pool.web_links.filter(el => el.key === "github").map(a => a.value)
-      this.webLinks.find(el => el.key === "medium").value = this.pool.web_links.filter(el => el.key === "medium").map(a => a.value)
-      this.webLinks.find(el => el.key === "telegram").value = this.pool.web_links.filter(el => el.key === "telegram").map(a => a.value)
-      this.webLinks.find(el => el.key === "twitter").value = this.pool.web_links.filter(el => el.key === "twitter").map(a => a.value)
-      this.webLinks.find(el => el.key === "whitepaper").value = this.pool.web_links.filter(el => el.key === "whitepaper").map(a => a.value)
+      this.webLinks.find(
+        el => el.key === "website"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "website")
+        .map(a => a.value);
+      this.webLinks.find(
+        el => el.key === "github"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "github")
+        .map(a => a.value);
+      this.webLinks.find(
+        el => el.key === "medium"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "medium")
+        .map(a => a.value);
+      this.webLinks.find(
+        el => el.key === "telegram"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "telegram")
+        .map(a => a.value);
+      this.webLinks.find(
+        el => el.key === "twitter"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "twitter")
+        .map(a => a.value);
+      this.webLinks.find(
+        el => el.key === "whitepaper"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "whitepaper")
+        .map(a => a.value);
     },
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
@@ -489,12 +516,12 @@ export default {
       console.log(this.token_decimals);
     },
     checkLinks() {
-      console.log(this.webLinks.filter(el => el.value != ""))
+      console.log(this.webLinks.filter(el => el.value != ""));
       this.cleanedWebLinks = this.webLinks.filter(el => el.value != "");
-      console.log(this.cleanedWebLinks)
+      console.log(this.cleanedWebLinks);
     },
     async updateChainPool() {
-      console.log(this.pool.pool_open)
+      console.log(this.pool.pool_open);
       const actions = [
         {
           account: process.env.CONTRACT_ADDRESS,
@@ -553,7 +580,7 @@ export default {
           data: {
             pool_id: this.poolID
           }
-        },
+        }
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
@@ -581,7 +608,7 @@ export default {
     async onPublish() {
       await this.publishPool();
     },
-    onReset() {},
+    onReset() {}
 
     // addLinkField() {
     //   console.log(this.pool.web_links);
@@ -602,5 +629,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
