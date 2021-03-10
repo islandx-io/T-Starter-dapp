@@ -96,7 +96,7 @@ export default {
 .c-large {
   padding: 0;
   margin: 0;
-  color: $primary;
+  color: $accent;
   font-weight: 200px;
 }
 .c-large li {
