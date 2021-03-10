@@ -9,7 +9,7 @@
         </q-toolbar-title>
         <div class="gt-sm row">
           <router-link to="/pools" class="router-link q-pr-md"
-            ><q-btn outline color="primary">View Pools</q-btn></router-link
+            ><q-btn outline color="primary">Pools ⛲</q-btn></router-link
           >
           <router-link to="/createpool" class="router-link"
             ><q-btn v-if="accountName === admin_address" outline color="primary"
