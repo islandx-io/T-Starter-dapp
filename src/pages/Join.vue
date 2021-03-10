@@ -1,17 +1,22 @@
 <template>
   <q-page>
     <!-- content -->
-    <q-form>
+    <q-form @submit="onSubmit" >
+      <router-link
+        :to="{ name: 'pooldetails', params: { id: poolID } }"
+        class="router-link q-pr-md"
+        ><q-btn outline color="primary">Back</q-btn></router-link
+      >
       <div>{{ pool.title }}</div>
       <div>
         Minimum:
-        {{ $chainToQty(pool.minimum_swap) + " " + BaseTokenSymbol }}
+        {{ $chainToQty(pool.minimum_swap) }} {{ BaseTokenSymbol }}
       </div>
       <div>
         Maximum:
-        {{ $chainToQty(pool.maximum_allocation) + " " + BaseTokenSymbol }}
+        {{ $chainToQty(pool.maximum_allocation) }} {{ BaseTokenSymbol }}
       </div>
-      <div>Balance: {{ balance }} TODO</div>
+      <div>Balance: {{ balance }} {{BaseTokenSymbol}}</div>
 
       <!-- Input with max button -->
       <div class="row">
@@ -33,12 +38,15 @@
         1 {{ BaseTokenSymbol }} = {{ $chainToQty(pool.swap_ratio.quantity) }}
         {{ TokenSymbol }}
       </div>
-      <div>To {{ amount * $chainToQty(pool.swap_ratio.quantity) }}</div>
+      <div>
+        To {{ amount * $chainToQty(pool.swap_ratio.quantity) }}
+        {{ TokenSymbol }}
+      </div>
       <div>
         Remaining {{ $chainToQty(pool.remaining_offer).toFixed(0) }}
         {{ TokenSymbol }}
       </div>
-      <q-btn label="Join Pool" @click="onSubmit" color="primary" />
+      <q-btn label="Join Pool" type="submit" color="primary" />
     </q-form>
   </q-page>
 </template>
@@ -94,7 +102,9 @@ export default {
         sym: this.BaseTokenSymbol,
         accountName: this.accountName
       };
-      this.balance = this.$chainToQty((await this.getBalanceFromChain(payload))[0]);
+      this.balance = this.$chainToQty(
+        (await this.getBalanceFromChain(payload))[0]
+      );
     },
 
     setMax() {
@@ -144,6 +154,7 @@ export default {
           icon: "cloud_done",
           message: "Submitted"
         });
+        this.$router.push({ name: 'pooldetails', params: { id: this.poolID }, query: { tab: 'allocations' } })
       }
     }
   },

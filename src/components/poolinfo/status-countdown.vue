@@ -109,7 +109,7 @@ export default {
   align-items: center;
   height: 40px;
   width: 40px;
-  border: 2px solid $primary;
+  border: 2px solid $accent;
   border-radius: 50%;
 }
 .c-large li:after {

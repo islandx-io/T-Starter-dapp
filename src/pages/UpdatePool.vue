@@ -489,12 +489,12 @@ export default {
       console.log(this.token_decimals);
     },
     checkLinks() {
-      // console.log(this.webLinks.filter(el => el.value[0] != ""))
       console.log(this.webLinks.filter(el => el.value != ""))
       this.cleanedWebLinks = this.webLinks.filter(el => el.value != "");
       console.log(this.cleanedWebLinks)
     },
     async updateChainPool() {
+      console.log(this.pool.pool_open)
       const actions = [
         {
           account: process.env.CONTRACT_ADDRESS,
@@ -528,9 +528,14 @@ export default {
               this.selected_base_token.sym
             ),
             remaining_offer: "3501234.5670 START", //TODO set these amounts
-            total_raise: "14.98765433 PBTC",
+            total_raise: this.$toChainString(
+              this.pool.hard_cap,
+              this.selected_base_token.decimals,
+              this.selected_base_token.sym
+            ),
             participants: 0,
             pool_open: this.pool.pool_open,
+            // pool_open: String(Math.trunc(Date.now())),
             private_end: this.pool.private_end,
             public_end: this.pool.public_end,
             whitelist: this.pool.whitelist,

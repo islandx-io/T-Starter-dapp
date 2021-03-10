@@ -73,10 +73,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["getAllChainPools", "getFeaturedChainPools"])
+    ...mapActions("pools", ["getAllChainPools", "getFeaturedChainPools", "getUpcomingChainPools"])
   },
   async mounted() {
     await this.getAllChainPools();
+    await this.getUpcomingChainPools();
     this.featuredIDs = await this.getFeaturedChainPools();
   }
 };

@@ -1,5 +1,8 @@
 <template>
-  <div>TODO</div>
+  <div>Date || Amount (base) || Token bought
+    <div>Show staked tokens?</div>
+  </div>
+  
 </template>
 
 <script>
@@ -7,7 +10,7 @@ export default {
   name: "tab-allocations",
   props: {
     pool: {
-      required: true
+      required: false
     }
   }
 };
