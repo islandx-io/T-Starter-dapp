@@ -125,7 +125,7 @@
             <tab-overview :pool="pool" />
           </q-tab-panel>
 
-          <q-tab-panel name="allocations">
+          <q-tab-panel name="allocations" @mousedown.stop>
             <tab-allocations :pool="pool"
           /></q-tab-panel>
         </q-tab-panels>
