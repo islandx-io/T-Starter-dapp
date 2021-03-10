@@ -49,7 +49,7 @@
           :rules="[val => (!!val) || 'Must specify the token']"
         >
           {{
-            toChainString(
+            $toChainString(
               pool.swap_ratio.quantity,
               token_decimals,
               token_symbol
@@ -419,7 +419,7 @@ export default {
     },
     swapRatio() {
       return {
-        quantity: this.toChainString(
+        quantity: this.$toChainString(
           this.pool.swap_ratio.quantity,
           this.token_decimals,
           this.token_symbol
@@ -444,11 +444,6 @@ export default {
     },
     toDateString(timestamp){
       return date.formatDate(timestamp, 'YYYY-MM-DD HH:mm')
-    },
-    toChainString(number, decimals, symbol) {
-      return (
-        String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
-      );
     },
     getPoolInfo() {
       this.pool = JSON.parse(JSON.stringify(this.getPoolByID(this.poolID))); //make deep copy
@@ -512,22 +507,22 @@ export default {
             description: this.pool.description,
             base_token: this.BaseTokenToChain,
             swap_ratio: this.swapRatio,
-            soft_cap: this.toChainString(
+            soft_cap: this.$toChainString(
               this.pool.soft_cap,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            hard_cap: this.toChainString(
+            hard_cap: this.$toChainString(
               this.pool.hard_cap,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            minimum_swap: this.toChainString(
+            minimum_swap: this.$toChainString(
               this.pool.minimum_swap,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            maximum_allocation: this.toChainString(
+            maximum_allocation: this.$toChainString(
               this.pool.maximum_allocation,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
