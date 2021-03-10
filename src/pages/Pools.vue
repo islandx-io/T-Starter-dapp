@@ -29,28 +29,25 @@
         swipeable
         class="tab-panel-container"
       >
-        <q-tab-panel name="all-pools" class="row  q-gutter-md">
-          <!-- <div class="col row  q-gutter-md"> -->
-          <Poolcard v-for="id in poolIDs" :key="id" :poolID="id"></Poolcard>
-          <!-- </div> -->
+        <q-tab-panel name="all-pools" class="poolcard-container">
+          <Poolcard v-for="id in poolIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
-        <q-tab-panel name="featured-pools">
-          <div class="row  q-gutter-md">
-            <Poolcard v-for="id in featuredIDs" :key="id" :poolID="id"></Poolcard>
-          </div>
+        <q-tab-panel name="featured-pools" class="poolcard-container">
+          <Poolcard v-for="id in featuredIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
-        <q-tab-panel name="joined-pools">
-          <div class="row  q-gutter-md">
-            <Poolcard v-for="id in joinedIDs" :key="id" :poolID="id"></Poolcard>
-          </div>
+        <q-tab-panel name="joined-pools" class="poolcard-container">
+          <Poolcard v-for="id in joinedIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
-        <q-tab-panel name="created-pools">
-          <div class="row  q-gutter-md">
-            <Poolcard v-for="id in createdPoolIDs" :key="id" :poolID="id" :created="true"></Poolcard>
-          </div>
+        <q-tab-panel name="created-pools" class="poolcard-container">
+          <Poolcard
+            v-for="id in createdPoolIDs"
+            :key="id"
+            :poolID="id"
+            :created="true"
+          />
         </q-tab-panel>
       </q-tab-panels>
     </section>
@@ -66,7 +63,7 @@ export default {
     return {
       tab: "all-pools",
       joinedIDs: [],
-      featuredIDs: [],
+      featuredIDs: []
     };
   },
   computed: {
@@ -77,11 +74,15 @@ export default {
     },
     createdPoolIDs() {
       return this.getCreatedPoolIDs(this.accountName);
-    },
+    }
   },
   methods: {
-    ...mapActions("pools", ["getAllChainPools", 'getCreatedChainPools', 'getJoinedChainPools', 'getFeaturedChainPools']),
-    
+    ...mapActions("pools", [
+      "getAllChainPools",
+      "getCreatedChainPools",
+      "getJoinedChainPools",
+      "getFeaturedChainPools"
+    ])
   },
   async mounted() {
     await this.getAllChainPools();
@@ -95,5 +96,13 @@ export default {
 <style lang="scss" scoped>
 .header-bg {
   height: 200px;
+}
+.poolcard-container {
+  padding: 30px;
+  min-height: 400px;
+}
+.body-container {
+  padding-left: 0;
+  padding-right: 0;
 }
 </style>

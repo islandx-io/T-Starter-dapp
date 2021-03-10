@@ -17,7 +17,7 @@
           </q-avatar>
         </q-item-section>
         <q-item-section top side>
-          <div class="text-accent column items-center justify-between">
+          <div class="text-accent column items-end justify-between">
             <status-badge :poolStatus="pool.pool_status" />
             <status-countdown
               v-if="pool.pool_status === 'upcoming'"
@@ -46,26 +46,17 @@
           v-if="['open', 'closed'].includes(pool.pool_status)"
         >
           <div class="text-h6 q-py-xs">Sale progress</div>
-          <div class="progress-bar">
-            <div
-              role="progressbar"
-              :style="{ width: progressToPercentage }"
-              :aria-valuenow="pool.progress"
-              aria-valuemin="0"
-              aria-valuemax="1"
-            >
-              {{ progressToPercentage }}
-            </div>
-          </div>
-        </div>
-        <!-- if owner of pool -->
-        <div v-if="created === true">
-          <router-link :to="{ name: 'updatepool', params: { id: poolID } }" class="router-link q-pr-md"
-            ><q-btn outline color="primary">Update pool</q-btn></router-link
-          >
+          <status-progress :progress="pool.progress" />
         </div>
       </q-card-section>
-
+      <!-- if owner of pool -->
+      <q-card-section v-if="created === true" class="row justify-center">
+        <router-link
+          :to="{ name: 'updatepool', params: { id: poolID } }"
+          class="router-link"
+          ><q-btn outline color="primary">Update pool</q-btn>
+        </router-link>
+      </q-card-section>
       <q-inner-loading :showing="poolID === -1">
         <q-spinner-puff size="50px" color="primary" />
       </q-inner-loading>
@@ -74,11 +65,11 @@
 </template>
 
 <script>
-import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
 import { toSvg } from "jdenticon";
 import statusBadge from "src/components/poolinfo/status-badge";
 import statusCountdown from "src/components/poolinfo/status-countdown";
+import statusProgress from "src/components/poolinfo/status-progress";
 
 export default {
   name: "Poolcard",
@@ -93,7 +84,7 @@ export default {
       required: false
     }
   },
-  components: { statusBadge, statusCountdown },
+  components: { statusBadge, statusCountdown, statusProgress },
   data() {
     return {
       pool: this.$defaultPoolInfo,
@@ -103,16 +94,7 @@ export default {
   },
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
-    progressToPercentage() {
-      var progress = Number(this.pool.progress);
-      if (isNaN(progress)) progress = 0;
-      if (progress <= 0) {
-        progress = "";
-      } else {
-        progress = progress.toFixed(2) * 100 + "%";
-      }
-      return progress;
-    },
+
     identicon() {
       return toSvg(this.poolID, this.avatar_size);
     },
@@ -120,7 +102,11 @@ export default {
       if (this.pool.hard_cap === "Loading") {
         return this.pool.hard_cap;
       } else {
-        return parseFloat(this.pool.hard_cap).toFixed(2);
+        return (
+          parseFloat(this.pool.hard_cap).toFixed(2) +
+          " " +
+          this.pool.base_token.sym.split(",")[1]
+        );
       }
     }
   },
@@ -161,24 +147,6 @@ export default {
 }
 .pool-card .bottom-section {
   padding-bottom: 8px;
-}
-.progress-bar {
-  color: $dark;
-  display: flex;
-  height: 1rem;
-  overflow: hidden;
-  font-size: 0.75rem;
-  background-color: #e9ecef;
-  border-radius: 0.25rem;
-}
-.progress-bar div {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: white;
-  text-align: center;
-  background-color: $primary;
-  transition: width 0.6s ease;
 }
 
 .pool-card .title-section {

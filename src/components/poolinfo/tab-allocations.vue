@@ -1,12 +1,14 @@
 <template>
-  <div>Allocations</div>
+  <div>TODO</div>
 </template>
 
 <script>
 export default {
-  name: 'tab-allocations',
-  data () {
-    return {}
+  name: "tab-allocations",
+  props: {
+    pool: {
+      required: true
+    }
   }
-}
+};
 </script>

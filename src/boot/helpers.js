@@ -1,8 +1,35 @@
 import { date } from "quasar";
 
-const fromChainString = function(str) {
-  let idx = str.indexOf(" ");
-  return Number(str.slice(0, idx));
+const chainToQty = function(str, decimals = -1) {
+  try {
+    let qty = str.split(" ")[0];
+    qty = parseFloat(qty);
+    if (decimals > -1) qty = qty.toFixed(decimals);
+    return qty;
+  } catch (error) {
+    return str;
+  }
+};
+
+const chainToSym = function(str) {
+  try {
+    return str.split(" ")[1];
+  } catch (error) {
+    return str;
+  }
+};
+
+const formatChain = function(str, decimals) {
+  try {
+    if (!str.includes(" ")) return str;
+    else {
+      let [qty, sym] = str.split(" ");
+      qty = parseFloat(qty).toFixed(decimals);
+      return `${qty} ${sym}`;
+    }
+  } catch (error) {
+    return str;
+  }
 };
 
 const toChainString = function(number, decimals, symbol) {
@@ -10,13 +37,16 @@ const toChainString = function(number, decimals, symbol) {
 };
 
 const toDate = function(timeStamp) {
-  return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
+  if (timeStamp === "Loading") return timeStamp;
+  else return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
 };
 
 export default ({ Vue, store }) => {
-  Vue.prototype.$fromChainString = fromChainString;
+  Vue.prototype.$chainToQty = chainToQty;
   Vue.prototype.$toChainString = toChainString;
+  Vue.prototype.$chainToSym = chainToSym;
+  Vue.prototype.$formatChain = formatChain;
   Vue.prototype.$toDate = toDate;
-  store["$fromChainString"] = fromChainString;
+  store["$chainToQty"] = chainToQty;
   store["$toChainString"] = toChainString;
 };

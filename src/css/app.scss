@@ -14,6 +14,19 @@
 body {
   background-color: $secondary;
 }
+h5 {
+  padding: 0;
+  margin: 0;
+  color: $primary;
+  font-size: 20px;
+  font-weight: 500;
+}
+h6 {
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
 
 // ----------------------------------------------
 // Classes
@@ -47,4 +60,12 @@ body {
 
 .tab-panel-container {
   background-color: $secondary;
+}
+
+.poolcard-container {
+  display: grid;
+  grid-gap: 20px;
+  align-items: stretch;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-rows: min-content;
 }

@@ -1,28 +1,28 @@
 <template>
   <div class="details-tab">
     <div>
-      <p>Type:</p>
-      <p>{{ pool.access_type }}</p>
+      <h6>Type:</h6>
+      <h5>{{ pool.access_type }}</h5>
     </div>
     <div>
-      <p>Sale open:</p>
-      <p>{{ this.$toDate(pool.pool_open) }}</p>
+      <h6>Sale open:</h6>
+      <h5>{{ this.$toDate(pool.pool_open) }}</h5>
     </div>
     <div v-if="pool.access_type === 'Private'">
-      <p>Private sale end:</p>
-      <p>{{ this.$toDate(pool.private_end) }}</p>
+      <h6>Private sale end:</h6>
+      <h5>{{ this.$toDate(pool.private_end) }}</h5>
     </div>
     <div>
-      <p>Public sale end:</p>
-      <p>{{ this.$toDate(pool.public_end) }}</p>
+      <h6>Public sale end:</h6>
+      <h5>{{ this.$toDate(pool.public_end) }}</h5>
     </div>
     <div>
-      <p>Minimum allocation:</p>
-      <p>{{ pool.minimum_swap }}</p>
+      <h6>Minimum allocation:</h6>
+      <h5>{{ this.$formatChain(pool.minimum_swap, 2) }}</h5>
     </div>
     <div>
-      <p>Maximum allocation:</p>
-      <p>{{ pool.maximum_allocation }}</p>
+      <h6>Maximum allocation:</h6>
+      <h5>{{ this.$formatChain(pool.maximum_allocation, 2) }}</h5>
     </div>
   </div>
 </template>
@@ -48,15 +48,13 @@ export default {
   font-weight: 500;
   flex-wrap: wrap;
   align-items: center;
+  padding-bottom: 8px;
 }
-.details-tab div p {
+.details-tab div h6 {
   min-width: 200px;
 }
-.details-tab div p + p {
-  color: $primary;
-  font-size: 20px;
+.details-tab div h5 {
   flex-grow: 4;
-  // min-width: 500px;
   display: flex;
   @media screen and (max-width: 550px) {
     justify-content: flex-start;

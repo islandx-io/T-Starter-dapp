@@ -23,7 +23,8 @@
                 <div>
                   <div class="text-h3 q-pb-md q-pt-sm">{{ pool.title }}</div>
                   <p>
-                    Contract: <a href="#">{{ pool.swap_ratio.contract }}</a>
+                    Contract:
+                    <a :href="contractURL">{{ pool.swap_ratio.contract }}</a>
                   </p>
                 </div>
                 <status-badge :poolStatus="pool.pool_status"></status-badge>
@@ -63,31 +64,36 @@
           </q-item>
         </div>
         <q-item class="token-info col">
-          <div class="border col column ">
+          <div class="border col column justify-between">
             <div class="row justify-between">
-              <div>Hard cap:</div>
-              <p>{{ pool.hard_cap }}</p>
-              <!-- TODO Format decimal places -->
-            </div>
-            <div class="row justify-between">
-              <div>Soft cap:</div>
-              <p>{{ pool.soft_cap }}</p>
+              <h6>Hard cap:</h6>
+              <h5>{{ toCap(pool.hard_cap) }}</h5>
             </div>
             <div class="row justify-between">
-              <div>Swap ratio:</div>
-              <p>1 {{ getBaseSymbol }} = {{ pool.swap_ratio.quantity }}</p>
+              <h6>Soft cap:</h6>
+              <h5>{{ toCap(pool.soft_cap) }}</h5>
             </div>
-            <div class="row justify-between" v-if="pool.pool_status === 'open'">
-              <div>Participants:</div>
-              <p>{{ pool.participants }}</p>
+            <div class="row justify-between">
+              <h6>Swap ratio:</h6>
+              <h5>
+                {{ swapRatio }}
+              </h5>
             </div>
-            <div class="row justify-between" v-if="pool.pool_status === 'open'">
-              <div>Sale progress:</div>
-              <p>{{ pool.progress }}</p>
+            <div class="row justify-between">
+              <h6>Participants:</h6>
+              <h5>{{ pool.participants }}</h5>
             </div>
-            <q-btn outline label="View on bloks.io" />
+            <div class="row justify-between">
+              <h6>Sale progress:</h6>
+              <h5>{{ progressLabel }}</h5>
+            </div>
+            <status-progress :progress="pool.progress" />
           </div>
         </q-item>
+
+        <q-inner-loading :showing="pool.title === 'Loading'">
+          <q-spinner-puff size="50px" color="primary" />
+        </q-inner-loading>
       </q-card>
       <q-card class="body-container card">
         <q-tabs
@@ -119,43 +125,16 @@
             <tab-overview :pool="pool" />
           </q-tab-panel>
 
-          <q-tab-panel name="allocations"> </q-tab-panel>
+          <q-tab-panel name="allocations">
+            <tab-allocations :pool="pool"
+          /></q-tab-panel>
         </q-tab-panels>
-        <!-- <section class="q-py-md q-gutter-md">
-        <q-btn
-          v-bind:class="['tab-button', { active: currentTab === 'Details' }]"
-          v-on:click="currentTab = 'Details'"
-          >Details</q-btn
-        >
-        <q-btn
-          v-bind:class="['tab-button', { active: currentTab === 'Overview' }]"
-          v-on:click="currentTab = 'Overview'"
-          >Overview</q-btn
-        >
-        <q-btn
-          v-if="isAuthenticated"
-          v-bind:class="[
-            'tab-button',
-            { active: currentTab === 'Allocations' }
-          ]"
-          v-on:click="currentTab = 'Allocations'"
-          >Your Allocations</q-btn
-        > -->
-      </q-card>
-      <!-- <q-card class="card">
-        <keep-alive>
-          <component
-            v-bind:is="currentTabComponent"
-            class="tab"
-            :poolObject.sync="pool"
-          ></component>
-        </keep-alive>
-      </q-card> -->
-    </div>
 
-    <!-- <div>Params: {{ this.$route.params }} Query: {{ this.$route.query }}</div>
-      <div v-if="isAuthenticated">{{ accountName }} is authenticated</div>
-      <div v-else>Please login to do a transfer!</div> -->
+        <q-inner-loading :showing="pool.title === 'Loading'">
+          <q-spinner-puff size="50px" color="primary" />
+        </q-inner-loading>
+      </q-card>
+    </div>
   </q-page>
 </template>
 
@@ -166,6 +145,7 @@ import statusBadge from "src/components/poolinfo/status-badge";
 import tabOverview from "src/components/poolinfo/tab-overview.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
+import statusProgress from "src/components/poolinfo/status-progress";
 import { mapGetters, mapActions } from "vuex";
 import { toSvg } from "jdenticon";
 import { date } from "quasar";
@@ -173,18 +153,15 @@ import { date } from "quasar";
 export default {
   components: {
     tabOverview,
-    // tabAllocations,
+    tabAllocations,
     tabDetails,
     statusCountdown,
-    statusBadge
+    statusBadge,
+    statusProgress
   },
   data() {
     return {
-      //page info
       tab: "details",
-      // currentTab: "Details",
-
-      //pool info
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
       polling: null
@@ -193,29 +170,56 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID"]),
-    // currentTabComponent: function() {
-    //   return "tab-" + this.currentTab.toLowerCase();
-    // },
     progressToPercentage() {
       return (this.progress * 100).toFixed(2) + "%";
     },
     identicon() {
       return toSvg(this.poolID, 80);
     },
-    getBaseSymbol() {
+    contractURL() {
+      let contractName = this.pool.swap_ratio.contract;
+      if (contractName === "Loading" || contractName === "") return "#";
+      else {
+        try {
+          return `${process.env.NETWORK_EXPLORER}/account/${contractName}`;
+        } catch (error) {
+          return "Error";
+        }
+      }
+    },
+    swapRatio() {
       try {
-        let str = this.pool.base_token.sym;
-        let idx = str.indexOf(",") + 1;
-        return str.slice(idx);
+        if (this.pool.swap_ratio.quantity === "Loading") return "Loading";
+        else {
+          let baseSym = this.pool.base_token.sym.split(",")[1];
+          let [quantity, sym] = this.pool.swap_ratio.quantity.split(" ");
+          return `1 ${baseSym} = ${parseFloat(quantity).toFixed(0)} ${sym}`;
+        }
       } catch (error) {
         return "Error";
+      }
+    },
+    progressLabel() {
+      if (this.pool.total_raise === "Loading") return "Loading";
+      else {
+        let totalRaise = this.$chainToQty(this.pool.total_raise, 0);
+        let hardCap = this.$chainToQty(this.pool.hard_cap, 0);
+        return `${totalRaise} / ${hardCap}`;
       }
     }
   },
   methods: {
-    ...mapActions("pools", ["getChainPoolByID", "updatePoolSettings"]),
+    ...mapActions("pools", ["getChainPoolByID"]),
     toDate(timeStamp) {
       return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
+    },
+    toCap(str) {
+      if (typeof str !== "string") return str;
+      else if (!str.includes(" ")) return str;
+      else {
+        let [amount, sym] = str.split(" ");
+        return parseFloat(amount).toFixed(2) + " " + sym;
+      }
     },
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
@@ -227,11 +231,9 @@ export default {
   async mounted() {
     // get data from chain, write to store, get from store
     await this.loadChainData();
-    this.updatePoolSettings(this.poolID);
     this.getPoolInfo();
     // Start polling
     this.polling = setInterval(() => {
-      this.updatePoolSettings(this.poolID);
       this.getPoolInfo();
     }, 60000);
   },
@@ -251,7 +253,7 @@ export default {
   min-width: 350px;
 }
 .token-info {
-  min-width: 400px;
+  min-width: 180px;
 }
 .token-info .border {
   border: 1px solid gray;
@@ -263,6 +265,10 @@ export default {
   background-color: white;
 }
 .active {
+  color: $primary;
+}
+a {
+  text-decoration: none;
   color: $primary;
 }
 </style>

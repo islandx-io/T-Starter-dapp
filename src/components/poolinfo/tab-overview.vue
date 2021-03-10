@@ -1,15 +1,15 @@
 <template>
   <div>
     <div v-if="pool.web_links !== 'Loading'">
-      <li v-for="link in pool.web_links" :key="link.id">
-        <a :href="link.value" v-if="link.value != ''">
-          <q-icon size="xs" :name="iconName(link.key)" />
-          {{ link.key }}</a
-        >
+      <li v-for="link in webLinks" :key="link.id">
+        <a :href="link.value">
+          <q-icon size="16px" :name="iconName(link.key)" class="q-pr-xs" />
+          {{ link.key.toUpperCase() }}
+        </a>
       </li>
     </div>
     <div v-else>{{ pool.web_links }}</div>
-    <p>{{ pool.description }}</p>
+    <p class="q-pt-md">{{ pool.description }}</p>
   </div>
 </template>
 
@@ -19,6 +19,11 @@ export default {
   props: {
     pool: {
       required: true
+    }
+  },
+  computed: {
+    webLinks() {
+      return this.pool.web_links.filter(link => link.value != "");
     }
   },
   methods: {
@@ -32,6 +37,8 @@ export default {
         result = "fab fa-telegram-plane";
       } else if (siteName === "twitter") {
         result = "fab fa-twitter";
+      } else if (siteName === "website") {
+        result = "fas fa-globe";
       }
       return result;
     }
@@ -45,6 +52,11 @@ li {
   margin: 0 3px;
 }
 a {
+  display: flex;
   text-decoration: none;
+  color: $primary;
+  align-items: stretch;
+  padding-right: 12px;
+  font-size: 12px;
 }
 </style>
