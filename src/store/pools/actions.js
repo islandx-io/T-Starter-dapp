@@ -38,7 +38,7 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       show_payer: false // Optional: Show ram payer
     });
 
-    tableResults.rows.forEach((pool, index) => {
+    for (const pool of tableResults.rows) {
       // console.log(pool);
       let id = pool.id;
 
@@ -50,8 +50,9 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       const poolTable = pool;
 
       commit("updatePoolOnState", { poolTable, id });
-      dispatch("updatePoolSettings", id);
-    });
+      await dispatch("updatePoolSettings", id);
+    }
+    
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -185,8 +186,8 @@ export const getCreatedChainPools = async function(
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
-
-    tableResults.rows.forEach((pool, index) => {
+    console.log('Created pools:')
+    for (const pool of tableResults.rows) {
       console.log(pool);
       let id = pool.id;
 
@@ -198,8 +199,9 @@ export const getCreatedChainPools = async function(
       const poolTable = pool;
 
       commit("updatePoolOnState", { poolTable, id });
-      dispatch("updatePoolSettings", id);
-    });
+      await dispatch("updatePoolSettings", id);
+    }
+
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -235,9 +237,9 @@ export const getJoinedChainPools = async function(
       pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
       console.log(pool_id_list);
 
-      pool_id_list.forEach(pool_id => {
-        dispatch("getChainPoolByID", pool_id);
-      });
+      for (const pool_id of pool_id_list) {
+        await dispatch("getChainPoolByID", pool_id);
+      }
 
       return pool_id_list;
     } else {
@@ -293,6 +295,7 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
       limit: 10, // Maximum number of rows that we want to get
       index_position: 3,
       key_type: "i64",
+      // lower_bound: 1, // show all published pools
       lower_bound: Math.trunc(Date.now() / 1000),
       // upper_bound: Math.trunc(Date.now()/1000),
       reverse: false, // Optional: Get reversed data
