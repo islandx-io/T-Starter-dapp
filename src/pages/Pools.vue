@@ -30,7 +30,7 @@
         class="tab-panel-container"
       >
         <q-tab-panel name="all-pools" class="poolcard-container">
-          <Poolcard v-for="id in poolIDs" :key="id" :poolID="id" />
+          <Poolcard v-for="id in getPublishedPoolIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
         <q-tab-panel name="featured-pools" class="poolcard-container">
@@ -67,7 +67,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("pools", ["getAllPoolIDs", "getCreatedPoolIDs"]),
+    ...mapGetters("pools", ["getAllPoolIDs", "getCreatedPoolIDs", "getPublishedPoolIDs"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     poolIDs() {
       return this.getAllPoolIDs;
