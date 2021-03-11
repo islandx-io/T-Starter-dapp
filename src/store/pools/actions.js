@@ -342,7 +342,7 @@ export const getAllocationByPool = async function(
 
       const allocationTable = await tableResults.rows.filter( a => a.account === payload.account && a.pool_id === payload.poolID)[0];
       console.log("Allocation:");
-      console.log(tableResults)
+      // console.log(tableResults)
       console.log(allocationTable);
       return allocationTable;
     }

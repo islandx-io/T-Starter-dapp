@@ -166,6 +166,7 @@ export default {
 
     async joinPoolTransaction() {
       const actions = [
+        // transfer to contract
         {
           account: process.env.CONTRACT_ADDRESS,
           name: "joinpool",
@@ -177,6 +178,21 @@ export default {
               this.BaseTokenDecimals,
               this.BaseTokenSymbol
             )
+          }
+        },
+        // transfer tokens
+        {
+          account: this.pool.base_token.contract,
+          name: "transfer",
+          data: {
+            from: this.accountName,
+            to: process.env.CONTRACT_ADDRESS,
+            quantity: this.$toChainString(
+              this.amount,
+              this.BaseTokenDecimals,
+              this.BaseTokenSymbol
+            ),
+            memo: 'Join pool'
           }
         }
       ];
