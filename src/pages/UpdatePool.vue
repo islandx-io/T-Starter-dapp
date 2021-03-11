@@ -95,7 +95,7 @@
                   <q-input
                     color="primary"
                     v-model="pool.soft_cap"
-                    :label="`Soft cap ()`"
+                    :label="`Soft cap (${baseTokenSymbolReformat})`"
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
@@ -106,7 +106,7 @@
                   <q-input
                     color="primary"
                     v-model="pool.hard_cap"
-                    :label="`Hard cap ()`"
+                    :label="`Hard cap (${baseTokenSymbolReformat})`"
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
@@ -119,7 +119,7 @@
                   <q-input
                     color="primary"
                     v-model="pool.minimum_swap"
-                    :label="`Minimum allocation ()`"
+                    :label="`Minimum allocation (${baseTokenSymbolReformat})`"
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
@@ -130,7 +130,7 @@
                   <q-input
                     color="primary"
                     v-model="pool.maximum_allocation"
-                    :label="`Maximum allocation ()`"
+                    :label="`Maximum allocation (${baseTokenSymbolReformat})`"
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
@@ -372,6 +372,11 @@ export default {
     tokenSymbolReformat() {
       let token = this.token_symbol;
       if (token === "") return "Custom token";
+      else return token;
+    },
+    baseTokenSymbolReformat() {
+      let token = this.base_token_symbol;
+      if (token === "") return "Base token";
       else return token;
     }
   },
