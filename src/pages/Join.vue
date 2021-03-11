@@ -194,7 +194,7 @@ export default {
             ),
             memo: 'Join pool'
           }
-        }
+        },
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
       if (transaction) {

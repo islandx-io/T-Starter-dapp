@@ -291,24 +291,25 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
       index_position: 3,
       key_type: "i64",
       // lower_bound: 1, // show all published pools
-      lower_bound: Math.trunc(Date.now() / 1000),
-      // upper_bound: Math.trunc(Date.now()/1000),
+      lower_bound: Math.trunc(Date.now() / 1000), // get upcoming pools
+      // upper_bound: Math.trunc(Date.now()/1000), // to get closed and open pools
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
 
     console.log("Upcoming pools");
-    // console.log(Math.trunc(Date.now() / 1000));
-    // console.log(tableResults.rows);
+    let pool_id_list = []
 
-    let pool_id_list = [];
-    tableResults.rows.forEach((pool, index) => {
-      console.log(pool);
-      let pool_id = pool.id;
-      pool_id_list.push(pool_id);
+    // sort according to nearest pool open
+    tableResults.rows.sort(function(a, b) {
+      return new Date(a.pool_open) - new Date(b.pool_open);
     });
+    
+    console.log(tableResults.rows)
+    pool_id_list = tableResults.rows.map(a => a.id)
     pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
-    console.log(pool_id_list);
+
+    console.log(pool_id_list)
 
     for (const pool_id of pool_id_list) {
       await dispatch("getChainPoolByID", pool_id);
@@ -340,13 +341,14 @@ export const getAllocationByPool = async function(
         show_payer: false // Optional: Show ram payer
       });
 
-      const allocationTable = await tableResults.rows.filter( a => a.account === payload.account && a.pool_id === payload.poolID)[0];
+      const allocationTable = await tableResults.rows.filter(
+        a => a.account === payload.account && a.pool_id === payload.poolID
+      )[0];
       console.log("Allocation:");
       // console.log(tableResults)
       console.log(allocationTable);
       return allocationTable;
-    }
-    else {
+    } else {
       return {};
     }
   } catch (error) {

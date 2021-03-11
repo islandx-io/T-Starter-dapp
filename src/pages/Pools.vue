@@ -67,7 +67,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("pools", ["getAllPoolIDs", "getCreatedPoolIDs", "getPublishedPoolIDs", "getPoolIDsByStatus"]),
+    ...mapGetters("pools", [
+      "getAllPoolIDs",
+      "getCreatedPoolIDs",
+      "getPublishedPoolIDs",
+      "getPoolIDsByStatus"
+    ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     poolIDs() {
       return this.getAllPoolIDs;
@@ -83,28 +88,30 @@ export default {
     },
     featuredIDs_sorted() {
       return this.sortPools(this.featuredIDs);
-    },
-
+    }
   },
   methods: {
     ...mapActions("pools", [
       "getAllChainPools",
       "getCreatedChainPools",
       "getJoinedChainPools",
-      "getFeaturedChainPools"
+      "getFeaturedChainPools",
+      "getUpcomingPools"
     ]),
+
     sortPools(id_list) {
       let new_id_list = [];
-      let open_pools = this.getPoolIDsByStatus('open');
-      let upcoming_pools = this.getPoolIDsByStatus('upcoming'); // TODO Sort by open time
-      let closed_pools = this.getPoolIDsByStatus('closed');
+      let open_pools = this.getPoolIDsByStatus("open");
+      let upcoming_pools_ids = this.getPoolIDsByStatus("upcoming");
+      let closed_pools = this.getPoolIDsByStatus("closed");
       new_id_list = new_id_list.concat(open_pools);
-      new_id_list = new_id_list.concat(upcoming_pools);
+      new_id_list = new_id_list.concat(upcoming_pools_ids);
       new_id_list = new_id_list.concat(closed_pools);
       new_id_list = new_id_list.filter(value => id_list.includes(value));
       // console.log(new_id_list);
       return new_id_list;
     },
+
   },
   async mounted() {
     await this.getAllChainPools();

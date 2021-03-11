@@ -206,7 +206,7 @@ export default {
     progressLabel() {
       if (this.pool.total_raise === "Loading") return "Loading";
       else {
-        let totalRaise = this.$chainToQty(this.pool.total_raise, 0);
+        let totalRaise = this.$chainToQty(this.pool.total_raise, 2);
         let hardCap = this.$chainToQty(this.pool.hard_cap, 0);
         return `${totalRaise} / ${hardCap}`;
       }
