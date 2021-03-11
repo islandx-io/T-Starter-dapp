@@ -53,10 +53,15 @@
           label="Join Pool"
           type="submit"
           color="primary"
-          :disable="!isAuthenticated"
+          :disable="
+            !isAuthenticated || balance <= $chainToQty(pool.minimum_swap)
+          "
         />
         <q-tooltip v-if="!isAuthenticated">
           Connect wallet
+        </q-tooltip>
+        <q-tooltip v-if="balance <= $chainToQty(pool.minimum_swap)">
+          Zero balance
         </q-tooltip>
       </q-item>
     </q-form>
@@ -99,7 +104,7 @@ export default {
     return {
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
-      balance: 1,
+      balance: 0,
       amount: 0,
       base_token_symbol: "",
       showTransaction: null,
@@ -152,6 +157,9 @@ export default {
       this.balance = this.$chainToQty(
         (await this.getBalanceFromChain(payload))[0]
       );
+      if (this.balance == undefined) {
+        return this.balance = 0;
+      }
     },
 
     setMax() {
