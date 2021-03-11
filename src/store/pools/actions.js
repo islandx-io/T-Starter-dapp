@@ -168,32 +168,34 @@ export const getCreatedChainPools = async function(
   owner
 ) {
   try {
-    const tableResults = await this.$api.getTableRows({
-      code: process.env.CONTRACT_ADDRESS, // Contract that we target
-      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-      table: process.env.CONTRACT_TABLE, // Table name
-      limit: 100,
-      index_position: 2,
-      key_type: "i64",
-      lower_bound: owner,
-      upper_bound: owner,
-      reverse: false, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
-    });
-    console.log("Created pools:");
-    for (const pool of tableResults.rows) {
-      console.log(pool);
-      let id = pool.id;
+    if (owner !== null) {
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: process.env.CONTRACT_TABLE, // Table name
+        limit: 100,
+        index_position: 2,
+        key_type: "i64",
+        lower_bound: owner,
+        upper_bound: owner,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+      console.log("Created pools:");
+      for (const pool of tableResults.rows) {
+        console.log(pool);
+        let id = pool.id;
 
-      //check dates are unix
-      pool.pool_open = new Date(pool.pool_open).valueOf();
-      pool.private_end = new Date(pool.private_end).valueOf();
-      pool.public_end = new Date(pool.public_end).valueOf();
+        //check dates are unix
+        pool.pool_open = new Date(pool.pool_open).valueOf();
+        pool.private_end = new Date(pool.private_end).valueOf();
+        pool.public_end = new Date(pool.public_end).valueOf();
 
-      const poolTable = pool;
+        const poolTable = pool;
 
-      commit("updatePoolOnState", { poolTable, id });
-      await dispatch("updatePoolSettings", id);
+        commit("updatePoolOnState", { poolTable, id });
+        await dispatch("updatePoolSettings", id);
+      }
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -236,7 +238,7 @@ export const getJoinedChainPools = async function(
 
       return pool_id_list;
     } else {
-      return;
+      return [];
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -338,14 +340,16 @@ export const getAllocationByPool = async function(
         show_payer: false // Optional: Show ram payer
       });
 
-      let allocationTable = tableResults.rows.filter(a => a.account === payload.account)[0]
+      let allocationTable = tableResults.rows.filter(
+        a => a.account === payload.account
+      )[0];
       console.log("Allocation:");
-      console.log(allocationTable)
+      console.log(allocationTable);
       return allocationTable;
     }
-    // else {
-    //   return ;
-    // }
+    else {
+      return {};
+    }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

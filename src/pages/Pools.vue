@@ -73,7 +73,7 @@ export default {
       return this.getAllPoolIDs;
     },
     createdPoolIDs() {
-      return this.sortPools(this.getCreatedPoolIDs(this.accountName));
+      return this.sortPools(this.getCreatedPoolIDs(this.accountName)); // TODO do like joined, maybe slower?
     },
     publishedPoolIDs() {
       return this.sortPools(this.getPublishedPoolIDs);
@@ -102,7 +102,7 @@ export default {
       new_id_list = new_id_list.concat(upcoming_pools);
       new_id_list = new_id_list.concat(closed_pools);
       new_id_list = new_id_list.filter(value => id_list.includes(value));
-      console.log(new_id_list);
+      // console.log(new_id_list);
       return new_id_list;
     },
   },

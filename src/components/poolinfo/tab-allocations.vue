@@ -68,10 +68,6 @@ export default {
   async mounted() {
     let payload = {account: this.accountName, poolID: this.pool.id}
     this.data = [await this.getAllocationByPool(payload)];
-    // if there isn't an allocation
-    if (this.data[0] == undefined) {
-      this.data = []
-    }
   }
 };
 </script>
