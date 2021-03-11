@@ -140,22 +140,23 @@
               </q-item>
               <!-- Dates -->
               <q-item>
-                <q-item-section class="col-7">
-                  <datetime-field :value.sync="pool_open" />
+                <q-item-section>
+                  <datetime-field :value.sync="pool_open" label="Sale start" />
                 </q-item-section>
-                <q-item-section>Sale start</q-item-section>
               </q-item>
               <q-item>
-                <q-item-section class="col-7">
-                  <datetime-field :value.sync="private_end" />
+                <q-item-section>
+                  <datetime-field
+                    :value.sync="private_end"
+                    label="Private sale end"
+                  />
                 </q-item-section>
-                <q-item-section>Private sale end</q-item-section>
-              </q-item>
-              <q-item>
-                <q-item-section class="col-7">
-                  <datetime-field :value.sync="public_end" />
+                <q-item-section>
+                  <datetime-field
+                    :value.sync="public_end"
+                    label="Public sale end"
+                  />
                 </q-item-section>
-                <q-item-section>Public sale end</q-item-section>
               </q-item>
               <!-- <div class="col column">
                 <div>Type</div>
@@ -177,6 +178,7 @@
                     hide-bottom-space
                   />
                 </q-item-section>
+                <!-- TODO Handle missing/broken links -->
                 <q-item-section side>
                   <q-avatar size="50px">
                     <img :src="pool.avatar" width="20px" alt="image" />

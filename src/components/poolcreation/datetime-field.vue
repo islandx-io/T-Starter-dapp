@@ -1,5 +1,5 @@
 <template>
-  <q-input outlined hide-bottom-space v-model="value.date">
+  <q-input outlined hide-bottom-space v-model="value.date" :label="label">
     <template v-slot:prepend>
       <q-icon name="event" class="cursor-pointer">
         <q-popup-proxy transition-show="scale" transition-hide="scale">
@@ -33,7 +33,8 @@ export default {
     };
   },
   props: {
-    value: {}
+    value: {},
+    label: {}
   }
 };
 </script>
