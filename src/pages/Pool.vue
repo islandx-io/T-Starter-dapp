@@ -233,12 +233,6 @@ export default {
     }
   },
   async mounted() {
-    // if rerouting with tab
-    if (this.$route.query.tab == "allocations") {
-      this.tab = "allocations";
-    } else {
-      this.tab = "details";
-    }
     // get data from chain, write to store, get from store
     await this.loadChainData();
     this.getPoolInfo();
@@ -246,6 +240,12 @@ export default {
     this.polling = setInterval(() => {
       this.getPoolInfo();
     }, 60000);
+    // if rerouting with tab
+    if (this.$route.query.tab == "allocations") {
+      this.tab = "allocations";
+    } else {
+      this.tab = "details";
+    }
   },
   beforeDestroy() {
     clearInterval(this.polling);

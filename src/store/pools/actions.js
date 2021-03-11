@@ -340,10 +340,9 @@ export const getAllocationByPool = async function(
         show_payer: false // Optional: Show ram payer
       });
 
-      let allocationTable = tableResults.rows.filter(
-        a => a.account === payload.account
-      )[0];
+      const allocationTable = await tableResults.rows.filter( a => a.account === payload.account && a.pool_id === payload.poolID)[0];
       console.log("Allocation:");
+      console.log(tableResults)
       console.log(allocationTable);
       return allocationTable;
     }

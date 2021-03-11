@@ -60,6 +60,28 @@
         </q-tooltip>
       </q-item>
     </q-form>
+
+    <q-dialog v-model="showTransaction" confirm>
+      <q-card>
+        <q-card-section class="row">
+          <q-avatar icon="arrow_forward" color="primary" text-color="white" />
+          <span class="q-ml-sm">
+            Transaction sent, click to view in block explorer.
+          </span>
+          <q-item
+            clickable
+            tag="a"
+            target="_blank"
+            :href="`${explorerUrl}/transaction/${transaction}`"
+            class="q-ml-sm"
+            >{{ transaction }}</q-item
+          >
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Ok" color="primary" @click="toAllocationsPage" v-close-popup></q-btn>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -73,7 +95,10 @@ export default {
       pool: this.$defaultPoolInfo,
       balance: 1,
       amount: 0,
-      base_token_symbol: ""
+      base_token_symbol: "",
+      showTransaction: null,
+      transaction: null,
+      explorerUrl: process.env.NETWORK_EXPLORER
     };
   },
 
@@ -85,7 +110,7 @@ export default {
       return this.pool.base_token.sym.slice(idx);
     },
     BaseTokenDecimals() {
-      let idx = this.pool.base_token.sym.indexOf(",") ;
+      let idx = this.pool.base_token.sym.indexOf(",");
       return Number(this.pool.base_token.sym.slice(0, idx));
     },
     TokenSymbol() {
@@ -147,11 +172,27 @@ export default {
           data: {
             account: this.accountName,
             pool_id: this.poolID,
-            quantity: this.$toChainString(this.amount, this.BaseTokenDecimals, this.BaseTokenSymbol)
+            quantity: this.$toChainString(
+              this.amount,
+              this.BaseTokenDecimals,
+              this.BaseTokenSymbol
+            )
           }
         }
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
+      if (transaction) {
+        this.showTransaction = true;
+        this.transaction = transaction.transactionId;
+      }
+    },
+
+    toAllocationsPage() {
+      this.$router.push({
+        name: "pooldetails",
+        params: { id: this.poolID },
+        query: { tab: "allocations" }
+      });
     },
 
     async onSubmit() {
@@ -171,11 +212,6 @@ export default {
           icon: "cloud_done",
           message: "Submitted"
         });
-        this.$router.push({
-          name: "pooldetails",
-          params: { id: this.poolID },
-          query: { tab: "allocations" }
-        });
       }
     }
   },
@@ -183,9 +219,9 @@ export default {
   async mounted() {
     await this.loadChainData();
     this.getPoolInfo();
-    
+
     if (this.isAuthenticated) {
-      this.getBalance();      
+      this.getBalance();
     }
   }
 };
