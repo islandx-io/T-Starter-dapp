@@ -30,15 +30,15 @@
         class="tab-panel-container"
       >
         <q-tab-panel name="all-pools" class="poolcard-container">
-          <Poolcard v-for="id in getPublishedPoolIDs" :key="id" :poolID="id" />
+          <Poolcard v-for="id in publishedPoolIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
         <q-tab-panel name="featured-pools" class="poolcard-container">
-          <Poolcard v-for="id in featuredIDs" :key="id" :poolID="id" />
+          <Poolcard v-for="id in featuredIDs_sorted" :key="id" :poolID="id" />
         </q-tab-panel>
 
         <q-tab-panel name="joined-pools" class="poolcard-container">
-          <Poolcard v-for="id in joinedIDs" :key="id" :poolID="id" />
+          <Poolcard v-for="id in joinedIDs_sorted" :key="id" :poolID="id" />
         </q-tab-panel>
 
         <q-tab-panel name="created-pools" class="poolcard-container">
@@ -67,14 +67,24 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("pools", ["getAllPoolIDs", "getCreatedPoolIDs", "getPublishedPoolIDs"]),
+    ...mapGetters("pools", ["getAllPoolIDs", "getCreatedPoolIDs", "getPublishedPoolIDs", "getPoolIDsByStatus"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     poolIDs() {
       return this.getAllPoolIDs;
     },
     createdPoolIDs() {
-      return this.getCreatedPoolIDs(this.accountName);
-    }
+      return this.sortPools(this.getCreatedPoolIDs(this.accountName));
+    },
+    publishedPoolIDs() {
+      return this.sortPools(this.getPublishedPoolIDs);
+    },
+    joinedIDs_sorted() {
+      return this.sortPools(this.joinedIDs);
+    },
+    featuredIDs_sorted() {
+      return this.sortPools(this.featuredIDs);
+    },
+
   },
   methods: {
     ...mapActions("pools", [
@@ -82,7 +92,19 @@ export default {
       "getCreatedChainPools",
       "getJoinedChainPools",
       "getFeaturedChainPools"
-    ])
+    ]),
+    sortPools(id_list) {
+      let new_id_list = [];
+      let open_pools = this.getPoolIDsByStatus('open');
+      let upcoming_pools = this.getPoolIDsByStatus('upcoming'); // TODO Sort by open time
+      let closed_pools = this.getPoolIDsByStatus('closed');
+      new_id_list = new_id_list.concat(open_pools);
+      new_id_list = new_id_list.concat(upcoming_pools);
+      new_id_list = new_id_list.concat(closed_pools);
+      new_id_list = new_id_list.filter(value => id_list.includes(value));
+      console.log(new_id_list);
+      return new_id_list;
+    },
   },
   async mounted() {
     await this.getAllChainPools();
