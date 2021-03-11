@@ -37,6 +37,11 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
+    
+    // sort according to nearest pool open
+    tableResults.rows.sort(function(a, b) {
+      return new Date(a.pool_open) - new Date(b.pool_open);
+    });
 
     for (const pool of tableResults.rows) {
       // console.log(pool);
@@ -224,11 +229,12 @@ export const getJoinedChainPools = async function(
       console.log("Joined pools:");
       // console.log(tableResults.rows);
       let pool_id_list = [];
-      tableResults.rows.forEach((pool, index) => {
-        // console.log(pool);
-        let pool_id = pool.pool_id;
-        pool_id_list.push(pool_id);
+      // sort according to nearest pool open
+      tableResults.rows.sort(function(a, b) {
+        return new Date(a.pool_open) - new Date(b.pool_open);
       });
+
+      pool_id_list = tableResults.rows.map(a => a.id);
       pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
       console.log(pool_id_list);
 
@@ -263,10 +269,13 @@ export const getFeaturedChainPools = async function({
     });
     console.log("Featured pools:");
     let pool_id_list = [];
-    tableResults.rows[0].featured_pools.forEach((id, index) => {
-      let pool_id = id;
-      pool_id_list.push(pool_id);
+
+    // sort according to nearest pool open
+    tableResults.rows.sort(function(a, b) {
+      return new Date(a.pool_open) - new Date(b.pool_open);
     });
+
+    pool_id_list = tableResults.rows.map(a => a.id);
     pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
     console.log(pool_id_list);
 
@@ -298,18 +307,18 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
     });
 
     console.log("Upcoming pools");
-    let pool_id_list = []
+    let pool_id_list = [];
 
     // sort according to nearest pool open
     tableResults.rows.sort(function(a, b) {
       return new Date(a.pool_open) - new Date(b.pool_open);
     });
-    
-    console.log(tableResults.rows)
-    pool_id_list = tableResults.rows.map(a => a.id)
+
+    console.log(tableResults.rows);
+    pool_id_list = tableResults.rows.map(a => a.id);
     pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
 
-    console.log(pool_id_list)
+    console.log(pool_id_list);
 
     for (const pool_id of pool_id_list) {
       await dispatch("getChainPoolByID", pool_id);
