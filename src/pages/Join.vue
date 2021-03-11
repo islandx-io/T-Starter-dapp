@@ -78,7 +78,13 @@
           >
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="Ok" color="primary" @click="toAllocationsPage" v-close-popup></q-btn>
+          <q-btn
+            flat
+            label="Ok"
+            color="primary"
+            @click="toAllocationsPage"
+            v-close-popup
+          ></q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -192,9 +198,9 @@ export default {
               this.BaseTokenDecimals,
               this.BaseTokenSymbol
             ),
-            memo: 'Join pool'
+            memo: "Join pool"
           }
-        },
+        }
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
       if (transaction) {
@@ -221,13 +227,23 @@ export default {
         });
       } else {
         this.checkAllowed();
-        await this.joinPoolTransaction();
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Submitted"
-        });
+
+        try {
+          await this.joinPoolTransaction();
+          this.$q.notify({
+            color: "green-4",
+            textColor: "white",
+            icon: "cloud_done",
+            message: "Submitted"
+          });
+        } catch (error) {
+          this.$q.notify({
+            color: "red-5",
+            textColor: "white",
+            icon: "warning",
+            message: "Transaction fail"
+          });
+        }
       }
     }
   },
