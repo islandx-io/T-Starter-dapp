@@ -28,19 +28,35 @@
         swipeable
         class="tab-panel-container"
       >
-        <q-tab-panel name="all-pools" class="poolcard-container">
+        <q-tab-panel
+          name="all-pools"
+          class="poolcard-container"
+          @mousedown.stop
+        >
           <Poolcard v-for="id in poolIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
-        <q-tab-panel name="featured-pools" class="poolcard-container">
+        <q-tab-panel
+          name="featured-pools"
+          class="poolcard-container"
+          @mousedown.stop
+        >
           <Poolcard v-for="id in featuredIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
-        <q-tab-panel name="joined-pools" class="poolcard-container">
+        <q-tab-panel
+          name="joined-pools"
+          class="poolcard-container"
+          @mousedown.stop
+        >
           <Poolcard v-for="id in joinedIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
-        <q-tab-panel name="created-pools" class="poolcard-container">
+        <q-tab-panel
+          name="created-pools"
+          class="poolcard-container"
+          @mousedown.stop
+        >
           <Poolcard
             v-for="id in createdPoolIDs"
             :key="id"
