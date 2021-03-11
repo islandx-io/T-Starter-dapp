@@ -132,6 +132,11 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
     poolStatus = "open";
   }
 
+  // Update status when pool is filled
+  if (this.$chainToQty(pool.remaining_ask) <= 0) {
+    poolStatus = "closed";
+  }
+
   // Update access type
   var access_type = "Private";
   if (pool.private_end >= pool.public_end) {
@@ -333,8 +338,8 @@ export const getAllocationByPool = async function(
         show_payer: false // Optional: Show ram payer
       });
 
-      console.log("Allocation:");
       let allocationTable = tableResults.rows.filter(a => a.account === payload.account)[0]
+      console.log("Allocation:");
       console.log(allocationTable)
       return allocationTable;
     }

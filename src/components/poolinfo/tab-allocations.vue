@@ -67,9 +67,7 @@ export default {
 
   async mounted() {
     let payload = {account: this.accountName, poolID: this.pool.id}
-    console.log(payload)
     this.data = [await this.getAllocationByPool(payload)];
-    console.log(this.data)
   }
 };
 </script>
