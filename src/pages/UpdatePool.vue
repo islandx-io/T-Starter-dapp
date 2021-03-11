@@ -537,13 +537,13 @@ export default {
             ),
             remaining_offer: "3501234.5670 START", //TODO set these amounts
             total_raise: this.$toChainString(
-              this.pool.hard_cap,
+              0,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
             participants: 0,
             pool_open: this.pool.pool_open,
-            // pool_open: String(Math.trunc(Date.now())),
+            // pool_open: Math.trunc(Date.now()/1000),
             private_end: this.pool.private_end,
             public_end: this.pool.public_end,
             whitelist: this.pool.whitelist,

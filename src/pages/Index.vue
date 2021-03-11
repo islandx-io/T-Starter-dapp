@@ -27,9 +27,9 @@ that you may prove what is that good and acceptable and perfect will of God. - R
     <div class="body-container">
       <section class="row justify-center q-gutter-md">
         <h2 class="col-12 text-center">Upcoming Pools</h2>
-        <div class="poolcard-container col" v-if="upcomingPools.length !== 0">
+        <div class="poolcard-container col" v-if="upcomingIDs.length !== 0">
           <Poolcard
-            v-for="id in upcomingPools"
+            v-for="id in upcomingIDs"
             :key="'upcoming-' + id"
             :poolID="id"
           />
@@ -60,7 +60,8 @@ export default {
   components: { Poolcard },
   data() {
     return {
-      featuredIDs: []
+      featuredIDs: [],
+      upcomingIDs: [],
     };
   },
   computed: {
@@ -76,8 +77,8 @@ export default {
     ...mapActions("pools", ["getAllChainPools", "getFeaturedChainPools", "getUpcomingChainPools"])
   },
   async mounted() {
-    await this.getAllChainPools();
-    await this.getUpcomingChainPools();
+    // await this.getAllChainPools();
+    this.upcomingIDs = await this.getUpcomingChainPools();
     this.featuredIDs = await this.getFeaturedChainPools();
   }
 };

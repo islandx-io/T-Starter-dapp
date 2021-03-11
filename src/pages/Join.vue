@@ -178,7 +178,10 @@ export default {
   async mounted() {
     await this.loadChainData();
     this.getPoolInfo();
-    this.getBalance();
+    
+    if (this.isAuthenticated) {
+      this.getBalance();      
+    }
   }
 };
 </script>
