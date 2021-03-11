@@ -3,27 +3,30 @@
     <div v-if="!isAuthenticated">
       <q-btn @click="showLogin = true" color="primary" label="Login" outline />
     </div>
-    <q-btn
-      v-if="isAuthenticated"
-      outline
-      color="primary"
-      class="login row justify-end items-center"
-      padding="4px xs"
-      @click="logout"
-    >
-      <div class="q-px-sm">10 ETH</div>
-      <div class="account-badge">
-        <div>
-          {{ accountName }}
-        </div>
-      </div>
-      <!-- <q-btn
-        @click="logout"
-        color="secondary"
-        text-color="black"
+    <q-btn-group outline>
+      <q-btn
+        color="primary"
         label="Logout"
-      /> -->
-    </q-btn>
+        v-if="showLogout"
+        @click="showLogout = false"
+        outline
+      />
+      <q-btn
+        v-if="isAuthenticated"
+        outline
+        color="primary"
+        class="login row justify-end items-center"
+        padding="4px xs"
+        @click="showLogout = !showLogout"
+      >
+        <div class="account-badge">
+          <div>
+            {{ accountName }}
+          </div>
+        </div>
+        <div class="q-px-sm">10 ETH</div>
+      </q-btn>
+    </q-btn-group>
     <q-dialog v-model="showLogin">
       <q-list>
         <q-item
@@ -82,7 +85,7 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
-    return { showLogin: false, error: null };
+    return { showLogin: false, error: null, showLogout: false };
   },
   computed: {
     ...mapGetters("account", [
@@ -131,6 +134,8 @@ export default {
 // }
 .login {
   padding-right: 0;
+}
+.login:hover {
 }
 .login .account-badge {
   display: flex;

@@ -18,7 +18,8 @@
           </router-link>
           <login-button></login-button>
         </div>
-        <q-btn-dropdown class="lt-md" icon="menu" align="right">
+        <!-- TODO Make mobile friendly -->
+        <!-- <q-btn-dropdown class="lt-md" icon="menu" align="right">
           <q-list class="column items-end">
             <q-item clickable v-close-popup>
               <router-link to="/pools" class="router-link"
@@ -34,7 +35,7 @@
               <login-button></login-button>
             </q-item>
           </q-list>
-        </q-btn-dropdown>
+        </q-btn-dropdown> -->
       </q-toolbar>
     </q-header>
 

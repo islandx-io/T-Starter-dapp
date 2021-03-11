@@ -14,7 +14,7 @@
         >
           <!-- tokens and adresses -->
           <div class="form-col-container">
-            <q-list>
+            <q-list dense>
               <q-item>
                 <q-item-section>
                   <q-input
@@ -26,7 +26,6 @@
                       val => (val && val.length > 1) || 'Must specify the title'
                     ]"
                     outlined
-                    hide-bottom-space
                   />
                 </q-item-section>
               </q-item>
@@ -40,13 +39,12 @@
                     :rules="[checkTokenContract]"
                     debounce="1000"
                     outlined
-                    hide-bottom-space
                   >
                   </q-input>
                 </q-item-section>
               </q-item>
               <q-item>
-                <q-item-section>
+                <q-item-section top>
                   <q-input
                     color="primary"
                     v-model="token_symbol"
@@ -56,23 +54,21 @@
                     outlined
                     class="col"
                     input-style
-                    hide-bottom-space
                   />
                 </q-item-section>
-                <q-item-section class="col-shrink">To</q-item-section>
-                <q-item-section>
+                <q-item-section class="col-shrink q-pb-md">To</q-item-section>
+                <q-item-section top>
                   <q-select
                     v-model="base_token_symbol"
                     :options="base_token_options.map(a => a.sym)"
-                    label="Standard"
+                    label="Base token"
                     outlined
-                    class="col"
                   />
                 </q-item-section>
               </q-item>
               <!-- Swap ratio -->
               <q-item>
-                <q-item-section side
+                <q-item-section side class="q-pb-md"
                   >1 {{ base_token_symbol }} =
                 </q-item-section>
                 <q-item-section>
@@ -83,7 +79,6 @@
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the swap ratio']"
                     outlined
-                    hide-bottom-space
                   >
                   </q-input>
                 </q-item-section>
@@ -99,7 +94,6 @@
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
-                    hide-bottom-space
                   />
                 </q-item-section>
                 <q-item-section>
@@ -110,7 +104,6 @@
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
-                    hide-bottom-space
                   />
                 </q-item-section>
               </q-item>
@@ -123,7 +116,6 @@
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
-                    hide-bottom-space
                   />
                 </q-item-section>
                 <q-item-section>
@@ -134,14 +126,18 @@
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
-                    hide-bottom-space
                   />
                 </q-item-section>
               </q-item>
               <!-- Dates -->
+              <!-- TODO Add "today" button -->
               <q-item>
                 <q-item-section>
-                  <datetime-field :value.sync="pool_open" label="Sale start" />
+                  <datetime-field
+                    :value.sync="pool_open"
+                    label="Sale start"
+                    class="q-pb-md"
+                  />
                 </q-item-section>
               </q-item>
               <q-item>
@@ -163,6 +159,8 @@
                 <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
               </div> -->
               <!-- Image -->
+            </q-list>
+            <q-list class="col" dense>
               <q-item>
                 <q-item-section>
                   <q-input
@@ -175,31 +173,46 @@
                         (val && val.length > 1) || 'Must specify the image link'
                     ]"
                     outlined
-                    hide-bottom-space
                   />
                 </q-item-section>
-                <!-- TODO Handle missing/broken links -->
-                <q-item-section side>
-                  <q-avatar size="50px">
-                    <img :src="pool.avatar" width="20px" alt="image" />
+                <q-item-section side v-if="pool.avatar !== ''">
+                  <q-avatar size="50px" class="q-mb-md">
+                    <q-img :src="pool.avatar" style="height: 50px">
+                      <template v-slot:loading>
+                        <q-spinner-puff color="primary" />
+                      </template>
+                      <template v-slot:error>
+                        <div
+                          class="absolute-full flex flex-center text-negative transparent text-weight-bold"
+                        >
+                          ?
+                        </div>
+                      </template>
+                    </q-img>
                   </q-avatar>
                 </q-item-section>
               </q-item>
-              <q-item>
-                <!-- Whitelist -->
+              <!-- Whitelist -->
+              <!-- <q-item>
                 <q-item-section>
                   <q-input
                     v-model="pool.whitelist"
                     autogrow
                     label="Some whitelist thing"
                     outlined
-                    hide-bottom-space
                   /> </q-item-section
-              ></q-item>
-            </q-list>
-            <q-list class="col">
+              ></q-item> -->
               <!-- web links -->
-              <q-item v-for="link in webLinks" :key="link.key">
+              <q-item class="weblink-container">
+                <div v-for="link in webLinks" :key="link.key">
+                  <q-input
+                    outlined
+                    v-model="link.value"
+                    :label="capitalize(link.key)"
+                  />
+                </div>
+              </q-item>
+              <!-- <q-item v-for="link in webLinks" :key="link.key">
                 <q-item-section>
                   <q-input
                     outlined
@@ -207,7 +220,7 @@
                     :label="capitalize(link.key)"
                   />
                 </q-item-section>
-              </q-item>
+              </q-item> -->
               <!-- tag-line -->
               <q-item>
                 <q-item-section>
@@ -222,7 +235,7 @@
                         'Must specify'
                     ]"
                     outlined
-                    hide-bottom-space
+                    style="padding-top:20px"
                   />
                 </q-item-section>
               </q-item>
@@ -236,7 +249,6 @@
                     lazy-rules
                     :rules="[val => (val && val.length > 1) || 'Must specify']"
                     outlined
-                    hide-bottom-space
                     type="textarea"
                   />
                 </q-item-section>
@@ -546,25 +558,27 @@ export default {
       // TODO Check and clean links not empty
       // TODO check if have permission to create pool. e.g. fuzzytestnet
       // console.log({ "Submitted start date": this.pool.pool_open });
+      this.pool.pool_open = this.pool_open.date;
+      this.pool.private_end = this.private_end.date;
+      this.pool.public_end = this.public_end.date;
       console.log({ pool_open: this.pool_open.date });
-      // console.log({ Title: this.pool.title });
-      // if (this.accept !== true || !this.isAuthenticated) {
-      //   this.$q.notify({
-      //     color: "red-5",
-      //     textColor: "white",
-      //     icon: "warning",
-      //     message: "You need to login and accept the license and terms first"
-      //   });
-      // } else {
-      //   this.checkLinks();
-      //   await this.updateChainPool();
-      //   this.$q.notify({
-      //     color: "green-4",
-      //     textColor: "white",
-      //     icon: "cloud_done",
-      //     message: "Submitted"
-      //   });
-      // }
+      if (this.accept !== true || !this.isAuthenticated) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: "You need to login and accept the license and terms first"
+        });
+      } else {
+        this.checkLinks();
+        await this.updateChainPool();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Submitted"
+        });
+      }
     },
     async onPublish() {
       await this.publishPool();
@@ -591,15 +605,29 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// .header-bg,
+.body-container,
+.card {
+  min-width: 450px;
+}
 .header-bg {
   height: 200px;
+  min-width: 490px;
   margin-bottom: -50px;
 }
-.form-col-container {
+.base-grid-container {
   display: grid;
-  // grid-gap: 5px;
   align-items: stretch;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   grid-template-rows: min-content;
+}
+.form-col-container {
+  @extend .base-grid-container;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+}
+.weblink-container {
+  @extend .base-grid-container;
+  grid-column-gap: 10px;
+  grid-row-gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 </style>
