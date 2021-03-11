@@ -44,7 +44,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             :poolID="id"
           />
         </div>
-        <Poolcard v-else class="col" :poolID="-1" />
+        <Poolcard v-else class="col-shrink" :poolID="-1" />
         <router-link to="/pools" class="router-link col-12 text-center">
           <q-btn outline color="accent">VIEW ALL POOLS</q-btn>
         </router-link>
@@ -66,10 +66,9 @@ export default {
   computed: {
     ...mapGetters("pools", ["getAllPoolIDs", "getPoolIDsByStatus"]),
     upcomingPools: function() {
-      return this.getPoolIDsByStatus("upcoming");
-    },
-    closedPools: function() {
-      return this.getPoolIDsByStatus("closed");
+      let pools = this.getPoolIDsByStatus("upcoming");
+      if (pools === undefined) return [];
+      else return pools;
     }
   },
   methods: {

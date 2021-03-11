@@ -1,5 +1,5 @@
 <template>
-  <q-input class="q-mr-sm q-my-xs" outlined v-model="value.date">
+  <q-input outlined hide-bottom-space v-model="value.date">
     <template v-slot:prepend>
       <q-icon name="event" class="cursor-pointer">
         <q-popup-proxy transition-show="scale" transition-hide="scale">

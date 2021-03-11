@@ -14,201 +14,253 @@
         >
           <!-- tokens and adresses -->
           <div class="form-col-container">
-            <div class="col">
-              <div class="col column">
-                <q-input
-                  color="primary"
-                  v-model="pool.title"
-                  label="Title"
-                  lazy-rules
-                  :rules="[
-                    val => (val && val.length > 1) || 'Must specify the title'
-                  ]"
-                  outlined
-                />
-              </div>
-              <q-input
-                color="primary"
-                v-model="pool.swap_ratio.contract"
-                label="Token contract address"
-                lazy-rules
-                :rules="[checkTokenContract]"
-                debounce="1000"
-                outlined
-              >
-              </q-input>
-              <div class="q-gutter-md q-pb-md row items-center">
-                <q-input
-                  color="primary"
-                  v-model="token_symbol"
-                  label="Token"
-                  lazy-rules
-                  :rules="[val => !!val || 'Must specify the token']"
-                  outlined
-                  class="col"
-                  input-style
-                  hide-bottom-space
-                />
-                <div>To</div>
-                <q-select
-                  v-model="base_token_symbol"
-                  :options="base_token_options.map(a => a.sym)"
-                  label="Standard"
-                  outlined
-                  class="col"
-                />
-              </div>
+            <q-list>
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.title"
+                    label="Title"
+                    lazy-rules
+                    :rules="[
+                      val => (val && val.length > 1) || 'Must specify the title'
+                    ]"
+                    outlined
+                    hide-bottom-space
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.swap_ratio.contract"
+                    label="Token contract address"
+                    lazy-rules
+                    :rules="[checkTokenContract]"
+                    debounce="1000"
+                    outlined
+                    hide-bottom-space
+                  >
+                  </q-input>
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="token_symbol"
+                    label="Token"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the token']"
+                    outlined
+                    class="col"
+                    input-style
+                    hide-bottom-space
+                  />
+                </q-item-section>
+                <q-item-section class="col-shrink">To</q-item-section>
+                <q-item-section>
+                  <q-select
+                    v-model="base_token_symbol"
+                    :options="base_token_options.map(a => a.sym)"
+                    label="Standard"
+                    outlined
+                    class="col"
+                  />
+                </q-item-section>
+              </q-item>
               <!-- Swap ratio -->
-              <div>Swap ratio</div>
-              <div class="q-gutter-md q-pb-md row items-center">
-                <div>1 {{ base_token_symbol }} =</div>
-                <q-input
-                  color="primary"
-                  v-model="pool.swap_ratio.quantity"
-                  :label="tokenSymbolReformat"
-                  lazy-rules
-                  :rules="[val => !!val || 'Must specify the swap ratio']"
-                  outlined
-                  hide-bottom-space
-                  class="col"
-                >
-                </q-input>
-              </div>
+              <q-item>
+                <q-item-section side
+                  >1 {{ base_token_symbol }} =
+                </q-item-section>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.swap_ratio.quantity"
+                    :label="`Swap ratio (${tokenSymbolReformat})`"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the swap ratio']"
+                    outlined
+                    hide-bottom-space
+                  >
+                  </q-input>
+                </q-item-section>
+              </q-item>
               <!-- Quantities -->
               <!-- <h3>Quantities</h3> -->
-              <div class="q-gutter-md row">
-                <q-input
-                  color="primary"
-                  v-model="pool.soft_cap"
-                  :label="`Soft cap ()`"
-                  lazy-rules
-                  :rules="[val => !!val || 'Must specify the amount']"
-                  outlined
-                  class="col"
-                />
-                <q-input
-                  color="primary"
-                  v-model="pool.hard_cap"
-                  :label="`Hard cap ()`"
-                  lazy-rules
-                  :rules="[val => !!val || 'Must specify the amount']"
-                  outlined
-                  class="col"
-                />
-              </div>
-              <div class="q-gutter-md row">
-                <q-input
-                  color="primary"
-                  v-model="pool.minimum_swap"
-                  :label="`Minimum allocation ()`"
-                  lazy-rules
-                  :rules="[val => !!val || 'Must specify the amount']"
-                  outlined
-                  class="col"
-                />
-                <q-input
-                  color="primary"
-                  v-model="pool.maximum_allocation"
-                  :label="`Maximum allocation ()`"
-                  lazy-rules
-                  :rules="[val => !!val || 'Must specify the amount']"
-                  outlined
-                  class="col"
-                />
-              </div>
-              <div>Dates</div>
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.soft_cap"
+                    :label="`Soft cap ()`"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the amount']"
+                    outlined
+                    hide-bottom-space
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.hard_cap"
+                    :label="`Hard cap ()`"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the amount']"
+                    outlined
+                    hide-bottom-space
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.minimum_swap"
+                    :label="`Minimum allocation ()`"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the amount']"
+                    outlined
+                    hide-bottom-space
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.maximum_allocation"
+                    :label="`Maximum allocation ()`"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the amount']"
+                    outlined
+                    hide-bottom-space
+                  />
+                </q-item-section>
+              </q-item>
               <!-- Dates -->
-              <div class="row reverse-wrap items-center">
-                <datetime-field :value.sync="pool_open" />
-                <div>Sale start</div>
-              </div>
-              <div class="row reverse-wrap items-center">
-                <datetime-field :value.sync="private_end" />
-                <div>Private sale end</div>
-              </div>
-              <div class="row reverse-wrap items-center">
-                <datetime-field :value.sync="public_end" />
-                <div>Public sale end</div>
-              </div>
+              <q-item>
+                <q-item-section class="col-7">
+                  <datetime-field :value.sync="pool_open" />
+                </q-item-section>
+                <q-item-section>Sale start</q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section class="col-7">
+                  <datetime-field :value.sync="private_end" />
+                </q-item-section>
+                <q-item-section>Private sale end</q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section class="col-7">
+                  <datetime-field :value.sync="public_end" />
+                </q-item-section>
+                <q-item-section>Public sale end</q-item-section>
+              </q-item>
               <!-- <div class="col column">
                 <div>Type</div>
                 <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
               </div> -->
-            </div>
-            <div class="col">
               <!-- Image -->
-              <div class="row items-center q-pb-md">
-                <q-input
-                  color="primary"
-                  v-model="pool.avatar"
-                  label="Avatar image link"
-                  lazy-rules
-                  :rules="[
-                    val =>
-                      (val && val.length > 1) || 'Must specify the image link'
-                  ]"
-                  outlined
-                  class="col q-pr-md"
-                  hide-bottom-space
-                >
-                </q-input>
-                <q-avatar size="50px">
-                  <img :src="pool.avatar" width="20px" alt="image" />
-                </q-avatar>
-              </div>
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.avatar"
+                    label="Avatar image link"
+                    lazy-rules
+                    :rules="[
+                      val =>
+                        (val && val.length > 1) || 'Must specify the image link'
+                    ]"
+                    outlined
+                    hide-bottom-space
+                  />
+                </q-item-section>
+                <q-item-section side>
+                  <q-avatar size="50px">
+                    <img :src="pool.avatar" width="20px" alt="image" />
+                  </q-avatar>
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <!-- Whitelist -->
+                <q-item-section>
+                  <q-input
+                    v-model="pool.whitelist"
+                    autogrow
+                    label="Some whitelist thing"
+                    outlined
+                    hide-bottom-space
+                  /> </q-item-section
+              ></q-item>
+            </q-list>
+            <q-list class="col">
               <!-- web links -->
-              <div>Websites</div>
-              <div class="row q-gutter-md q-pb-md">
-                <q-input
-                  outlined
-                  v-for="link in webLinks"
-                  v-model="link.value"
-                  :key="link.key"
-                  :label="capitalize(link.key)"
-                />
-              </div>
-              <!-- Whitelist -->
-              <q-input
-                v-model="pool.whitelist"
-                autogrow
-                label="Some whitelist thing"
-                outlined
-                class="q-pb-md"
-              />
+              <q-item v-for="link in webLinks" :key="link.key">
+                <q-item-section>
+                  <q-input
+                    outlined
+                    v-model="link.value"
+                    :label="capitalize(link.key)"
+                  />
+                </q-item-section>
+              </q-item>
               <!-- tag-line -->
-              <q-input
-                v-model="pool.tag_line"
-                autogrow
-                label="Tag line"
-                lazy-rules
-                :rules="[
-                  val =>
-                    (val && val.length > 1 && val.length < 230) ||
-                    'Must specify'
-                ]"
-                outlined
-              />
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    v-model="pool.tag_line"
+                    autogrow
+                    label="Tag line"
+                    lazy-rules
+                    :rules="[
+                      val =>
+                        (val && val.length > 1 && val.length < 230) ||
+                        'Must specify'
+                    ]"
+                    outlined
+                    hide-bottom-space
+                  />
+                </q-item-section>
+              </q-item>
               <!-- description -->
-              <q-input
-                v-model="pool.description"
-                autogrow
-                label="Description"
-                lazy-rules
-                :rules="[val => (val && val.length > 1) || 'Must specify']"
-                outlined
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    v-model="pool.description"
+                    autogrow
+                    label="Description"
+                    lazy-rules
+                    :rules="[val => (val && val.length > 1) || 'Must specify']"
+                    outlined
+                    hide-bottom-space
+                    type="textarea"
+                  />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
+          <q-list>
+            <q-item>
+              <q-toggle
+                v-model="accept"
+                label="I accept the license and terms"
+                el="accept"
               />
-            </div>
-          </div>
-          <div>
-            <!-- T's and C's -->
-            <q-toggle v-model="accept" label="I accept the license and terms" />
-            <!-- Submit -->
-            <div class="q-gutter-md">
-              <q-btn label="Update" type="submit" color="primary" />
-              <q-btn label="Publish" @click="onPublish" color="primary" />
-              <q-btn label="Reset" type="reset" color="primary" flat />
-            </div>
-          </div>
+            </q-item>
+            <q-item class="justify-start">
+              <q-item-section class="col-auto">
+                <q-btn label="Update" type="submit" color="primary" />
+              </q-item-section>
+              <q-item-section class="col-auto">
+                <q-btn label="Publish" @click="onPublish" color="primary" />
+              </q-item-section>
+              <q-item-section class="col-shrink">
+                <q-btn label="Reset" type="reset" color="primary" flat />
+              </q-item-section>
+            </q-item>
+          </q-list>
         </q-form>
 
         <div v-else>You are not the owner of this pool</div>
@@ -538,7 +590,7 @@ export default {
 }
 .form-col-container {
   display: grid;
-  grid-gap: 20px;
+  // grid-gap: 5px;
   align-items: stretch;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   grid-template-rows: min-content;
