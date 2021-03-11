@@ -37,7 +37,7 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
-    
+
     // sort according to nearest pool open
     tableResults.rows.sort(function(a, b) {
       return new Date(a.pool_open) - new Date(b.pool_open);
@@ -234,7 +234,7 @@ export const getJoinedChainPools = async function(
         return new Date(a.pool_open) - new Date(b.pool_open);
       });
 
-      pool_id_list = tableResults.rows.map(a => a.id);
+      pool_id_list = tableResults.rows.map(a => a.pool_id);
       pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
       console.log(pool_id_list);
 
@@ -270,12 +270,7 @@ export const getFeaturedChainPools = async function({
     console.log("Featured pools:");
     let pool_id_list = [];
 
-    // sort according to nearest pool open
-    tableResults.rows.sort(function(a, b) {
-      return new Date(a.pool_open) - new Date(b.pool_open);
-    });
-
-    pool_id_list = tableResults.rows.map(a => a.id);
+    pool_id_list = tableResults.rows[0].featured_pools;
     pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
     console.log(pool_id_list);
 
