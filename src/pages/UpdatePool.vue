@@ -491,11 +491,16 @@ export default {
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
     },
+    // TODO check this check again
     async checkTokenContract(val) {
       // simulating a delay
       let payload = { address: val, token_symbol: this.token_symbol };
       this.token_decimals = await this.getTokenPrecision(payload);
       console.log(this.token_decimals);
+      return (
+        (!!val ||
+        `Must be a valid contract`)
+      );
     },
     checkLinks() {
       console.log(this.webLinks.filter(el => el.value != ""));
@@ -535,15 +540,7 @@ export default {
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            remaining_offer: "3501234.5670 START", //TODO set these amounts
-            total_raise: this.$toChainString(
-              0,
-              this.selected_base_token.decimals,
-              this.selected_base_token.sym
-            ),
-            participants: 0,
             pool_open: this.pool.pool_open,
-            // pool_open: Math.trunc(Date.now()/1000),
             private_end: this.pool.private_end,
             public_end: this.pool.public_end,
             whitelist: this.pool.whitelist,

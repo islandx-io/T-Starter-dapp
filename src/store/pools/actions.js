@@ -52,7 +52,6 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       commit("updatePoolOnState", { poolTable, id });
       await dispatch("updatePoolSettings", id);
     }
-    
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -176,7 +175,7 @@ export const getCreatedChainPools = async function(
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
-    console.log('Created pools:')
+    console.log("Created pools:");
     for (const pool of tableResults.rows) {
       console.log(pool);
       let id = pool.id;
@@ -191,7 +190,6 @@ export const getCreatedChainPools = async function(
       commit("updatePoolOnState", { poolTable, id });
       await dispatch("updatePoolSettings", id);
     }
-
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -217,7 +215,7 @@ export const getJoinedChainPools = async function(
       });
 
       console.log("Joined pools:");
-      console.log(tableResults.rows);
+      // console.log(tableResults.rows);
       let pool_id_list = [];
       tableResults.rows.forEach((pool, index) => {
         // console.log(pool);
@@ -310,6 +308,39 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
     }
 
     return pool_id_list;
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// get personal allocation for pool
+export const getAllocationByPool = async function(
+  { commit, getters, dispatch },
+  payload
+) {
+  try {
+    if (payload.account !== null) {
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: "poolaccounts", // Table name
+        limit: 100,
+        index_position: 2,
+        key_type: "i64",
+        lower_bound: payload.poolID,
+        upper_bound: payload.poolID,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+
+      console.log("Allocation:");
+      let allocationTable = tableResults.rows.filter(a => a.account === payload.account)[0]
+      console.log(allocationTable)
+      return allocationTable;
+    }
+    // else {
+    //   return ;
+    // }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

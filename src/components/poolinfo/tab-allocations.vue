@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-table
-      title="Allocation History"
+      title="Allocation"
       :data="data"
       :columns="columns"
       row-key="name"
@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   name: "tab-allocations",
   props: {
@@ -21,44 +23,53 @@ export default {
     return {
       columns: [
         {
-          name: "id",
-          required: true,
-          label: "ID",
-          align: "left",
-          field: row => row.id,
-          format: val => `${val}`,
-          sortable: true,
-          // body td:
-          // style: "width: 500px",
-          // classes: "my-special-class",
-
-          // (v1.3+) header th:
-          // headerStyle: "width: 500px",
-          // headerClasses: "my-special-class"
+          name: "bid",
+          label: "Bid",
+          field: "bid"
         },
         {
-          name: "date",
-          align: "center",
-          label: "Date",
-          field: "date",
-          sortable: true
-        },
-        { name: "spent", label: "Spent", field: "spent", sortable: true },
-        { name: "bought", label: "Tokens Bought", field: "bought" },
-        { name: "staked", label: "Tokens staked", field: "staked" },
-        { name: "transactionid", label: "Transaction", field: "transactionid" },
-      ],
-      data: [
-        {
-          id: 1,
-          date: Date.now(),
-          spent: 0.2,
-          bought: 24,
-          staked: 4.0,
-          transactionid: "abcd"
+          name: "allocation",
+          label: "Allocation",
+          field: "allocation"
         }
-      ]
+        // {
+        //   name: "id",
+        //   required: true,
+        //   label: "ID",
+        //   align: "left",
+        //   field: row => row.id,
+        //   format: val => `${val}`,
+        //   sortable: true
+        // },
+        // {
+        //   name: "date",
+        //   align: "center",
+        //   label: "Date",
+        //   field: "date",
+        //   sortable: true
+        // },
+        // { name: "spent", label: "Spent", field: "spent", sortable: true },
+        // { name: "bought", label: "Tokens Bought", field: "bought" },
+        // { name: "staked", label: "Tokens staked", field: "staked" },
+        // { name: "transactionid", label: "Transaction", field: "transactionid" }
+      ],
+      data: []
     };
+  },
+
+  computed: {
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+  },
+
+  methods: {
+    ...mapActions("pools", ["getAllocationByPool"]),
+  },
+
+  async mounted() {
+    let payload = {account: this.accountName, poolID: this.pool.id}
+    console.log(payload)
+    this.data = [await this.getAllocationByPool(payload)];
+    console.log(this.data)
   }
 };
 </script>

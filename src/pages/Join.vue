@@ -84,6 +84,10 @@ export default {
       let idx = this.pool.base_token.sym.indexOf(",") + 1;
       return this.pool.base_token.sym.slice(idx);
     },
+    BaseTokenDecimals() {
+      let idx = this.pool.base_token.sym.indexOf(",") ;
+      return Number(this.pool.base_token.sym.slice(0, idx));
+    },
     TokenSymbol() {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
       return this.pool.swap_ratio.quantity.slice(idx);
@@ -142,7 +146,8 @@ export default {
           name: "joinpool",
           data: {
             account: this.accountName,
-            pool_id: this.poolID
+            pool_id: this.poolID,
+            quantity: this.$toChainString(this.amount, this.BaseTokenDecimals, this.BaseTokenSymbol)
           }
         }
       ];
