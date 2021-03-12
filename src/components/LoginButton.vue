@@ -1,8 +1,14 @@
 <template>
   <div>
-    <div v-if="!isAuthenticated">
-      <q-btn @click="showLogin = true" color="primary" label="Login" outline />
-    </div>
+    <q-btn
+      v-if="!isAuthenticated"
+      @click="showLogin = true"
+      class="hover-accent"
+      flat
+      color="secondary"
+      label="Login"
+      outline
+    />
     <q-btn-group outline>
       <q-btn
         class="hover-accent"
