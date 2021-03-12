@@ -180,20 +180,6 @@ export default {
 
     async joinPoolTransaction() {
       const actions = [
-        // transfer to contract
-        {
-          account: process.env.CONTRACT_ADDRESS,
-          name: "joinpool",
-          data: {
-            account: this.accountName,
-            pool_id: this.poolID,
-            quantity: this.$toChainString(
-              this.amount,
-              this.BaseTokenDecimals,
-              this.BaseTokenSymbol
-            )
-          }
-        },
         // transfer tokens
         {
           account: this.pool.base_token.contract,
@@ -208,7 +194,21 @@ export default {
             ),
             memo: "Join pool"
           }
-        }
+        },
+        // transfer to contract
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "joinpool",
+          data: {
+            account: this.accountName,
+            pool_id: this.poolID,
+            quantity: this.$toChainString(
+              this.amount,
+              this.BaseTokenDecimals,
+              this.BaseTokenSymbol
+            )
+          }
+        },        
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
       if (transaction) {

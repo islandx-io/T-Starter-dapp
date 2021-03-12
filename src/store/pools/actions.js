@@ -288,7 +288,7 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: process.env.CONTRACT_TABLE, // Table name
-      limit: 10, // Maximum number of rows that we want to get
+      limit: 100, // Maximum number of rows that we want to get
       index_position: 3,
       key_type: "i64",
       // lower_bound: 1, // show all published pools
@@ -302,9 +302,7 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
     let pool_id_list = [];
 
     // sort according to nearest pool open
-    tableResults.rows.sort(function(a, b) {
-      return new Date(a.pool_open) - new Date(b.pool_open);
-    });
+    tableResults.rows.sort(function(a, b) { return new Date(a.pool_open) - new Date(b.pool_open); });
 
     console.log(tableResults.rows);
     pool_id_list = tableResults.rows.map(a => a.id);
