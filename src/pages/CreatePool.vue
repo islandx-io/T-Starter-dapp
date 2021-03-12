@@ -1,41 +1,48 @@
 <template>
   <q-page>
-    <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
-      <!-- tokens and adresses -->
-      <div>
-        <q-input
-          color="primary"
-          v-model="owner"
-          label="owner"
-          lazy-rules
-          :rules="[getChainAccountInfo]"
-          debounce="500"
-        >
-        </q-input>
-      </div>
-      <div>
-        <q-input
-          color="primary"
-          v-model="pool_type"
-          label="pool type"
-          lazy-rules
-          debounce="1000"
-        >
-        </q-input>
-      </div>
-
-      <!-- Submit -->
-      <div>
-        <q-btn label="Submit" type="submit" color="primary" />
-        <q-btn
-          label="Reset"
-          type="reset"
-          color="primary"
-          flat
-          class="q-ml-sm"
-        />
-      </div>
-    </q-form>
+    <section class="header-bg row content-center justify-center">
+      <h2 class="text-white">Create Pool</h2>
+    </section>
+    <section class="body-container">
+      <q-card class="card">
+        <q-form @submit="onSubmit" @reset="onReset">
+          <!-- tokens and adresses -->
+          <q-list>
+            <q-item>
+              <q-item-section top>
+                <q-input
+                  color="primary"
+                  v-model="owner"
+                  label="owner"
+                  lazy-rules
+                  :rules="[getChainAccountInfo]"
+                  debounce="500"
+                  outlined
+                  top
+                >
+                </q-input>
+              </q-item-section>
+              <q-item-section top>
+                <q-input
+                  color="primary"
+                  v-model="pool_type"
+                  label="pool type"
+                  lazy-rules
+                  debounce="1000"
+                  outlined
+                >
+                </q-input>
+              </q-item-section>
+            </q-item>
+            <!-- Submit -->
+            <q-item>
+              <q-btn label="Submit" type="submit" color="primary" />
+              <q-btn label="Reset" type="reset" color="primary" flat />
+            </q-item>
+          </q-list>
+        </q-form>
+      </q-card>
+    </section>
   </q-page>
 </template>
 
@@ -100,4 +107,10 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.header-bg {
+  height: 200px;
+  min-width: 490px;
+  margin-bottom: -50px;
+}
+</style>
