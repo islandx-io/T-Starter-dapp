@@ -133,6 +133,7 @@ export default {
       amount: 0,
       alreadyStaked: false,
       confirm_stake: false,
+      premium_stake: {},
       base_token_symbol: "",
       showTransaction: null,
       transaction: null,
@@ -216,12 +217,12 @@ export default {
           actions.push(
             // send start if private
             {
-              account: "token.start", // TODO staking info from chain
+              account: this.premium_stake.contract,
               name: "transfer",
               data: {
                 from: this.accountName,
                 to: process.env.CONTRACT_ADDRESS,
-                quantity: this.$toChainString(500, 4, "START"),
+                quantity: this.premium_stake.quantity,
                 memo: "Staking"
               }
             }
@@ -305,8 +306,8 @@ export default {
           message: "You need to login first"
         });
       } else {
-        this.checkAllowed();
-        if (this.alreadyStaked) {
+        // this.checkAllowed();
+        if (!this.alreadyStaked) {
           this.confirm_stake = true;
         } else {
           this.tryTransaction();
@@ -322,7 +323,7 @@ export default {
     if (this.isAuthenticated) {
       this.getBalance();
     }
-
+    this.premium_stake = await this.getPremiumStake();
     this.alreadyStaked = await this.checkStakedChain(this.accountName);
   }
 };

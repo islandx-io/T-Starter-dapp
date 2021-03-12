@@ -408,11 +408,11 @@ export const checkStakedChain = async function(
       // get premium stake
       const premium_stake = await dispatch("getPremiumStake");
       let premium_stake_qty = this.$chainToQty(premium_stake.quantity)
-      console.log(premium_stake_qty)
+      // console.log(premium_stake_qty)
       
       const staked_amount = this.$chainToQty(tableResults.rows[0].staked)
-      console.log("START staked?");
-      console.log(staked_amount);
+      // console.log("START staked?");
+      // console.log(staked_amount);
 
       if (staked_amount >= premium_stake_qty) {
         return true
