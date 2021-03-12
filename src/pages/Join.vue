@@ -127,7 +127,7 @@
                   :disable="
                     !isAuthenticated ||
                       balance <= $chainToQty(pool.minimum_swap) ||
-                      pool.pool_status !== `open`
+                      pool.pool_status !== `open` || not_enough_start
                   "
                 />
               </q-item-section>
@@ -137,12 +137,16 @@
               <q-tooltip v-if="balance <= $chainToQty(pool.minimum_swap)">
                 Zero balance
               </q-tooltip>
+              <q-tooltip v-if="not_enough_start">
+                Not enough START
+              </q-tooltip>
             </q-item>
+            <div v-if="not_enough_start">You do not have enough START tokens to participate in this pool. Get here.</div>
           </div>
         </q-form>
 
         <!-- Not enough START to participate in private pool -->
-        <q-dialog v-model="eligible_warning">
+        <q-dialog v-model="stake_warning">
           <q-card>
             <q-card-section>
               <div class="text-h6">Alert</div>
@@ -236,7 +240,8 @@ export default {
       amount: 0,
       alreadyStaked: false,
       confirm_stake: false,
-      eligible_warning: false,
+      stake_warning: false,
+      not_enough_start: false,
       premium_stake: {},
       base_token_symbol: "",
       showTransaction: null,
@@ -439,7 +444,8 @@ export default {
     );
     console.log("Start balance:" + start_balance)
     if (start_balance < this.$chainToQty(this.premium_stake.quantity && this.pool.access_type === "Private")) {
-      this.eligible_warning = true;
+      this.stake_warning = true;
+      this.not_enough_start = true;
     }
   }
 };
