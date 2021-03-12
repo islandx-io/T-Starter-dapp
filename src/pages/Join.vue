@@ -314,24 +314,21 @@ export default {
 
     async joinPoolTransaction() {
       const actions = [];
-      if (this.pool.access_type === "Private") {
+      if (this.pool.access_type === "Private" && !this.alreadyStaked) {
         console.log("this is private");
-
-        if (!this.alreadyStaked) {
-          actions.push(
-            // send start if private
-            {
-              account: this.premium_stake.contract,
-              name: "transfer",
-              data: {
-                from: this.accountName,
-                to: process.env.CONTRACT_ADDRESS,
-                quantity: this.premium_stake.quantity,
-                memo: "Staking"
-              }
+        actions.push(
+          // send start if private
+          {
+            account: this.premium_stake.contract,
+            name: "transfer",
+            data: {
+              from: this.accountName,
+              to: process.env.CONTRACT_ADDRESS,
+              quantity: this.premium_stake.quantity,
+              memo: "Staking"
             }
-          );
-        }
+          }
+        );
       }
       actions.push(
         // transfer tokens
@@ -411,7 +408,7 @@ export default {
         });
       } else {
         // this.checkAllowed();
-        if (!this.alreadyStaked) {
+        if (!this.alreadyStaked && this.pool.access_type === "Private") {
           this.confirm_stake = true;
         } else {
           this.tryTransaction();
@@ -422,14 +419,17 @@ export default {
 
   async mounted() {
     await this.loadChainData();
-    this.getPoolInfo();
+    await this.getPoolInfo();
+    console.log(this.pool);
 
     if (this.isAuthenticated) {
       this.getBalance();
     }
     this.premium_stake = await this.getPremiumStake();
-    this.alreadyStaked = await this.checkStakedChain(this.accountName);
 
+    // check stake if private pool
+    this.alreadyStaked = await this.checkStakedChain(this.accountName);
+    
     // TODO if balance not enough
     this.eligible_warning = true;
   }

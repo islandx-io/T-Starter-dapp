@@ -97,7 +97,7 @@ export default {
   data() {
     return { showLogin: false, error: null, showLogout: false, 
     balance: 0,
-    balanceSymbol: '' };
+    balanceSymbol: 'START' };
   },
   computed: {
     ...mapGetters("account", [
@@ -147,6 +147,9 @@ export default {
       );
       if (this.balance == undefined) {
         return (this.balance = 0);
+      }
+      if (this.balanceSymbol == undefined) {
+        return (this.balanceSymbol = 'START');
       }
     },
 
