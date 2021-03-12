@@ -8,17 +8,22 @@
           </router-link>
         </q-toolbar-title>
         <div class="gt-sm row">
-          <router-link to="/pools" class="router-link q-pr-md">
-            <q-btn flat color="secondary" class="hover-accent"
-              >Pools ⛲</q-btn
-            >
+          <router-link to="/pools" class="router-link">
+            <q-btn flat color="secondary" class="hover-accent">
+              Pools ⛲
+            </q-btn>
           </router-link>
           <router-link to="/createpool" class="router-link">
-            <q-btn v-if="accountName === admin_address" flat color="secondary">
+            <q-btn
+              flat
+              color="secondary"
+              class="hover-accent"
+              v-if="accountName === admin_address"
+            >
               Create Pool
             </q-btn>
           </router-link>
-          <login-button></login-button>
+          <login-button class="q-pl-md"></login-button>
         </div>
         <!-- TODO Make mobile friendly -->
         <!-- <q-btn-dropdown class="lt-md" icon="menu" align="right">
