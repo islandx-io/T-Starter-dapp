@@ -105,7 +105,7 @@ export default {
       "accountName",
       "loading",
       "isAutoLoading"
-    ])
+    ]),
   },
   methods: {
     ...mapActions("account", ["login", "logout", "autoLogin"]),
@@ -132,11 +132,11 @@ export default {
       }
     },
 
-    // TODO get all base tokens dynamically
+    // TODO get all base tokens dynamically, also show START tokens
     async getBalance() {
       let payload = {
-        address: "eth.ptokens",
-        sym: "PETH",
+        address: "token.start",
+        sym: "START",
         accountName: this.accountName
       };
       this.balance = this.$chainToQty(

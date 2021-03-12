@@ -54,7 +54,9 @@
           type="submit"
           color="primary"
           :disable="
-            !isAuthenticated || balance <= $chainToQty(pool.minimum_swap) || pool.pool_status !== `open`
+            !isAuthenticated ||
+              balance <= $chainToQty(pool.minimum_swap) ||
+              pool.pool_status !== `open`
           "
         />
         <q-tooltip v-if="!isAuthenticated">
@@ -66,6 +68,29 @@
       </q-item>
     </q-form>
 
+    <!-- Confirm stake dialog -->
+    <q-dialog v-model="confirm_stake" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar
+            icon="fas fa-money-bill-alt"
+            color="primary"
+            text-color="white"
+          />
+          <span class="q-ml-sm"
+            >Confirm staking additional 500 START tokens for private
+            access?</span
+          >
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup />
+          <q-btn flat label="Confirm" color="primary" @click="tryTransaction" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Transaction sent dialog -->
     <q-dialog v-model="showTransaction" confirm>
       <q-card>
         <q-card-section class="row">
@@ -106,6 +131,8 @@ export default {
       pool: this.$defaultPoolInfo,
       balance: 0,
       amount: 0,
+      alreadyStaked: false,
+      confirm_stake: false,
       base_token_symbol: "",
       showTransaction: null,
       transaction: null,
@@ -134,7 +161,9 @@ export default {
     ...mapActions("pools", [
       "getChainPoolByID",
       "getChainAccountInfo",
-      "getBalanceFromChain"
+      "getBalanceFromChain",
+      "getPremiumStake",
+      "checkStakedChain"
     ]),
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
@@ -144,7 +173,7 @@ export default {
       return (
         (val >= this.$chainToQty(this.pool.minimum_swap) &&
           val <= this.$chainToQty(this.pool.maximum_allocation)) ||
-        `Must be between minimum and mximum`
+        `Must be between minimum and maximum`
       );
     },
 
@@ -158,7 +187,7 @@ export default {
         (await this.getBalanceFromChain(payload))[0]
       );
       if (this.balance == undefined) {
-        return this.balance = 0;
+        return (this.balance = 0);
       }
     },
 
@@ -179,7 +208,27 @@ export default {
     },
 
     async joinPoolTransaction() {
-      const actions = [
+      const actions = [];
+      if (this.pool.access_type === "Private") {
+        console.log("this is private");
+
+        if (!this.alreadyStaked) {
+          actions.push(
+            // send start if private
+            {
+              account: "token.start", // TODO staking info from chain
+              name: "transfer",
+              data: {
+                from: this.accountName,
+                to: process.env.CONTRACT_ADDRESS,
+                quantity: this.$toChainString(500, 4, "START"),
+                memo: "Staking"
+              }
+            }
+          );
+        }
+      }
+      actions.push(
         // transfer tokens
         {
           account: this.pool.base_token.contract,
@@ -194,7 +243,9 @@ export default {
             ),
             memo: "Join pool"
           }
-        },
+        }
+      );
+      actions.push(
         // transfer to contract
         {
           account: process.env.CONTRACT_ADDRESS,
@@ -208,8 +259,9 @@ export default {
               this.BaseTokenSymbol
             )
           }
-        },        
-      ];
+        }
+      );
+      console.log(actions);
       const transaction = await this.$store.$api.signTransaction(actions);
       if (transaction) {
         this.showTransaction = true;
@@ -225,6 +277,25 @@ export default {
       });
     },
 
+    async tryTransaction() {
+      try {
+        await this.joinPoolTransaction();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Submitted"
+        });
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: "Transaction fail"
+        });
+      }
+    },
+
     async onSubmit() {
       if (!this.isAuthenticated) {
         this.$q.notify({
@@ -235,22 +306,10 @@ export default {
         });
       } else {
         this.checkAllowed();
-
-        try {
-          await this.joinPoolTransaction();
-          this.$q.notify({
-            color: "green-4",
-            textColor: "white",
-            icon: "cloud_done",
-            message: "Submitted"
-          });
-        } catch (error) {
-          this.$q.notify({
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: "Transaction fail"
-          });
+        if (this.alreadyStaked) {
+          this.confirm_stake = true;
+        } else {
+          this.tryTransaction();
         }
       }
     }
@@ -263,6 +322,8 @@ export default {
     if (this.isAuthenticated) {
       this.getBalance();
     }
+
+    this.alreadyStaked = await this.checkStakedChain(this.accountName);
   }
 };
 </script>
