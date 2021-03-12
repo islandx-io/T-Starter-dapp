@@ -58,9 +58,13 @@
               :to="{ name: 'joinpool', params: {} }"
               :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
               label="Join pool"
-              :disable="pool.pool_status === 'upcoming'"
+              :disable="pool.pool_status === 'upcoming' || !isAuthenticated"
               v-if="pool.pool_status !== 'closed'"
-            />
+            >
+            </q-btn>
+            <q-tooltip v-if="!isAuthenticated">
+              Connect wallet
+            </q-tooltip>
           </q-item>
         </div>
         <q-item class="token-info col">
@@ -202,7 +206,7 @@ export default {
     progressLabel() {
       if (this.pool.total_raise === "Loading") return "Loading";
       else {
-        let totalRaise = this.$chainToQty(this.pool.total_raise, 0);
+        let totalRaise = this.$chainToQty(this.pool.total_raise, 2);
         let hardCap = this.$chainToQty(this.pool.hard_cap, 0);
         return `${totalRaise} / ${hardCap}`;
       }
@@ -225,6 +229,12 @@ export default {
     this.polling = setInterval(() => {
       this.getPoolInfo();
     }, 60000);
+    // if rerouting with tab
+    if (this.$route.query.tab == "allocations") {
+      this.tab = "allocations";
+    } else {
+      this.tab = "details";
+    }
   },
   beforeDestroy() {
     clearInterval(this.polling);

@@ -20,7 +20,7 @@ export const getChainPoolByID = async function({ commit, dispatch }, id) {
     poolTable.public_end = new Date(poolTable.public_end).valueOf();
 
     commit("updatePoolOnState", { poolTable, id });
-    dispatch("updatePoolSettings", id);
+    await dispatch("updatePoolSettings", id);
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -38,7 +38,12 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       show_payer: false // Optional: Show ram payer
     });
 
-    tableResults.rows.forEach((pool, index) => {
+    // sort according to nearest pool open
+    tableResults.rows.sort(function(a, b) {
+      return new Date(a.pool_open) - new Date(b.pool_open);
+    });
+
+    for (const pool of tableResults.rows) {
       // console.log(pool);
       let id = pool.id;
 
@@ -50,22 +55,37 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       const poolTable = pool;
 
       commit("updatePoolOnState", { poolTable, id });
-      dispatch("updatePoolSettings", id);
-    });
+      await dispatch("updatePoolSettings", id);
+    }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
 
 // Test function for reading address
-export const getChainAccountInfo = async function({ commit }, payload) {
+export const getChainAccountInfo = async function({ commit }, accountName) {
   const rpc = this.$api.getRpc();
-  console.log(payload)
-  console.log(await rpc.get_account(payload.address));
-  console.log(await rpc.get_account(payload.accountName));
-  console.log(await rpc.get_currency_balance(payload.address, payload.accountName, payload.sym));
+  console.log(await rpc.get_account(accountName));
 
   // console.log(await rpc.get_currency_balance(address, "fuzzytestnet"));
+};
+
+// Get balance from chain for given address and token
+export const getBalanceFromChain = async function({ commit }, payload) {
+  try {
+    const rpc = this.$api.getRpc();
+    console.log(
+      await rpc.get_currency_balance(
+        payload.address,
+        payload.accountName,
+        payload.sym
+      )
+    );
+    let balance = await rpc.get_currency_balance( payload.address, payload.accountName, payload.sym );
+    return balance
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
 };
 
 // gets the precision of Token
@@ -114,6 +134,11 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
     poolStatus = "open";
   }
 
+  // Update status when pool is filled
+  if (this.$chainToQty(pool.remaining_ask) <= 0) {
+    poolStatus = "closed";
+  }
+
   // Update access type
   var access_type = "Private";
   if (pool.private_end >= pool.public_end) {
@@ -145,101 +170,192 @@ export const getCreatedChainPools = async function(
   owner
 ) {
   try {
-    const tableResults = await this.$api.getTableRows({
-      code: process.env.CONTRACT_ADDRESS, // Contract that we target
-      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-      table: process.env.CONTRACT_TABLE, // Table name
-      limit: 100,
-      index_position: 2,
-      key_type: "i64",
-      lower_bound: owner,
-      upper_bound: owner,
-      reverse: false, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
-    });
+    if (owner !== null) {
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: process.env.CONTRACT_TABLE, // Table name
+        limit: 100,
+        index_position: 2,
+        key_type: "i64",
+        lower_bound: owner,
+        upper_bound: owner,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+      console.log("Created pools:");
+      for (const pool of tableResults.rows) {
+        console.log(pool);
+        let id = pool.id;
 
-    tableResults.rows.forEach((pool, index) => {
-      console.log(pool);
-      let id = pool.id;
+        //check dates are unix
+        pool.pool_open = new Date(pool.pool_open).valueOf();
+        pool.private_end = new Date(pool.private_end).valueOf();
+        pool.public_end = new Date(pool.public_end).valueOf();
 
-      //check dates are unix
-      pool.pool_open = new Date(pool.pool_open).valueOf();
-      pool.private_end = new Date(pool.private_end).valueOf();
-      pool.public_end = new Date(pool.public_end).valueOf();
+        const poolTable = pool;
 
-      const poolTable = pool;
-
-      commit("updatePoolOnState", { poolTable, id });
-      dispatch("updatePoolSettings", id);
-    });
+        commit("updatePoolOnState", { poolTable, id });
+        await dispatch("updatePoolSettings", id);
+      }
+    }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
 
-export const getJoinedChainPools = async function({ commit, getters, dispatch }, user) {
+export const getJoinedChainPools = async function(
+  { commit, getters, dispatch },
+  user
+) {
   try {
-    const tableResults = await this.$api.getTableRows({
-      code: process.env.CONTRACT_ADDRESS, // Contract that we target
-      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-      table: 'poolaccounts', // Table name
-      limit: 100,
-      index_position: 3,
-      key_type: "i64",
-      lower_bound: user,
-      upper_bound: user,
-      reverse: false, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
-    });
+    if (user !== null) {
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: "poolaccounts", // Table name
+        limit: 100,
+        index_position: 3,
+        key_type: "i64",
+        lower_bound: user,
+        upper_bound: user,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
 
-    let pool_id_list = []
-    tableResults.rows.forEach((pool, index) => {
-      // console.log(pool);
-      let pool_id = pool.pool_id;
-      pool_id_list.push(pool_id);
-    });
-    pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
-    console.log(pool_id_list);
+      console.log("Joined pools:");
+      // console.log(tableResults.rows);
+      let pool_id_list = [];
+      // sort according to nearest pool open
+      tableResults.rows.sort(function(a, b) {
+        return new Date(a.pool_open) - new Date(b.pool_open);
+      });
 
-    pool_id_list.forEach((pool_id) => {
-      dispatch("getChainPoolByID", pool_id);
-    });
+      pool_id_list = tableResults.rows.map(a => a.pool_id);
+      pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
+      console.log(pool_id_list);
 
-    return pool_id_list
+      for (const pool_id of pool_id_list) {
+        await dispatch("getChainPoolByID", pool_id);
+      }
 
+      return pool_id_list;
+    } else {
+      return [];
+    }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
 
-
-export const getFeaturedChainPools = async function({ commit, getters, dispatch }) {
+export const getFeaturedChainPools = async function({
+  commit,
+  getters,
+  dispatch
+}) {
   try {
     const tableResults = await this.$api.getTableRows({
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-      table: 'settings', // Table name
+      table: "settings", // Table name
       limit: 100,
       index_position: 1,
       key_type: "i64",
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
-    console.log("Featured pools:")
-    let pool_id_list = []
-    tableResults.rows[0].featured_pools.forEach((id, index) => {
-      let pool_id = id;
-      pool_id_list.push(pool_id);
-    });
+    console.log("Featured pools:");
+    let pool_id_list = [];
+
+    pool_id_list = tableResults.rows[0].featured_pools;
     pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
     console.log(pool_id_list);
 
-    pool_id_list.forEach((pool_id) => {
-      dispatch("getChainPoolByID", pool_id);
+    for (const pool_id of pool_id_list) {
+      await dispatch("getChainPoolByID", pool_id);
+    }
+
+    return pool_id_list;
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// get upcoming pools from chain, populate store
+export const getUpcomingChainPools = async function({ commit, dispatch }) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: process.env.CONTRACT_TABLE, // Table name
+      limit: 10, // Maximum number of rows that we want to get
+      index_position: 3,
+      key_type: "i64",
+      // lower_bound: 1, // show all published pools
+      lower_bound: Math.trunc(Date.now() / 1000), // get upcoming pools
+      // upper_bound: Math.trunc(Date.now()/1000), // to get closed and open pools
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
     });
 
-    return pool_id_list
+    console.log("Upcoming pools");
+    let pool_id_list = [];
 
+    // sort according to nearest pool open
+    tableResults.rows.sort(function(a, b) {
+      return new Date(a.pool_open) - new Date(b.pool_open);
+    });
+
+    console.log(tableResults.rows);
+    pool_id_list = tableResults.rows.map(a => a.id);
+    pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
+
+    console.log(pool_id_list);
+
+    for (const pool_id of pool_id_list) {
+      await dispatch("getChainPoolByID", pool_id);
+    }
+
+    return pool_id_list;
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// get personal allocation for pool
+export const getAllocationByPool = async function(
+  { commit, getters, dispatch },
+  payload
+) {
+  try {
+    if (payload.account !== null) {
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: "poolaccounts", // Table name
+        limit: 100,
+        index_position: 2,
+        key_type: "i64",
+        lower_bound: payload.poolID,
+        upper_bound: payload.poolID,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+
+      const allocationTable = tableResults.rows.filter(
+        a => a.account === payload.account && a.pool_id === payload.poolID
+      )[0];
+      console.log("Allocation:");
+      if (allocationTable !== undefined) {
+        console.log(allocationTable);
+        return allocationTable;
+      } else {
+        return {}
+      }
+ 
+    } else {
+      return {};
+    }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

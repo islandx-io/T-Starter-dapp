@@ -375,7 +375,7 @@ export default {
     },
     swapRatio() {
       return {
-        quantity: this.toChainString(
+        quantity: this.$toChainString(
           this.pool.swap_ratio.quantity,
           this.token_decimals,
           this.token_symbol
@@ -411,26 +411,17 @@ export default {
     toDateString(timestamp) {
       return date.formatDate(timestamp, "YYYY-MM-DD HH:mm");
     },
-    toChainString(number, decimals, symbol) {
-      return (
-        String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
-      );
-    },
-    fromChainString(str) {
-      let idx = str.indexOf(" ");
-      return Number(str.slice(0, idx));
-    },
     getPoolInfo() {
       this.pool = JSON.parse(JSON.stringify(this.getPoolByID(this.poolID))); //make deep copy
       this.getTokenSymbolFromPool();
       // pool to numbers
-      this.pool.swap_ratio.quantity = this.fromChainString(
+      this.pool.swap_ratio.quantity = this.$chainToQty(
         this.pool.swap_ratio.quantity
       );
-      this.pool.soft_cap = this.fromChainString(this.pool.soft_cap);
-      this.pool.hard_cap = this.fromChainString(this.pool.hard_cap);
-      this.pool.minimum_swap = this.fromChainString(this.pool.minimum_swap);
-      this.pool.maximum_allocation = this.fromChainString(
+      this.pool.soft_cap = this.$chainToQty(this.pool.soft_cap);
+      this.pool.hard_cap = this.$chainToQty(this.pool.hard_cap);
+      this.pool.minimum_swap = this.$chainToQty(this.pool.minimum_swap);
+      this.pool.maximum_allocation = this.$chainToQty(
         this.pool.maximum_allocation
       );
 
@@ -450,45 +441,32 @@ export default {
       this.base_token_symbol = this.pool.base_token.sym.slice(idx);
     },
     populateWebLinks() {
-      this.webLinks.find(
-        el => el.key === "website"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "website")
-        .map(a => a.value);
-      this.webLinks.find(
-        el => el.key === "github"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "github")
-        .map(a => a.value);
-      this.webLinks.find(
-        el => el.key === "medium"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "medium")
-        .map(a => a.value);
-      this.webLinks.find(
-        el => el.key === "telegram"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "telegram")
-        .map(a => a.value);
-      this.webLinks.find(
-        el => el.key === "twitter"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "twitter")
-        .map(a => a.value);
-      this.webLinks.find(
-        el => el.key === "whitepaper"
-      ).value = this.pool.web_links
-        .filter(el => el.key === "whitepaper")
-        .map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find(el => el.key === "website").value = this.pool.web_links.filter(el => el.key === "website").map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find( el => el.key === "github" ).value = this.pool.web_links.filter(el => el.key === "github").map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find( el => el.key === "medium" ).value = this.pool.web_links.filter(el => el.key === "medium").map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find( el => el.key === "telegram" ).value = this.pool.web_links.filter(el => el.key === "telegram").map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find( el => el.key === "twitter" ).value = this.pool.web_links.filter(el => el.key === "twitter").map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find( el => el.key === "whitepaper" ).value = this.pool.web_links.filter(el => el.key === "whitepaper").map(a => a.value);
     },
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
     },
+    // TODO check this check again
     async checkTokenContract(val) {
       // simulating a delay
       let payload = { address: val, token_symbol: this.token_symbol };
       this.token_decimals = await this.getTokenPrecision(payload);
       console.log(this.token_decimals);
+      return (
+        (!!val ||
+        `Must be a valid contract`)
+      );
     },
     checkLinks() {
       // console.log(this.webLinks.filter(el => el.value[0] != ""))
@@ -509,29 +487,26 @@ export default {
             description: this.pool.description,
             base_token: this.BaseTokenToChain,
             swap_ratio: this.swapRatio,
-            soft_cap: this.toChainString(
+            soft_cap: this.$toChainString(
               this.pool.soft_cap,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            hard_cap: this.toChainString(
+            hard_cap: this.$toChainString(
               this.pool.hard_cap,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            minimum_swap: this.toChainString(
+            minimum_swap: this.$toChainString(
               this.pool.minimum_swap,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            maximum_allocation: this.toChainString(
+            maximum_allocation: this.$toChainString(
               this.pool.maximum_allocation,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            remaining_offer: "3501234.5670 START", //TODO set these amounts
-            total_raise: "14.98765433 PBTC",
-            participants: 0,
             pool_open: this.pool.pool_open,
             private_end: this.pool.private_end,
             public_end: this.pool.public_end,

@@ -10,7 +10,7 @@
         <div class="gt-sm row">
           <router-link to="/pools" class="router-link q-pr-md">
             <q-btn flat color="secondary" class="hover-accent"
-              >View Pools</q-btn
+              >Pools ⛲</q-btn
             >
           </router-link>
           <router-link to="/createpool" class="router-link">

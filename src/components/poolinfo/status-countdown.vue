@@ -96,7 +96,7 @@ export default {
 .c-large {
   padding: 0;
   margin: 0;
-  color: $primary;
+  color: $accent;
   font-weight: 200px;
 }
 .c-large li {
@@ -109,7 +109,7 @@ export default {
   align-items: center;
   height: 40px;
   width: 40px;
-  border: 2px solid $primary;
+  border: 2px solid $accent;
   border-radius: 50%;
 }
 .c-large li:after {

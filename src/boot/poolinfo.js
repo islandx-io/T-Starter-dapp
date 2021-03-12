@@ -16,6 +16,7 @@ const defaultPoolInfo = {
   minimum_swap: loading,
   maximum_allocation: loading,
   remaining_offer: loading,
+  remaining_ask: loading,
   total_raise: loading,
   participants: loading,
   pool_open: loading,
