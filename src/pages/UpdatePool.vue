@@ -1,347 +1,304 @@
 <template>
   <q-page>
-    <q-form v-if="(this.accountName === this.pool.owner)" @submit="onSubmit" @reset="onReset" @publish="onPublish" class="q-gutter-md">
-      <!-- tokens and adresses -->
-      <div class="row">
-        <div class="q-pa-md">
-          <div class="q-gutter-sm">
-            Pool type:
-            <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
+    <section class="header-bg row content-center justify-center">
+      <h2 class="text-white">Update Pool</h2>
+    </section>
+
+    <section class="body-container">
+      <q-card class="card">
+        <q-form
+          v-if="this.accountName === this.pool.owner"
+          @submit="onSubmit"
+          @reset="onReset"
+          @publish="onPublish"
+        >
+          <!-- tokens and adresses -->
+          <div class="form-col-container">
+            <q-list dense>
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.title"
+                    label="Title"
+                    lazy-rules
+                    :rules="[
+                      val => (val && val.length > 1) || 'Must specify the title'
+                    ]"
+                    outlined
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.swap_ratio.contract"
+                    label="Token contract address"
+                    lazy-rules
+                    :rules="[checkTokenContract]"
+                    debounce="1000"
+                    outlined
+                  >
+                  </q-input>
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section top>
+                  <q-input
+                    color="primary"
+                    v-model="token_symbol"
+                    label="Token"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the token']"
+                    outlined
+                    class="col"
+                    input-style
+                  />
+                </q-item-section>
+                <q-item-section class="col-shrink q-pb-md">To</q-item-section>
+                <q-item-section top>
+                  <q-select
+                    v-model="base_token_symbol"
+                    :options="base_token_options.map(a => a.sym)"
+                    label="Base token"
+                    outlined
+                  />
+                </q-item-section>
+              </q-item>
+              <!-- Swap ratio -->
+              <q-item>
+                <q-item-section side class="q-pb-md"
+                  >1 {{ base_token_symbol }} =
+                </q-item-section>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.swap_ratio.quantity"
+                    :label="`Swap ratio (${tokenSymbolReformat})`"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the swap ratio']"
+                    outlined
+                  >
+                  </q-input>
+                </q-item-section>
+              </q-item>
+              <!-- Quantities -->
+              <!-- <h3>Quantities</h3> -->
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.soft_cap"
+                    :label="`Soft cap (${baseTokenSymbolReformat})`"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the amount']"
+                    outlined
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.hard_cap"
+                    :label="`Hard cap (${baseTokenSymbolReformat})`"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the amount']"
+                    outlined
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.minimum_swap"
+                    :label="`Minimum allocation (${baseTokenSymbolReformat})`"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the amount']"
+                    outlined
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.maximum_allocation"
+                    :label="`Maximum allocation (${baseTokenSymbolReformat})`"
+                    lazy-rules
+                    :rules="[val => !!val || 'Must specify the amount']"
+                    outlined
+                  />
+                </q-item-section>
+              </q-item>
+              <!-- Dates -->
+              <!-- TODO Add "today" button -->
+              <q-item>
+                <q-item-section>
+                  <datetime-field
+                    :value.sync="pool_open"
+                    label="Sale start"
+                    class="q-pb-md"
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <datetime-field
+                    :value.sync="private_end"
+                    label="Private sale end"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <datetime-field
+                    :value.sync="public_end"
+                    label="Public sale end"
+                  />
+                </q-item-section>
+              </q-item>
+              <!-- <div class="col column">
+                <div>Type</div>
+                <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
+              </div> -->
+              <!-- Image -->
+            </q-list>
+            <q-list class="col" dense>
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    color="primary"
+                    v-model="pool.avatar"
+                    label="Avatar image link"
+                    lazy-rules
+                    :rules="[
+                      val =>
+                        (val && val.length > 1) || 'Must specify the image link'
+                    ]"
+                    outlined
+                  />
+                </q-item-section>
+                <q-item-section side v-if="pool.avatar !== ''">
+                  <q-avatar size="50px" class="q-mb-md">
+                    <q-img :src="pool.avatar" style="height: 50px">
+                      <template v-slot:loading>
+                        <q-spinner-puff color="primary" />
+                      </template>
+                      <template v-slot:error>
+                        <div
+                          class="absolute-full flex flex-center text-negative transparent text-weight-bold"
+                        >
+                          ?
+                        </div>
+                      </template>
+                    </q-img>
+                  </q-avatar>
+                </q-item-section>
+              </q-item>
+              <!-- Whitelist -->
+              <!-- <q-item>
+                <q-item-section>
+                  <q-input
+                    v-model="pool.whitelist"
+                    autogrow
+                    label="Some whitelist thing"
+                    outlined
+                  /> </q-item-section
+              ></q-item> -->
+              <!-- web links -->
+              <q-item class="weblink-container">
+                <div v-for="link in webLinks" :key="link.key">
+                  <q-input
+                    outlined
+                    v-model="link.value"
+                    :label="capitalize(link.key)"
+                  />
+                </div>
+              </q-item>
+              <!-- <q-item v-for="link in webLinks" :key="link.key">
+                <q-item-section>
+                  <q-input
+                    outlined
+                    v-model="link.value"
+                    :label="capitalize(link.key)"
+                  />
+                </q-item-section>
+              </q-item> -->
+              <!-- tag-line -->
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    v-model="pool.tag_line"
+                    autogrow
+                    label="Tag line"
+                    lazy-rules
+                    :rules="[
+                      val =>
+                        (val && val.length > 1 && val.length < 230) ||
+                        'Must specify'
+                    ]"
+                    outlined
+                    style="padding-top:20px"
+                  />
+                </q-item-section>
+              </q-item>
+              <!-- description -->
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    v-model="pool.description"
+                    autogrow
+                    label="Description"
+                    lazy-rules
+                    :rules="[val => (val && val.length > 1) || 'Must specify']"
+                    outlined
+                    type="textarea"
+                  />
+                </q-item-section>
+              </q-item>
+            </q-list>
           </div>
-        </div>
-      </div>
-      <div class="row">
-        <q-input
-          color="primary"
-          v-model="pool.swap_ratio.contract"
-          label="Token contract address"
-          lazy-rules
-          :rules="[checkTokenContract]"
-          debounce="1000"
-        >
-        </q-input>
-      </div>
-      <div class="row">
-        <q-input
-          color="primary"
-          v-model="token_symbol"
-          label="Token"
-          lazy-rules
-          :rules="[val => (!!val) || 'Must specify the token']"
-        >
-        </q-input>
-        To
-        <q-select
-          v-model="base_token_symbol"
-          :options="base_token_options.map(a => a.sym)"
-          label="Standard"
-        />
-      </div>
-      <!-- Swap ratio -->
-      <h3>Swap ratio</h3>
-      <div class="row">
-        1 {{ base_token_symbol }} =
-        <q-input
-          color="primary"
-          v-model="pool.swap_ratio.quantity"
-          label="Ratio"
-          lazy-rules
-          :rules="[val => (!!val) || 'Must specify the token']"
-        >
-          {{
-            toChainString(
-              pool.swap_ratio.quantity,
-              token_decimals,
-              token_symbol
-            )
-          }}
-        </q-input>
-      </div>
-      <!-- Quantities -->
-      <h3>Quantities</h3>
-      <div class="class row">
-        <div>
-          <q-input
-            color="primary"
-            v-model="pool.soft_cap"
-            label="Soft cap"
-            lazy-rules
-            :rules="[
-              val => (!!val) || 'Must specify the amount'
-            ]"
-          >
-          </q-input>
-          <q-input
-            color="primary"
-            v-model="pool.hard_cap"
-            label="Hard cap"
-            lazy-rules
-            :rules="[
-              val => (!!val) || 'Must specify the amount'
-            ]"
-          >
-          </q-input>
-        </div>
-        <div>
-          <q-input
-            color="primary"
-            v-model="pool.minimum_swap"
-            label="minimum swap amount"
-            lazy-rules
-            :rules="[
-              val => (!!val) || 'Must specify the amount'
-            ]"
-          >
-          </q-input>
-          <q-input
-            color="primary"
-            v-model="pool.maximum_allocation"
-            label="maximum swap per wallet"
-            lazy-rules
-            :rules="[
-              val => (!!val) || 'Must specify the amount'
-            ]"
-          >
-          </q-input>
-        </div>
-      </div>
+          <q-list>
+            <q-item>
+              <q-toggle
+                v-model="accept"
+                label="I accept the license and terms"
+                el="accept"
+              />
+            </q-item>
+            <q-item class="justify-start">
+              <q-item-section class="col-auto">
+                <q-btn label="Update" type="submit" color="primary" />
+              </q-item-section>
+              <q-item-section class="col-auto">
+                <q-btn label="Publish" @click="onPublish" color="primary" />
+              </q-item-section>
+              <q-item-section class="col-shrink">
+                <q-btn label="Reset" type="reset" color="primary" flat />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-form>
 
-      <h3>Dates</h3>
-      <!-- Date input -->
-      <div class="row">
-        <q-input filled v-model="pool.pool_open">
-          <template v-slot:prepend>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-date v-model="pool.pool_open" mask="YYYY-MM-DD HH:mm">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-          <template v-slot:append>
-            <q-icon name="access_time" class="cursor-pointer">
-              <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-time
-                  v-model="pool.pool_open"
-                  mask="YYYY-MM-DD HH:mm"
-                  format24h
-                >
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-time>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-        Sale start
-      </div>
-      <!-- Date input -->
-      <div class="row">
-        <q-input filled v-model="pool.private_end">
-          <template v-slot:prepend>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-date v-model="pool.private_end" mask="YYYY-MM-DD HH:mm">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-          <template v-slot:append>
-            <q-icon name="access_time" class="cursor-pointer">
-              <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-time
-                  v-model="pool.private_end"
-                  mask="YYYY-MM-DD HH:mm"
-                  format24h
-                >
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-time>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-        Private sale end
-      </div>
-      <!-- Date input -->
-      <div class="row">
-        <q-input filled v-model="pool.public_end">
-          <template v-slot:prepend>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-date v-model="pool.public_end" mask="YYYY-MM-DD HH:mm">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-          <template v-slot:append>
-            <q-icon name="access_time" class="cursor-pointer">
-              <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-time
-                  v-model="pool.public_end"
-                  mask="YYYY-MM-DD HH:mm"
-                  format24h
-                >
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-time>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-        Public sale end
-        <!-- {{ toUnixTimestamp(date) }} -->
-      </div>
-
-      <!-- Pool name, image and descriptions -->
-      <div class=" row">
-        <!-- Title -->
-        <q-input
-          color="primary"
-          v-model="pool.title"
-          label="Title"
-          lazy-rules
-          :rules="[val => (val && val.length > 1) || 'Must specify the title']"
-        >
-        </q-input>
-        <!-- Image link -->
-        <q-input
-          color="primary"
-          v-model="pool.avatar"
-          label="Avatar image link"
-          lazy-rules
-          :rules="[val => (val && val.length > 1) || 'Must specify the image link']"
-        >
-        </q-input>
-        <q-avatar size="50px">
-          <img :src="pool.avatar" width="20px" alt="image" />
-        </q-avatar>
-      </div>
-      <div class="q-pa-md" style="max-width: 500px">
-        <!-- tag-line -->
-        <q-input
-          v-model="pool.tag_line"
-          filled
-          autogrow
-          label="Tag line"
-          lazy-rules
-          :rules="[
-            val => (val && val.length > 1 && val.length < 230) || 'Must specify'
-          ]"
-        />
-      </div>
-      <div class="q-pa-md" style="max-width: 500px">
-        <!-- description -->
-        <q-input
-          v-model="pool.description"
-          filled
-          autogrow
-          label="Description"
-          lazy-rules
-          :rules="[val => (val && val.length > 1) || 'Must specify']"
-        />
-      </div>
-
-      <!-- web links -->
-      <h3>Websites</h3>
-      <div>
-        <!-- <link-field
-          v-for="(link, link_index) in pool.web_links"
-          :key="link_index"
-          :link.sync="link"
-          :index.sync="link_index"
-          v-on:deleteThisLink="deleteThisLink"
-        ></link-field>
-        <q-btn round color="primary" icon="add" @click="addLinkField" /> -->
-
-        <div class="row">
-          <q-input
-            outlined
-            v-model="webLinks[0].value"
-            :label="capitalize(webLinks[0].key)"
-          />
-          <q-input
-            outlined
-            v-model="webLinks[1].value"
-            :label="capitalize(webLinks[1].key)"
-          />
-          <q-input
-            outlined
-            v-model="webLinks[2].value"
-            :label="capitalize(webLinks[2].key)"
-          />
-          <q-input
-            outlined
-            v-model="webLinks[3].value"
-            :label="capitalize(webLinks[3].key)"
-          />
-          <q-input
-            outlined
-            v-model="webLinks[4].value"
-            :label="capitalize(webLinks[4].key)"
-          />
-          <q-input
-            outlined
-            v-model="webLinks[5].value"
-            :label="capitalize(webLinks[5].key)"
-          />
-        </div>
-      </div>
-
-      <!-- Whitelist -->
-      <div class="q-pa-md" style="max-width: 500px">
-        <q-input
-          v-model="pool.whitelist"
-          filled
-          autogrow
-          label="Some whitelist thing"
-        />
-      </div>
-
-      <!-- T's and C's -->
-      <q-toggle v-model="accept" label="I accept the license and terms" />
-
-      <!-- Submit -->
-      <div>
-        <q-btn label="Update" type="submit" color="primary" />
-        <q-btn label="Publish" @click="onPublish" color="primary" />
-        <q-btn
-          label="Reset"
-          type="reset"
-          color="primary"
-          flat
-          class="q-ml-sm"
-        />
-      </div>
-    </q-form>
-
-    <div v-else> You are not the owner of this pool</div>
+        <div v-else>You are not the owner of this pool</div>
+      </q-card>
+    </section>
   </q-page>
 </template>
 
 <script>
 import { date } from "quasar";
-// import LinkField from "src/components/poolcreation/link-field.vue";
+import datetimeField from "src/components/poolcreation/datetime-field.vue";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  // components: { LinkField },
+  components: { datetimeField },
   data() {
     return {
+      customDate: "",
+      dateTimeMask: "YYYY-MM-DD HH:mm",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
+      pool_open: { date: "" },
+      private_end: { date: "" },
+      public_end: { date: "" },
 
       cleanedWebLinks: [],
       webLinks: [
@@ -371,7 +328,6 @@ export default {
         }
       ],
 
-
       base_token_symbol: "PBTC",
       base_token_options: [
         {
@@ -394,7 +350,7 @@ export default {
       token_decimals: 1,
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
-      link_index: -1,
+      link_index: -1
     };
   },
   computed: {
@@ -427,6 +383,16 @@ export default {
         contract: this.pool.swap_ratio.contract
       };
     },
+    tokenSymbolReformat() {
+      let token = this.token_symbol;
+      if (token === "") return "Custom token";
+      else return token;
+    },
+    baseTokenSymbolReformat() {
+      let token = this.base_token_symbol;
+      if (token === "") return "Base token";
+      else return token;
+    }
   },
 
   methods: {
@@ -442,51 +408,78 @@ export default {
     toUnixTimestamp(timeStamp) {
       return new Date(timeStamp).valueOf();
     },
-    toDateString(timestamp){
-      return date.formatDate(timestamp, 'YYYY-MM-DD HH:mm')
+    toDateString(timestamp) {
+      return date.formatDate(timestamp, "YYYY-MM-DD HH:mm");
     },
     toChainString(number, decimals, symbol) {
       return (
         String(parseFloat(number).toFixed(decimals)) + String(" " + symbol)
       );
     },
-    fromChainString(str){
-      let idx = str.indexOf(' ')
-      return Number(str.slice(0,idx));
+    fromChainString(str) {
+      let idx = str.indexOf(" ");
+      return Number(str.slice(0, idx));
     },
     getPoolInfo() {
       this.pool = JSON.parse(JSON.stringify(this.getPoolByID(this.poolID))); //make deep copy
       this.getTokenSymbolFromPool();
       // pool to numbers
-      this.pool.swap_ratio.quantity = this.fromChainString(this.pool.swap_ratio.quantity);
+      this.pool.swap_ratio.quantity = this.fromChainString(
+        this.pool.swap_ratio.quantity
+      );
       this.pool.soft_cap = this.fromChainString(this.pool.soft_cap);
       this.pool.hard_cap = this.fromChainString(this.pool.hard_cap);
       this.pool.minimum_swap = this.fromChainString(this.pool.minimum_swap);
-      this.pool.maximum_allocation = this.fromChainString(this.pool.maximum_allocation);
+      this.pool.maximum_allocation = this.fromChainString(
+        this.pool.maximum_allocation
+      );
 
       this.populateWebLinks();
-      this.BaseTokenFromChain();      
+      this.BaseTokenFromChain();
 
-      this.pool.pool_open = this.toDateString(this.pool.pool_open)
-      this.pool.private_end = this.toDateString(this.pool.private_end)
-      this.pool.public_end = this.toDateString(this.pool.public_end)
-
+      this.pool_open.date = this.toDateString(this.pool.pool_open);
+      this.private_end.date = this.toDateString(this.pool.private_end);
+      this.public_end.date = this.toDateString(this.pool.public_end);
     },
     getTokenSymbolFromPool() {
-      let idx = this.pool.swap_ratio.quantity.indexOf(' ')+1
-      this.token_symbol = this.pool.swap_ratio.quantity.slice(idx)
+      let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
+      this.token_symbol = this.pool.swap_ratio.quantity.slice(idx);
     },
     BaseTokenFromChain() {
-      let idx = this.pool.base_token.sym.indexOf(',')+1
-      this.base_token_symbol = this.pool.base_token.sym.slice(idx)
+      let idx = this.pool.base_token.sym.indexOf(",") + 1;
+      this.base_token_symbol = this.pool.base_token.sym.slice(idx);
     },
     populateWebLinks() {
-      this.webLinks.find(el => el.key === "website").value = this.pool.web_links.filter(el => el.key === "website").map(a => a.value)
-      this.webLinks.find(el => el.key === "github").value = this.pool.web_links.filter(el => el.key === "github").map(a => a.value)
-      this.webLinks.find(el => el.key === "medium").value = this.pool.web_links.filter(el => el.key === "medium").map(a => a.value)
-      this.webLinks.find(el => el.key === "telegram").value = this.pool.web_links.filter(el => el.key === "telegram").map(a => a.value)
-      this.webLinks.find(el => el.key === "twitter").value = this.pool.web_links.filter(el => el.key === "twitter").map(a => a.value)
-      this.webLinks.find(el => el.key === "whitepaper").value = this.pool.web_links.filter(el => el.key === "whitepaper").map(a => a.value)
+      this.webLinks.find(
+        el => el.key === "website"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "website")
+        .map(a => a.value);
+      this.webLinks.find(
+        el => el.key === "github"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "github")
+        .map(a => a.value);
+      this.webLinks.find(
+        el => el.key === "medium"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "medium")
+        .map(a => a.value);
+      this.webLinks.find(
+        el => el.key === "telegram"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "telegram")
+        .map(a => a.value);
+      this.webLinks.find(
+        el => el.key === "twitter"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "twitter")
+        .map(a => a.value);
+      this.webLinks.find(
+        el => el.key === "whitepaper"
+      ).value = this.pool.web_links
+        .filter(el => el.key === "whitepaper")
+        .map(a => a.value);
     },
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
@@ -499,9 +492,9 @@ export default {
     },
     checkLinks() {
       // console.log(this.webLinks.filter(el => el.value[0] != ""))
-      console.log(this.webLinks.filter(el => el.value != ""))
+      console.log(this.webLinks.filter(el => el.value != ""));
       this.cleanedWebLinks = this.webLinks.filter(el => el.value != "");
-      console.log(this.cleanedWebLinks)
+      console.log(this.cleanedWebLinks);
     },
     async updateChainPool() {
       const actions = [
@@ -557,13 +550,18 @@ export default {
           data: {
             pool_id: this.poolID
           }
-        },
+        }
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
     async onSubmit() {
       // TODO Check and clean links not empty
       // TODO check if have permission to create pool. e.g. fuzzytestnet
+      // console.log({ "Submitted start date": this.pool.pool_open });
+      this.pool.pool_open = this.pool_open.date;
+      this.pool.private_end = this.private_end.date;
+      this.pool.public_end = this.public_end.date;
+      console.log({ pool_open: this.pool_open.date });
       if (this.accept !== true || !this.isAuthenticated) {
         this.$q.notify({
           color: "red-5",
@@ -585,7 +583,7 @@ export default {
     async onPublish() {
       await this.publishPool();
     },
-    onReset() {},
+    onReset() {}
 
     // addLinkField() {
     //   console.log(this.pool.web_links);
@@ -606,5 +604,30 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+// .header-bg,
+.body-container,
+.card {
+  min-width: 450px;
+}
+.header-bg {
+  height: 200px;
+  min-width: 490px;
+  margin-bottom: -50px;
+}
+.base-grid-container {
+  display: grid;
+  align-items: stretch;
+  grid-template-rows: min-content;
+}
+.form-col-container {
+  @extend .base-grid-container;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+}
+.weblink-container {
+  @extend .base-grid-container;
+  grid-column-gap: 10px;
+  grid-row-gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
 </style>

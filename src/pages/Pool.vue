@@ -67,11 +67,11 @@
           <div class="border col column justify-between">
             <div class="row justify-between">
               <h6>Hard cap:</h6>
-              <h5>{{ toCap(pool.hard_cap) }}</h5>
+              <h5>{{ this.$chainStrReformat(pool.hard_cap, 2) }}</h5>
             </div>
             <div class="row justify-between">
               <h6>Soft cap:</h6>
-              <h5>{{ toCap(pool.soft_cap) }}</h5>
+              <h5>{{ this.$chainStrReformat(pool.soft_cap, 2) }}</h5>
             </div>
             <div class="row justify-between">
               <h6>Swap ratio:</h6>
@@ -125,7 +125,7 @@
             <tab-overview :pool="pool" />
           </q-tab-panel>
 
-          <q-tab-panel name="allocations">
+          <q-tab-panel name="allocations" @mousedown.stop>
             <tab-allocations :pool="pool"
           /></q-tab-panel>
         </q-tab-panels>
@@ -210,17 +210,6 @@ export default {
   },
   methods: {
     ...mapActions("pools", ["getChainPoolByID"]),
-    toDate(timeStamp) {
-      return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm UTC");
-    },
-    toCap(str) {
-      if (typeof str !== "string") return str;
-      else if (!str.includes(" ")) return str;
-      else {
-        let [amount, sym] = str.split(" ");
-        return parseFloat(amount).toFixed(2) + " " + sym;
-      }
-    },
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
@@ -245,7 +234,7 @@ export default {
 
 <style lang="scss" scoped>
 .header-bg {
-  height: 120px;
+  height: 160px;
   margin-bottom: -50px;
   background-position-y: 50%;
 }

@@ -1,24 +1,33 @@
 <template>
   <div>
-    <div v-if="!isAuthenticated" class="q-px-md">
-      <q-btn
-        @click="showLogin = true"
-        color="primary"
-        text-color="black"
-        label="Login"
-      />
+    <div v-if="!isAuthenticated">
+      <q-btn @click="showLogin = true" color="primary" label="Login" outline />
     </div>
-    <div v-if="isAuthenticated" class="q-px-md row">
-      <div @click="goToAccountPage" class="account-name q-px-md">
-        {{ accountName }}
-      </div>
+    <q-btn-group outline>
       <q-btn
-        @click="logout"
+        class="hover-accent"
+        text-color="secondary"
         color="secondary"
-        text-color="black"
+        outline
         label="Logout"
+        v-if="showLogout"
+        @click="showLogout = false"
       />
-    </div>
+      <q-btn
+        v-if="isAuthenticated"
+        color="secondary"
+        class="login row justify-end items-center"
+        padding="4px xs"
+        @click="showLogout = !showLogout"
+      >
+        <div class="account-badge">
+          <div>
+            {{ accountName }}
+          </div>
+        </div>
+        <div class="q-px-sm text-black">10 ETH</div>
+      </q-btn>
+    </q-btn-group>
     <q-dialog v-model="showLogin">
       <q-list>
         <q-item
@@ -77,7 +86,7 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
-    return { showLogin: false, error: null };
+    return { showLogin: false, error: null, showLogout: false };
   },
   computed: {
     ...mapGetters("account", [
@@ -114,7 +123,28 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
-.account-name
-    font-size: 20px
+<style lang="scss" scoped>
+// .account-badge {
+//   border-radius: 16px;
+//   max-height: 32px;
+//   padding: 4px 10px;
+//   background-color: $primary;
+//   font-size: 14px;
+//   font-weight: bold;
+//   color: $secondary;
+// }
+.login {
+  padding-right: 0;
+}
+.login .account-badge {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  max-height: 28px;
+  padding: 4px 10px;
+  background-color: $space;
+  font-size: 14px;
+  font-weight: bold;
+  color: $secondary;
+}
 </style>

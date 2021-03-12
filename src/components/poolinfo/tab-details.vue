@@ -18,11 +18,11 @@
     </div>
     <div>
       <h6>Minimum allocation:</h6>
-      <h5>{{ this.$formatChain(pool.minimum_swap, 2) }}</h5>
+      <h5>{{ this.$chainStrReformat(pool.minimum_swap, 2) }}</h5>
     </div>
     <div>
       <h6>Maximum allocation:</h6>
-      <h5>{{ this.$formatChain(pool.maximum_allocation, 2) }}</h5>
+      <h5>{{ this.$chainStrReformat(pool.maximum_allocation, 2) }}</h5>
     </div>
   </div>
 </template>

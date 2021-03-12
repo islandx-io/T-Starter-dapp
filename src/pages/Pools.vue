@@ -1,8 +1,7 @@
 <template>
   <q-page>
-    <title>T-STARTER - Pools</title>
     <section class="header-bg row content-center justify-center">
-      <h2 class="text-white">Pools</h2>
+      <h2 class="text-white q-pt-xl">Pools</h2>
     </section>
 
     <section class="body-container">
@@ -29,19 +28,35 @@
         swipeable
         class="tab-panel-container"
       >
-        <q-tab-panel name="all-pools" class="poolcard-container">
+        <q-tab-panel
+          name="all-pools"
+          class="poolcard-container"
+          @mousedown.stop
+        >
           <Poolcard v-for="id in poolIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
-        <q-tab-panel name="featured-pools" class="poolcard-container">
+        <q-tab-panel
+          name="featured-pools"
+          class="poolcard-container"
+          @mousedown.stop
+        >
           <Poolcard v-for="id in featuredIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
-        <q-tab-panel name="joined-pools" class="poolcard-container">
+        <q-tab-panel
+          name="joined-pools"
+          class="poolcard-container"
+          @mousedown.stop
+        >
           <Poolcard v-for="id in joinedIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
-        <q-tab-panel name="created-pools" class="poolcard-container">
+        <q-tab-panel
+          name="created-pools"
+          class="poolcard-container"
+          @mousedown.stop
+        >
           <Poolcard
             v-for="id in createdPoolIDs"
             :key="id"
