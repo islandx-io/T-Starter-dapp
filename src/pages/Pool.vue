@@ -9,12 +9,19 @@
           <q-item>
             <q-item-section top class="col-shrink">
               <q-avatar size="80px">
-                <img
+                <q-img
                   v-if="pool.avatar"
                   :src="pool.avatar"
-                  width="100px"
-                  alt="image"
-                />
+                  style="width: 80px"
+                >
+                  <template v-slot:error>
+                    <div
+                      class="transparent"
+                      style="padding: 0"
+                      v-html="identicon"
+                    />
+                  </template>
+                </q-img>
                 <div v-else v-html="identicon" />
               </q-avatar>
             </q-item-section>

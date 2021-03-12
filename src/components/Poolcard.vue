@@ -7,12 +7,15 @@
       <q-item>
         <q-item-section top>
           <q-avatar :size="avatar_size.toString() + 'px'">
-            <img
-              v-if="pool.avatar"
-              :src="pool.avatar"
-              width="100px"
-              alt="image"
-            />
+            <q-img v-if="pool.avatar" :src="pool.avatar" style="width: 100px">
+              <template v-slot:error>
+                <div
+                  class="transparent"
+                  style="padding: 0"
+                  v-html="identicon"
+                />
+              </template>
+            </q-img>
             <div v-else v-html="identicon" />
           </q-avatar>
         </q-item-section>
