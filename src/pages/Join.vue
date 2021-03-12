@@ -54,7 +54,7 @@
           type="submit"
           color="primary"
           :disable="
-            !isAuthenticated || balance <= $chainToQty(pool.minimum_swap)
+            !isAuthenticated || balance <= $chainToQty(pool.minimum_swap) || pool.pool_status !== `open`
           "
         />
         <q-tooltip v-if="!isAuthenticated">
