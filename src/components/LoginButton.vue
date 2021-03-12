@@ -34,7 +34,7 @@
             {{ accountName }}
           </div>
         </div>
-        <div class="q-px-sm text-black">10 ETH</div>
+        <div class="q-px-sm text-black">{{ balance }} {{balanceSymbol}}</div>
       </q-btn>
     </q-btn-group>
     <q-dialog v-model="showLogin">
@@ -95,7 +95,9 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
-    return { showLogin: false, error: null, showLogout: false };
+    return { showLogin: false, error: null, showLogout: false, 
+    balance: 0,
+    balanceSymbol: '' };
   },
   computed: {
     ...mapGetters("account", [
@@ -107,6 +109,8 @@ export default {
   },
   methods: {
     ...mapActions("account", ["login", "logout", "autoLogin"]),
+    ...mapActions("pools", ["getBalanceFromChain"]),
+
     async onLogin(idx) {
       this.error = null;
       const error = await this.login({ idx });
@@ -116,18 +120,40 @@ export default {
         this.error = error;
       }
     },
+
     openUrl(url) {
       window.open(url);
     },
+
     goToAccountPage() {
       const accountPath = `/account/${this.accountName}`;
       if (this.$router.currentRoute.path !== accountPath) {
         this.$router.push({ path: accountPath });
       }
-    }
+    },
+
+    // TODO get all base tokens dynamically
+    async getBalance() {
+      let payload = {
+        address: "eth.ptokens",
+        sym: "PETH",
+        accountName: this.accountName
+      };
+      this.balance = this.$chainToQty(
+        (await this.getBalanceFromChain(payload))[0]
+      );
+      this.balanceSymbol = this.$chainToSym(
+        (await this.getBalanceFromChain(payload))[0]
+      );
+      if (this.balance == undefined) {
+        return (this.balance = 0);
+      }
+    },
+
   },
   async mounted() {
     await this.autoLogin(this.$route.query.returnUrl);
+    await this.getBalance();
   }
 };
 </script>
