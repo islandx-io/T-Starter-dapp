@@ -80,11 +80,8 @@
             <!-------->
             <q-item dense class="text-h6">To</q-item>
             <q-card flat bordered class="inner-card row ">
-              <div class="col row justify-between ">
-                <div
-                  class="col input-amount q-pr-lg"
-                  style="margin-top:-8px; padding-bottom: 8px"
-                >
+              <div class="col row justify-between items-center ">
+                <div class="col input-amount q-pr-lg">
                   {{ amount * $chainToQty(pool.swap_ratio.quantity) }}
                 </div>
                 <div class="column items-end justify-between content-end">
