@@ -43,13 +43,20 @@
                       outline
                     />
                     <q-avatar size="40px">
-                      <!-- TODO Change to currency logo (Create a common component for it) -->
-                      <q-img
-                        v-if="pool.avatar"
-                        :src="pool.avatar"
-                        style="width: 80px"
-                      >
-                      </q-img>
+                      <!-- TODO Create a common component avatars -->
+                      <q-icon
+                        v-if="BaseTokenSymbol === 'PETH'"
+                        name="fab fa-ethereum"
+                        size="40px"
+                        style="color: rgb(130 168 248) "
+                      />
+                      <q-icon
+                        v-if="BaseTokenSymbol === 'PBTC'"
+                        name="fab fa-bitcoin"
+                        size="42px"
+                        class="bg-secondary"
+                        style="color: rgb(247 143 22)"
+                      />
                     </q-avatar>
                     <div class="text-h4">{{ BaseTokenSymbol }}</div>
                   </div>
@@ -133,7 +140,6 @@
             </q-item>
           </div>
         </q-form>
-
 
         <!-- Not enough START to participate in private pool -->
         <q-dialog v-model="eligible_warning">
