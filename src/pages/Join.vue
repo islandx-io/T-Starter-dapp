@@ -80,9 +80,9 @@
                 >
                   {{ amount * $chainToQty(pool.swap_ratio.quantity) }}
                 </div>
-                <div class="column items-end justify-between">
-                  <div>Balance: ***** {{ TokenSymbol }}</div>
-                  <div class="row q-gutter-x-sm">
+                <div class="column items-end justify-between content-end">
+                  <!-- <div>Balance: ***** {{ TokenSymbol }}</div> -->
+                  <div class="row q-gutter-x-sm content-end">
                     <q-avatar size="40px">
                       <q-img
                         v-if="pool.avatar"
