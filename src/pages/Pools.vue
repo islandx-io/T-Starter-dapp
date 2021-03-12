@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <section class="header-bg row content-center justify-center">
-      <h2 class="text-white">Pools</h2>
+      <h2 class="text-white q-pt-xl">Pools</h2>
     </section>
 
     <section class="body-container">

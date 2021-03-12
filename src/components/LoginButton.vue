@@ -5,16 +5,17 @@
     </div>
     <q-btn-group outline>
       <q-btn
-        color="primary"
+        class="hover-accent"
+        text-color="secondary"
+        color="secondary"
+        outline
         label="Logout"
         v-if="showLogout"
         @click="showLogout = false"
-        outline
       />
       <q-btn
         v-if="isAuthenticated"
-        outline
-        color="primary"
+        color="secondary"
         class="login row justify-end items-center"
         padding="4px xs"
         @click="showLogout = !showLogout"
@@ -24,7 +25,7 @@
             {{ accountName }}
           </div>
         </div>
-        <div class="q-px-sm">10 ETH</div>
+        <div class="q-px-sm text-black">10 ETH</div>
       </q-btn>
     </q-btn-group>
     <q-dialog v-model="showLogin">
@@ -135,17 +136,15 @@ export default {
 .login {
   padding-right: 0;
 }
-.login:hover {
-}
 .login .account-badge {
   display: flex;
   align-items: center;
   border-radius: 10px;
   max-height: 28px;
   padding: 4px 10px;
-  background-color: $primary;
+  background-color: $space;
   font-size: 14px;
   font-weight: bold;
-  color: white;
+  color: $secondary;
 }
 </style>

@@ -11,7 +11,9 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             building on Telos
           </h2>
           <router-link class="router-link " to="/pools">
-            <q-btn outline color="secondary">VIEW ALL POOLS</q-btn>
+            <q-btn class="hover-accent" color="secondary" outline
+              >VIEW ALL POOLS</q-btn
+            >
           </router-link>
         </div>
         <div class="gt-sm rocket col row justify-center">
@@ -45,8 +47,13 @@ that you may prove what is that good and acceptable and perfect will of God. - R
           />
         </div>
         <Poolcard v-else class="col-shrink" :poolID="-1" />
-        <router-link to="/pools" class="router-link col-12 text-center">
-          <q-btn outline color="accent">VIEW ALL POOLS</q-btn>
+        <router-link
+          to="/pools"
+          class="router-link col-12 text-center row justify-center q-pt-md"
+        >
+          <q-btn outline color="accent" class="hover-accent">
+            VIEW ALL POOLS
+          </q-btn>
         </router-link>
       </section>
     </div>
@@ -87,7 +94,7 @@ export default {
   height: 550px;
 }
 .header-container {
-  padding-top: 50px;
+  padding-top: 100px;
 }
 .header-container h2 {
   color: $secondary;

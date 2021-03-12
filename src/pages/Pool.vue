@@ -234,7 +234,7 @@ export default {
 
 <style lang="scss" scoped>
 .header-bg {
-  height: 120px;
+  height: 160px;
   margin-bottom: -50px;
   background-position-y: 50%;
 }

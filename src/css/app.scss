@@ -34,6 +34,8 @@ h6 {
 .router-link {
   text-decoration: none;
   color: inherit;
+  display: flex;
+  align-items: center;
 }
 
 .card {
@@ -68,4 +70,17 @@ h6 {
   align-items: stretch;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-template-rows: min-content;
+}
+
+.hover-accent {
+  & .q-btn__wrapper::before {
+    transition: all 0.15s ease-in-out;
+  }
+  &:hover .q-btn__wrapper::before {
+    background-color: $accent;
+    border-color: $accent;
+  }
+  &:hover .q-btn__wrapper .q-btn__content {
+    color: $secondary;
+  }
 }
