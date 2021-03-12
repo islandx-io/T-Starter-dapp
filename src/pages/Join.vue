@@ -68,6 +68,23 @@
       </q-item>
     </q-form>
 
+    <!-- Not enough START to participate in private pool -->
+     <q-dialog v-model="eligible_warning">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Alert</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Not enough START tokens to participate in a private pool. Buy here ~linky link~
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="OK" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <!-- Confirm stake dialog -->
     <q-dialog v-model="confirm_stake" persistent>
       <q-card>
@@ -133,6 +150,7 @@ export default {
       amount: 0,
       alreadyStaked: false,
       confirm_stake: false,
+      eligible_warning: false, 
       premium_stake: {},
       base_token_symbol: "",
       showTransaction: null,
@@ -325,6 +343,9 @@ export default {
     }
     this.premium_stake = await this.getPremiumStake();
     this.alreadyStaked = await this.checkStakedChain(this.accountName);
+
+    // TODO if balance not enough
+    this.eligible_warning = true;
   }
 };
 </script>

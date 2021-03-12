@@ -376,8 +376,8 @@ export const getPremiumStake = async function(
       });
 
       const premium_stake = tableResults.rows[0].premium_stake
-      console.log("Premium stake amount");
-      console.log(premium_stake);
+      // console.log("Premium stake amount");
+      // console.log(premium_stake);
       return premium_stake
  
   } catch (error) {
