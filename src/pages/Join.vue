@@ -420,7 +420,7 @@ export default {
   async mounted() {
     await this.loadChainData();
     await this.getPoolInfo();
-    console.log(this.pool);
+    console.log(this.pool.access_type);
 
     if (this.isAuthenticated) {
       this.getBalance();
@@ -429,9 +429,19 @@ export default {
 
     // check stake if private pool
     this.alreadyStaked = await this.checkStakedChain(this.accountName);
-    
-    // TODO if balance not enough
-    this.eligible_warning = true;
+
+    // if START balance not enough and is private pool, show dialog to buy
+    let payload = {
+      address: this.premium_stake.contract,
+      sym: "START",
+      accountName: this.accountName
+    };
+    let start_balance = this.$chainToQty(
+      (await this.getBalanceFromChain(payload))[0]
+    );
+    if (start_balance < this.$chainToQty(this.premium_stake.quantity && this.pool.access_type === "Private")) {
+      this.eligible_warning = true;
+    }
   }
 };
 </script>
