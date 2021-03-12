@@ -81,8 +81,15 @@ export const getBalanceFromChain = async function({ commit }, payload) {
         payload.sym
       )
     );
-    let balance = await rpc.get_currency_balance( payload.address, payload.accountName, payload.sym );
-    return balance
+    let balance = (await rpc.get_currency_balance( payload.address, payload.accountName, payload.sym ))[0];
+    // console.log('balance')
+    // console.log(balance)
+    if (balance == undefined) {
+      return `0 ${payload.sym}`
+    } else {
+      return balance
+    }
+
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

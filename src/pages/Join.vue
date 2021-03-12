@@ -288,12 +288,10 @@ export default {
         sym: this.BaseTokenSymbol,
         accountName: this.accountName
       };
+      console.log(await this.getBalanceFromChain(payload))
       this.balance = this.$chainToQty(
-        (await this.getBalanceFromChain(payload))[0]
+        (await this.getBalanceFromChain(payload))
       );
-      if (this.balance == undefined) {
-        return (this.balance = 0);
-      }
     },
 
     setMax() {
@@ -437,8 +435,9 @@ export default {
       accountName: this.accountName
     };
     let start_balance = this.$chainToQty(
-      (await this.getBalanceFromChain(payload))[0]
+      (await this.getBalanceFromChain(payload))
     );
+    console.log("Start balance:" + start_balance)
     if (start_balance < this.$chainToQty(this.premium_stake.quantity && this.pool.access_type === "Private")) {
       this.eligible_warning = true;
     }
