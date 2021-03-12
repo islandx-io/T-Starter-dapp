@@ -1,100 +1,129 @@
 <template>
   <q-page>
     <!-- content -->
-    <section class="header-bg row content-center justify-center">
-      <h2 class="text-white">Join Pool</h2>
-    </section>
+    <section class="header-bg" />
     <section class="body-container">
-      <q-card>
+      <q-card class="card-container">
+        <q-btn
+          :to="{ name: 'pooldetails', params: { id: poolID } }"
+          color="primary"
+          flat
+          round
+          class="self-start"
+        >
+          <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px;" />
+        </q-btn>
         <q-form @submit="onSubmit">
-          <q-list>
-            <q-item>
-              <q-item-section side>
-                <q-btn
-                  :to="{ name: 'pooldetails', params: { id: poolID } }"
-                  color="primary"
-                  flat
-                  round
-                >
-                  <q-icon
-                    name="fas fa-chevron-circle-left"
-                    style="font-size: 50px;"
-                  />
-                </q-btn>
-              </q-item-section>
-              <q-item-section class="items-center">
-                <h2>{{ pool.title }}</h2>
-              </q-item-section>
-            </q-item>
+          <div>
+            <div class="row justify-center">
+              <h2>{{ pool.title }}</h2>
+            </div>
+
+            <!---------->
+            <!-- From -->
+            <!---------->
             <q-item dense class="text-h6">From</q-item>
-            <q-item>
-              <q-item-section>
-                <q-card flat bordered class="inner-card">
+            <q-card flat bordered class="inner-card row ">
+              <div class="row ">
+                <q-input
+                  class="col input-amount q-pr-lg"
+                  color="primary"
+                  v-model="amount"
+                  :rules="[validateInput]"
+                  borderless
+                />
+                <div class="column items-end justify-between">
                   <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
-                  <!-- Input with max button -->
-                  <q-input
-                    color="primary"
-                    v-model="amount"
-                    :rules="[validateInput]"
-                    borderless
-                  >
-                    <template v-slot:append>
-                      <div class="row items-center justify-end">
-                        <q-btn label="Max" @click="setMax" color="primary" />
-                      </div>
-                    </template>
-                  </q-input>
-                </q-card>
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-section>
+                  <div class="row q-gutter-x-sm">
+                    <q-btn
+                      class="col-shrink"
+                      label="Max"
+                      @click="setMax"
+                      color="positive"
+                      outline
+                    />
+                    <q-avatar size="40px">
+                      <!-- TODO Change to currency logo (Create a common component for it) -->
+                      <q-img
+                        v-if="pool.avatar"
+                        :src="pool.avatar"
+                        style="width: 80px"
+                      >
+                      </q-img>
+                    </q-avatar>
+                    <div class="text-h4">{{ BaseTokenSymbol }}</div>
+                  </div>
+                </div>
+              </div>
+            </q-card>
+            <div class="row justify-between" style="padding: 5px 20px">
+              <div>
                 Minimum:
                 {{ $chainToQty(pool.minimum_swap) }} {{ BaseTokenSymbol }}
-              </q-item-section>
-              <q-item-section>
+              </div>
+              <div>
                 Maximum:
                 {{ $chainToQty(pool.maximum_allocation) }}
                 {{ BaseTokenSymbol }}
-              </q-item-section>
-            </q-item>
-            <q-item dense class="text-h6">To</q-item>
-            <q-item>
-              <q-item-section>
-                <q-card flat bordered class="inner-card">
-                  <q-item>
-                    <q-item-section>
-                      {{ amount * $chainToQty(pool.swap_ratio.quantity) }}
-                    </q-item-section>
-                    <q-item-section side>{{ TokenSymbol }}</q-item-section>
-                  </q-item>
-                </q-card>
-              </q-item-section>
-            </q-item>
+              </div>
+            </div>
 
-            <q-item>
-              <q-item-section>
+            <!-------->
+            <!-- To -->
+            <!-------->
+            <q-item dense class="text-h6">To</q-item>
+            <q-card flat bordered class="inner-card row ">
+              <div class="col row justify-between ">
+                <div
+                  class="col input-amount q-pr-lg"
+                  style="margin-top:-8px; padding-bottom: 8px"
+                >
+                  {{ amount * $chainToQty(pool.swap_ratio.quantity) }}
+                </div>
+                <div class="column items-end justify-between">
+                  <div>Balance: ***** {{ TokenSymbol }}</div>
+                  <div class="row q-gutter-x-sm">
+                    <q-avatar size="40px">
+                      <q-img
+                        v-if="pool.avatar"
+                        :src="pool.avatar"
+                        style="width: 80px"
+                      >
+                      </q-img>
+                    </q-avatar>
+                    <div class="text-h4">{{ TokenSymbol }}</div>
+                  </div>
+                </div>
+              </div>
+            </q-card>
+            <div class="row justify-between" style="padding: 5px 20px">
+              <div>
                 1 {{ BaseTokenSymbol }} =
                 {{ $chainToQty(pool.swap_ratio.quantity) }}
                 {{ TokenSymbol }}
-              </q-item-section>
-              <q-item-section>
+              </div>
+              <div>
                 Remaining {{ $chainToQty(pool.remaining_offer).toFixed(0) }}
                 {{ TokenSymbol }}
+              </div>
+            </div>
+
+            <!------------>
+            <!-- Submit -->
+            <!------------>
+            <q-item class="q-py-lg">
+              <q-item-section>
+                <q-btn
+                  label="Join Pool"
+                  type="submit"
+                  color="primary"
+                  :disable="
+                    !isAuthenticated ||
+                      balance <= $chainToQty(pool.minimum_swap) ||
+                      pool.pool_status !== `open`
+                  "
+                />
               </q-item-section>
-            </q-item>
-            <q-item>
-              <q-btn
-                class="col"
-                label="Join Pool"
-                type="submit"
-                color="primary"
-                :disable="
-                  !isAuthenticated ||
-                    balance <= $chainToQty(pool.minimum_swap) ||
-                    pool.pool_status !== `open`
-                "
-              />
               <q-tooltip v-if="!isAuthenticated">
                 Connect wallet
               </q-tooltip>
@@ -102,7 +131,7 @@
                 Zero balance
               </q-tooltip>
             </q-item>
-          </q-list>
+          </div>
         </q-form>
 
         <q-dialog v-model="showTransaction" confirm>
@@ -189,7 +218,7 @@ export default {
       return (
         (val >= this.$chainToQty(this.pool.minimum_swap) &&
           val <= this.$chainToQty(this.pool.maximum_allocation)) ||
-        `Must be between minimum and mximum`
+        `Must be between minimum and maximum`
       );
     },
 
@@ -316,12 +345,28 @@ export default {
 .body-container {
   max-width: 700px;
 }
+.card-container {
+  display: grid;
+  // grid-gap: 20px;
+  align-items: stretch;
+  grid-template-columns: 50px auto 50px;
+  // grid-template-rows: min-content;
+}
 .header-bg {
-  height: 200px;
+  height: 160px;
   min-width: 490px;
   margin-bottom: -50px;
 }
 .inner-card {
   border: 1px solid rgb(194, 194, 194);
+  padding: 15px 20px;
+}
+// .q-field__control {
+//   display: flex;
+//   align-items: flex-end;
+// }
+.input-amount {
+  font-size: 50px;
+  color: $primary;
 }
 </style>

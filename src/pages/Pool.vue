@@ -253,7 +253,7 @@ export default {
 .header-bg {
   height: 160px;
   margin-bottom: -50px;
-  background-position-y: 50%;
+  // background-position-y: 50%;
 }
 .join-pane {
   min-width: 350px;
