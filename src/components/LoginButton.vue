@@ -11,7 +11,10 @@
         outline
         label="Logout"
         v-if="showLogout"
-        @click="showLogout = false"
+        @click="
+          showLogout = false;
+          logout();
+        "
       />
       <q-btn
         v-if="isAuthenticated"
