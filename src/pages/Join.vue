@@ -26,46 +26,63 @@
                 <h2>{{ pool.title }}</h2>
               </q-item-section>
             </q-item>
-            <q-card flat bordered>
-              <div>
+            <q-item dense class="text-h6">From</q-item>
+            <q-item>
+              <q-item-section>
+                <q-card flat bordered class="inner-card">
+                  <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
+                  <!-- Input with max button -->
+                  <q-input
+                    color="primary"
+                    v-model="amount"
+                    :rules="[validateInput]"
+                    borderless
+                  >
+                    <template v-slot:append>
+                      <div class="row items-center justify-end">
+                        <q-btn label="Max" @click="setMax" color="primary" />
+                      </div>
+                    </template>
+                  </q-input>
+                </q-card>
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section>
                 Minimum:
                 {{ $chainToQty(pool.minimum_swap) }} {{ BaseTokenSymbol }}
-              </div>
-              <div>
+              </q-item-section>
+              <q-item-section>
                 Maximum:
-                {{ $chainToQty(pool.maximum_allocation) }} {{ BaseTokenSymbol }}
-              </div>
-              <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
-              <!-- Input with max button -->
-              <div class="row">
-                <q-input
-                  color="primary"
-                  v-model="amount"
-                  filled
-                  label="Amount"
-                  :rules="[validateInput]"
-                >
-                  <template v-slot:append>
-                    <div class="row items-center justify-end">
-                      <q-btn label="Max" @click="setMax" color="primary" />
-                    </div>
-                  </template>
-                </q-input>
-              </div>
-            </q-card>
-            <div>
-              1 {{ BaseTokenSymbol }} =
-              {{ $chainToQty(pool.swap_ratio.quantity) }}
-              {{ TokenSymbol }}
-            </div>
-            <div>
-              To {{ amount * $chainToQty(pool.swap_ratio.quantity) }}
-              {{ TokenSymbol }}
-            </div>
-            <div>
-              Remaining {{ $chainToQty(pool.remaining_offer).toFixed(0) }}
-              {{ TokenSymbol }}
-            </div>
+                {{ $chainToQty(pool.maximum_allocation) }}
+                {{ BaseTokenSymbol }}
+              </q-item-section>
+            </q-item>
+            <q-item dense class="text-h6">To</q-item>
+            <q-item>
+              <q-item-section>
+                <q-card flat bordered class="inner-card">
+                  <q-item>
+                    <q-item-section>
+                      {{ amount * $chainToQty(pool.swap_ratio.quantity) }}
+                    </q-item-section>
+                    <q-item-section side>{{ TokenSymbol }}</q-item-section>
+                  </q-item>
+                </q-card>
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                1 {{ BaseTokenSymbol }} =
+                {{ $chainToQty(pool.swap_ratio.quantity) }}
+                {{ TokenSymbol }}
+              </q-item-section>
+              <q-item-section>
+                Remaining {{ $chainToQty(pool.remaining_offer).toFixed(0) }}
+                {{ TokenSymbol }}
+              </q-item-section>
+            </q-item>
             <q-item>
               <q-btn
                 class="col"
@@ -296,9 +313,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.body-container {
+  max-width: 700px;
+}
 .header-bg {
   height: 200px;
   min-width: 490px;
   margin-bottom: -50px;
+}
+.inner-card {
+  border: 1px solid rgb(194, 194, 194);
 }
 </style>
