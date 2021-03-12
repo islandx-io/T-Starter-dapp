@@ -5,7 +5,7 @@
     </section>
 
     <section class="body-container">
-      <q-card class="card">
+      <q-card>
         <q-form
           v-if="this.accountName === this.pool.owner"
           @submit="onSubmit"
@@ -463,10 +463,7 @@ export default {
       let payload = { address: val, token_symbol: this.token_symbol };
       this.token_decimals = await this.getTokenPrecision(payload);
       console.log(this.token_decimals);
-      return (
-        (!!val ||
-        `Must be a valid contract`)
-      );
+      return !!val || `Must be a valid contract`;
     },
     checkLinks() {
       // console.log(this.webLinks.filter(el => el.value[0] != ""))
@@ -582,7 +579,7 @@ export default {
 <style lang="scss" scoped>
 // .header-bg,
 .body-container,
-.card {
+.q-card {
   min-width: 450px;
 }
 .header-bg {

@@ -4,7 +4,7 @@
       <h2 class="text-white">Create Pool</h2>
     </section>
     <section class="body-container">
-      <q-card class="card">
+      <q-card>
         <q-form @submit="onSubmit" @reset="onReset">
           <!-- tokens and adresses -->
           <q-list>

@@ -1,98 +1,126 @@
 <template>
   <q-page>
     <!-- content -->
-    <q-form @submit="onSubmit">
-      <q-btn
-        :to="{ name: 'pooldetails', params: { id: poolID } }"
-        outline
-        color="primary"
-        >Back</q-btn
-      >
-      <div>{{ pool.title }}</div>
-      <div>
-        Minimum:
-        {{ $chainToQty(pool.minimum_swap) }} {{ BaseTokenSymbol }}
-      </div>
-      <div>
-        Maximum:
-        {{ $chainToQty(pool.maximum_allocation) }} {{ BaseTokenSymbol }}
-      </div>
-      <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
-
-      <!-- Input with max button -->
-      <div class="row">
-        <q-input
-          color="primary"
-          v-model="amount"
-          filled
-          label="Amount"
-          :rules="[validateInput]"
-        >
-          <template v-slot:append>
-            <div class="row items-center justify-end">
-              <q-btn label="Max" @click="setMax" color="primary" />
-            </div>
-          </template>
-        </q-input>
-      </div>
-      <div>
-        1 {{ BaseTokenSymbol }} = {{ $chainToQty(pool.swap_ratio.quantity) }}
-        {{ TokenSymbol }}
-      </div>
-      <div>
-        To {{ amount * $chainToQty(pool.swap_ratio.quantity) }}
-        {{ TokenSymbol }}
-      </div>
-      <div>
-        Remaining {{ $chainToQty(pool.remaining_offer).toFixed(0) }}
-        {{ TokenSymbol }}
-      </div>
-      <q-item>
-        <q-btn
-          class="col"
-          label="Join Pool"
-          type="submit"
-          color="primary"
-          :disable="
-            !isAuthenticated || balance <= $chainToQty(pool.minimum_swap) || pool.pool_status !== `open`
-          "
-        />
-        <q-tooltip v-if="!isAuthenticated">
-          Connect wallet
-        </q-tooltip>
-        <q-tooltip v-if="balance <= $chainToQty(pool.minimum_swap)">
-          Zero balance
-        </q-tooltip>
-      </q-item>
-    </q-form>
-
-    <q-dialog v-model="showTransaction" confirm>
+    <section class="header-bg row content-center justify-center">
+      <h2 class="text-white">Join Pool</h2>
+    </section>
+    <section class="body-container">
       <q-card>
-        <q-card-section class="row">
-          <q-avatar icon="arrow_forward" color="primary" text-color="white" />
-          <span class="q-ml-sm">
-            Transaction sent, click to view in block explorer.
-          </span>
-          <q-item
-            clickable
-            tag="a"
-            target="_blank"
-            :href="`${explorerUrl}/transaction/${transaction}`"
-            class="q-ml-sm"
-            >{{ transaction }}</q-item
-          >
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn
-            flat
-            label="Ok"
-            color="primary"
-            @click="toAllocationsPage"
-            v-close-popup
-          ></q-btn>
-        </q-card-actions>
+        <q-form @submit="onSubmit">
+          <q-list>
+            <q-item>
+              <q-item-section side>
+                <q-btn
+                  :to="{ name: 'pooldetails', params: { id: poolID } }"
+                  color="primary"
+                  flat
+                  round
+                >
+                  <q-icon
+                    name="fas fa-chevron-circle-left"
+                    style="font-size: 50px;"
+                  />
+                </q-btn>
+              </q-item-section>
+              <q-item-section class="items-center">
+                <h2>{{ pool.title }}</h2>
+              </q-item-section>
+            </q-item>
+            <q-card flat bordered>
+              <div>
+                Minimum:
+                {{ $chainToQty(pool.minimum_swap) }} {{ BaseTokenSymbol }}
+              </div>
+              <div>
+                Maximum:
+                {{ $chainToQty(pool.maximum_allocation) }} {{ BaseTokenSymbol }}
+              </div>
+              <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
+              <!-- Input with max button -->
+              <div class="row">
+                <q-input
+                  color="primary"
+                  v-model="amount"
+                  filled
+                  label="Amount"
+                  :rules="[validateInput]"
+                >
+                  <template v-slot:append>
+                    <div class="row items-center justify-end">
+                      <q-btn label="Max" @click="setMax" color="primary" />
+                    </div>
+                  </template>
+                </q-input>
+              </div>
+            </q-card>
+            <div>
+              1 {{ BaseTokenSymbol }} =
+              {{ $chainToQty(pool.swap_ratio.quantity) }}
+              {{ TokenSymbol }}
+            </div>
+            <div>
+              To {{ amount * $chainToQty(pool.swap_ratio.quantity) }}
+              {{ TokenSymbol }}
+            </div>
+            <div>
+              Remaining {{ $chainToQty(pool.remaining_offer).toFixed(0) }}
+              {{ TokenSymbol }}
+            </div>
+            <q-item>
+              <q-btn
+                class="col"
+                label="Join Pool"
+                type="submit"
+                color="primary"
+                :disable="
+                  !isAuthenticated ||
+                    balance <= $chainToQty(pool.minimum_swap) ||
+                    pool.pool_status !== `open`
+                "
+              />
+              <q-tooltip v-if="!isAuthenticated">
+                Connect wallet
+              </q-tooltip>
+              <q-tooltip v-if="balance <= $chainToQty(pool.minimum_swap)">
+                Zero balance
+              </q-tooltip>
+            </q-item>
+          </q-list>
+        </q-form>
+
+        <q-dialog v-model="showTransaction" confirm>
+          <q-card>
+            <q-card-section class="row">
+              <q-avatar
+                icon="arrow_forward"
+                color="primary"
+                text-color="white"
+              />
+              <span class="q-ml-sm">
+                Transaction sent, click to view in block explorer.
+              </span>
+              <q-item
+                clickable
+                tag="a"
+                target="_blank"
+                :href="`${explorerUrl}/transaction/${transaction}`"
+                class="q-ml-sm"
+                >{{ transaction }}</q-item
+              >
+            </q-card-section>
+            <q-card-actions align="right">
+              <q-btn
+                flat
+                label="Ok"
+                color="primary"
+                @click="toAllocationsPage"
+                v-close-popup
+              ></q-btn>
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
       </q-card>
-    </q-dialog>
+    </section>
   </q-page>
 </template>
 
@@ -158,7 +186,7 @@ export default {
         (await this.getBalanceFromChain(payload))[0]
       );
       if (this.balance == undefined) {
-        return this.balance = 0;
+        return (this.balance = 0);
       }
     },
 
@@ -266,3 +294,11 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.header-bg {
+  height: 200px;
+  min-width: 490px;
+  margin-bottom: -50px;
+}
+</style>

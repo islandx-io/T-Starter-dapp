@@ -1,9 +1,9 @@
 <template>
   <router-link
-    class="router-link pool-card row"
+    class="router-link row content-stretch items-stretch"
     :to="{ name: 'pooldetails', params: { id: poolID } }"
   >
-    <q-card flat class="col bg-secondary text-black relative-position">
+    <q-card class="col bg-secondary text-black ">
       <q-item>
         <q-item-section top>
           <q-avatar :size="avatar_size.toString() + 'px'">
@@ -132,7 +132,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pool-card {
+.q-card {
   transition: all 0.3s ease-in-out;
   min-width: 300px;
   max-width: 600px;
@@ -141,22 +141,22 @@ export default {
   border-color: $secondary;
   box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
 }
-.pool-card:hover {
+.q-card:hover {
   transform: scale(1.05);
   z-index: 2;
 }
-.pool-card .bottom-section {
+.q-card .bottom-section {
   padding-bottom: 8px;
 }
 
-.pool-card .title-section {
+.q-card .title-section {
   min-height: 48px;
 }
-.pool-card .title {
+.q-card .title {
   margin: 0;
   padding: 0;
 }
-.pool-card .info-value {
+.q-card .info-value {
   line-height: 30px;
   font-size: 20px;
   color: $primary;

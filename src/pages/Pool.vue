@@ -4,7 +4,7 @@
   <q-page>
     <section class="header-bg" />
     <div class="body-container">
-      <q-card class="card row justify-between content-start q-mb-lg">
+      <q-card class="row justify-between content-start q-mb-lg">
         <div class="join-pane col column">
           <q-item>
             <q-item-section top class="col-shrink">
@@ -99,7 +99,7 @@
           <q-spinner-puff size="50px" color="primary" />
         </q-inner-loading>
       </q-card>
-      <q-card class="body-container card">
+      <q-card class="body-container">
         <q-tabs
           v-model="tab"
           dense
