@@ -288,7 +288,7 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: process.env.CONTRACT_TABLE, // Table name
-      limit: 10, // Maximum number of rows that we want to get
+      limit: 100, // Maximum number of rows that we want to get
       index_position: 3,
       key_type: "i64",
       // lower_bound: 1, // show all published pools
@@ -302,9 +302,7 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
     let pool_id_list = [];
 
     // sort according to nearest pool open
-    tableResults.rows.sort(function(a, b) {
-      return new Date(a.pool_open) - new Date(b.pool_open);
-    });
+    tableResults.rows.sort(function(a, b) { return new Date(a.pool_open) - new Date(b.pool_open); });
 
     console.log(tableResults.rows);
     pool_id_list = tableResults.rows.map(a => a.id);
@@ -355,6 +353,76 @@ export const getAllocationByPool = async function(
  
     } else {
       return {};
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// get premuim stake value
+export const getPremiumStake = async function(
+  { commit, getters, dispatch },
+) {
+  try {
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: "settings", // Table name
+        limit: 100,
+        index_position: 1,
+        key_type: "i64",
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+
+      const premium_stake = tableResults.rows[0].premium_stake
+      // console.log("Premium stake amount");
+      // console.log(premium_stake);
+      return premium_stake
+ 
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// check if tokens already staked
+export const checkStakedChain = async function(
+  { commit, getters, dispatch },
+  account
+) {
+  try {
+    if (account !== null) {
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: "stakebalance", // Table name
+        limit: 100,
+        index_position: 1,
+        key_type: "i64",
+        lower_bound: account,
+        upper_bound: account,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+
+      // get premium stake
+      const premium_stake = await dispatch("getPremiumStake");
+      let premium_stake_qty = this.$chainToQty(premium_stake.quantity)
+      // console.log(premium_stake_qty)
+      
+      const staked_amount = this.$chainToQty(tableResults.rows[0].staked)
+      // console.log("START staked?");
+      // console.log(staked_amount);
+
+      if (staked_amount >= premium_stake_qty) {
+        return true
+      }
+      else {
+        return false
+      }
+ 
+    } else {
+      return false;
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
