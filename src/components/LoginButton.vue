@@ -119,6 +119,7 @@ export default {
       } else {
         this.error = error;
       }
+      await this.getBalance();
     },
 
     openUrl(url) {
