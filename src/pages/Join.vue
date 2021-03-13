@@ -124,7 +124,7 @@
                   :disable="
                     !isAuthenticated ||
                       balance <= $chainToQty(pool.minimum_swap) ||
-                      pool.pool_status !== `open`
+                      pool.pool_status !== `open` || not_enough_start
                   "
                 />
               </q-item-section>
@@ -134,12 +134,16 @@
               <q-tooltip v-if="balance <= $chainToQty(pool.minimum_swap)">
                 Zero balance
               </q-tooltip>
+              <q-tooltip v-if="not_enough_start">
+                Not enough START
+              </q-tooltip>
             </q-item>
+            <div v-if="not_enough_start">You do not have enough START tokens to participate in this pool. Get here.</div>
           </div>
         </q-form>
 
         <!-- Not enough START to participate in private pool -->
-        <q-dialog v-model="eligible_warning">
+        <q-dialog v-model="stake_warning">
           <q-card>
             <q-card-section>
               <div class="text-h6">Alert</div>
@@ -233,7 +237,8 @@ export default {
       amount: 0,
       alreadyStaked: false,
       confirm_stake: false,
-      eligible_warning: false,
+      stake_warning: false,
+      not_enough_start: false,
       premium_stake: {},
       base_token_symbol: "",
       showTransaction: null,
@@ -285,12 +290,10 @@ export default {
         sym: this.BaseTokenSymbol,
         accountName: this.accountName
       };
+      console.log(await this.getBalanceFromChain(payload))
       this.balance = this.$chainToQty(
-        (await this.getBalanceFromChain(payload))[0]
+        (await this.getBalanceFromChain(payload))
       );
-      if (this.balance == undefined) {
-        return (this.balance = 0);
-      }
     },
 
     setMax() {
@@ -417,7 +420,7 @@ export default {
   async mounted() {
     await this.loadChainData();
     await this.getPoolInfo();
-    console.log(this.pool);
+    console.log(this.pool.access_type);
 
     if (this.isAuthenticated) {
       this.getBalance();
@@ -426,9 +429,21 @@ export default {
 
     // check stake if private pool
     this.alreadyStaked = await this.checkStakedChain(this.accountName);
-    
-    // TODO if balance not enough
-    this.eligible_warning = true;
+
+    // if START balance not enough and is private pool, show dialog to buy
+    let payload = {
+      address: this.premium_stake.contract,
+      sym: "START",
+      accountName: this.accountName
+    };
+    let start_balance = this.$chainToQty(
+      (await this.getBalanceFromChain(payload))
+    );
+    console.log("Start balance:" + start_balance)
+    if (start_balance < this.$chainToQty(this.premium_stake.quantity && this.pool.access_type === "Private")) {
+      this.stake_warning = true;
+      this.not_enough_start = true;
+    }
   }
 };
 </script>

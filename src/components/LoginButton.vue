@@ -34,7 +34,7 @@
             {{ accountName }}
           </div>
         </div>
-        <div class="q-px-sm text-black">{{ balance }} {{balanceSymbol}}</div>
+        <div class="q-px-sm text-black">{{ balanceSTR }}</div>
       </q-btn>
     </q-btn-group>
     <q-dialog v-model="showLogin">
@@ -96,8 +96,8 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   data() {
     return { showLogin: false, error: null, showLogout: false, 
-    balance: 0,
-    balanceSymbol: 'START' };
+    balanceSTR: 0,
+    };
   },
   computed: {
     ...mapGetters("account", [
@@ -119,6 +119,7 @@ export default {
       } else {
         this.error = error;
       }
+      await this.getBalance();
     },
 
     openUrl(url) {
@@ -139,18 +140,7 @@ export default {
         sym: "START",
         accountName: this.accountName
       };
-      this.balance = this.$chainToQty(
-        (await this.getBalanceFromChain(payload))[0]
-      );
-      this.balanceSymbol = this.$chainToSym(
-        (await this.getBalanceFromChain(payload))[0]
-      );
-      if (this.balance == undefined) {
-        return (this.balance = 0);
-      }
-      if (this.balanceSymbol == undefined) {
-        return (this.balanceSymbol = 'START');
-      }
+      this.balanceSTR =  this.$chainStrReformat((await this.getBalanceFromChain(payload)))
     },
 
   },
