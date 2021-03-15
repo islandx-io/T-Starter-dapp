@@ -270,9 +270,9 @@
               <q-item-section class="col-auto">
                 <q-btn label="Publish" @click="onPublish" color="primary" />
               </q-item-section>
-              <q-item-section class="col-shrink">
+              <!-- <q-item-section class="col-shrink">
                 <q-btn label="Reset" type="reset" color="primary" flat />
-              </q-item-section>
+              </q-item-section> -->
             </q-item>
           </q-list>
         </q-form>
@@ -421,9 +421,7 @@ export default {
       this.pool.soft_cap = this.$chainToQty(this.pool.soft_cap);
       this.pool.hard_cap = this.$chainToQty(this.pool.hard_cap);
       this.pool.minimum_swap = this.$chainToQty(this.pool.minimum_swap);
-      this.pool.maximum_swap = this.$chainToQty(
-        this.pool.maximum_swap
-      );
+      this.pool.maximum_swap = this.$chainToQty(this.pool.maximum_swap);
 
       this.populateWebLinks();
       this.BaseTokenFromChain();
