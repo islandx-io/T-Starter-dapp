@@ -604,7 +604,7 @@ export default {
             color: "red-5",
             textColor: "white",
             icon: "warning",
-            message: `Update fail. ERROR: ${error}`
+            message: `${error}`
           });
         }
       }
@@ -647,7 +647,7 @@ export default {
             color: "red-5",
             textColor: "white",
             icon: "warning",
-            message: `Transaction fail. ERROR: ${error}`
+            message: `${error}`
           });
         }
         this.$q.notify({

@@ -89,13 +89,13 @@ export const ifPoolFunded = async function({ commit }, payload) {
 export const getBalanceFromChain = async function({ commit }, payload) {
   try {
     const rpc = this.$api.getRpc();
-    console.log(
-      await rpc.get_currency_balance(
-        payload.address,
-        payload.accountName,
-        payload.sym
-      )
-    );
+    // console.log(
+    //   await rpc.get_currency_balance(
+    //     payload.address,
+    //     payload.accountName,
+    //     payload.sym
+    //   )
+    // );
     let balance = (await rpc.get_currency_balance( payload.address, payload.accountName, payload.sym ))[0];
     // console.log('balance')
     // console.log(balance)
@@ -410,36 +410,43 @@ export const getPremiumStake = async function(
 // check if tokens already staked
 export const checkStakedChain = async function(
   { commit, getters, dispatch },
-  account
+  payload
 ) {
   try {
-    if (account !== null) {
-      const tableResults = await this.$api.getTableRows({
+    if (payload.account !== null) {
+      const stakeBalanceTbl = await this.$api.getTableRows({
         code: process.env.CONTRACT_ADDRESS, // Contract that we target
         scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
         table: "stakebalance", // Table name
         limit: 100,
         index_position: 1,
         key_type: "i64",
-        lower_bound: account,
-        upper_bound: account,
+        lower_bound: payload.account,
+        upper_bound: payload.account,
         reverse: false, // Optional: Get reversed data
         show_payer: false // Optional: Show ram payer
       });
+
+      let allocationTable = await dispatch("getAllocationByPool", {account: payload.account, poolID: payload.poolID})
+      console.log("allocation table")
+      console.log(allocationTable)
 
       // get premium stake
       const premium_stake = await dispatch("getPremiumStake");
       let premium_stake_qty = this.$chainToQty(premium_stake.quantity)
       // console.log(premium_stake_qty)
       
-      const staked_amount = this.$chainToQty(tableResults.rows[0].staked)
+      const staked_START = this.$chainToQty(stakeBalanceTbl.rows[0].staked)
+      const liquid_START = this.$chainToQty(stakeBalanceTbl.rows[0].liquid)
       // console.log("START staked?");
       // console.log(staked_amount);
 
-      if (staked_amount >= premium_stake_qty) {
+      if (staked_START >= premium_stake_qty) {
         return true
       }
-      else {
+      else if (allocationTable == {}) {
+        return false
+      } else {
         return false
       }
  

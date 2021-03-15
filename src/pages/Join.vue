@@ -393,7 +393,7 @@ export default {
           color: "red-5",
           textColor: "white",
           icon: "warning",
-          message: `Transaction fail. ERROR: ${error}`
+          message: `${error}`
         });
       }
     },
@@ -428,7 +428,7 @@ export default {
     this.premium_stake = await this.getPremiumStake();
 
     // check stake if private pool
-    this.alreadyStaked = await this.checkStakedChain(this.accountName);
+    this.alreadyStaked = await this.checkStakedChain({account: this.accountName, poolID: this.poolID});
 
     // if START balance not enough and is private pool, show dialog to buy
     let payload = {
