@@ -10,7 +10,7 @@
           v-if="this.accountName === this.pool.owner"
           @submit="onSubmit"
           @reset="onReset"
-          @publish="onPublish"
+          ref="updateForm"
         >
           <!-- tokens and adresses -->
           <div class="form-col-container">
@@ -235,6 +235,7 @@
                         'Must specify'
                     ]"
                     outlined
+                    debounce="500"
                     style="padding-top:20px"
                   />
                 </q-item-section>
@@ -249,6 +250,7 @@
                     lazy-rules
                     :rules="[val => (val && val.length > 1) || 'Must specify']"
                     outlined
+                    debounce="1000"
                     type="textarea"
                   />
                 </q-item-section>
@@ -266,6 +268,9 @@
             <q-item class="justify-start">
               <q-item-section class="col-auto">
                 <q-btn label="Update" type="submit" color="primary" />
+              </q-item-section>
+              <q-item-section class="col-auto">
+                <q-btn label="Fund" @click="onFund" color="primary" />
               </q-item-section>
               <q-item-section class="col-auto">
                 <q-btn label="Publish" @click="onPublish" color="primary" />
@@ -400,7 +405,7 @@ export default {
       "getChainAccountInfo",
       "getTokenPrecision",
       "getChainPoolByID",
-      "updatePoolStatus"
+      "updatePoolStatus",
     ]),
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
@@ -421,9 +426,7 @@ export default {
       this.pool.soft_cap = this.$chainToQty(this.pool.soft_cap);
       this.pool.hard_cap = this.$chainToQty(this.pool.hard_cap);
       this.pool.minimum_swap = this.$chainToQty(this.pool.minimum_swap);
-      this.pool.maximum_swap = this.$chainToQty(
-        this.pool.maximum_swap
-      );
+      this.pool.maximum_swap = this.$chainToQty(this.pool.maximum_swap);
 
       this.populateWebLinks();
       this.BaseTokenFromChain();
@@ -454,16 +457,18 @@ export default {
       // prettier-ignore
       this.webLinks.find( el => el.key === "whitepaper" ).value = this.pool.web_links.filter(el => el.key === "whitepaper").map(a => a.value);
     },
+
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
     },
+
     // TODO check this check again
     async checkTokenContract(val) {
       // simulating a delay
       let payload = { address: val, token_symbol: this.token_symbol };
       this.token_decimals = await this.getTokenPrecision(payload);
       console.log(this.token_decimals);
-      return !!val || `Must be a valid contract`;
+      return !!val && this.token_decimals >= 0 || `Must be a valid contract and token`;
     },
     checkLinks() {
       // console.log(this.webLinks.filter(el => el.value[0] != ""))
@@ -514,6 +519,7 @@ export default {
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
+
     async publishPool() {
       const actions = [
         {
@@ -526,9 +532,28 @@ export default {
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
+
+    async fundPool() {
+      const actions = [
+        {
+          account: this.pool.swap_ratio.contract,
+          name: "transfer",
+          data: {
+            from: this.accountName,
+            to: process.env.CONTRACT_ADDRESS,
+            quantity: this.$toChainString(
+              this.pool.swap_ratio.quantity * this.pool.hard_cap,
+              this.token_decimals,
+              this.token_symbol
+            ),
+            memo: `fund pool:${this.poolID}`
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
     async onSubmit() {
-      // TODO Check and clean links not empty
-      // TODO check if have permission to create pool. e.g. fuzzytestnet
       // console.log({ "Submitted start date": this.pool.pool_open });
       this.pool.pool_open = this.pool_open.date;
       this.pool.private_end = this.private_end.date;
@@ -552,9 +577,21 @@ export default {
         });
       }
     },
+
     async onPublish() {
       await this.publishPool();
     },
+
+    async onFund() {
+      
+      try {
+        if (await this.$refs.updateForm.validate()) {
+          await this.fundPool();          
+        } ;
+      } catch (error) {
+      }
+    },
+
     onReset() {}
 
     // addLinkField() {
@@ -570,6 +607,9 @@ export default {
   async mounted() {
     await this.loadChainData();
     this.getPoolInfo();
+
+    // TODO check if already funded
+    this.getChainAccountInfo(this.accountName)
   },
 
   watch: {}

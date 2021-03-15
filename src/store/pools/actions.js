@@ -66,8 +66,17 @@ export const getAllChainPools = async function({ commit, dispatch }) {
 export const getChainAccountInfo = async function({ commit }, accountName) {
   const rpc = this.$api.getRpc();
   console.log(await rpc.get_account(accountName));
+  console.log(await rpc.history_get_actions(accountName));
 
   // console.log(await rpc.get_currency_balance(address, "fuzzytestnet"));
+};
+
+// if pool is funded with the token
+export const ifPoolFunded = async function({ commit }, accountName) {
+  const rpc = this.$api.getRpc();
+  console.log(await rpc.get_account(accountName));
+  console.log(await rpc.history_get_actions(accountName));
+
 };
 
 // Get balance from chain for given address and token
