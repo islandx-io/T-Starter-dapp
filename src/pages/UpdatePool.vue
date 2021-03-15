@@ -270,7 +270,12 @@
                 <q-btn label="Update" type="submit" color="primary" />
               </q-item-section>
               <q-item-section class="col-auto">
-                <q-btn label="Fund" @click="onFund" :disable="pool.status === 'published'" color="primary" />
+                <q-btn
+                  label="Fund"
+                  @click="onFund"
+                  :disable="pool.status === 'published'"
+                  color="primary"
+                />
                 <q-tooltip v-if="pool.status === 'published'">
                   Already published
                 </q-tooltip>
@@ -577,13 +582,12 @@ export default {
       this.pool.pool_open = this.pool_open.date;
       this.pool.private_end = this.private_end.date;
       this.pool.public_end = this.public_end.date;
-      console.log({ pool_open: this.pool_open.date });
       if (this.accept !== true || !this.isAuthenticated) {
         this.$q.notify({
           color: "red-5",
           textColor: "white",
           icon: "warning",
-          message: "You need to login and accept the license and terms first"
+          message: "You need to accept the license and terms first"
         });
       } else {
         this.checkLinks();
@@ -598,15 +602,45 @@ export default {
     },
 
     async onPublish() {
-      await this.publishPool();
+      if (this.accept !== true) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: "You need to accept the license and terms first"
+        });
+      } else {
+        await this.publishPool();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Submitted"
+        });
+      }
     },
 
     async onFund() {
-      try {
-        if (await this.$refs.updateForm.validate()) {
-          await this.fundPool();
-        }
-      } catch (error) {}
+      if (this.accept !== true) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: "You need to accept the license and terms first"
+        });
+      } else {
+        try {
+          if (await this.$refs.updateForm.validate()) {
+            await this.fundPool();
+          }
+        } catch (error) {}
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Submitted"
+        });
+      }
     },
 
     onReset() {}
