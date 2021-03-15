@@ -75,12 +75,12 @@
           <div class="col-sm-3 column items-center content-end">
             <p class="text-weight-bolder">Contact Us</p>
             <div class="row justify-start">
-              <q-btn type="a" href="https://t.me/tstarterio">
-                <q-icon size="sm" name="fab fa-telegram-plane" />
-              </q-btn>
-              <q-btn type="a" href="https://medium.com/@t-starter">
-                <q-icon size="sm" name="fab fa-medium-m" />
-              </q-btn>
+              <a href="https://t.me/tstarterio" class="social-link">
+                <q-icon size="md" name="fab fa-telegram-plane" />
+              </a>
+              <a href="https://medium.com/@t-starter" class="social-link">
+                <q-icon size="md" name="fab fa-medium-m" />
+              </a>
             </div>
           </div>
         </div>
@@ -115,5 +115,14 @@ export default {
 }
 .q-page-container {
   padding-top: 0 !important;
+}
+.social-link {
+  padding: 0px 10px;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+  color: $secondary;
+  &:hover {
+    color: $accent;
+  }
 }
 </style>
