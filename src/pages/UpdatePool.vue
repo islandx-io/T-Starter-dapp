@@ -364,11 +364,11 @@ export default {
           decimals: 9,
           contract: "eth.ptokens"
         },
-        {
-          sym: "TLOS",
-          decimals: 4,
-          contract: "eosio.token"
-        }
+        // {
+        //   sym: "TLOS",
+        //   decimals: 4,
+        //   contract: "eosio.token"
+        // }
       ],
       token_symbol: "",
       token_decimals: 1,
@@ -675,10 +675,8 @@ export default {
     await this.loadChainData();
     await this.getPoolInfo();
 
-    // TODO check if already funded
-    let payload = { account: this.accountName, id: this.poolID };
-    this.funded = await this.ifPoolFunded(payload);
-    console.log(this.funded);
+    // check if already funded
+    this.funded = await this.ifPoolFunded({ account: this.accountName, id: this.poolID });
   },
 
   watch: {}

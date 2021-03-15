@@ -441,12 +441,13 @@ export const checkStakedChain = async function(
       // console.log("START staked?");
       // console.log(staked_amount);
 
-      if (staked_START >= premium_stake_qty) {
-        return true
-      }
-      else if (allocationTable == {}) {
+      if (Object.keys(allocationTable).length === 0 && allocationTable.constructor === Object) {
         return false
+      }
+      else if (Object.keys(allocationTable).length > 0 && allocationTable.constructor === Object) {
+        return true
       } else {
+        console.log("Nothing")
         return false
       }
  

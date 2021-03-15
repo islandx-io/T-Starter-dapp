@@ -440,7 +440,7 @@ export default {
       (await this.getBalanceFromChain(payload))
     );
     console.log("Start balance:" + start_balance)
-    if (start_balance < this.$chainToQty(this.premium_stake.quantity && this.pool.access_type === "Private")) {
+    if (start_balance < this.$chainToQty(this.premium_stake.quantity) && this.pool.access_type === "Private") {
       this.stake_warning = true;
       this.not_enough_start = true;
     }
