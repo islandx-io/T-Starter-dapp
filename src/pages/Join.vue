@@ -70,7 +70,7 @@
               </div>
               <div>
                 Maximum:
-                {{ $chainToQty(pool.maximum_allocation) }}
+                {{ $chainToQty(pool.maximum_swap) }}
                 {{ BaseTokenSymbol }}
               </div>
             </div>
@@ -279,7 +279,7 @@ export default {
     validateInput(val) {
       return (
         (val >= this.$chainToQty(this.pool.minimum_swap) &&
-          val <= this.$chainToQty(this.pool.maximum_allocation)) ||
+          val <= this.$chainToQty(this.pool.maximum_swap)) ||
         `Must be between minimum and maximum`
       );
     },
@@ -297,8 +297,8 @@ export default {
     },
 
     setMax() {
-      if (this.balance >= this.$chainToQty(this.pool.maximum_allocation)) {
-        this.amount = this.$chainToQty(this.pool.maximum_allocation);
+      if (this.balance >= this.$chainToQty(this.pool.maximum_swap)) {
+        this.amount = this.$chainToQty(this.pool.maximum_swap);
       } else {
         this.amount = this.balance;
       }

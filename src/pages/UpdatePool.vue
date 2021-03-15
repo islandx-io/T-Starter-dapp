@@ -121,7 +121,7 @@
                 <q-item-section>
                   <q-input
                     color="primary"
-                    v-model="pool.maximum_allocation"
+                    v-model="pool.maximum_swap"
                     :label="`Maximum allocation (${baseTokenSymbolReformat})`"
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the amount']"
@@ -421,8 +421,8 @@ export default {
       this.pool.soft_cap = this.$chainToQty(this.pool.soft_cap);
       this.pool.hard_cap = this.$chainToQty(this.pool.hard_cap);
       this.pool.minimum_swap = this.$chainToQty(this.pool.minimum_swap);
-      this.pool.maximum_allocation = this.$chainToQty(
-        this.pool.maximum_allocation
+      this.pool.maximum_swap = this.$chainToQty(
+        this.pool.maximum_swap
       );
 
       this.populateWebLinks();
@@ -499,8 +499,8 @@ export default {
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            maximum_allocation: this.$toChainString(
-              this.pool.maximum_allocation,
+            maximum_swap: this.$toChainString(
+              this.pool.maximum_swap,
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),

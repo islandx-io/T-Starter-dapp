@@ -22,7 +22,7 @@
     </div>
     <div>
       <h6>Maximum allocation:</h6>
-      <h5>{{ this.$chainStrReformat(pool.maximum_allocation) }}</h5>
+      <h5>{{ this.$chainStrReformat(pool.maximum_swap) }}</h5>
     </div>
   </div>
 </template>

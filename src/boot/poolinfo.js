@@ -14,7 +14,7 @@ const defaultPoolInfo = {
   soft_cap: loading,
   hard_cap: loading,
   minimum_swap: loading,
-  maximum_allocation: loading,
+  maximum_swap: loading,
   remaining_offer: loading,
   remaining_ask: loading,
   total_raise: loading,
