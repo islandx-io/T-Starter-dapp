@@ -3,40 +3,51 @@
     <q-header class="bg-transparent q-pt-sm">
       <q-toolbar class="toolbar items-center">
         <q-toolbar-title>
-          <router-link to="/" class="router-link">
-            <img src="~assets/logo/logo-light.svg" alt="logo" height="50px" />
-          </router-link>
+          <div class="row">
+            <router-link to="/" class="router-link">
+              <img src="~assets/logo/logo-light.svg" alt="logo" height="50px" />
+            </router-link>
+          </div>
         </q-toolbar-title>
         <div class="gt-sm row">
-          <router-link to="/pools" class="router-link">
-            <q-btn flat color="secondary" class="hover-accent">
-              Pools ⛲
-            </q-btn>
-          </router-link>
-          <router-link to="/createpool" class="router-link">
-            <q-btn
-              flat
-              color="secondary"
-              class="hover-accent"
-              v-if="accountName === admin_address"
-            >
-              Create Pool
-            </q-btn>
-          </router-link>
-          <login-button class="q-pl-md"></login-button>
+          <q-btn
+            class="hover-accent"
+            color="secondary"
+            flat
+            to="/pools"
+            label="Pools ⛲"
+          />
+          <q-btn
+            class="hover-accent"
+            color="secondary"
+            flat
+            to="/createpool"
+            label="Create pool"
+            v-if="accountName === admin_address"
+          />
+          <login-button class="q-pl-md" />
         </div>
         <!-- TODO Make mobile friendly -->
         <!-- <q-btn-dropdown class="lt-md" icon="menu" align="right">
           <q-list class="column items-end">
             <q-item clickable v-close-popup>
-              <router-link to="/pools" class="router-link"
-                ><q-btn outline color="primary">View Pools</q-btn></router-link
-              >
+                        <q-btn
+            class="hover-accent"
+            color="secondary"
+            flat
+            to="/pools"
+            label="Pools ⛲"
+          />
             </q-item>
             <q-item clickable v-close-popup>
-              <router-link to="/createpool" class="router-link"
-                ><q-btn outline color="primary">Create Pool</q-btn></router-link
-              >
+          <q-btn
+            class="hover-accent"
+            color="secondary"
+            flat
+            to="/createpool"
+            label="Create pool"
+            v-if="accountName === admin_address"
+          />
             </q-item>
             <q-item clickable v-close-popup>
               <login-button></login-button>

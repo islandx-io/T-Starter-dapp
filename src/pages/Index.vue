@@ -10,11 +10,16 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             <span>back projects</span>
             building on Telos
           </h2>
-          <router-link class="router-link " to="/pools">
-            <q-btn class="hover-accent" color="secondary" outline
-              >VIEW ALL POOLS</q-btn
-            >
-          </router-link>
+
+          <div>
+            <q-btn
+              class="hover-accent"
+              color="secondary"
+              outline
+              to="/pools"
+              label="VIEW ALL POOLS"
+            />
+          </div>
         </div>
         <div class="gt-sm rocket col row justify-center">
           <img
@@ -47,14 +52,16 @@ that you may prove what is that good and acceptable and perfect will of God. - R
           />
         </div>
         <Poolcard v-else class="col-shrink" :poolID="-1" />
-        <router-link
-          to="/pools"
-          class="router-link col-12 text-center row justify-center q-pt-md"
-        >
-          <q-btn outline color="accent" class="hover-accent">
-            VIEW ALL POOLS
-          </q-btn>
-        </router-link>
+
+        <div class="col-12 text-center row justify-center q-pt-md">
+          <q-btn
+            class="hover-accent"
+            color="accent"
+            outline
+            to="/pools"
+            label="VIEW ALL POOLS"
+          />
+        </div>
       </section>
     </div>
   </q-page>
@@ -68,7 +75,7 @@ export default {
   data() {
     return {
       featuredIDs: [],
-      upcomingIDs: [],
+      upcomingIDs: []
     };
   },
   computed: {
@@ -80,7 +87,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["getAllChainPools", "getFeaturedChainPools", "getUpcomingChainPools"])
+    ...mapActions("pools", [
+      "getAllChainPools",
+      "getFeaturedChainPools",
+      "getUpcomingChainPools"
+    ])
   },
   async mounted() {
     // await this.getAllChainPools();
