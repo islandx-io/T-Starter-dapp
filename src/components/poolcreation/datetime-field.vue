@@ -29,7 +29,7 @@
 export default {
   data() {
     return {
-      dateTimeMask: "YYYY-MM-DD HH:mm"
+      dateTimeMask: "YYYY-MM-DD HH:mmZ"
     };
   },
   props: {

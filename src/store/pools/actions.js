@@ -1,3 +1,5 @@
+import { date } from 'quasar'
+
 // Get pool info from chain by id, put into store
 export const getChainPoolByID = async function({ commit, dispatch }, id) {
   try {
@@ -15,9 +17,11 @@ export const getChainPoolByID = async function({ commit, dispatch }, id) {
     console.log(poolTable);
 
     //check dates are unix
-    poolTable.pool_open = new Date(poolTable.pool_open).valueOf();
-    poolTable.private_end = new Date(poolTable.private_end).valueOf();
-    poolTable.public_end = new Date(poolTable.public_end).valueOf();
+    console.log(poolTable.pool_open + 'Z')
+    poolTable.pool_open = new Date(poolTable.pool_open + 'Z').valueOf();
+    // poolTable.pool_open = new Date(poolTable.pool_open).valueOf();
+    poolTable.private_end = new Date(poolTable.private_end + 'Z').valueOf();
+    poolTable.public_end = new Date(poolTable.public_end + 'Z').valueOf();
 
     commit("updatePoolOnState", { poolTable, id });
     await dispatch("updatePoolSettings", id);
@@ -48,9 +52,9 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       let id = pool.id;
 
       //check dates are unix
-      pool.pool_open = new Date(pool.pool_open).valueOf();
-      pool.private_end = new Date(pool.private_end).valueOf();
-      pool.public_end = new Date(pool.public_end).valueOf();
+      pool.pool_open = new Date(pool.pool_open + 'Z').valueOf();
+      pool.private_end = new Date(pool.private_end + 'Z').valueOf();
+      pool.public_end = new Date(pool.public_end + 'Z').valueOf();
 
       const poolTable = pool;
 
@@ -211,9 +215,9 @@ export const getCreatedChainPools = async function(
         let id = pool.id;
 
         //check dates are unix
-        pool.pool_open = new Date(pool.pool_open).valueOf();
-        pool.private_end = new Date(pool.private_end).valueOf();
-        pool.public_end = new Date(pool.public_end).valueOf();
+        pool.pool_open = new Date(pool.pool_open + 'Z').valueOf();
+        pool.private_end = new Date(pool.private_end + 'Z').valueOf();
+        pool.public_end = new Date(pool.public_end + 'Z').valueOf();
 
         const poolTable = pool;
 

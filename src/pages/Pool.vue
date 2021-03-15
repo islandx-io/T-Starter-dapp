@@ -49,14 +49,14 @@
               v-if="pool.pool_status === 'upcoming'"
             >
               <div>Opens in:</div>
-              <status-countdown :deadline="pool.pool_open"></status-countdown>
+              <status-countdown :deadline="pool.pool_open" :poolID="poolID"></status-countdown>
             </div>
             <div
               class="col row justify-between items-center"
               v-else-if="pool.pool_status === 'open'"
             >
               <div>Closes in:</div>
-              <status-countdown :deadline="pool.public_end"></status-countdown>
+              <status-countdown :deadline="pool.public_end" :poolID="poolID"></status-countdown>
             </div>
           </q-item>
           <q-item>
@@ -149,7 +149,6 @@
   </q-page>
 </template>
 
-// TODO reroute to this page if logged out
 <script>
 import statusCountdown from "src/components/poolinfo/status-countdown";
 import statusBadge from "src/components/poolinfo/status-badge";
