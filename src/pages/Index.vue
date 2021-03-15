@@ -41,21 +41,21 @@ that you may prove what is that good and acceptable and perfect will of God. - R
     </section>
     <div class="body-container">
       <section class="row justify-center q-gutter-md">
-        <h2 class="col-12 text-center">Upcoming Pools</h2>
-        <div class="poolcard-container col" v-if="upcomingIDs.length !== 0">
-          <Poolcard
-            v-for="id in upcomingIDs"
-            :key="'upcoming-' + id"
-            :poolID="id"
-          />
-        </div>
-        <Poolcard v-else class="col-shrink" :poolID="-1" />
-        <h2 class="col-12 text-center q-pt-xl">Featured Pools</h2>
+        <h2 class="col-12 text-center">Featured Pools</h2>
         <div class="poolcard-container col" v-if="featuredIDs.length !== 0">
           <Poolcard
             class="col"
             v-for="id in featuredIDs"
             :key="'featured-' + id"
+            :poolID="id"
+          />
+        </div>
+        <Poolcard v-else class="col-shrink" :poolID="-1" />
+        <h2 class="col-12 text-center q-pt-xl">Upcoming Pools</h2>
+        <div class="poolcard-container col" v-if="upcomingIDs.length !== 0">
+          <Poolcard
+            v-for="id in upcomingIDs"
+            :key="'upcoming-' + id"
             :poolID="id"
           />
         </div>
