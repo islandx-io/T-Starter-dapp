@@ -25,7 +25,7 @@
             label="Create pool"
             v-if="accountName === admin_address"
           />
-          <login-button class="q-pl-md" />
+          <login-button :key="$route.fullPath" class="q-pl-md" />
         </div>
         <!-- TODO Make mobile friendly -->
         <!-- <q-btn-dropdown class="lt-md" icon="menu" align="right">
