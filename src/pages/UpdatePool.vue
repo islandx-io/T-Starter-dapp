@@ -591,13 +591,22 @@ export default {
         });
       } else {
         this.checkLinks();
-        await this.updateChainPool();
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Submitted"
-        });
+        try {
+          await this.updateChainPool();
+          this.$q.notify({
+            color: "green-4",
+            textColor: "white",
+            icon: "cloud_done",
+            message: "Submitted"
+          });
+        } catch (error) {
+          this.$q.notify({
+            color: "red-5",
+            textColor: "white",
+            icon: "warning",
+            message: `Update fail. ERROR: ${error}`
+          });
+        }
       }
     },
 
@@ -633,12 +642,19 @@ export default {
           if (await this.$refs.updateForm.validate()) {
             await this.fundPool();
           }
-        } catch (error) {}
+        } catch (error) {
+          this.$q.notify({
+            color: "red-5",
+            textColor: "white",
+            icon: "warning",
+            message: `Transaction fail. ERROR: ${error}`
+          });
+        }
         this.$q.notify({
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Submitted"
+          message: "Submitted, please refresh"
         });
       }
     },

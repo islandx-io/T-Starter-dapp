@@ -393,7 +393,7 @@ export default {
           color: "red-5",
           textColor: "white",
           icon: "warning",
-          message: "Transaction fail"
+          message: `Transaction fail. ERROR: ${error}`
         });
       }
     },
