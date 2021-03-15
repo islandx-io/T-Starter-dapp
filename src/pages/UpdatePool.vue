@@ -435,7 +435,7 @@ export default {
       return new Date(timeStamp).valueOf();
     },
     toDateString(timestamp) {
-      return date.formatDate(timestamp, "YYYY-MM-DD HH:mm");
+      return date.formatDate(timestamp, "YYYY-MM-DD HH:mmZ");
     },
     getPoolInfo() {
       this.pool = JSON.parse(JSON.stringify(this.getPoolByID(this.poolID))); //make deep copy

@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 let interval = null;
 export default {
   name: "status-countdown",
@@ -34,6 +35,9 @@ export default {
     },
     mini: {
       type: Boolean
+    },
+    poolID: {
+      type: Number
     }
   },
   data() {
@@ -63,7 +67,7 @@ export default {
     }
   },
   watch: {
-    now() {
+    async now() {
       if (!this.deadline) {
         throw new Error("Missing prop 'deadline'");
       }
@@ -75,6 +79,7 @@ export default {
       if (this.diff <= 0 || this.reset) {
         this.diff = 0;
         clearInterval(interval); // Stop countdown
+        await this.getChainPoolByID(this.poolID); // update status
       }
     }
   },
@@ -88,6 +93,9 @@ export default {
   },
   destroyed() {
     clearInterval(interval);
+  },
+  methods: {
+    ...mapActions("pools", ["getChainPoolByID", "updatePoolSettings"]),
   }
 };
 </script>
