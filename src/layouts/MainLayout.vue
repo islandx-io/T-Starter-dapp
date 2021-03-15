@@ -15,7 +15,7 @@
             color="secondary"
             flat
             to="/pools"
-            label="Pools ⛲"
+            :label="'Pools ' + poolEmoji"
           />
           <q-btn
             class="hover-accent"
@@ -101,6 +101,10 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     admin_address() {
       return process.env.ADMIN_ADDRESS; // Check if undefined
+    },
+    poolEmoji() {
+      let emojiArray = ["🚀", "💦", "💧", "🐊", "🍞", "🥯", "🌲", "🍣"];
+      return emojiArray[Math.floor(Math.random() * emojiArray.length)];
     }
   }
 };
