@@ -1,9 +1,9 @@
 <template>
   <router-link
-    class="router-link row content-stretch items-stretch"
+    class="router-link"
     :to="{ name: 'pooldetails', params: { id: poolID } }"
   >
-    <q-card class="col bg-secondary text-black ">
+    <q-card class="col bg-secondary text-black self-stretch">
       <q-item>
         <q-item-section top>
           <q-avatar :size="avatar_size.toString() + 'px'">
@@ -54,11 +54,12 @@
       </q-card-section>
       <!-- if owner of pool -->
       <q-card-section v-if="created === true" class="row justify-center">
-        <router-link
+        <q-btn
+          outline
+          color="primary"
           :to="{ name: 'updatepool', params: { id: poolID } }"
-          class="router-link"
-          ><q-btn outline color="primary">Update pool</q-btn>
-        </router-link>
+          label="Update pool"
+        />
       </q-card-section>
       <q-inner-loading :showing="poolID === -1">
         <q-spinner-puff size="50px" color="primary" />

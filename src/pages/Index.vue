@@ -10,20 +10,33 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             <span>back projects</span>
             building on Telos
           </h2>
-          <router-link class="router-link " to="/pools">
-            <q-btn class="hover-accent" color="secondary" outline
-              >VIEW ALL POOLS</q-btn
-            >
-          </router-link>
+
+          <div>
+            <q-btn
+              class="hover-accent"
+              color="secondary"
+              outline
+              to="/pools"
+              label="VIEW ALL POOLS"
+            />
+          </div>
         </div>
-        <div class="gt-sm rocket col row justify-center">
-          <img
-            class="col q-pt-md"
-            src="~assets/index/tstarter-rocket.svg"
-            width="80%"
-            alt="Illustration"
-          />
-        </div>
+        <transition
+          appear
+          appear-active-class="fade-enter-active"
+          @before-appear="beforeAppear"
+          @appear="appear"
+          @after-appear="afterAppear"
+        >
+          <div class="gt-sm rocket col row justify-center">
+            <img
+              class="col q-pt-md"
+              src="~assets/index/tstarter-rocket.svg"
+              width="80%"
+              alt="Illustration"
+            />
+          </div>
+        </transition>
       </div>
     </section>
     <div class="body-container">
@@ -47,14 +60,16 @@ that you may prove what is that good and acceptable and perfect will of God. - R
           />
         </div>
         <Poolcard v-else class="col-shrink" :poolID="-1" />
-        <router-link
-          to="/pools"
-          class="router-link col-12 text-center row justify-center q-pt-md"
-        >
-          <q-btn outline color="accent" class="hover-accent">
-            VIEW ALL POOLS
-          </q-btn>
-        </router-link>
+
+        <div class="col-12 text-center row justify-center q-pt-md">
+          <q-btn
+            class="hover-accent"
+            color="accent"
+            outline
+            to="/pools"
+            label="VIEW ALL POOLS"
+          />
+        </div>
       </section>
     </div>
   </q-page>
@@ -68,7 +83,7 @@ export default {
   data() {
     return {
       featuredIDs: [],
-      upcomingIDs: [],
+      upcomingIDs: []
     };
   },
   computed: {
@@ -80,7 +95,20 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["getAllChainPools", "getFeaturedChainPools", "getUpcomingChainPools"])
+    ...mapActions("pools", [
+      "getAllChainPools",
+      "getFeaturedChainPools",
+      "getUpcomingChainPools"
+    ]),
+    beforeAppear: function(el) {
+      console.log("beforeAppear");
+    },
+    appear: function(el) {
+      console.log("appear!");
+    },
+    afterAppear: function(el) {
+      console.log("afterAppear!");
+    }
   },
   async mounted() {
     // await this.getAllChainPools();
@@ -109,13 +137,42 @@ export default {
 .header-container h2 span {
   color: $accent;
 }
+.body-container {
+  padding-top: 50px;
+}
+// Rocket
+@keyframes up_down {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-30px) translateX(0);
+  }
+  75% {
+    transform: translateY(30px) translateX(0);
+  }
+}
+@keyframes go {
+  from {
+    transform: translateY(150px) translateX(0);
+  }
+  to {
+    transform: translateY(0) translateX(0);
+  }
+}
 .rocket {
+  animation: up_down;
+  animation-duration: 15s;
+  animation-delay: 1s;
+  animation-iteration-count: infinite;
+  position: relative;
   min-width: 250px;
 }
 .rocket img {
   max-width: 300px;
 }
-.body-container {
-  padding-top: 50px;
+.fade-enter-active {
+  animation: go 2s;
+  animation-timing-function: cubic-bezier(0.32, 0.45, 0.07, 1.03);
 }
 </style>
