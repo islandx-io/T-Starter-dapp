@@ -270,10 +270,24 @@
                 <q-btn label="Update" type="submit" color="primary" />
               </q-item-section>
               <q-item-section class="col-auto">
-                <q-btn label="Fund" @click="onFund" color="primary" />
+                <q-btn label="Fund" @click="onFund" :disable="pool.status === 'published'" color="primary" />
+                <q-tooltip v-if="pool.status === 'published'">
+                  Already published
+                </q-tooltip>
               </q-item-section>
               <q-item-section class="col-auto">
-                <q-btn label="Publish" @click="onPublish" color="primary" />
+                <q-btn
+                  label="Publish"
+                  @click="onPublish"
+                  :disable="!this.funded || pool.status === 'published'"
+                  color="primary"
+                />
+                <q-tooltip v-if="!funded">
+                  Pool fully not funded
+                </q-tooltip>
+                <q-tooltip v-if="pool.status === 'published'">
+                  Already published
+                </q-tooltip>
               </q-item-section>
               <q-item-section class="col-shrink">
                 <q-btn label="Reset" type="reset" color="primary" flat />
@@ -355,7 +369,8 @@ export default {
       token_decimals: 1,
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
-      link_index: -1
+      link_index: -1,
+      funded: false
     };
   },
   computed: {
@@ -406,6 +421,7 @@ export default {
       "getTokenPrecision",
       "getChainPoolByID",
       "updatePoolStatus",
+      "ifPoolFunded"
     ]),
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
@@ -468,7 +484,10 @@ export default {
       let payload = { address: val, token_symbol: this.token_symbol };
       this.token_decimals = await this.getTokenPrecision(payload);
       console.log(this.token_decimals);
-      return !!val && this.token_decimals >= 0 || `Must be a valid contract and token`;
+      return (
+        (!!val && this.token_decimals >= 0) ||
+        `Must be a valid contract and token`
+      );
     },
     checkLinks() {
       // console.log(this.webLinks.filter(el => el.value[0] != ""))
@@ -583,13 +602,11 @@ export default {
     },
 
     async onFund() {
-      
       try {
         if (await this.$refs.updateForm.validate()) {
-          await this.fundPool();          
-        } ;
-      } catch (error) {
-      }
+          await this.fundPool();
+        }
+      } catch (error) {}
     },
 
     onReset() {}
@@ -606,10 +623,12 @@ export default {
   },
   async mounted() {
     await this.loadChainData();
-    this.getPoolInfo();
+    await this.getPoolInfo();
 
     // TODO check if already funded
-    this.getChainAccountInfo(this.accountName)
+    let payload = { account: this.accountName, id: this.poolID };
+    this.funded = await this.ifPoolFunded(payload);
+    console.log(this.funded);
   },
 
   watch: {}

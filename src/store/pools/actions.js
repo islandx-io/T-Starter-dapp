@@ -72,10 +72,16 @@ export const getChainAccountInfo = async function({ commit }, accountName) {
 };
 
 // if pool is funded with the token
-export const ifPoolFunded = async function({ commit }, accountName) {
+export const ifPoolFunded = async function({ commit }, payload) {
   const rpc = this.$api.getRpc();
-  console.log(await rpc.get_account(accountName));
-  console.log(await rpc.history_get_actions(accountName));
+  // console.log(await rpc.history_get_actions(payload.account));
+  let actionsTable = (await rpc.history_get_actions(payload.account)).actions;
+  console.log(actionsTable.filter(a => a.action_trace.act.data.memo === `fund pool:${payload.id}`))
+  if (actionsTable.filter(a => a.action_trace.act.data.memo === `fund pool:${payload.id}`).length > 0) {
+    return true
+  } else {
+    return false
+  }
 
 };
 
