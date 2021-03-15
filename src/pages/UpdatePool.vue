@@ -409,6 +409,7 @@ export default {
       return new Date(timeStamp).valueOf();
     },
     toDateString(timestamp) {
+      if (timestamp <= 0) timestamp = new Date().valueOf();
       return date.formatDate(timestamp, "YYYY-MM-DD HH:mm");
     },
     getPoolInfo() {
