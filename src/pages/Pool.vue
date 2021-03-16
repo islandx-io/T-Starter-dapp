@@ -244,7 +244,7 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.polling);
-  }
+  },
 };
 </script>
 

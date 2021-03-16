@@ -19,7 +19,6 @@ export const getChainPoolByID = async function({ commit, dispatch }, id) {
     //check dates are unix
     console.log(poolTable.pool_open + 'Z')
     poolTable.pool_open = new Date(poolTable.pool_open + 'Z').valueOf();
-    // poolTable.pool_open = new Date(poolTable.pool_open).valueOf();
     poolTable.private_end = new Date(poolTable.private_end + 'Z').valueOf();
     poolTable.public_end = new Date(poolTable.public_end + 'Z').valueOf();
 
