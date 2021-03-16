@@ -39,8 +39,7 @@
                   v-model="amount"
                   :rules="[validateInput]"
                   borderless
-                  type="text"
-                  mask="#######"
+                  type="number"
                   placeholder="0"
                 />
                 <div class="column items-end justify-between">
@@ -97,22 +96,11 @@
                 </div>
                 <div class="column items-end justify-between content-end">
                   <div class="row q-gutter-x-sm content-end">
-                    <q-avatar size="40px">
-                      <q-img
-                        v-if="pool.avatar"
-                        :src="pool.avatar"
-                        style="width: 40px; height: 40px"
-                        alt="Avatar"
-                      >
-                        <template v-slot:error>
-                          <div
-                            class="transparent"
-                            style="padding: 0"
-                            v-html="identicon"
-                          />
-                        </template>
-                      </q-img>
-                    </q-avatar>
+                    <pool-avatar
+                      :avatar="pool.avatar"
+                      :poolID="poolID"
+                      :avatarSize="40"
+                    />
                     <div class="text-h4">{{ TokenSymbol }}</div>
                   </div>
                 </div>
@@ -244,7 +232,6 @@
             <q-card-section>
               <q-item>
                 <q-item-label lines="1">
-                  fb00e168c7a5e7248aa44e28efa8776be78aa2da3610787b78d5c5827971860b
                   {{ transaction }}
                 </q-item-label>
               </q-item>
@@ -273,6 +260,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import poolAvatar from "src/components/poolinfo/pool-avatar";
 
 export default {
   data() {
@@ -294,7 +282,7 @@ export default {
         "https://t-starter.medium.com/how-to-participate-in-the-t-starter-seed-round-token-sale-8eb6290c3c15"
     };
   },
-
+  components: { poolAvatar },
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),

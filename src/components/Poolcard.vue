@@ -7,26 +7,11 @@
     <q-card class="col bg-secondary text-black self-stretch">
       <q-item>
         <q-item-section top>
-          <q-avatar :size="`${avatar_size}px`">
-            <q-img
-              v-if="pool.avatar"
-              :src="pool.avatar"
-              :style="`width:${avatar_size}px; height:${avatar_size}px`"
-              alt="Avatar"
-            >
-              <template v-slot:error>
-                <div
-                  class="transparent"
-                  style="padding: 0"
-                  v-html="identicon"
-                />
-              </template>
-              <template v-slot:loading>
-                <q-spinner-puff color="primary" />
-              </template>
-            </q-img>
-            <div v-else v-html="identicon" />
-          </q-avatar>
+          <pool-avatar
+            :avatar="pool.avatar"
+            :poolID="poolID"
+            :avatarSize="60"
+          />
         </q-item-section>
         <q-item-section top side>
           <div class="text-accent column items-end justify-between">
@@ -79,7 +64,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { toSvg } from "jdenticon";
+import poolAvatar from "src/components/poolinfo/pool-avatar";
 import statusBadge from "src/components/poolinfo/status-badge";
 import statusCountdown from "src/components/poolinfo/status-countdown";
 import statusProgress from "src/components/poolinfo/status-progress";
@@ -97,20 +82,16 @@ export default {
       required: false
     }
   },
-  components: { statusBadge, statusCountdown, statusProgress },
+  components: { statusBadge, statusCountdown, statusProgress, poolAvatar },
   data() {
     return {
       pool: this.$defaultPoolInfo,
-      avatar_size: 60, // (px)
       polling: null
     };
   },
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
 
-    identicon() {
-      return toSvg(this.poolID, this.avatar_size);
-    },
     hardCap() {
       if (this.pool.hard_cap === "Loading") {
         return this.pool.hard_cap;

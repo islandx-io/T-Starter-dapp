@@ -8,23 +8,11 @@
         <div class="join-pane col column">
           <q-item>
             <q-item-section top class="col-shrink">
-              <q-avatar size="80px">
-                <q-img
-                  v-if="pool.avatar"
-                  :src="pool.avatar"
-                  style="width: 80px; height: 80px"
-                  alt="Avatar"
-                >
-                  <template v-slot:error>
-                    <div
-                      class="transparent"
-                      style="padding: 0"
-                      v-html="identicon"
-                    />
-                  </template>
-                </q-img>
-                <div v-else v-html="identicon" />
-              </q-avatar>
+              <pool-avatar
+                :avatar="pool.avatar"
+                :poolID="poolID"
+                :avatarSize="80"
+              />
             </q-item-section>
             <q-item-section top class="q-pl-sm">
               <div class="row justify-between content-start items-start">
@@ -165,8 +153,8 @@ import tabOverview from "src/components/poolinfo/tab-overview.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
 import statusProgress from "src/components/poolinfo/status-progress";
+import poolAvatar from "src/components/poolinfo/pool-avatar";
 import { mapGetters, mapActions } from "vuex";
-import { toSvg } from "jdenticon";
 import { date } from "quasar";
 
 export default {
@@ -176,7 +164,8 @@ export default {
     tabDetails,
     statusCountdown,
     statusBadge,
-    statusProgress
+    statusProgress,
+    poolAvatar
   },
   data() {
     return {
@@ -191,9 +180,6 @@ export default {
     ...mapGetters("pools", ["getPoolByID"]),
     progressToPercentage() {
       return (this.progress * 100).toFixed(2) + "%";
-    },
-    identicon() {
-      return toSvg(this.poolID, 80);
     },
     contractURL() {
       let contractName = this.pool.swap_ratio.contract;
