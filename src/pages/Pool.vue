@@ -172,7 +172,7 @@ export default {
   },
   data() {
     return {
-      tab: "allocations",
+      tab: "details",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
       polling: null
@@ -237,11 +237,11 @@ export default {
       this.getPoolInfo();
     }, 60000);
     // if rerouting with tab
-    // if (this.$route.query.tab == "allocations") {
-    //   this.tab = "allocations";
-    // } else {
-    //   this.tab = "details";
-    // }
+    if (this.$route.query.tab == "allocations") {
+      this.tab = "allocations";
+    } else {
+      this.tab = "details";
+    }
   },
   beforeDestroy() {
     clearInterval(this.polling);

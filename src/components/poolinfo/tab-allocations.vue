@@ -30,7 +30,8 @@ export default {
         {
           name: "bid",
           label: "Bid",
-          field: "bid"
+          field: "bid",
+          align: "left"
         },
         {
           name: "allocation",
