@@ -135,7 +135,7 @@
                 <q-item-section>
                   <datetime-field
                     :value.sync="pool_open"
-                    label="Sale start"
+                    label="Sale start (UTC)"
                     class="q-pb-md"
                   />
                 </q-item-section>
@@ -144,13 +144,13 @@
                 <q-item-section>
                   <datetime-field
                     :value.sync="private_end"
-                    label="Private sale end"
+                    label="Private sale end (UTC)"
                   />
                 </q-item-section>
                 <q-item-section>
                   <datetime-field
                     :value.sync="public_end"
-                    label="Public sale end"
+                    label="Public sale end (UTC)"
                   />
                 </q-item-section>
               </q-item>
@@ -449,8 +449,6 @@ export default {
         this.base_token_options.push(token_reformat)
 
       }
-      console.log(this.base_token_options)
-
     },
 
     getPoolInfo() {

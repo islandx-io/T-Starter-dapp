@@ -489,10 +489,9 @@ export const getBaseTokens = async function({ commit, getters, dispatch }) {
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
-
     
     let base_token_info_list = tableResults.rows.filter(a => a.enabled === 1).map(a => a.token_info)
-    console.log(base_token_info_list)
+    
     return base_token_info_list;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
