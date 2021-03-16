@@ -17,7 +17,6 @@ export const getChainPoolByID = async function({ commit, dispatch }, id) {
     console.log(poolTable);
 
     //check dates are unix
-    console.log(poolTable.pool_open + 'Z')
     poolTable.pool_open = new Date(poolTable.pool_open + 'Z').valueOf();
     poolTable.private_end = new Date(poolTable.private_end + 'Z').valueOf();
     poolTable.public_end = new Date(poolTable.public_end + 'Z').valueOf();
@@ -474,6 +473,27 @@ export const checkStakedChain = async function(
     } else {
       return false;
     }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// get possible base tokens
+export const getBaseTokens = async function({ commit, getters, dispatch }) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: "tokens", // Table name
+      limit: 100,
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+
+    
+    let base_token_info_list = tableResults.rows.filter(a => a.enabled === 1).map(a => a.token_info)
+    console.log(base_token_info_list)
+    return base_token_info_list;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

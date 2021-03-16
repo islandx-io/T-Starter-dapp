@@ -317,7 +317,7 @@ export default {
   data() {
     return {
       customDate: "",
-      dateTimeMask: "YYYY-MM-DD HH:mm",
+      dateTimeMask: "YYYY-MM-DD HH:mmZ",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
       pool_open: { date: "" },
@@ -353,23 +353,8 @@ export default {
       ],
 
       base_token_symbol: "PBTC",
-      base_token_options: [
-        {
-          sym: "PBTC",
-          decimals: 8,
-          contract: "btc.ptokens"
-        },
-        {
-          sym: "PETH",
-          decimals: 9,
-          contract: "eth.ptokens"
-        }
-        // {
-        //   sym: "TLOS",
-        //   decimals: 4,
-        //   contract: "eosio.token"
-        // }
-      ],
+      base_tokens_raw: [],
+      base_token_options: [ ],
       token_symbol: "",
       token_decimals: 1,
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
@@ -426,7 +411,8 @@ export default {
       "getTokenPrecision",
       "getChainPoolByID",
       "updatePoolStatus",
-      "ifPoolFunded"
+      "ifPoolFunded",
+      "getBaseTokens"
     ]),
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
@@ -438,6 +424,35 @@ export default {
       if (timestamp <= 0) timestamp = new Date().valueOf();
       return date.formatDate(timestamp, "YYYY-MM-DD HH:mmZ");
     },
+
+    getDecimalFromAsset(asset) {
+      let idx = asset.sym.indexOf(",");
+      let decimal = asset.sym.slice(0,idx);
+      return decimal
+    },
+
+    getSymFromAsset(asset) {
+      let idx = asset.sym.indexOf(",") + 1;
+      let sym = asset.sym.slice(idx);
+      return sym
+    },
+
+    async setBaseTokenOptions() {
+      this.base_tokens_raw = await this.getBaseTokens()
+      for (let token_num = 0; token_num < this.base_tokens_raw.length; token_num++) {
+        const asset = this.base_tokens_raw[token_num];
+        let token_reformat = {
+          sym: this.getSymFromAsset(asset),
+          decimals: this.getDecimalFromAsset(asset),
+          contract: asset.contract,
+        }
+        this.base_token_options.push(token_reformat)
+
+      }
+      console.log(this.base_token_options)
+
+    },
+
     getPoolInfo() {
       this.pool = JSON.parse(JSON.stringify(this.getPoolByID(this.poolID))); //make deep copy
       this.getTokenSymbolFromPool();
@@ -451,7 +466,7 @@ export default {
       this.pool.maximum_swap = this.$chainToQty(this.pool.maximum_swap);
 
       this.populateWebLinks();
-      this.BaseTokenFromChain();
+      this.BaseTokenSymFromChain();
 
       this.pool_open.date = this.toDateString(this.pool.pool_open);
       this.private_end.date = this.toDateString(this.pool.private_end);
@@ -461,7 +476,7 @@ export default {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
       this.token_symbol = this.pool.swap_ratio.quantity.slice(idx);
     },
-    BaseTokenFromChain() {
+    BaseTokenSymFromChain() {
       let idx = this.pool.base_token.sym.indexOf(",") + 1;
       this.base_token_symbol = this.pool.base_token.sym.slice(idx);
     },
@@ -484,7 +499,6 @@ export default {
       await this.getChainPoolByID(this.poolID);
     },
 
-    // TODO check this check again
     async checkTokenContract(val) {
       // simulating a delay
       let payload = { address: val, token_symbol: this.token_symbol };
@@ -495,12 +509,14 @@ export default {
         `Must be a valid contract and token`
       );
     },
+
     checkLinks() {
       // console.log(this.webLinks.filter(el => el.value[0] != ""))
       console.log(this.webLinks.filter(el => el.value != ""));
       this.cleanedWebLinks = this.webLinks.filter(el => el.value != "");
       console.log(this.cleanedWebLinks);
     },
+
     async updateChainPool() {
       const actions = [
         {
@@ -675,6 +691,8 @@ export default {
   async mounted() {
     await this.loadChainData();
     await this.getPoolInfo();
+    //TODO get possible base tokens    
+    await this.setBaseTokenOptions();
 
     // check if already funded
     this.funded = await this.ifPoolFunded({
