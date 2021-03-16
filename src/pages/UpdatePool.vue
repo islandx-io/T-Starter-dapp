@@ -327,7 +327,7 @@
                   label="Close Pool"
                   @click="onClosePool"
                   color="accent"
-                  v-if="pool.status === ('fail' || 'closed')"
+                  v-if="Date.now() > pool.public_end"
                 />
               </q-item-section>
             </q-item>
