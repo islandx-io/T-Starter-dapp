@@ -159,16 +159,28 @@
         <!-- Not enough START to participate in private pool -->
         <q-dialog v-model="stake_warning">
           <q-card>
-            <q-card-section>
-              <div class="text-h6">Alert</div>
+            <q-card-section class="row items-center">
+              <q-icon
+                name="fas fa-exclamation-circle"
+                size="lg"
+                class="q-pr-sm"
+              />
+              <div class="text-h6">Private pool</div>
             </q-card-section>
 
             <q-card-section class="q-pt-none">
-              Not enough START tokens to participate in a private pool. Buy here
-              ~linky link~
+              You don't have enough START tokens to participate in a private
+              pool.
             </q-card-section>
 
             <q-card-actions align="right">
+              <q-btn
+                outline
+                to="#"
+                label="Buy START"
+                color="accent"
+                class="hover-accent"
+              />
               <q-btn flat label="OK" color="primary" v-close-popup />
             </q-card-actions>
           </q-card>
