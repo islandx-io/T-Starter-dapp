@@ -91,14 +91,21 @@
                   {{ zeroNaN(amount * $chainToQty(pool.swap_ratio.quantity)) }}
                 </div>
                 <div class="column items-end justify-between content-end">
-                  <!-- <div>Balance: ***** {{ TokenSymbol }}</div> -->
                   <div class="row q-gutter-x-sm content-end">
                     <q-avatar size="40px">
                       <q-img
                         v-if="pool.avatar"
                         :src="pool.avatar"
-                        style="width: 40px height: 40px"
+                        style="width: 40px; height: 40px"
+                        alt="Avatar"
                       >
+                        <template v-slot:error>
+                          <div
+                            class="transparent"
+                            style="padding: 0"
+                            v-html="identicon"
+                          />
+                        </template>
                       </q-img>
                     </q-avatar>
                     <div class="text-h4">{{ TokenSymbol }}</div>
