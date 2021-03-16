@@ -81,15 +81,20 @@ export const getBalanceFromChain = async function({ commit }, payload) {
         payload.sym
       )
     );
-    let balance = (await rpc.get_currency_balance( payload.address, payload.accountName, payload.sym ))[0];
+    let balance = (
+      await rpc.get_currency_balance(
+        payload.address,
+        payload.accountName,
+        payload.sym
+      )
+    )[0];
     // console.log('balance')
     // console.log(balance)
     if (balance == undefined) {
-      return `0 ${payload.sym}`
+      return `0 ${payload.sym}`;
     } else {
-      return balance
+      return balance;
     }
-
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -309,7 +314,9 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
     let pool_id_list = [];
 
     // sort according to nearest pool open
-    tableResults.rows.sort(function(a, b) { return new Date(a.pool_open) - new Date(b.pool_open); });
+    tableResults.rows.sort(function(a, b) {
+      return new Date(a.pool_open) - new Date(b.pool_open);
+    });
 
     console.log(tableResults.rows);
     pool_id_list = tableResults.rows.map(a => a.id);
@@ -355,9 +362,8 @@ export const getAllocationByPool = async function(
         console.log(allocationTable);
         return allocationTable;
       } else {
-        return {}
+        return {};
       }
- 
     } else {
       return {};
     }
@@ -367,26 +373,23 @@ export const getAllocationByPool = async function(
 };
 
 // get premuim stake value
-export const getPremiumStake = async function(
-  { commit, getters, dispatch },
-) {
+export const getPremiumStake = async function({ commit, getters, dispatch }) {
   try {
-      const tableResults = await this.$api.getTableRows({
-        code: process.env.CONTRACT_ADDRESS, // Contract that we target
-        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-        table: "settings", // Table name
-        limit: 100,
-        index_position: 1,
-        key_type: "i64",
-        reverse: false, // Optional: Get reversed data
-        show_payer: false // Optional: Show ram payer
-      });
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: "settings", // Table name
+      limit: 100,
+      index_position: 1,
+      key_type: "i64",
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
 
-      const premium_stake = tableResults.rows[0].premium_stake
-      // console.log("Premium stake amount");
-      // console.log(premium_stake);
-      return premium_stake
- 
+    const premium_stake = tableResults.rows[0].premium_stake;
+    // console.log("Premium stake amount");
+    // console.log(premium_stake);
+    return premium_stake;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -414,20 +417,18 @@ export const checkStakedChain = async function(
 
       // get premium stake
       const premium_stake = await dispatch("getPremiumStake");
-      let premium_stake_qty = this.$chainToQty(premium_stake.quantity)
+      let premium_stake_qty = this.$chainToQty(premium_stake.quantity);
       // console.log(premium_stake_qty)
-      
-      const staked_amount = this.$chainToQty(tableResults.rows[0].staked)
+
+      const staked_amount = this.$chainToQty(tableResults.rows[0].staked);
       // console.log("START staked?");
       // console.log(staked_amount);
 
       if (staked_amount >= premium_stake_qty) {
-        return true
+        return true;
+      } else {
+        return false;
       }
-      else {
-        return false
-      }
- 
     } else {
       return false;
     }

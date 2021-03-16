@@ -7,6 +7,9 @@
       row-key="name"
     />
     <p class="q-pt-md" v-else>No allocations to show.</p>
+    <q-inner-loading :showing="loadingData">
+      <q-spinner-puff size="50px" color="primary" />
+    </q-inner-loading>
   </div>
 </template>
 
@@ -22,6 +25,7 @@ export default {
   },
   data() {
     return {
+      loadingData: true,
       columns: [
         {
           name: "bid",
@@ -65,10 +69,12 @@ export default {
   methods: {
     ...mapActions("pools", ["getAllocationByPool"])
   },
-
   async mounted() {
+    // FIXME If the account name is undefined, the table will never update
     let payload = { account: this.accountName, poolID: this.pool.id };
+    this.loadingData = true;
     this.data = [await this.getAllocationByPool(payload)];
+    this.loadingData = false;
   }
 };
 </script>
