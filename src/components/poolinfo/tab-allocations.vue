@@ -1,11 +1,12 @@
 <template>
-  <div>
+  <div class="text-weight-light">
     <q-table
-      title="Allocation"
+      v-if="Object.keys(data[0]).length > 0"
       :data="data"
       :columns="columns"
       row-key="name"
     />
+    <p class="q-pt-md" v-else>No allocations to show.</p>
   </div>
 </template>
 
@@ -53,21 +54,31 @@ export default {
         // { name: "staked", label: "Tokens staked", field: "staked" },
         // { name: "transactionid", label: "Transaction", field: "transactionid" }
       ],
-      data: [ ]
+      data: [{}]
     };
   },
 
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("account", ["isAuthenticated", "accountName"])
   },
 
   methods: {
-    ...mapActions("pools", ["getAllocationByPool"]),
+    ...mapActions("pools", ["getAllocationByPool"])
   },
 
   async mounted() {
-    let payload = {account: this.accountName, poolID: this.pool.id}
+    let payload = { account: this.accountName, poolID: this.pool.id };
     this.data = [await this.getAllocationByPool(payload)];
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.q-table__container {
+  padding: 20px 20px;
+  // border: 1px solid gray;
+  // border-radius: $card-corner-radius;
+  box-shadow: none;
+  background-color: $secondary;
+}
+</style>
