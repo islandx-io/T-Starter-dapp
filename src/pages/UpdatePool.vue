@@ -294,9 +294,9 @@
                   Already published
                 </q-tooltip>
               </q-item-section>
-              <q-item-section class="col-shrink">
+              <!-- <q-item-section class="col-shrink">
                 <q-btn label="Reset" type="reset" color="primary" flat />
-              </q-item-section>
+              </q-item-section> -->
             </q-item>
           </q-list>
         </q-form>
@@ -363,7 +363,7 @@ export default {
           sym: "PETH",
           decimals: 9,
           contract: "eth.ptokens"
-        },
+        }
         // {
         //   sym: "TLOS",
         //   decimals: 4,
@@ -435,6 +435,7 @@ export default {
       return new Date(timeStamp).valueOf();
     },
     toDateString(timestamp) {
+      if (timestamp <= 0) timestamp = new Date().valueOf();
       return date.formatDate(timestamp, "YYYY-MM-DD HH:mmZ");
     },
     getPoolInfo() {
@@ -676,7 +677,10 @@ export default {
     await this.getPoolInfo();
 
     // check if already funded
-    this.funded = await this.ifPoolFunded({ account: this.accountName, id: this.poolID });
+    this.funded = await this.ifPoolFunded({
+      account: this.accountName,
+      id: this.poolID
+    });
   },
 
   watch: {}
