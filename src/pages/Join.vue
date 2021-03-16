@@ -217,32 +217,41 @@
         <!-- Transaction sent dialog -->
         <q-dialog v-model="showTransaction" confirm>
           <q-card>
-            <q-card-section class="row">
-              <q-avatar
-                icon="arrow_forward"
+            <q-card-section class="row items-center">
+              <q-icon
+                name="fas fa-arrow-circle-right"
+                size="lg"
+                class="q-pr-sm"
                 color="primary"
                 text-color="white"
               />
-              <span class="q-ml-sm">
-                Transaction sent, click to view in block explorer.
+              <span class="text-h6">
+                Transaction placed
               </span>
-              <q-item
-                clickable
-                tag="a"
-                target="_blank"
-                :href="`${explorerUrl}/transaction/${transaction}`"
-                class="q-ml-sm"
-                >{{ transaction }}</q-item
-              >
+            </q-card-section>
+            <q-card-section>
+              <q-item>
+                <q-item-label lines="1">
+                  fb00e168c7a5e7248aa44e28efa8776be78aa2da3610787b78d5c5827971860b
+                  {{ transaction }}
+                </q-item-label>
+              </q-item>
             </q-card-section>
             <q-card-actions align="right">
               <q-btn
+                outline
+                :to="`/transaction/`"
+                label="Boks.io"
+                color="accent"
+                class="hover-accent"
+              />
+              <q-btn
                 flat
-                label="Ok"
+                label="Back To pool page"
                 color="primary"
                 @click="toAllocationsPage"
                 v-close-popup
-              ></q-btn>
+              />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -267,7 +276,7 @@ export default {
       not_enough_start: false,
       premium_stake: {},
       base_token_symbol: "",
-      showTransaction: null,
+      showTransaction: false,
       transaction: null,
       explorerUrl: process.env.NETWORK_EXPLORER
     };
