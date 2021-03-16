@@ -377,7 +377,6 @@ export default {
   data() {
     return {
       customDate: "",
-      dateTimeMask: "YYYY-MM-DD HH:mmZ",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
       pool_open: { date: "" },
@@ -482,7 +481,8 @@ export default {
     },
     toDateString(timestamp) {
       if (timestamp <= 0) timestamp = new Date().valueOf();
-      return date.formatDate(timestamp, "YYYY-MM-DD HH:mmZ");
+      return new Date(timestamp).toISOString();
+      // return date.formatDate(new Date(timestamp), "YYYY-MM-DD HH:mm");
     },
 
     getDecimalFromAsset(asset) {
