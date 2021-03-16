@@ -36,8 +36,7 @@
                     v-model="pool.swap_ratio.contract"
                     label="Token contract address"
                     lazy-rules
-                    :rules="[checkTokenContract]"
-                    debounce="1000"
+                    :rules="[val => !!val || 'Must specify the token contract']"
                     outlined
                   >
                   </q-input>
@@ -48,10 +47,11 @@
                   <q-input
                     color="primary"
                     v-model="token_symbol"
-                    label="Token"
+                    label="Token Symbol"
                     lazy-rules
-                    :rules="[val => !!val || 'Must specify the token']"
+                    :rules="[checkTokenContract]"
                     outlined
+                    debounce="1000"
                     class="col"
                     input-style
                   />
@@ -273,11 +273,14 @@
                 <q-btn
                   label="Fund"
                   @click="onFund"
-                  :disable="pool.status === 'published'"
+                  :disable="pool.status === 'published' || this.funded"
                   color="primary"
                 />
                 <q-tooltip v-if="pool.status === 'published'">
                   Already published
+                </q-tooltip>
+                <q-tooltip v-if="this.funded">
+                  Already funded
                 </q-tooltip>
               </q-item-section>
               <q-item-section class="col-auto">
@@ -288,7 +291,7 @@
                   color="primary"
                 />
                 <q-tooltip v-if="!funded">
-                  Pool fully not funded
+                  Not funded
                 </q-tooltip>
                 <q-tooltip v-if="pool.status === 'published'">
                   Already published
@@ -354,7 +357,7 @@ export default {
 
       base_token_symbol: "PBTC",
       base_tokens_raw: [],
-      base_token_options: [ ],
+      base_token_options: [],
       token_symbol: "",
       token_decimals: 1,
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
@@ -427,27 +430,30 @@ export default {
 
     getDecimalFromAsset(asset) {
       let idx = asset.sym.indexOf(",");
-      let decimal = asset.sym.slice(0,idx);
-      return decimal
+      let decimal = asset.sym.slice(0, idx);
+      return decimal;
     },
 
     getSymFromAsset(asset) {
       let idx = asset.sym.indexOf(",") + 1;
       let sym = asset.sym.slice(idx);
-      return sym
+      return sym;
     },
 
     async setBaseTokenOptions() {
-      this.base_tokens_raw = await this.getBaseTokens()
-      for (let token_num = 0; token_num < this.base_tokens_raw.length; token_num++) {
+      this.base_tokens_raw = await this.getBaseTokens();
+      for (
+        let token_num = 0;
+        token_num < this.base_tokens_raw.length;
+        token_num++
+      ) {
         const asset = this.base_tokens_raw[token_num];
         let token_reformat = {
           sym: this.getSymFromAsset(asset),
           decimals: this.getDecimalFromAsset(asset),
-          contract: asset.contract,
-        }
-        this.base_token_options.push(token_reformat)
-
+          contract: asset.contract
+        };
+        this.base_token_options.push(token_reformat);
       }
     },
 
@@ -498,10 +504,9 @@ export default {
     },
 
     async checkTokenContract(val) {
-      // simulating a delay
-      let payload = { address: val, token_symbol: this.token_symbol };
+      // get decimal precisoin from token
+      let payload = { address: this.pool.swap_ratio.contract, token_symbol: val };
       this.token_decimals = await this.getTokenPrecision(payload);
-      console.log(this.token_decimals);
       return (
         (!!val && this.token_decimals >= 0) ||
         `Must be a valid contract and token`
@@ -656,6 +661,12 @@ export default {
         try {
           if (await this.$refs.updateForm.validate()) {
             await this.fundPool();
+            this.$q.notify({
+              color: "green-4",
+              textColor: "white",
+              icon: "cloud_done",
+              message: "Submitted, please refresh"
+            });
           }
         } catch (error) {
           this.$q.notify({
@@ -665,12 +676,6 @@ export default {
             message: `${error}`
           });
         }
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Submitted, please refresh"
-        });
       }
     },
 
@@ -689,7 +694,7 @@ export default {
   async mounted() {
     await this.loadChainData();
     await this.getPoolInfo();
-    //TODO get possible base tokens    
+    //TODO get possible base tokens
     await this.setBaseTokenOptions();
 
     // check if already funded
