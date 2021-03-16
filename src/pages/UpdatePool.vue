@@ -505,7 +505,10 @@ export default {
 
     async checkTokenContract(val) {
       // get decimal precisoin from token
-      let payload = { address: this.pool.swap_ratio.contract, token_symbol: val };
+      let payload = {
+        address: this.pool.swap_ratio.contract,
+        token_symbol: val
+      };
       this.token_decimals = await this.getTokenPrecision(payload);
       return (
         (!!val && this.token_decimals >= 0) ||
@@ -639,13 +642,24 @@ export default {
           message: "You need to accept the license and terms first"
         });
       } else {
-        await this.publishPool();
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Submitted"
-        });
+        try {
+          if (await this.$refs.updateForm.validate()) {
+            await this.publishPool();
+            this.$q.notify({
+              color: "green-4",
+              textColor: "white",
+              icon: "cloud_done",
+              message: "Submitted"
+            });
+          }
+        } catch (error) {
+          this.$q.notify({
+            color: "red-5",
+            textColor: "white",
+            icon: "warning",
+            message: `${error}`
+          });
+        }
       }
     },
 

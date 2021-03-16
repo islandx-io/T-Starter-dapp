@@ -463,7 +463,7 @@ export const checkStakedChain = async function(
         return false;
       } else if (
         Object.keys(allocationTable).length > 0 &&
-        allocationTable.constructor === Object
+        allocationTable.constructor === Object || liquid_START >= premium_stake_qty // if already made 1st purchase or if have liquid
       ) {
         return true;
       } else {
@@ -491,7 +491,7 @@ export const getBaseTokens = async function({ commit, getters, dispatch }) {
     });
     
     let base_token_info_list = tableResults.rows.filter(a => a.enabled === 1).map(a => a.token_info)
-    
+
     return base_token_info_list;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
