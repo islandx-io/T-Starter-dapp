@@ -6,7 +6,6 @@
       <q-card class="card-container">
         <q-btn
           :to="{ name: 'pooldetails', params: { id: poolID } }"
-          color="primary"
           flat
           round
           class="self-start"
@@ -95,7 +94,7 @@
                       <q-img
                         v-if="pool.avatar"
                         :src="pool.avatar"
-                        style="width: 80px"
+                        style="width: 40px height: 40px"
                       >
                       </q-img>
                     </q-avatar>

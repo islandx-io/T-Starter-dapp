@@ -12,7 +12,8 @@
                 <q-img
                   v-if="pool.avatar"
                   :src="pool.avatar"
-                  style="width: 80px"
+                  style="width: 80px; height: 80px"
+                  alt="Avatar"
                 >
                   <template v-slot:error>
                     <div
