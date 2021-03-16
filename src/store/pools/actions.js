@@ -1,4 +1,4 @@
-import { date } from 'quasar'
+import { date } from "quasar";
 
 // Get pool info from chain by id, put into store
 export const getChainPoolByID = async function({ commit, dispatch }, id) {
@@ -17,11 +17,11 @@ export const getChainPoolByID = async function({ commit, dispatch }, id) {
     console.log(poolTable);
 
     //check dates are unix
-    console.log(poolTable.pool_open + 'Z')
-    poolTable.pool_open = new Date(poolTable.pool_open + 'Z').valueOf();
+    console.log(poolTable.pool_open + "Z");
+    poolTable.pool_open = new Date(poolTable.pool_open + "Z").valueOf();
     // poolTable.pool_open = new Date(poolTable.pool_open).valueOf();
-    poolTable.private_end = new Date(poolTable.private_end + 'Z').valueOf();
-    poolTable.public_end = new Date(poolTable.public_end + 'Z').valueOf();
+    poolTable.private_end = new Date(poolTable.private_end + "Z").valueOf();
+    poolTable.public_end = new Date(poolTable.public_end + "Z").valueOf();
 
     commit("updatePoolOnState", { poolTable, id });
     await dispatch("updatePoolSettings", id);
@@ -52,9 +52,9 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       let id = pool.id;
 
       //check dates are unix
-      pool.pool_open = new Date(pool.pool_open + 'Z').valueOf();
-      pool.private_end = new Date(pool.private_end + 'Z').valueOf();
-      pool.public_end = new Date(pool.public_end + 'Z').valueOf();
+      pool.pool_open = new Date(pool.pool_open + "Z").valueOf();
+      pool.private_end = new Date(pool.private_end + "Z").valueOf();
+      pool.public_end = new Date(pool.public_end + "Z").valueOf();
 
       const poolTable = pool;
 
@@ -80,13 +80,20 @@ export const ifPoolFunded = async function({ commit }, payload) {
   const rpc = this.$api.getRpc();
   // console.log(await rpc.history_get_actions(payload.account));
   let actionsTable = (await rpc.history_get_actions(payload.account)).actions;
-  console.log(actionsTable.filter(a => a.action_trace.act.data.memo === `fund pool:${payload.id}`))
-  if (actionsTable.filter(a => a.action_trace.act.data.memo === `fund pool:${payload.id}`).length > 0) {
-    return true
+  console.log(
+    actionsTable.filter(
+      a => a.action_trace.act.data.memo === `fund pool:${payload.id}`
+    )
+  );
+  if (
+    actionsTable.filter(
+      a => a.action_trace.act.data.memo === `fund pool:${payload.id}`
+    ).length > 0
+  ) {
+    return true;
   } else {
-    return false
+    return false;
   }
-
 };
 
 // Get balance from chain for given address and token
@@ -100,15 +107,20 @@ export const getBalanceFromChain = async function({ commit }, payload) {
     //     payload.sym
     //   )
     // );
-    let balance = (await rpc.get_currency_balance( payload.address, payload.accountName, payload.sym ))[0];
+    let balance = (
+      await rpc.get_currency_balance(
+        payload.address,
+        payload.accountName,
+        payload.sym
+      )
+    )[0];
     // console.log('balance')
     // console.log(balance)
     if (balance == undefined) {
-      return `0 ${payload.sym}`
+      return `0 ${payload.sym}`;
     } else {
-      return balance
+      return balance;
     }
-
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -215,9 +227,9 @@ export const getCreatedChainPools = async function(
         let id = pool.id;
 
         //check dates are unix
-        pool.pool_open = new Date(pool.pool_open + 'Z').valueOf();
-        pool.private_end = new Date(pool.private_end + 'Z').valueOf();
-        pool.public_end = new Date(pool.public_end + 'Z').valueOf();
+        pool.pool_open = new Date(pool.pool_open + "Z").valueOf();
+        pool.private_end = new Date(pool.private_end + "Z").valueOf();
+        pool.public_end = new Date(pool.public_end + "Z").valueOf();
 
         const poolTable = pool;
 
@@ -328,7 +340,9 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
     let pool_id_list = [];
 
     // sort according to nearest pool open
-    tableResults.rows.sort(function(a, b) { return new Date(a.pool_open) - new Date(b.pool_open); });
+    tableResults.rows.sort(function(a, b) {
+      return new Date(a.pool_open) - new Date(b.pool_open);
+    });
 
     console.log(tableResults.rows);
     pool_id_list = tableResults.rows.map(a => a.id);
@@ -374,9 +388,8 @@ export const getAllocationByPool = async function(
         console.log(allocationTable);
         return allocationTable;
       } else {
-        return {}
+        return {};
       }
- 
     } else {
       return {};
     }
@@ -386,26 +399,23 @@ export const getAllocationByPool = async function(
 };
 
 // get premuim stake value
-export const getPremiumStake = async function(
-  { commit, getters, dispatch },
-) {
+export const getPremiumStake = async function({ commit, getters, dispatch }) {
   try {
-      const tableResults = await this.$api.getTableRows({
-        code: process.env.CONTRACT_ADDRESS, // Contract that we target
-        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-        table: "settings", // Table name
-        limit: 100,
-        index_position: 1,
-        key_type: "i64",
-        reverse: false, // Optional: Get reversed data
-        show_payer: false // Optional: Show ram payer
-      });
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: "settings", // Table name
+      limit: 100,
+      index_position: 1,
+      key_type: "i64",
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
 
-      const premium_stake = tableResults.rows[0].premium_stake
-      // console.log("Premium stake amount");
-      // console.log(premium_stake);
-      return premium_stake
- 
+    const premium_stake = tableResults.rows[0].premium_stake;
+    // console.log("Premium stake amount");
+    // console.log(premium_stake);
+    return premium_stake;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -431,30 +441,37 @@ export const checkStakedChain = async function(
         show_payer: false // Optional: Show ram payer
       });
 
-      let allocationTable = await dispatch("getAllocationByPool", {account: payload.account, poolID: payload.poolID})
-      console.log("allocation table")
-      console.log(allocationTable)
+      let allocationTable = await dispatch("getAllocationByPool", {
+        account: payload.account,
+        poolID: payload.poolID
+      });
+      console.log("allocation table");
+      console.log(allocationTable);
 
       // get premium stake
       const premium_stake = await dispatch("getPremiumStake");
-      let premium_stake_qty = this.$chainToQty(premium_stake.quantity)
+      let premium_stake_qty = this.$chainToQty(premium_stake.quantity);
       // console.log(premium_stake_qty)
-      
-      const staked_START = this.$chainToQty(stakeBalanceTbl.rows[0].staked)
-      const liquid_START = this.$chainToQty(stakeBalanceTbl.rows[0].liquid)
+
+      const staked_START = this.$chainToQty(stakeBalanceTbl.rows[0].staked);
+      const liquid_START = this.$chainToQty(stakeBalanceTbl.rows[0].liquid);
       // console.log("START staked?");
       // console.log(staked_amount);
 
-      if (Object.keys(allocationTable).length === 0 && allocationTable.constructor === Object) {
-        return false
-      }
-      else if (Object.keys(allocationTable).length > 0 && allocationTable.constructor === Object) {
-        return true
+      if (
+        Object.keys(allocationTable).length === 0 &&
+        allocationTable.constructor === Object
+      ) {
+        return false;
+      } else if (
+        Object.keys(allocationTable).length > 0 &&
+        allocationTable.constructor === Object
+      ) {
+        return true;
       } else {
-        console.log("Nothing")
-        return false
+        console.log("Nothing");
+        return false;
       }
- 
     } else {
       return false;
     }

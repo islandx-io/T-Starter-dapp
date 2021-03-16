@@ -6,8 +6,13 @@
     <q-card class="col bg-secondary text-black self-stretch">
       <q-item>
         <q-item-section top>
-          <q-avatar :size="avatar_size.toString() + 'px'">
-            <q-img v-if="pool.avatar" :src="pool.avatar" style="width: 100px">
+          <q-avatar :size="`${avatar_size}px`">
+            <q-img
+              v-if="pool.avatar"
+              :src="pool.avatar"
+              :style="`width:${avatar_size}px; height:${avatar_size}px`"
+              alt="Avatar"
+            >
               <template v-slot:error>
                 <div
                   class="transparent"

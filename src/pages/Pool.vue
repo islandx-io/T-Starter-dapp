@@ -29,7 +29,7 @@
               <div class="row justify-between content-start items-start">
                 <div>
                   <div class="text-h3 q-pb-md q-pt-sm">{{ pool.title }}</div>
-                  <p>
+                  <p class="text-weight-light">
                     Contract:
                     <a :href="contractURL">{{ pool.swap_ratio.contract }}</a>
                   </p>
@@ -39,7 +39,7 @@
             </q-item-section>
           </q-item>
           <q-item>
-            <p>
+            <p class="text-weight-light">
               {{ pool.tag_line }}
             </p>
           </q-item>
@@ -59,7 +59,7 @@
               class="col row justify-between items-center"
               v-else-if="pool.pool_status === 'open'"
             >
-              <div>Closes in:</div>
+              <div class="text-weight-light">Closes in:</div>
               <status-countdown
                 :deadline="pool.public_end"
                 :poolID="poolID"

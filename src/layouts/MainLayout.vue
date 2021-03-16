@@ -15,7 +15,7 @@
             color="secondary"
             flat
             to="/pools"
-            label="Pools ⛲"
+            :label="'Pools ' + poolEmoji"
           />
           <q-btn
             class="hover-accent"
@@ -65,8 +65,8 @@
       <div class="footer-container row items-end justify-center">
         <div class="col-12 row justify-between ">
           <div class="col-sm-4">
-            <router-link to="/" class="router-link">
-              <img src="~assets/logo/logo-light.svg" alt="logo" height="33px" />
+            <router-link to="/" class="router-link q-pb-sm">
+              <img src="~assets/logo/logo-light.svg" alt="logo" height="50px" />
             </router-link>
             <p class="text-body1">
               The place to discover and back projects building on Telos
@@ -101,6 +101,10 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     admin_address() {
       return process.env.ADMIN_ADDRESS; // Check if undefined
+    },
+    poolEmoji() {
+      let emojiArray = ["🚀", "💦", "💧", "🐊", "🍞", "🥯", "🌲", "🍣"];
+      return emojiArray[Math.floor(Math.random() * emojiArray.length)];
     }
   }
 };
