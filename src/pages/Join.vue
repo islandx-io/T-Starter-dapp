@@ -30,6 +30,9 @@
                   v-model="amount"
                   :rules="[validateInput]"
                   borderless
+                  type="text"
+                  mask="#######"
+                  placeholder="0"
                 />
                 <div class="column items-end justify-between">
                   <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
@@ -242,7 +245,7 @@ export default {
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
       balance: 0,
-      amount: 0,
+      amount: "",
       alreadyStaked: false,
       confirm_stake: false,
       stake_warning: false,
