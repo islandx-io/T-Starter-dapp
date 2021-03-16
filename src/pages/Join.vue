@@ -45,19 +45,15 @@
                       outline
                     />
                     <q-avatar size="40px">
-                      <!-- TODO Create a common component avatars -->
-                      <q-icon
+                      <q-img
                         v-if="BaseTokenSymbol === 'PETH'"
-                        name="fab fa-ethereum"
                         size="40px"
-                        style="color: rgb(130 168 248) "
+                        src="~assets/tokens/peth.png"
                       />
-                      <q-icon
+                      <q-img
                         v-if="BaseTokenSymbol === 'PBTC'"
-                        name="fab fa-bitcoin"
-                        size="42px"
-                        class="bg-secondary"
-                        style="color: rgb(247 143 22)"
+                        size="40px"
+                        src="~assets/tokens/pbtc.png"
                       />
                     </q-avatar>
                     <div class="text-h4">{{ BaseTokenSymbol }}</div>
