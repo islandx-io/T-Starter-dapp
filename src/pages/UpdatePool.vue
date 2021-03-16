@@ -22,6 +22,8 @@
                     v-model="pool.title"
                     label="Title"
                     lazy-rules
+                    :disable="pool.status==='published'"
+                    :readonly="pool.status==='published'"
                     :rules="[
                       val => (val && val.length > 1) || 'Must specify the title'
                     ]"
@@ -36,6 +38,8 @@
                     v-model="pool.swap_ratio.contract"
                     label="Token contract address"
                     lazy-rules
+                    :disable="pool.status==='published'"
+                    :readonly="pool.status==='published'"
                     :rules="[val => !!val || 'Must specify the token contract']"
                     outlined
                   >
@@ -49,6 +53,8 @@
                     v-model="token_symbol"
                     label="Token Symbol"
                     lazy-rules
+                    :disable="pool.status==='published'"
+                    :readonly="pool.status==='published'"
                     :rules="[checkTokenContract]"
                     outlined
                     debounce="1000"
@@ -61,6 +67,8 @@
                   <q-select
                     v-model="base_token_symbol"
                     :options="base_token_options.map(a => a.sym)"
+                    :disable="pool.status==='published'"
+                    :readonly="pool.status==='published'"
                     label="Base token"
                     outlined
                   />
@@ -75,6 +83,8 @@
                   <q-input
                     color="primary"
                     v-model="pool.swap_ratio.quantity"
+                    :disable="pool.status==='published'"
+                    :readonly="pool.status==='published'"
                     :label="`Swap ratio (${tokenSymbolReformat})`"
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the swap ratio']"
@@ -92,6 +102,8 @@
                     v-model="pool.soft_cap"
                     :label="`Soft cap (${baseTokenSymbolReformat})`"
                     lazy-rules
+                    :disable="pool.status==='published'"
+                    :readonly="pool.status==='published'"
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
                   />
@@ -102,6 +114,8 @@
                     v-model="pool.hard_cap"
                     :label="`Hard cap (${baseTokenSymbolReformat})`"
                     lazy-rules
+                    :disable="pool.status==='published'"
+                    :readonly="pool.status==='published'"
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
                   />
@@ -114,6 +128,8 @@
                     v-model="pool.minimum_swap"
                     :label="`Minimum allocation (${baseTokenSymbolReformat})`"
                     lazy-rules
+                    :disable="pool.status==='published'"
+                    :readonly="pool.status==='published'"
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
                   />
@@ -124,6 +140,8 @@
                     v-model="pool.maximum_swap"
                     :label="`Maximum allocation (${baseTokenSymbolReformat})`"
                     lazy-rules
+                    :disable="pool.status==='published'"
+                    :readonly="pool.status==='published'"
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
                   />
@@ -135,6 +153,7 @@
                 <q-item-section>
                   <datetime-field
                     :value.sync="pool_open"
+                    :pool="pool"
                     label="Sale start (UTC)"
                     class="q-pb-md"
                   />
@@ -144,12 +163,14 @@
                 <q-item-section>
                   <datetime-field
                     :value.sync="private_end"
+                    :pool="pool"
                     label="Private sale end (UTC)"
                   />
                 </q-item-section>
                 <q-item-section>
                   <datetime-field
                     :value.sync="public_end"
+                    :pool="pool"
                     label="Public sale end (UTC)"
                   />
                 </q-item-section>
@@ -327,7 +348,7 @@
             text-color="white"
           />
           <span class="q-ml-sm"
-            >Send tokens to participants (Additional costs may incur)?</span
+            >Send tokens to participants? (Additional costs may incur)</span
           >
         </q-card-section>
 
@@ -396,7 +417,6 @@ export default {
       base_token_options: [],
       token_symbol: "",
       token_decimals: 1,
-      date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
       link_index: -1,
       funded: false,

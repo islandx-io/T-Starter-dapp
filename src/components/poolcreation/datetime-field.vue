@@ -1,5 +1,11 @@
 <template>
-  <q-input outlined v-model="value.date" :label="label">
+  <q-input
+    outlined
+    v-model="value.date"
+    :label="label"
+    :disable="pool.status === 'published'"
+    :readonly="pool.status === 'published'"
+  >
     <template v-slot:prepend>
       <q-icon name="event" class="cursor-pointer">
         <q-popup-proxy transition-show="scale" transition-hide="scale">
@@ -34,7 +40,8 @@ export default {
   },
   props: {
     value: {},
-    label: {}
+    label: {},
+    pool: {},
   }
 };
 </script>
