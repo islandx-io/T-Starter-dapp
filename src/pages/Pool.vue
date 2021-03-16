@@ -49,14 +49,22 @@
               v-if="pool.pool_status === 'upcoming'"
             >
               <div>Opens in:</div>
-              <status-countdown :deadline="pool.pool_open" :poolID="poolID"></status-countdown>
+              <status-countdown
+                :deadline="pool.pool_open"
+                :poolID="poolID"
+                @countdown-finished="getPoolInfo"
+              ></status-countdown>
             </div>
             <div
               class="col row justify-between items-center"
               v-else-if="pool.pool_status === 'open'"
             >
               <div>Closes in:</div>
-              <status-countdown :deadline="pool.public_end" :poolID="poolID"></status-countdown>
+              <status-countdown
+                :deadline="pool.public_end"
+                :poolID="poolID"
+                @countdown-finished="getPoolInfo"
+              ></status-countdown>
             </div>
           </q-item>
           <q-item>
@@ -213,7 +221,7 @@ export default {
       if (this.pool.total_raise === "Loading") return "Loading";
       else {
         let totalRaise = this.$chainToQty(this.pool.total_raise);
-        let hardCap = this.$chainToQty(this.pool.hard_cap,0);
+        let hardCap = this.$chainToQty(this.pool.hard_cap, 0);
         return `${totalRaise} / ${hardCap}`;
       }
     }

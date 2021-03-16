@@ -80,6 +80,7 @@ export default {
         this.diff = 0;
         clearInterval(interval); // Stop countdown
         await this.getChainPoolByID(this.poolID); // update status
+        this.$emit("countdown-finished");
       }
     }
   },
@@ -95,7 +96,7 @@ export default {
     clearInterval(interval);
   },
   methods: {
-    ...mapActions("pools", ["getChainPoolByID", "updatePoolSettings"]),
+    ...mapActions("pools", ["getChainPoolByID", "updatePoolSettings"])
   }
 };
 </script>

@@ -26,6 +26,7 @@
               v-if="pool.pool_status === 'upcoming'"
               :deadline="pool.pool_open"
               mini
+              @countdown-finished="getPoolInfo"
             />
           </div>
         </q-item-section>
