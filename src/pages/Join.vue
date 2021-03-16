@@ -138,6 +138,11 @@
                       not_enough_start
                   "
                 />
+                <div v-if="not_enough_start" class="q-pt-sm self-center">
+                  You do not have enough START tokens to participate in this
+                  pool.
+                  <a href="#">Get here</a>
+                </div>
               </q-item-section>
               <q-tooltip v-if="!isAuthenticated">
                 Connect wallet
@@ -149,10 +154,6 @@
                 Not enough START
               </q-tooltip>
             </q-item>
-            <div v-if="not_enough_start">
-              You do not have enough START tokens to participate in this pool.
-              Get here.
-            </div>
           </div>
         </q-form>
 
@@ -164,6 +165,7 @@
                 name="fas fa-exclamation-circle"
                 size="lg"
                 class="q-pr-sm"
+                color="primary"
               />
               <div class="text-h6">Private pool</div>
             </q-card-section>
@@ -190,15 +192,15 @@
         <q-dialog v-model="confirm_stake" persistent>
           <q-card>
             <q-card-section class="row items-center">
-              <q-avatar
-                icon="fas fa-money-bill-alt"
-                color="primary"
-                text-color="white"
-              />
-              <span class="q-ml-sm"
-                >Confirm staking additional 500 START tokens for private
-                access?</span
-              >
+              <q-avatar color="primary" text-color="secondary" class="q-mr-sm">
+                <q-icon name="fas fa-coins" size="28px" />
+              </q-avatar>
+              <span class="text-h6">Confirm stake</span>
+            </q-card-section>
+            <q-card-section>
+              <span>
+                Confirm staking additional 500 START tokens for private access?
+              </span>
             </q-card-section>
 
             <q-card-actions align="right">
@@ -239,15 +241,14 @@
             </q-card-section>
             <q-card-actions align="right">
               <q-btn
-                outline
                 :to="`/transaction/`"
                 label="Boks.io"
-                color="accent"
-                class="hover-accent"
+                color="primary"
+                flat
               />
               <q-btn
                 flat
-                label="Back To pool page"
+                label="pool page"
                 color="primary"
                 @click="toAllocationsPage"
                 v-close-popup
@@ -516,6 +517,10 @@ export default {
 // }
 .input-amount {
   font-size: 50px;
+  color: $primary;
+}
+a {
+  text-decoration: none;
   color: $primary;
 }
 </style>
