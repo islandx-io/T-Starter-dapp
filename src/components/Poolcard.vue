@@ -2,6 +2,7 @@
   <router-link
     class="router-link"
     :to="{ name: 'pooldetails', params: { id: poolID } }"
+    :event="clickable ? '' : 'click'"
   >
     <q-card class="col bg-secondary text-black self-stretch">
       <q-item>
@@ -19,6 +20,9 @@
                   style="padding: 0"
                   v-html="identicon"
                 />
+              </template>
+              <template v-slot:loading>
+                <q-spinner-puff color="primary" />
               </template>
             </q-img>
             <div v-else v-html="identicon" />
@@ -117,6 +121,9 @@ export default {
           this.pool.base_token.sym.split(",")[1]
         );
       }
+    },
+    clickable() {
+      return this.poolID === -1;
     }
   },
   methods: {
