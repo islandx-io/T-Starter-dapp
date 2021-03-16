@@ -300,8 +300,14 @@
               <!-- <q-item-section class="col-shrink">
                 <q-btn label="Reset" type="reset" color="primary" flat />
               </q-item-section> -->
+              <!-- Close pool button -->
               <q-item-section class="col-auto">
-                <q-btn label="Close Pool" @click="onClosePool" color="accent" v-if="pool.status === 'published'" />
+                <q-btn
+                  label="Close Pool"
+                  @click="onClosePool"
+                  color="accent"
+                  v-if="pool.status === ('fail' || 'closed')"
+                />
               </q-item-section>
             </q-item>
           </q-list>
@@ -310,6 +316,33 @@
         <div v-else>You are not the owner of this pool</div>
       </q-card>
     </section>
+
+    <!-- Send tokens dialog -->
+    <q-dialog v-model="dialog_send_tokens" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar
+            icon="fas fa-money-bill-alt"
+            color="primary"
+            text-color="white"
+          />
+          <span class="q-ml-sm"
+            >Send tokens to participants (Additional costs may incur)?</span
+          >
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="No" color="primary" @click="tryClosePool(false)" v-close-popup />
+          <q-btn
+            flat
+            label="Yes"
+            color="primary"
+            @click="tryClosePool(true)"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -366,7 +399,8 @@ export default {
       date: date.formatDate(Date.now(), "YYYY-MM-DDTHH:mm:ss"),
       accept: false,
       link_index: -1,
-      funded: false
+      funded: false,
+      dialog_send_tokens: false,
     };
   },
   computed: {
@@ -603,14 +637,14 @@ export default {
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
-    async closePool() {
+    async closePool(send_tokens) {
       const actions = [
         {
           account: process.env.CONTRACT_ADDRESS,
           name: "closepool",
           data: {
             pool_id: this.poolID,
-            send_tokens: false
+            send_tokens: send_tokens
           }
         }
       ];
@@ -710,9 +744,9 @@ export default {
       }
     },
 
-    async onClosePool() {
+    async tryClosePool(send_tokens) {
       try {
-        await this.closePool();
+        await this.closePool(send_tokens);
         this.$q.notify({
           color: "green-4",
           textColor: "white",
@@ -727,6 +761,10 @@ export default {
           message: `${error}`
         });
       }
+    },
+
+    async onClosePool() {
+      this.dialog_send_tokens = true      
     },
 
     onReset() {}
