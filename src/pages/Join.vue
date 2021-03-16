@@ -66,11 +66,12 @@
             <div class="row justify-between" style="padding: 5px 20px">
               <div>
                 Minimum:
-                {{ $chainToQty(pool.minimum_swap) }} {{ BaseTokenSymbol }}
+                {{ zeroNaN($chainToQty(pool.minimum_swap)) }}
+                {{ BaseTokenSymbol }}
               </div>
               <div>
                 Maximum:
-                {{ $chainToQty(pool.maximum_swap) }}
+                {{ zeroNaN($chainToQty(pool.maximum_swap)) }}
                 {{ BaseTokenSymbol }}
               </div>
             </div>
@@ -82,7 +83,7 @@
             <q-card flat bordered class="inner-card row ">
               <div class="col row justify-between items-center ">
                 <div class="col input-amount q-pr-lg">
-                  {{ amount * $chainToQty(pool.swap_ratio.quantity) }}
+                  {{ zeroNaN(amount * $chainToQty(pool.swap_ratio.quantity)) }}
                 </div>
                 <div class="column items-end justify-between content-end">
                   <!-- <div>Balance: ***** {{ TokenSymbol }}</div> -->
@@ -103,11 +104,12 @@
             <div class="row justify-between" style="padding: 5px 20px">
               <div>
                 1 {{ BaseTokenSymbol }} =
-                {{ $chainToQty(pool.swap_ratio.quantity) }}
+                {{ zeroNaN($chainToQty(pool.swap_ratio.quantity)) }}
                 {{ TokenSymbol }}
               </div>
               <div>
-                Remaining {{ $chainToQty(pool.remaining_offer).toFixed(0) }}
+                Remaining
+                {{ zeroNaN($chainToQty(pool.remaining_offer).toFixed(0)) }}
                 {{ TokenSymbol }}
               </div>
             </div>
@@ -124,7 +126,8 @@
                   :disable="
                     !isAuthenticated ||
                       balance <= $chainToQty(pool.minimum_swap) ||
-                      pool.pool_status !== `open` || not_enough_start
+                      pool.pool_status !== `open` ||
+                      not_enough_start
                   "
                 />
               </q-item-section>
@@ -138,7 +141,10 @@
                 Not enough START
               </q-tooltip>
             </q-item>
-            <div v-if="not_enough_start">You do not have enough START tokens to participate in this pool. Get here.</div>
+            <div v-if="not_enough_start">
+              You do not have enough START tokens to participate in this pool.
+              Get here.
+            </div>
           </div>
         </q-form>
 
@@ -272,6 +278,10 @@ export default {
       "getPremiumStake",
       "checkStakedChain"
     ]),
+    zeroNaN(val) {
+      if (isNaN(val)) return 0;
+      else return val;
+    },
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
@@ -290,10 +300,8 @@ export default {
         sym: this.BaseTokenSymbol,
         accountName: this.accountName
       };
-      console.log(await this.getBalanceFromChain(payload))
-      this.balance = this.$chainToQty(
-        (await this.getBalanceFromChain(payload))
-      );
+      console.log(await this.getBalanceFromChain(payload));
+      this.balance = this.$chainToQty(await this.getBalanceFromChain(payload));
     },
 
     setMax() {
@@ -437,10 +445,15 @@ export default {
       accountName: this.accountName
     };
     let start_balance = this.$chainToQty(
-      (await this.getBalanceFromChain(payload))
+      await this.getBalanceFromChain(payload)
     );
-    console.log("Start balance:" + start_balance)
-    if (start_balance < this.$chainToQty(this.premium_stake.quantity && this.pool.access_type === "Private")) {
+    console.log("Start balance:" + start_balance);
+    if (
+      start_balance <
+      this.$chainToQty(
+        this.premium_stake.quantity && this.pool.access_type === "Private"
+      )
+    ) {
       this.stake_warning = true;
       this.not_enough_start = true;
     }
