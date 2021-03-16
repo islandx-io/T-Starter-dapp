@@ -68,8 +68,15 @@
               label="Join pool"
               :disable="pool.pool_status === 'upcoming' || !isAuthenticated"
               v-if="pool.pool_status !== 'closed'"
-            >
-            </q-btn>
+            />
+            <q-btn
+              v-if="pool.owner === accountName"
+              label="Update"
+              outline
+              color="primary"
+              :to="{ name: 'updatepool', params: { id: poolID } }"
+              class="q-ml-sm"
+            />
             <q-tooltip v-if="!isAuthenticated">
               Connect wallet
             </q-tooltip>
@@ -117,12 +124,12 @@
           align="left"
           narrow-indicator
         >
-          <q-tab name="details" label="DETAILS"></q-tab>
-          <q-tab name="overview" label="OVERVIEW"></q-tab>
-          <q-tab name="allocations" label="YOUR ALLOCATIONS"></q-tab>
+          <q-tab name="details" label="DETAILS" />
+          <q-tab name="overview" label="OVERVIEW" />
+          <q-tab name="allocations" label="YOUR ALLOCATIONS" />
         </q-tabs>
 
-        <q-separator></q-separator>
+        <q-separator />
 
         <q-tab-panels
           v-model="tab"
@@ -138,8 +145,8 @@
           </q-tab-panel>
 
           <q-tab-panel name="allocations" @mousedown.stop>
-            <tab-allocations :pool="pool"
-          /></q-tab-panel>
+            <tab-allocations :pool="pool" />
+          </q-tab-panel>
         </q-tab-panels>
 
         <q-inner-loading :showing="pool.title === 'Loading'">
