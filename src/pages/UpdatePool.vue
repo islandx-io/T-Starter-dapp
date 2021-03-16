@@ -300,6 +300,9 @@
               <!-- <q-item-section class="col-shrink">
                 <q-btn label="Reset" type="reset" color="primary" flat />
               </q-item-section> -->
+              <q-item-section class="col-auto">
+                <q-btn label="Close Pool" @click="onClosePool" color="accent" v-if="pool.status === 'published'" />
+              </q-item-section>
             </q-item>
           </q-list>
         </q-form>
@@ -600,6 +603,20 @@ export default {
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
+    async closePool() {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "closepool",
+          data: {
+            pool_id: this.poolID,
+            send_tokens: false
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
     async onSubmit() {
       // console.log({ "Submitted start date": this.pool.pool_open });
       this.pool.pool_open = this.pool_open.date;
@@ -690,6 +707,25 @@ export default {
             message: `${error}`
           });
         }
+      }
+    },
+
+    async onClosePool() {
+      try {
+        await this.closePool();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Submitted"
+        });
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
       }
     },
 
