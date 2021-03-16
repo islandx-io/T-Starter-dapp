@@ -3,7 +3,16 @@
     <!-- content -->
     <section class="header-bg" />
     <section class="body-container">
-      <q-card class="card-container">
+      <q-card
+        v-if="pool.pool_status !== 'open'"
+        style="min-height: 100px"
+        class="row justify-center content-center "
+      >
+        <div v-if="['upcoming', 'closed'].includes(pool.pool_status)">
+          Cannot join {{ pool.pool_status }} pools
+        </div>
+      </q-card>
+      <q-card v-else class="card-container">
         <q-btn
           :to="{ name: 'pooldetails', params: { id: poolID } }"
           flat
@@ -141,7 +150,7 @@
                 <div v-if="not_enough_start" class="q-pt-sm self-center">
                   You do not have enough START tokens to participate in this
                   pool.
-                  <a href="#">Get here</a>
+                  <a :href="buyStartUrl">Get here</a>
                 </div>
               </q-item-section>
               <q-tooltip v-if="!isAuthenticated">
@@ -178,7 +187,8 @@
             <q-card-actions align="right">
               <q-btn
                 outline
-                to="#"
+                type="a"
+                :href="buyStartUrl"
                 label="Buy START"
                 color="accent"
                 class="hover-accent"
@@ -279,7 +289,9 @@ export default {
       base_token_symbol: "",
       showTransaction: false,
       transaction: null,
-      explorerUrl: process.env.NETWORK_EXPLORER
+      explorerUrl: process.env.NETWORK_EXPLORER,
+      buyStartUrl:
+        "https://t-starter.medium.com/how-to-participate-in-the-t-starter-seed-round-token-sale-8eb6290c3c15"
     };
   },
 
