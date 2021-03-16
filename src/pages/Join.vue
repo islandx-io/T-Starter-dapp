@@ -76,6 +76,9 @@
               </div>
             </div>
 
+            <q-item class="justify-center">
+              <q-icon name="fas fa-arrow-down" size="50px" color="primary" />
+            </q-item>
             <!-------->
             <!-- To -->
             <!-------->
