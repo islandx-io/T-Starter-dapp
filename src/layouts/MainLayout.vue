@@ -73,13 +73,13 @@
             </p>
           </div>
           <div class="col-sm-3 column items-center content-end">
-            <p class="text-weight-bolder">Contact Us</p>
+            <div class="text-h6">Contact Us</div>
             <div class="row justify-start">
               <a href="https://t.me/tstarterio" class="social-link">
-                <q-icon size="md" name="fab fa-telegram-plane" />
+                <q-icon size="28px" name="fab fa-telegram-plane" />
               </a>
               <a href="https://medium.com/@t-starter" class="social-link">
-                <q-icon size="md" name="fab fa-medium-m" />
+                <q-icon size="28px" name="fab fa-medium-m" />
               </a>
             </div>
           </div>
@@ -121,7 +121,7 @@ export default {
   padding-top: 0 !important;
 }
 .social-link {
-  padding: 0px 10px;
+  padding: 5px 20px 0 0;
   text-decoration: none;
   transition: all 0.15s ease-in-out;
   color: $secondary;
