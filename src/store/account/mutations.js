@@ -35,8 +35,9 @@ export const setWalletToken = (state, {token_sym, token_contract}) => {
   }
 };
 
-export const setWalletTokenBalance = (state, {token_sym}) => {
-  
+export const setWalletTokenBalance = (state, {token_sym, amount}) => {
+  let token = state.wallet.find(a => a.token_sym === token_sym);
+  token.balance = amount;
 }
 
 export const setWalletTokenLiquid = (state, {token_sym, amount}) => {
@@ -44,6 +45,7 @@ export const setWalletTokenLiquid = (state, {token_sym, amount}) => {
   token.liquid = amount;
 }
 
-export const setWalletTokenLocked = (state, {token_sym}) => {
-  
+export const setWalletTokenLocked = (state, {token_sym, amount}) => {
+  let token = state.wallet.find(a => a.token_sym === token_sym);
+  token.locked = amount;
 }
