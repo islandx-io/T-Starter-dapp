@@ -41,6 +41,7 @@
                   borderless
                   placeholder="0"
                   maxlength="7"
+                  autofocus
                 />
                 <div class="column items-end justify-between">
                   <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
