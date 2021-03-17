@@ -130,7 +130,7 @@
                     lazy-rules
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
-                    :rules="[val => !!val || 'Must specify the amount']"
+                    :rules="[val => !isNaN(val) || 'Must specify the amount']"
                     outlined
                   />
                 </q-item-section>
@@ -213,16 +213,7 @@
                   </q-avatar>
                 </q-item-section>
               </q-item>
-              <!-- Whitelist -->
-              <!-- <q-item>
-                <q-item-section>
-                  <q-input
-                    v-model="pool.whitelist"
-                    autogrow
-                    label="Some whitelist thing"
-                    outlined
-                  /> </q-item-section
-              ></q-item> -->
+              
               <!-- web links -->
               <q-item class="weblink-container">
                 <div v-for="link in webLinks" :key="link.key">
@@ -276,6 +267,17 @@
                   />
                 </q-item-section>
               </q-item>
+
+              <!-- Whitelist -->
+              <q-item>
+                <q-item-section>
+                  <q-input
+                    v-model="pool.whitelist"
+                    autogrow
+                    label="Whitelist (CSV)"
+                    outlined
+                  /> </q-item-section
+              ></q-item>
             </q-list>
           </div>
           <q-list>
@@ -486,7 +488,7 @@ export default {
     },
     toDateString(timestamp) {
       if (timestamp <= 0) timestamp = new Date().valueOf();
-      return new Date(timestamp).toISOString();
+      return new Date(timestamp).toISOString().slice(0, 16).replace('T', ' ');
       // return date.formatDate(new Date(timestamp), "YYYY-MM-DD HH:mm");
     },
 
@@ -677,10 +679,10 @@ export default {
     },
 
     async onSubmit() {
-      // console.log({ "Submitted start date": this.pool.pool_open });
       this.pool.pool_open = this.pool_open.date;
       this.pool.private_end = this.private_end.date;
       this.pool.public_end = this.public_end.date;
+      console.log({ "Submitted start date": this.pool.pool_open });
       if (this.accept !== true || !this.isAuthenticated) {
         this.$q.notify({
           color: "red-5",
