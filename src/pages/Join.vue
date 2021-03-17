@@ -51,18 +51,7 @@
                       color="positive"
                       outline
                     />
-                    <q-avatar size="40px">
-                      <q-img
-                        v-if="BaseTokenSymbol === 'PETH'"
-                        size="40px"
-                        src="~assets/tokens/peth.png"
-                      />
-                      <q-img
-                        v-if="BaseTokenSymbol === 'PBTC'"
-                        size="40px"
-                        src="~assets/tokens/pbtc.png"
-                      />
-                    </q-avatar>
+                    <token-avatar :avatar="BaseTokenSymbol" :avatarSize="40" />
                     <div class="text-h4">{{ BaseTokenSymbol }}</div>
                   </div>
                 </div>
@@ -95,7 +84,7 @@
                 </div>
                 <div class="column items-end justify-between content-end">
                   <div class="row q-gutter-x-sm content-end">
-                    <pool-avatar
+                    <token-avatar
                       :avatar="pool.avatar"
                       :poolID="poolID"
                       :avatarSize="40"
@@ -261,7 +250,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import poolAvatar from "src/components/poolinfo/pool-avatar";
+import tokenAvatar from "src/components/TokenAvatar";
 
 export default {
   data() {
@@ -283,7 +272,7 @@ export default {
         "https://t-starter.medium.com/how-to-participate-in-the-t-starter-seed-round-token-sale-8eb6290c3c15"
     };
   },
-  components: { poolAvatar },
+  components: { tokenAvatar },
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
