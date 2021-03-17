@@ -10,6 +10,11 @@ const routes = [
     children: [{ path: "", component: () => import("pages/Account.vue") }]
   },
   {
+    path: "/wallet/:accountName",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ path: "", name: 'wallet', component: () => import("pages/Wallet.vue") }]
+  },
+  {
     path: "/transfer",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/Transfer.vue") }]

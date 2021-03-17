@@ -14,6 +14,13 @@
             class="hover-accent"
             color="secondary"
             flat
+            :to="{ name: 'wallet', params: { accountName: accountName } }"
+            :label="'Wallet'"
+          />
+          <q-btn
+            class="hover-accent"
+            color="secondary"
+            flat
             to="/pools"
             :label="'Pools ' + poolEmoji"
           />
