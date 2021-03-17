@@ -492,18 +492,6 @@ export default {
       // return date.formatDate(new Date(timestamp), "YYYY-MM-DD HH:mm");
     },
 
-    getDecimalFromAsset(asset) {
-      let idx = asset.sym.indexOf(",");
-      let decimal = asset.sym.slice(0, idx);
-      return decimal;
-    },
-
-    getSymFromAsset(asset) {
-      let idx = asset.sym.indexOf(",") + 1;
-      let sym = asset.sym.slice(idx);
-      return sym;
-    },
-
     async setBaseTokenOptions() {
       this.base_tokens_raw = await this.getBaseTokens();
       for (
@@ -513,8 +501,8 @@ export default {
       ) {
         const asset = this.base_tokens_raw[token_num];
         let token_reformat = {
-          sym: this.getSymFromAsset(asset),
-          decimals: this.getDecimalFromAsset(asset),
+          sym: this.$getSymFromAsset(asset),
+          decimals: this.$getDecimalFromAsset(asset),
           contract: asset.contract
         };
         this.base_token_options.push(token_reformat);
