@@ -39,7 +39,6 @@
                   v-model="amount"
                   :rules="[validateInput]"
                   borderless
-                  type="number"
                   placeholder="0"
                 />
                 <div class="column items-end justify-between">
@@ -238,14 +237,16 @@
             </q-card-section>
             <q-card-actions align="right">
               <q-btn
-                :to="`/transaction/`"
-                label="Boks.io"
+                type="a"
+                target="_blank"
+                :href="`${explorerUrl}/transaction/${transaction}`"
+                label="Bloks.io"
                 color="primary"
                 flat
               />
               <q-btn
                 flat
-                label="pool page"
+                label="Allocation"
                 color="primary"
                 @click="toAllocationsPage"
                 v-close-popup
