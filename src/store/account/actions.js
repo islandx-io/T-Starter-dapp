@@ -130,6 +130,10 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
         token_sym: token_reformat.sym,
         token_contract: token_reformat.contract
       });
+      commit("setWalletTokenDecimals", {
+        token_sym: token_reformat.sym,
+        amount: token_reformat.decimals
+      });
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
