@@ -14,6 +14,7 @@
       label="Claim"
       class="hover-accent self-end q-mt-md"
       v-if="hasAllocations && pool.pool_status === 'closed'"
+      @click="tryClaimTokens"
     />
     <p class="q-pt-md" v-if="!hasAllocations">No allocation to show.</p>
     <q-inner-loading :showing="loadingData">
@@ -47,7 +48,40 @@ export default {
   },
 
   methods: {
-    ...mapActions("pools", ["getAllocationByPool"])
+    ...mapActions("pools", ["getAllocationByPool"]),
+
+    async claimTokens() {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "claim",
+          data: {
+            account: this.accountName,
+            pool_id: this.pool.id
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
+    async tryClaimTokens() {
+      try {
+        await this.claimTokens();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Tokens claimed"
+        });
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+      }
+    }
   },
   async mounted() {
     // FIXME If the account name is undefined, the table will never update

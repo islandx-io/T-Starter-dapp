@@ -16,6 +16,7 @@
             flat
             :to="{ name: 'wallet', params: { accountName: accountName } }"
             :label="'Wallet'"
+            v-if="isAuthenticated"
           />
           <q-btn
             class="hover-accent"

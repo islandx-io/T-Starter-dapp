@@ -42,12 +42,31 @@ const toDate = function(timeStamp) {
   else return date.formatDate(timeStamp, "DD MMMM YYYY, HH:mm");
 };
 
+// Gets decimal from base token asset
+const getDecimalFromAsset = function(asset) {
+  let idx = asset.sym.indexOf(",");
+  let decimal = asset.sym.slice(0, idx);
+  return decimal;
+};
+
+// Gets symbol from base token asset
+const getSymFromAsset = function(asset) {
+  let idx = asset.sym.indexOf(",") + 1;
+  let sym = asset.sym.slice(idx);
+  return sym;
+};
+
 export default ({ Vue, store }) => {
   Vue.prototype.$chainToQty = chainToQty;
   Vue.prototype.$toChainString = toChainString;
   Vue.prototype.$chainToSym = chainToSym;
   Vue.prototype.$chainStrReformat = chainStrReformat;
   Vue.prototype.$toDate = toDate;
+  Vue.prototype.$getDecimalFromAsset = getDecimalFromAsset;
+  Vue.prototype.$getSymFromAsset = getSymFromAsset;
   store["$chainToQty"] = chainToQty;
+  store["$chainToSym"] = chainToSym;
   store["$toChainString"] = toChainString;
+  store["$getDecimalFromAsset"] = getDecimalFromAsset;
+  store["$getSymFromAsset"] = getSymFromAsset;
 };

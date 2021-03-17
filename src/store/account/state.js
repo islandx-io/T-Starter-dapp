@@ -4,6 +4,22 @@ export default function() {
     hasProfile: false,
     profiles: {},
     autoLogin: false,
-    loading: {}
+    loading: {},
+    wallet: [
+      {
+        token_sym: "START",
+        token_contract: "token.start",
+        balance: 0,
+        liquid: 0,
+        locked: 0
+      },
+      {
+        token_sym: "PETH",
+        token_contract: "eth.ptokens",
+        balance: 0,
+        liquid: 0,
+        locked: 0
+      }
+    ]
   };
 }

@@ -88,7 +88,7 @@ export const getUserProfile = async function({ commit }, accountName) {
       index_position: 1,
       key_type: "i64",
       lower_bound: accountName,
-      upper_bound: accountName,
+      upper_bound: accountName
     });
     // console.log(profileResult);
     const profile = profileResult.rows[0];
@@ -103,17 +103,133 @@ export const getAccountProfile = async function({ commit, dispatch }) {
     return;
   }
 
-  dispatch(
-    "getUserProfile",
-    this.state.account.accountName
-  );
+  dispatch("getUserProfile", this.state.account.accountName);
 };
 
-export const accountExists = async function ({ commit, dispatch }, accountName) {
+export const accountExists = async function({ commit, dispatch }, accountName) {
   try {
     const account = await this.$api.getAccount(accountName);
     return !!account;
   } catch (e) {
     return false;
   }
-}
+};
+
+export const setWalletBaseTokens = async function({ commit, dispatch }) {
+  try {
+    let base_tokens_raw = [];
+    base_tokens_raw = await dispatch("pools/getBaseTokens", "", { root: true });
+
+    for (const asset of base_tokens_raw) {
+      let token_reformat = {
+        sym: this.$getSymFromAsset(asset),
+        decimals: this.$getDecimalFromAsset(asset),
+        contract: asset.contract
+      };
+      commit("setWalletToken", {
+        token_sym: token_reformat.sym,
+        token_contract: token_reformat.contract
+      });
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// set balances in state of each token in wallet
+export const setWalletBalances = async function({ commit, getters, dispatch }, account) {
+  try {
+    const wallet = getters.wallet;
+
+    for (const token_info of wallet) {
+
+      let payload = {
+        address: token_info.token_contract,
+        sym: token_info.token_sym,
+        accountName: account
+      };
+
+      let balance = this.$chainToQty(await dispatch("pools/getBalanceFromChain", payload, { root: true } ));
+      commit("setWalletTokenBalance", {
+        token_sym: token_info.token_sym,
+        amount: balance
+      });
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// get contract wallet table info for user
+export const getChainWalletTable = async function(
+  { commit, getters, dispatch },
+  account
+) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: account, // Account that owns the data
+      table: "wallets", // Table name
+      limit: 100,
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+
+    let contractWalletTbl = tableResults.rows;
+
+    // Set each token on state
+    for (const token_info of contractWalletTbl) {
+      let token_sym = this.$chainToSym(token_info.balance);
+      let token_liquid = this.$chainToQty(token_info.balance);
+      let token_contract = token_info.contract;
+
+      commit("setWalletToken", {
+        token_sym: token_sym,
+        token_contract: token_contract
+      });
+      commit("setWalletTokenLiquid", {
+        token_sym: token_sym,
+        amount: token_liquid
+      });
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// check if tokens already staked
+export const getChainSTART = async function(
+  { commit, getters, dispatch },
+  account
+) {
+  try {
+    if (account !== null) {
+      const stakeBalanceTbl = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: "stakebalance", // Table name
+        limit: 100,
+        index_position: 1,
+        key_type: "i64",
+        lower_bound: account,
+        upper_bound: account,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+
+      const staked_START = this.$chainToQty(stakeBalanceTbl.rows[0].staked);
+      const liquid_START = this.$chainToQty(stakeBalanceTbl.rows[0].liquid);
+
+      commit("setWalletTokenLiquid", {
+        token_sym: 'START',
+        amount: liquid_START
+      });
+      commit("setWalletTokenLocked", {
+        token_sym: 'START',
+        amount: staked_START
+      });
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
