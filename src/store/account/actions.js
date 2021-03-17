@@ -130,6 +130,7 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
         token_sym: token_reformat.sym,
         token_contract: token_reformat.contract
       });
+      console.log(token_reformat.decimals)
       commit("setWalletTokenDecimals", {
         token_sym: token_reformat.sym,
         amount: token_reformat.decimals
@@ -199,6 +200,10 @@ export const getChainWalletTable = async function(
       commit("setWalletTokenLiquid", {
         token_sym: token_sym,
         amount: token_liquid
+      });
+      commit("setWalletTokenDecimals", {
+        token_sym: token_sym,
+        amount: this.$chainToDecimals(token_info.balance)
       });
     }
   } catch (error) {
