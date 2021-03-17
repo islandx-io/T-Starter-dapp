@@ -34,3 +34,15 @@ export const setWalletBaseToken = (state, {token_sym, token_contract}) => {
     // console.log(poolTable);
   }
 };
+
+export const setWalletTokenBalance = (state, {token_sym}) => {
+
+}
+
+export const setWalletTokenLiquid = (state, {token_sym}) => {
+  
+}
+
+export const setWalletTokenLocked = (state, {token_sym}) => {
+  
+}

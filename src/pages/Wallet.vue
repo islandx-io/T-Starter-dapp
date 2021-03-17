@@ -21,12 +21,14 @@ export default {
 
   methods: {
     ...mapActions("pools", ["getBalanceFromChain", "getBaseTokens"]),
-    ...mapActions("account", ["setWalletBaseTokens"]),
+    ...mapActions("account", ["setWalletBaseTokens","getContractWalletTable", "setWalletBalances"]),
 
   },
 
   async mounted() {
     await this.setWalletBaseTokens();
+    await this.setWalletBalances();
+    await this.getContractWalletTable(this.accountName);
   }
 };
 </script>

@@ -121,8 +121,8 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
     let base_token_options = [];
 
     base_tokens_raw = await dispatch("pools/getBaseTokens", '', { root: true });
-    for (let token_num = 0; token_num < base_tokens_raw.length; token_num++) {
-      let asset = base_tokens_raw[token_num];
+    
+    for (const asset of base_tokens_raw) {
       let token_reformat = {
         sym: this.$getSymFromAsset(asset),
         decimals: this.$getDecimalFromAsset(asset),
@@ -131,7 +131,35 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
       base_token_options.push(token_reformat);
       commit("setWalletBaseToken", {token_sym: token_reformat.sym, token_contract: token_reformat.contract})
     }
-    console.log(base_token_options);
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+export const setWalletBalances = async function({ commit, getters, dispatch }) {
+  try {
+
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// get contract wallet table info for user
+export const getContractWalletTable = async function({ commit, getters, dispatch }, account) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: account, // Account that owns the data
+      table: "wallets", // Table name
+      limit: 100,
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+    
+    let contractWalletTbl = tableResults.rows
+    console.log(contractWalletTbl)
+
+    return contractWalletTbl;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
