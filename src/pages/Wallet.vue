@@ -1,7 +1,8 @@
 <template>
   <q-page padding>
     <!-- content -->
-    <div>This is my wallet!</div>
+    <div v-if="isAuthenticated">This is my wallet!</div>
+    <div v-else>Connect wallet</div>
   </q-page>
 </template>
 
@@ -29,7 +30,7 @@ export default {
     await this.setWalletBaseTokens();
     await this.getChainWalletTable(this.accountName);
     await this.getChainSTART(this.accountName);
-    await this.setWalletBalances();
+    await this.setWalletBalances(this.accountName);
   }
 };
 </script>

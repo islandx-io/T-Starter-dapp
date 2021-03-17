@@ -137,12 +137,23 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
 };
 
 // set balances in state of each token in wallet
-export const setWalletBalances = async function({ commit, getters, dispatch }) {
+export const setWalletBalances = async function({ commit, getters, dispatch }, account) {
   try {
     const wallet = getters.wallet;
 
     for (const token_info of wallet) {
-      // console.log(token_info)
+
+      let payload = {
+        address: token_info.token_contract,
+        sym: token_info.token_sym,
+        accountName: account
+      };
+
+      let balance = this.$chainToQty(await dispatch("pools/getBalanceFromChain", payload, { root: true } ));
+      commit("setWalletTokenBalance", {
+        token_sym: token_info.token_sym,
+        amount: balance
+      });
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
