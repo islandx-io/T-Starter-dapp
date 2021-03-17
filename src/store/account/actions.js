@@ -88,7 +88,7 @@ export const getUserProfile = async function({ commit }, accountName) {
       index_position: 1,
       key_type: "i64",
       lower_bound: accountName,
-      upper_bound: accountName,
+      upper_bound: accountName
     });
     // console.log(profileResult);
     const profile = profileResult.rows[0];
@@ -103,17 +103,36 @@ export const getAccountProfile = async function({ commit, dispatch }) {
     return;
   }
 
-  dispatch(
-    "getUserProfile",
-    this.state.account.accountName
-  );
+  dispatch("getUserProfile", this.state.account.accountName);
 };
 
-export const accountExists = async function ({ commit, dispatch }, accountName) {
+export const accountExists = async function({ commit, dispatch }, accountName) {
   try {
     const account = await this.$api.getAccount(accountName);
     return !!account;
   } catch (e) {
     return false;
   }
-}
+};
+
+export const setWalletBaseTokens = async function({ commit, dispatch }) {
+  try {
+    let base_tokens_raw = [];
+    let base_token_options = [];
+
+    base_tokens_raw = await dispatch("pools/getBaseTokens", '', { root: true });
+    for (let token_num = 0; token_num < base_tokens_raw.length; token_num++) {
+      let asset = base_tokens_raw[token_num];
+      let token_reformat = {
+        sym: this.$getSymFromAsset(asset),
+        decimals: this.$getDecimalFromAsset(asset),
+        contract: asset.contract
+      };
+      base_token_options.push(token_reformat);
+      commit("setWalletBaseToken", {token_sym: token_reformat.sym, token_contract: token_reformat.contract})
+    }
+    console.log(base_token_options);
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};

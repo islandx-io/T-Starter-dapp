@@ -66,4 +66,6 @@ export default ({ Vue, store }) => {
   Vue.prototype.$getSymFromAsset = getSymFromAsset;
   store["$chainToQty"] = chainToQty;
   store["$toChainString"] = toChainString;
+  store["$getDecimalFromAsset"] = getDecimalFromAsset;
+  store["$getSymFromAsset"] = getSymFromAsset;
 };

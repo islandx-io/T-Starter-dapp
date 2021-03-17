@@ -7,14 +7,14 @@ export default function() {
     loading: {},
     wallet: [
       {
-        token: "START",
+        token_sym: "START",
         token_contract: "token.start",
         balance: 0,
         liquid: 0,
         locked: 0
       },
       {
-        token: "PETH",
+        token_sym: "PETH",
         token_contract: "eth.ptokens",
         balance: 0,
         liquid: 0,
