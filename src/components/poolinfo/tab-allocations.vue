@@ -1,12 +1,21 @@
 <template>
-  <div>
-    <q-table
-      v-if="Object.keys(data[0]).length > 0"
-      :data="data"
-      :columns="columns"
-      row-key="name"
+  <div class="column justify-between">
+    <div class="row justify-between" v-if="hasAllocations">
+      <h6>Bid:</h6>
+      <h5>{{ this.$chainStrReformat(data.bid) }}</h5>
+    </div>
+    <div class="row justify-between" v-if="hasAllocations">
+      <h6>Allocation:</h6>
+      <h5>{{ this.$chainStrReformat(data.allocation) }}</h5>
+    </div>
+    <q-btn
+      outline
+      color="accent"
+      label="Claim"
+      class="hover-accent self-end q-mt-md"
+      v-if="hasAllocations && pool.pool_status === 'closed'"
     />
-    <p class="q-pt-md" v-else>No allocations to show.</p>
+    <p class="q-pt-md" v-if="!hasAllocations">No allocation to show.</p>
     <q-inner-loading :showing="loadingData">
       <q-spinner-puff size="50px" color="primary" />
     </q-inner-loading>
@@ -26,45 +35,15 @@ export default {
   data() {
     return {
       loadingData: true,
-      columns: [
-        {
-          name: "bid",
-          label: "Bid",
-          field: "bid",
-          align: "left"
-        },
-        {
-          name: "allocation",
-          label: "Allocation",
-          field: "allocation"
-        }
-        // {
-        //   name: "id",
-        //   required: true,
-        //   label: "ID",
-        //   align: "left",
-        //   field: row => row.id,
-        //   format: val => `${val}`,
-        //   sortable: true
-        // },
-        // {
-        //   name: "date",
-        //   align: "center",
-        //   label: "Date",
-        //   field: "date",
-        //   sortable: true
-        // },
-        // { name: "spent", label: "Spent", field: "spent", sortable: true },
-        // { name: "bought", label: "Tokens Bought", field: "bought" },
-        // { name: "staked", label: "Tokens staked", field: "staked" },
-        // { name: "transactionid", label: "Transaction", field: "transactionid" }
-      ],
-      data: [{}]
+      data: {}
     };
   },
 
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"])
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    hasAllocations() {
+      return Object.keys(this.data).length > 0;
+    }
   },
 
   methods: {
@@ -74,18 +53,8 @@ export default {
     // FIXME If the account name is undefined, the table will never update
     let payload = { account: this.accountName, poolID: this.pool.id };
     this.loadingData = true;
-    this.data = [await this.getAllocationByPool(payload)];
+    this.data = await this.getAllocationByPool(payload);
     this.loadingData = false;
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.q-table__container {
-  padding: 20px 20px;
-  // border: 1px solid gray;
-  // border-radius: $card-corner-radius;
-  box-shadow: none;
-  background-color: $secondary;
-}
-</style>
