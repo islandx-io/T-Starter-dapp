@@ -20,7 +20,7 @@
                   <q-input
                     color="primary"
                     v-model="pool.title"
-                    label="Title"
+                    label="Title *"
                     lazy-rules
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
@@ -36,7 +36,7 @@
                   <q-input
                     color="primary"
                     v-model="pool.swap_ratio.contract"
-                    label="Token contract address"
+                    label="Token contract address *"
                     lazy-rules
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
@@ -51,7 +51,7 @@
                   <q-input
                     color="primary"
                     v-model="token_symbol"
-                    label="Token Symbol"
+                    label="Token Symbol *"
                     lazy-rules
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
@@ -69,7 +69,7 @@
                     :options="base_token_options.map(a => a.sym)"
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
-                    label="Base token"
+                    label="Base token *"
                     outlined
                   />
                 </q-item-section>
@@ -85,7 +85,7 @@
                     v-model="pool.swap_ratio.quantity"
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
-                    :label="`Swap ratio (${tokenSymbolReformat})`"
+                    :label="`Swap ratio (${tokenSymbolReformat}) *`"
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the swap ratio']"
                     outlined
@@ -100,7 +100,7 @@
                   <q-input
                     color="primary"
                     v-model="pool.soft_cap"
-                    :label="`Soft cap (${baseTokenSymbolReformat})`"
+                    :label="`Soft cap (${baseTokenSymbolReformat}) *`"
                     lazy-rules
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
@@ -112,7 +112,7 @@
                   <q-input
                     color="primary"
                     v-model="pool.hard_cap"
-                    :label="`Hard cap (${baseTokenSymbolReformat})`"
+                    :label="`Hard cap (${baseTokenSymbolReformat}) *`"
                     lazy-rules
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
@@ -126,7 +126,7 @@
                   <q-input
                     color="primary"
                     v-model="pool.minimum_swap"
-                    :label="`Minimum allocation (${baseTokenSymbolReformat})`"
+                    :label="`Minimum allocation (${baseTokenSymbolReformat}) *`"
                     lazy-rules
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
@@ -138,7 +138,7 @@
                   <q-input
                     color="primary"
                     v-model="pool.maximum_swap"
-                    :label="`Maximum allocation (${baseTokenSymbolReformat})`"
+                    :label="`Maximum allocation (${baseTokenSymbolReformat}) *`"
                     lazy-rules
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
@@ -154,7 +154,7 @@
                   <datetime-field
                     :value.sync="pool_open"
                     :pool="pool"
-                    label="Sale start (UTC)"
+                    label="Sale start (UTC) *"
                     class="q-pb-md"
                   />
                 </q-item-section>
@@ -164,14 +164,14 @@
                   <datetime-field
                     :value.sync="private_end"
                     :pool="pool"
-                    label="Private sale end (UTC)"
+                    label="Private sale end (UTC) *"
                   />
                 </q-item-section>
                 <q-item-section>
                   <datetime-field
                     :value.sync="public_end"
                     :pool="pool"
-                    label="Public sale end (UTC)"
+                    label="Public sale end (UTC) *"
                   />
                 </q-item-section>
               </q-item>
@@ -187,7 +187,7 @@
                   <q-input
                     color="primary"
                     v-model="pool.avatar"
-                    label="Avatar image link"
+                    label="Avatar image link *"
                     lazy-rules
                     :rules="[
                       val =>
@@ -239,7 +239,7 @@
                   <q-input
                     v-model="pool.tag_line"
                     autogrow
-                    label="Tag line"
+                    label="Tag line *"
                     lazy-rules
                     :rules="[
                       val =>
@@ -258,7 +258,7 @@
                   <q-input
                     v-model="pool.description"
                     autogrow
-                    label="Description"
+                    label="Description *"
                     lazy-rules
                     :rules="[val => (val && val.length > 1) || 'Must specify']"
                     outlined
