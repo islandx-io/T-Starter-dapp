@@ -118,8 +118,6 @@ export const accountExists = async function({ commit, dispatch }, accountName) {
 export const setWalletBaseTokens = async function({ commit, dispatch }) {
   try {
     let base_tokens_raw = [];
-    let base_token_options = [];
-
     base_tokens_raw = await dispatch("pools/getBaseTokens", '', { root: true });
     
     for (const asset of base_tokens_raw) {
@@ -128,16 +126,21 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
         decimals: this.$getDecimalFromAsset(asset),
         contract: asset.contract
       };
-      base_token_options.push(token_reformat);
-      commit("setWalletBaseToken", {token_sym: token_reformat.sym, token_contract: token_reformat.contract})
+      commit("setWalletToken", {token_sym: token_reformat.sym, token_contract: token_reformat.contract})
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
 
+// set balances in state of each token in wallet
 export const setWalletBalances = async function({ commit, getters, dispatch }) {
   try {
+    const wallet = getters.wallet;
+
+    for (const token_info of wallet) {
+      // console.log(token_info)
+    }
 
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -158,6 +161,16 @@ export const getContractWalletTable = async function({ commit, getters, dispatch
     
     let contractWalletTbl = tableResults.rows
     console.log(contractWalletTbl)
+
+    // Set each token on state
+    for (const token_info of contractWalletTbl) {
+      let token_sym = this.$chainToSym(token_info.balance);
+      let token_liquid = this.$chainToQty(token_info.balance);
+      let token_contract = token_info.contract;
+
+      commit("setWalletToken", {token_sym: token_sym, token_contract: token_contract})
+      commit("setWalletTokenLiquid", {token_sym: token_sym, amount: token_liquid})
+    }
 
     return contractWalletTbl;
   } catch (error) {

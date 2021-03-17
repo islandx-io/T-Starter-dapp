@@ -27,8 +27,8 @@ export default {
 
   async mounted() {
     await this.setWalletBaseTokens();
-    await this.setWalletBalances();
     await this.getContractWalletTable(this.accountName);
+    await this.setWalletBalances();
   }
 };
 </script>
