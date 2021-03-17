@@ -1,7 +1,9 @@
 <template>
   <q-page padding>
     <!-- content -->
-    <div v-if="isAuthenticated">This is my wallet!</div>
+    <div v-if="isAuthenticated" class="q-pa-md">
+      <q-table :data="wallet" row-key="name" />
+    </div>
     <div v-else>Connect wallet</div>
   </q-page>
 </template>
@@ -11,19 +13,21 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
-    return {
-      
-    };
+    return {};
   },
 
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"])
+    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"])
   },
 
   methods: {
     ...mapActions("pools", ["getBalanceFromChain", "getBaseTokens"]),
-    ...mapActions("account", ["setWalletBaseTokens","getChainWalletTable", "setWalletBalances", "getChainSTART"]),
-
+    ...mapActions("account", [
+      "setWalletBaseTokens",
+      "getChainWalletTable",
+      "setWalletBalances",
+      "getChainSTART"
+    ])
   },
 
   async mounted() {
