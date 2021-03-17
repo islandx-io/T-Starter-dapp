@@ -11,6 +11,13 @@ const chainToQty = function(str, decimals = -1) {
   }
 };
 
+const chainToDecimals = function(str) {
+  let commaidx = str.indexOf(".") + 1;
+  let spaceidx = str.indexOf(" ");
+  const precision = str.slice(commaidx, spaceidx).length;
+  return precision
+};
+
 const chainToSym = function(str) {
   try {
     return str.split(" ")[1];
@@ -64,9 +71,11 @@ export default ({ Vue, store }) => {
   Vue.prototype.$toDate = toDate;
   Vue.prototype.$getDecimalFromAsset = getDecimalFromAsset;
   Vue.prototype.$getSymFromAsset = getSymFromAsset;
+  Vue.prototype.$chainToDecimals = chainToDecimals;
   store["$chainToQty"] = chainToQty;
   store["$chainToSym"] = chainToSym;
   store["$toChainString"] = toChainString;
   store["$getDecimalFromAsset"] = getDecimalFromAsset;
   store["$getSymFromAsset"] = getSymFromAsset;
+  store["$chainToDecimals"] = chainToDecimals;
 };

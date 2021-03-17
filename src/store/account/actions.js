@@ -149,10 +149,15 @@ export const setWalletBalances = async function({ commit, getters, dispatch }, a
         accountName: account
       };
 
-      let balance = this.$chainToQty(await dispatch("pools/getBalanceFromChain", payload, { root: true } ));
+      let token_str = await dispatch("pools/getBalanceFromChain", payload, { root: true } );
+      let balance = this.$chainToQty(token_str);
       commit("setWalletTokenBalance", {
         token_sym: token_info.token_sym,
         amount: balance
+      });
+      commit("setWalletTokenDecimals", {
+        token_sym: token_info.token_sym,
+        amount: this.$chainToDecimals(token_str)
       });
     }
   } catch (error) {
