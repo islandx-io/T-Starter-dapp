@@ -2,11 +2,11 @@
   <div class="column justify-between">
     <div class="row justify-between" v-if="hasAllocations">
       <h6>Bid:</h6>
-      <h5>{{ data.bid }}</h5>
+      <h5>{{ this.$chainStrReformat(data.bid) }}</h5>
     </div>
     <div class="row justify-between" v-if="hasAllocations">
       <h6>Allocation:</h6>
-      <h5>{{ data.allocation }}</h5>
+      <h5>{{ this.$chainStrReformat(data.allocation) }}</h5>
     </div>
     <q-btn
       outline
@@ -15,7 +15,7 @@
       class="hover-accent self-end q-mt-md"
       v-if="hasAllocations && pool.pool_status === 'closed'"
     />
-    <p class="q-pt-md" v-if="!hasAllocations">No allocations to show.</p>
+    <p class="q-pt-md" v-if="!hasAllocations">No allocation to show.</p>
     <q-inner-loading :showing="loadingData">
       <q-spinner-puff size="50px" color="primary" />
     </q-inner-loading>
@@ -35,7 +35,7 @@ export default {
   data() {
     return {
       loadingData: true,
-      data: [{}]
+      data: {}
     };
   },
 

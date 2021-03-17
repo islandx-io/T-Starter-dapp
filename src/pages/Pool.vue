@@ -122,7 +122,7 @@
         >
           <q-tab name="details" label="DETAILS" />
           <q-tab name="overview" label="OVERVIEW" />
-          <q-tab name="allocations" label="YOUR ALLOCATIONS" />
+          <q-tab name="allocations" label="YOUR ALLOCATION" />
         </q-tabs>
 
         <q-separator />
