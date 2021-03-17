@@ -40,6 +40,7 @@
                   :rules="[validateInput]"
                   borderless
                   placeholder="0"
+                  maxlength="7"
                 />
                 <div class="column items-end justify-between">
                   <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
@@ -509,6 +510,7 @@ export default {
 .input-amount {
   font-size: 50px;
   color: $primary;
+  min-width: 270px;
 }
 a {
   text-decoration: none;
