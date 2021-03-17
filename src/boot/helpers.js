@@ -12,10 +12,12 @@ const chainToQty = function(str, decimals = -1) {
 };
 
 const chainToDecimals = function(str) {
-  let commaidx = str.indexOf(".") + 1;
-  let spaceidx = str.indexOf(" ");
-  const precision = str.slice(commaidx, spaceidx).length;
-  return precision
+  if (str.length > 0) {
+    let commaidx = str.indexOf(".") + 1;
+    let spaceidx = str.indexOf(" ");
+    const precision = str.slice(commaidx, spaceidx).length;
+    return precision;
+  } else return 0;
 };
 
 const chainToSym = function(str) {

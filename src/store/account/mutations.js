@@ -53,9 +53,8 @@ export const setWalletTokenLocked = (state, { token_sym, amount }) => {
   token.locked = amount;
 };
 
-// TODO if not zero, overwrite
 export const setWalletTokenDecimals = (state, { token_sym, amount }) => {
-  if (amount != 0) {
+  if (state.wallet.find(a => a.token_sym === token_sym).decimals === 0) {
     let token = state.wallet.find(a => a.token_sym === token_sym);
     token.decimals = amount;
   }
