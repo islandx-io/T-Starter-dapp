@@ -327,7 +327,7 @@
                   label="Close Pool"
                   @click="onClosePool"
                   color="accent"
-                  v-if="Date.now() > pool.public_end"
+                  v-if="Date.now() > pool.public_end && pool.status === ('published')"
                 />
               </q-item-section>
             </q-item>
@@ -335,6 +335,9 @@
         </q-form>
 
         <div v-else>You are not the owner of this pool</div>
+
+        <div v-if="pool.status === 'success'">Pool success</div>
+        <div v-if="pool.status === 'fail'">Pool failed</div>
       </q-card>
     </section>
 
