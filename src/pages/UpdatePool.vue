@@ -22,8 +22,8 @@
                     v-model="pool.title"
                     label="Title"
                     lazy-rules
-                    :disable="pool.status==='published'"
-                    :readonly="pool.status==='published'"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                     :rules="[
                       val => (val && val.length > 1) || 'Must specify the title'
                     ]"
@@ -38,8 +38,8 @@
                     v-model="pool.swap_ratio.contract"
                     label="Token contract address"
                     lazy-rules
-                    :disable="pool.status==='published'"
-                    :readonly="pool.status==='published'"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                     :rules="[val => !!val || 'Must specify the token contract']"
                     outlined
                   >
@@ -53,8 +53,8 @@
                     v-model="token_symbol"
                     label="Token Symbol"
                     lazy-rules
-                    :disable="pool.status==='published'"
-                    :readonly="pool.status==='published'"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                     :rules="[checkTokenContract]"
                     outlined
                     debounce="1000"
@@ -67,8 +67,8 @@
                   <q-select
                     v-model="base_token_symbol"
                     :options="base_token_options.map(a => a.sym)"
-                    :disable="pool.status==='published'"
-                    :readonly="pool.status==='published'"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                     label="Base token"
                     outlined
                   />
@@ -83,8 +83,8 @@
                   <q-input
                     color="primary"
                     v-model="pool.swap_ratio.quantity"
-                    :disable="pool.status==='published'"
-                    :readonly="pool.status==='published'"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                     :label="`Swap ratio (${tokenSymbolReformat})`"
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the swap ratio']"
@@ -102,8 +102,8 @@
                     v-model="pool.soft_cap"
                     :label="`Soft cap (${baseTokenSymbolReformat})`"
                     lazy-rules
-                    :disable="pool.status==='published'"
-                    :readonly="pool.status==='published'"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
                   />
@@ -114,8 +114,8 @@
                     v-model="pool.hard_cap"
                     :label="`Hard cap (${baseTokenSymbolReformat})`"
                     lazy-rules
-                    :disable="pool.status==='published'"
-                    :readonly="pool.status==='published'"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
                   />
@@ -128,8 +128,8 @@
                     v-model="pool.minimum_swap"
                     :label="`Minimum allocation (${baseTokenSymbolReformat})`"
                     lazy-rules
-                    :disable="pool.status==='published'"
-                    :readonly="pool.status==='published'"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
                   />
@@ -140,8 +140,8 @@
                     v-model="pool.maximum_swap"
                     :label="`Maximum allocation (${baseTokenSymbolReformat})`"
                     lazy-rules
-                    :disable="pool.status==='published'"
-                    :readonly="pool.status==='published'"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
                   />
@@ -295,6 +295,7 @@
                   label="Fund"
                   @click="onFund"
                   :disable="pool.status === 'published' || this.funded"
+                  v-if="pool.status === 'draft'"
                   color="primary"
                 />
                 <q-tooltip v-if="pool.status === 'published'">
@@ -309,6 +310,7 @@
                   label="Publish"
                   @click="onPublish"
                   :disable="!this.funded || pool.status === 'published'"
+                  v-if="pool.status === 'draft' && funded"
                   color="primary"
                 />
                 <q-tooltip v-if="!funded">

@@ -3,8 +3,8 @@
     outlined
     v-model="value.date"
     :label="label"
-    :disable="pool.status === 'published'"
-    :readonly="pool.status === 'published'"
+    :disable="pool.status !== 'draft'"
+    :readonly="pool.status !== 'draft'"
   >
     <template v-slot:prepend>
       <q-icon name="event" class="cursor-pointer">
@@ -41,7 +41,7 @@ export default {
   props: {
     value: {},
     label: {},
-    pool: {},
+    pool: {}
   }
 };
 </script>
