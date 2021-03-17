@@ -9,7 +9,7 @@
       </li>
     </div>
     <div v-else>{{ pool.web_links }}</div>
-    <p class="text-weight-light q-pt-md">{{ pool.description }}</p>
+    <p class="q-pt-md">{{ pool.description }}</p>
   </div>
 </template>
 

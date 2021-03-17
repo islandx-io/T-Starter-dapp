@@ -46,6 +46,10 @@ h6 {
   background-color: $secondary;
 }
 
+.q-dialog__inner .q-card {
+  border-radius: $card-corner-radius;
+}
+
 .toolbar,
 .header-container,
 .body-container,

@@ -1,5 +1,5 @@
 <template>
-  <div class="text-weight-light">
+  <div>
     <q-table
       v-if="Object.keys(data[0]).length > 0"
       :data="data"

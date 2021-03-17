@@ -3,10 +3,18 @@
     <!-- content -->
     <section class="header-bg" />
     <section class="body-container">
-      <q-card class="card-container">
+      <q-card
+        v-if="pool.pool_status !== 'open'"
+        style="min-height: 100px"
+        class="row justify-center content-center "
+      >
+        <div v-if="['upcoming', 'closed'].includes(pool.pool_status)">
+          Cannot join {{ pool.pool_status }} pools
+        </div>
+      </q-card>
+      <q-card v-else class="card-container">
         <q-btn
           :to="{ name: 'pooldetails', params: { id: poolID } }"
-          color="primary"
           flat
           round
           class="self-start"
@@ -31,6 +39,8 @@
                   v-model="amount"
                   :rules="[validateInput]"
                   borderless
+                  type="number"
+                  placeholder="0"
                 />
                 <div class="column items-end justify-between">
                   <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
@@ -43,19 +53,15 @@
                       outline
                     />
                     <q-avatar size="40px">
-                      <!-- TODO Create a common component avatars -->
-                      <q-icon
+                      <q-img
                         v-if="BaseTokenSymbol === 'PETH'"
-                        name="fab fa-ethereum"
                         size="40px"
-                        style="color: rgb(130 168 248) "
+                        src="~assets/tokens/peth.png"
                       />
-                      <q-icon
+                      <q-img
                         v-if="BaseTokenSymbol === 'PBTC'"
-                        name="fab fa-bitcoin"
-                        size="42px"
-                        class="bg-secondary"
-                        style="color: rgb(247 143 22)"
+                        size="40px"
+                        src="~assets/tokens/pbtc.png"
                       />
                     </q-avatar>
                     <div class="text-h4">{{ BaseTokenSymbol }}</div>
@@ -66,15 +72,19 @@
             <div class="row justify-between" style="padding: 5px 20px">
               <div>
                 Minimum:
-                {{ $chainToQty(pool.minimum_swap) }} {{ BaseTokenSymbol }}
+                {{ zeroNaN($chainToQty(pool.minimum_swap)) }}
+                {{ BaseTokenSymbol }}
               </div>
               <div>
                 Maximum:
-                {{ $chainToQty(pool.maximum_swap) }}
+                {{ zeroNaN($chainToQty(pool.maximum_swap)) }}
                 {{ BaseTokenSymbol }}
               </div>
             </div>
 
+            <q-item class="justify-center">
+              <q-icon name="fas fa-arrow-down" size="50px" color="primary" />
+            </q-item>
             <!-------->
             <!-- To -->
             <!-------->
@@ -82,19 +92,15 @@
             <q-card flat bordered class="inner-card row ">
               <div class="col row justify-between items-center ">
                 <div class="col input-amount q-pr-lg">
-                  {{ amount * $chainToQty(pool.swap_ratio.quantity) }}
+                  {{ zeroNaN(amount * $chainToQty(pool.swap_ratio.quantity)) }}
                 </div>
                 <div class="column items-end justify-between content-end">
-                  <!-- <div>Balance: ***** {{ TokenSymbol }}</div> -->
                   <div class="row q-gutter-x-sm content-end">
-                    <q-avatar size="40px">
-                      <q-img
-                        v-if="pool.avatar"
-                        :src="pool.avatar"
-                        style="width: 80px"
-                      >
-                      </q-img>
-                    </q-avatar>
+                    <pool-avatar
+                      :avatar="pool.avatar"
+                      :poolID="poolID"
+                      :avatarSize="40"
+                    />
                     <div class="text-h4">{{ TokenSymbol }}</div>
                   </div>
                 </div>
@@ -103,11 +109,12 @@
             <div class="row justify-between" style="padding: 5px 20px">
               <div>
                 1 {{ BaseTokenSymbol }} =
-                {{ $chainToQty(pool.swap_ratio.quantity) }}
+                {{ zeroNaN($chainToQty(pool.swap_ratio.quantity)) }}
                 {{ TokenSymbol }}
               </div>
               <div>
-                Remaining {{ $chainToQty(pool.remaining_offer).toFixed(0) }}
+                Remaining
+                {{ zeroNaN($chainToQty(pool.remaining_offer).toFixed(0)) }}
                 {{ TokenSymbol }}
               </div>
             </div>
@@ -124,9 +131,15 @@
                   :disable="
                     !isAuthenticated ||
                       balance <= $chainToQty(pool.minimum_swap) ||
-                      pool.pool_status !== `open` || not_enough_start
+                      pool.pool_status !== `open` ||
+                      not_enough_start
                   "
                 />
+                <div v-if="not_enough_start" class="q-pt-sm self-center">
+                  You do not have enough START tokens to participate in this
+                  pool.
+                  <a :href="buyStartUrl">Get here</a>
+                </div>
               </q-item-section>
               <q-tooltip v-if="!isAuthenticated">
                 Connect wallet
@@ -138,23 +151,36 @@
                 Not enough START
               </q-tooltip>
             </q-item>
-            <div v-if="not_enough_start">You do not have enough START tokens to participate in this pool. Get here.</div>
           </div>
         </q-form>
 
         <!-- Not enough START to participate in private pool -->
         <q-dialog v-model="stake_warning">
           <q-card>
-            <q-card-section>
-              <div class="text-h6">Alert</div>
+            <q-card-section class="row items-center">
+              <q-icon
+                name="fas fa-exclamation-circle"
+                size="lg"
+                class="q-pr-sm"
+                color="primary"
+              />
+              <div class="text-h6">Private pool</div>
             </q-card-section>
 
             <q-card-section class="q-pt-none">
-              Not enough START tokens to participate in a private pool. Buy here
-              ~linky link~
+              You don't have enough START tokens to participate in a private
+              pool.
             </q-card-section>
 
             <q-card-actions align="right">
+              <q-btn
+                outline
+                type="a"
+                :href="buyStartUrl"
+                label="Buy START"
+                color="accent"
+                class="hover-accent"
+              />
               <q-btn flat label="OK" color="primary" v-close-popup />
             </q-card-actions>
           </q-card>
@@ -164,15 +190,15 @@
         <q-dialog v-model="confirm_stake" persistent>
           <q-card>
             <q-card-section class="row items-center">
-              <q-avatar
-                icon="fas fa-money-bill-alt"
-                color="primary"
-                text-color="white"
-              />
-              <span class="q-ml-sm"
-                >Confirm staking additional 500 START tokens for private
-                access?</span
-              >
+              <q-avatar color="primary" text-color="secondary" class="q-mr-sm">
+                <q-icon name="fas fa-coins" size="28px" />
+              </q-avatar>
+              <span class="text-h6">Confirm stake</span>
+            </q-card-section>
+            <q-card-section>
+              <span>
+                Confirm staking additional 500 START tokens for private access?
+              </span>
             </q-card-section>
 
             <q-card-actions align="right">
@@ -191,32 +217,39 @@
         <!-- Transaction sent dialog -->
         <q-dialog v-model="showTransaction" confirm>
           <q-card>
-            <q-card-section class="row">
-              <q-avatar
-                icon="arrow_forward"
+            <q-card-section class="row items-center">
+              <q-icon
+                name="fas fa-arrow-circle-right"
+                size="lg"
+                class="q-pr-sm"
                 color="primary"
                 text-color="white"
               />
-              <span class="q-ml-sm">
-                Transaction sent, click to view in block explorer.
+              <span class="text-h6">
+                Transaction placed
               </span>
-              <q-item
-                clickable
-                tag="a"
-                target="_blank"
-                :href="`${explorerUrl}/transaction/${transaction}`"
-                class="q-ml-sm"
-                >{{ transaction }}</q-item
-              >
+            </q-card-section>
+            <q-card-section>
+              <q-item>
+                <q-item-label lines="1">
+                  {{ transaction }}
+                </q-item-label>
+              </q-item>
             </q-card-section>
             <q-card-actions align="right">
               <q-btn
+                :to="`/transaction/`"
+                label="Boks.io"
+                color="primary"
                 flat
-                label="Ok"
+              />
+              <q-btn
+                flat
+                label="pool page"
                 color="primary"
                 @click="toAllocationsPage"
                 v-close-popup
-              ></q-btn>
+              />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -227,6 +260,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import poolAvatar from "src/components/poolinfo/pool-avatar";
 
 export default {
   data() {
@@ -234,19 +268,21 @@ export default {
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
       balance: 0,
-      amount: 0,
+      amount: "",
       alreadyStaked: false,
       confirm_stake: false,
       stake_warning: false,
       not_enough_start: false,
       premium_stake: {},
       base_token_symbol: "",
-      showTransaction: null,
+      showTransaction: false,
       transaction: null,
-      explorerUrl: process.env.NETWORK_EXPLORER
+      explorerUrl: process.env.NETWORK_EXPLORER,
+      buyStartUrl:
+        "https://t-starter.medium.com/how-to-participate-in-the-t-starter-seed-round-token-sale-8eb6290c3c15"
     };
   },
-
+  components: { poolAvatar },
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
@@ -272,6 +308,10 @@ export default {
       "getPremiumStake",
       "checkStakedChain"
     ]),
+    zeroNaN(val) {
+      if (isNaN(val)) return 0;
+      else return val;
+    },
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
@@ -290,10 +330,8 @@ export default {
         sym: this.BaseTokenSymbol,
         accountName: this.accountName
       };
-      console.log(await this.getBalanceFromChain(payload))
-      this.balance = this.$chainToQty(
-        (await this.getBalanceFromChain(payload))
-      );
+      console.log(await this.getBalanceFromChain(payload));
+      this.balance = this.$chainToQty(await this.getBalanceFromChain(payload));
     },
 
     setMax() {
@@ -428,7 +466,10 @@ export default {
     this.premium_stake = await this.getPremiumStake();
 
     // check stake if private pool
-    this.alreadyStaked = await this.checkStakedChain({account: this.accountName, poolID: this.poolID});
+    this.alreadyStaked = await this.checkStakedChain({
+      account: this.accountName,
+      poolID: this.poolID
+    });
 
     // if START balance not enough and is private pool, show dialog to buy
     let payload = {
@@ -437,10 +478,13 @@ export default {
       accountName: this.accountName
     };
     let start_balance = this.$chainToQty(
-      (await this.getBalanceFromChain(payload))
+      await this.getBalanceFromChain(payload)
     );
-    console.log("Start balance:" + start_balance)
-    if (start_balance < this.$chainToQty(this.premium_stake.quantity) && this.pool.access_type === "Private") {
+    console.log("Start balance:" + start_balance);
+    if (
+      start_balance < this.$chainToQty(this.premium_stake.quantity) &&
+      this.pool.access_type === "Private"
+    ) {
       this.stake_warning = true;
       this.not_enough_start = true;
     }
@@ -474,6 +518,10 @@ export default {
 // }
 .input-amount {
   font-size: 50px;
+  color: $primary;
+}
+a {
+  text-decoration: none;
   color: $primary;
 }
 </style>

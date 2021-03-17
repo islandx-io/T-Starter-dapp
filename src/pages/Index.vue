@@ -42,7 +42,13 @@ that you may prove what is that good and acceptable and perfect will of God. - R
     <div class="body-container">
       <section class="row justify-center q-gutter-md">
         <h2 class="col-12 text-center">Featured Pools</h2>
-        <div class="poolcard-container col" v-if="featuredIDs.length !== 0">
+        <p class="col-12 text-center" v-if="noFeaturedPools">
+          There are no featured pools at the moment.
+        </p>
+        <div
+          class="poolcard-container col"
+          v-else-if="featuredIDs.length !== 0"
+        >
           <Poolcard
             class="col"
             v-for="id in featuredIDs"
@@ -52,7 +58,13 @@ that you may prove what is that good and acceptable and perfect will of God. - R
         </div>
         <Poolcard v-else class="col-shrink" :poolID="-1" />
         <h2 class="col-12 text-center q-pt-xl">Upcoming Pools</h2>
-        <div class="poolcard-container col" v-if="upcomingIDs.length !== 0">
+        <p class="col-12 text-center" v-if="noUpcomingPools">
+          There are no upcoming pools at the moment.
+        </p>
+        <div
+          class="poolcard-container col"
+          v-else-if="upcomingIDs.length !== 0"
+        >
           <Poolcard
             v-for="id in upcomingIDs"
             :key="'upcoming-' + id"
@@ -83,7 +95,9 @@ export default {
   data() {
     return {
       featuredIDs: [],
-      upcomingIDs: []
+      upcomingIDs: [],
+      noUpcomingPools: false,
+      noFeaturedPools: false
     };
   },
   computed: {
@@ -113,7 +127,9 @@ export default {
   async mounted() {
     // await this.getAllChainPools();
     this.upcomingIDs = await this.getUpcomingChainPools();
+    if (this.upcomingIDs.length === 0) this.noUpcomingPools = true;
     this.featuredIDs = await this.getFeaturedChainPools();
+    if (this.featuredIDs.length === 0) this.noFeaturedPools = true;
   }
 };
 </script>

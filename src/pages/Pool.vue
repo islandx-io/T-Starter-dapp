@@ -8,28 +8,17 @@
         <div class="join-pane col column">
           <q-item>
             <q-item-section top class="col-shrink">
-              <q-avatar size="80px">
-                <q-img
-                  v-if="pool.avatar"
-                  :src="pool.avatar"
-                  style="width: 80px"
-                >
-                  <template v-slot:error>
-                    <div
-                      class="transparent"
-                      style="padding: 0"
-                      v-html="identicon"
-                    />
-                  </template>
-                </q-img>
-                <div v-else v-html="identicon" />
-              </q-avatar>
+              <pool-avatar
+                :avatar="pool.avatar"
+                :poolID="poolID"
+                :avatarSize="80"
+              />
             </q-item-section>
             <q-item-section top class="q-pl-sm">
               <div class="row justify-between content-start items-start">
                 <div>
                   <div class="text-h3 q-pb-md q-pt-sm">{{ pool.title }}</div>
-                  <p class="text-weight-light">
+                  <p>
                     Contract:
                     <a :href="contractURL">{{ pool.swap_ratio.contract }}</a>
                   </p>
@@ -39,7 +28,7 @@
             </q-item-section>
           </q-item>
           <q-item>
-            <p class="text-weight-light">
+            <p>
               {{ pool.tag_line }}
             </p>
           </q-item>
@@ -59,7 +48,7 @@
               class="col row justify-between items-center"
               v-else-if="pool.pool_status === 'open'"
             >
-              <div class="text-weight-light">Closes in:</div>
+              <div>Closes in:</div>
               <status-countdown
                 :deadline="pool.public_end"
                 :poolID="poolID"
@@ -75,8 +64,15 @@
               label="Join pool"
               :disable="pool.pool_status === 'upcoming' || !isAuthenticated"
               v-if="pool.pool_status !== 'closed'"
-            >
-            </q-btn>
+            />
+            <q-btn
+              v-if="pool.owner === accountName"
+              label="Update"
+              outline
+              color="primary"
+              :to="{ name: 'updatepool', params: { id: poolID } }"
+              class="q-ml-sm"
+            />
             <q-tooltip v-if="!isAuthenticated">
               Connect wallet
             </q-tooltip>
@@ -124,12 +120,12 @@
           align="left"
           narrow-indicator
         >
-          <q-tab name="details" label="DETAILS"></q-tab>
-          <q-tab name="overview" label="OVERVIEW"></q-tab>
-          <q-tab name="allocations" label="YOUR ALLOCATIONS"></q-tab>
+          <q-tab name="details" label="DETAILS" />
+          <q-tab name="overview" label="OVERVIEW" />
+          <q-tab name="allocations" label="YOUR ALLOCATIONS" />
         </q-tabs>
 
-        <q-separator></q-separator>
+        <q-separator />
 
         <q-tab-panels
           v-model="tab"
@@ -145,8 +141,8 @@
           </q-tab-panel>
 
           <q-tab-panel name="allocations" @mousedown.stop>
-            <tab-allocations :pool="pool"
-          /></q-tab-panel>
+            <tab-allocations :pool="pool" />
+          </q-tab-panel>
         </q-tab-panels>
 
         <q-inner-loading :showing="pool.title === 'Loading'">
@@ -164,8 +160,8 @@ import tabOverview from "src/components/poolinfo/tab-overview.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
 import statusProgress from "src/components/poolinfo/status-progress";
+import poolAvatar from "src/components/poolinfo/pool-avatar";
 import { mapGetters, mapActions } from "vuex";
-import { toSvg } from "jdenticon";
 import { date } from "quasar";
 
 export default {
@@ -175,7 +171,8 @@ export default {
     tabDetails,
     statusCountdown,
     statusBadge,
-    statusProgress
+    statusProgress,
+    poolAvatar
   },
   data() {
     return {
@@ -190,9 +187,6 @@ export default {
     ...mapGetters("pools", ["getPoolByID"]),
     progressToPercentage() {
       return (this.progress * 100).toFixed(2) + "%";
-    },
-    identicon() {
-      return toSvg(this.poolID, 80);
     },
     contractURL() {
       let contractName = this.pool.swap_ratio.contract;
@@ -252,7 +246,7 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.polling);
-  },
+  }
 };
 </script>
 
