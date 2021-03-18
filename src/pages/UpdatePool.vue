@@ -213,7 +213,7 @@
                   </q-avatar>
                 </q-item-section>
               </q-item>
-              
+
               <!-- web links -->
               <q-item class="weblink-container">
                 <div v-for="link in webLinks" :key="link.key">
@@ -331,7 +331,9 @@
                   label="Close Pool"
                   @click="onClosePool"
                   color="accent"
-                  v-if="Date.now() > pool.public_end && pool.status === ('published')"
+                  v-if="
+                    Date.now() > pool.public_end && pool.status === 'published'
+                  "
                 />
               </q-item-section>
             </q-item>
@@ -360,7 +362,13 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="No" color="primary" @click="tryClosePool(false)" v-close-popup />
+          <q-btn
+            flat
+            label="No"
+            color="primary"
+            @click="tryClosePool(false)"
+            v-close-popup
+          />
           <q-btn
             flat
             label="Yes"
@@ -426,7 +434,7 @@ export default {
       accept: false,
       link_index: -1,
       funded: false,
-      dialog_send_tokens: false,
+      dialog_send_tokens: false
     };
   },
   computed: {
@@ -488,17 +496,23 @@ export default {
     },
     toDateString(timestamp) {
       if (timestamp <= 0) timestamp = new Date().valueOf();
-      return new Date(timestamp).toISOString().slice(0, 16).replace('T', ' ');
+      return new Date(timestamp)
+        .toISOString()
+        .slice(0, 16)
+        .replace("T", " ");
       // return date.formatDate(new Date(timestamp), "YYYY-MM-DD HH:mm");
     },
 
     formatWhitelist() {
-      //clean whitespace
-      if (this.pool.whitelist.includes(' ')) {
-        this.pool.whitelist = this.pool.whitelist.replace(" ", "")
+      // if empty do nothing
+      if (this.pool.whitelist.length !== 0) {
+        //clean whitespace
+        if (this.pool.whitelist.includes(" ")) {
+          this.pool.whitelist = this.pool.whitelist.replace(" ", "");
+        }
+        //split into array
+        this.pool.whitelist = this.pool.whitelist.split(",");
       }
-      //split into array
-      this.pool.whitelist=this.pool.whitelist.split(',')
     },
 
     async setBaseTokenOptions() {
@@ -789,7 +803,7 @@ export default {
     },
 
     async onClosePool() {
-      this.dialog_send_tokens = true      
+      this.dialog_send_tokens = true;
     },
 
     onReset() {}

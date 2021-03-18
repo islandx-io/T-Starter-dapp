@@ -13,7 +13,7 @@
       color="accent"
       label="Claim"
       class="hover-accent self-end q-mt-md"
-      v-if="hasAllocations && pool.pool_status === 'closed'"
+      v-if="hasAllocations && pool.status === ('success' || 'fail')"
       @click="tryClaimTokens"
     />
     <p class="q-pt-md" v-if="!hasAllocations">No allocation to show.</p>
