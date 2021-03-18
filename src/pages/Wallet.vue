@@ -34,6 +34,17 @@
             <div>{{ props.row.token_sym }}</div>
           </q-td>
         </template>
+        <!-- Withdraw buttons -->
+        <template v-slot:body-cell-action="props">
+          <q-td :props="props">
+            <q-btn
+              outline
+              color="negative"
+              @click="tryWithdraw(props)"
+              label="Withdraw"
+            ></q-btn>
+          </q-td>
+        </template>
       </q-table>
       <q-card
         v-else
@@ -68,7 +79,8 @@ export default {
           align: "center"
         },
         { name: "liquid", label: "Liquid", field: "liquid", align: "center" },
-        { name: "locked", label: "Locked", field: "locked", align: "center" }
+        { name: "locked", label: "Locked", field: "locked", align: "center" },
+        { name: "action", label: "Action", field: "action", align: "center" }
       ]
     };
   },
@@ -87,14 +99,56 @@ export default {
       "getChainWalletTable",
       "setWalletBalances",
       "getChainSTART"
-    ])
+    ]),
+
+    async withdrawTokens(amount_str) {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "withdraw",
+          data: {
+            account: this.accountName,
+            quantity: amount_str
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
+    async tryWithdraw(props) {
+      try {
+        let amount_str = this.$toChainString(
+          props.row.liquid,
+          props.row.decimals,
+          props.row.token_sym
+        );
+        await this.withdrawTokens(amount_str);
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Tokens claimed, please refresh"
+        });
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+      }
+    },
+
+    async reloadWalletInfo() {
+      await this.setWalletBaseTokens();
+      await this.getChainWalletTable(this.accountName);
+      await this.getChainSTART(this.accountName);
+      await this.setWalletBalances(this.accountName);
+    }
   },
 
   async mounted() {
-    await this.setWalletBaseTokens();
-    await this.getChainWalletTable(this.accountName);
-    await this.getChainSTART(this.accountName);
-    await this.setWalletBalances(this.accountName);
+    await this.reloadWalletInfo();
   }
 };
 </script>
