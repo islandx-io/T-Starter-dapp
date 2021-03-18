@@ -8,7 +8,7 @@
         <div class="join-pane col column">
           <q-item>
             <q-item-section top class="col-shrink">
-              <pool-avatar
+              <token-avatar
                 :avatar="pool.avatar"
                 :poolID="poolID"
                 :avatarSize="80"
@@ -160,7 +160,7 @@ import tabOverview from "src/components/poolinfo/tab-overview.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
 import statusProgress from "src/components/poolinfo/status-progress";
-import poolAvatar from "src/components/poolinfo/pool-avatar";
+import tokenAvatar from "src/components/TokenAvatar";
 import { mapGetters, mapActions } from "vuex";
 import { date } from "quasar";
 
@@ -172,7 +172,7 @@ export default {
     statusCountdown,
     statusBadge,
     statusProgress,
-    poolAvatar
+    tokenAvatar
   },
   data() {
     return {

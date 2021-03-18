@@ -7,7 +7,7 @@
     <q-card class="col bg-secondary text-black self-stretch">
       <q-item>
         <q-item-section top>
-          <pool-avatar
+          <token-avatar
             :avatar="pool.avatar"
             :poolID="poolID"
             :avatarSize="60"
@@ -65,7 +65,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import poolAvatar from "src/components/poolinfo/pool-avatar";
+import tokenAvatar from "src/components/TokenAvatar";
 import statusBadge from "src/components/poolinfo/status-badge";
 import statusCountdown from "src/components/poolinfo/status-countdown";
 import statusProgress from "src/components/poolinfo/status-progress";
@@ -83,7 +83,7 @@ export default {
       required: false
     }
   },
-  components: { statusBadge, statusCountdown, statusProgress, poolAvatar },
+  components: { statusBadge, statusCountdown, statusProgress, tokenAvatar },
   data() {
     return {
       pool: this.$defaultPoolInfo,

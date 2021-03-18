@@ -1,8 +1,14 @@
 <template>
   <q-avatar :size="`${avatarSize}px`">
+    <q-icon
+      v-if="avatar === 'TLOS'"
+      :size="`${avatarSize}px`"
+      name="fas fa-circle"
+      color="primary"
+    />
     <q-img
-      v-if="avatar"
-      :src="avatar"
+      v-else-if="src"
+      :src="src"
       alt="Avatar"
       :style="`width:${avatarSize}px; height:${avatarSize}px`"
     >
@@ -28,8 +34,7 @@ export default {
     },
     poolID: {
       type: Number,
-      default: 0,
-      required: true
+      default: 0
     },
     avatarSize: {
       type: Number,
@@ -40,6 +45,12 @@ export default {
   computed: {
     identicon() {
       return toSvg(this.poolID, this.avatarSize);
+    },
+    src() {
+      let result = this.avatar;
+      if (this.avatar === "PETH") result = "/tokens/peth.png";
+      else if (this.avatar === "PBTC") result = "/tokens/pbtc.png";
+      return result;
     }
   }
 };
