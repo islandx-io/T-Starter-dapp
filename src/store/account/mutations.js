@@ -24,7 +24,8 @@ export const setWalletToken = (state, { token_sym, token_contract }) => {
     balance: 0,
     liquid: 0,
     locked: 0,
-    decimals: 0
+    decimals: 0,
+    avatar: '',
   };
   // if token in store update, else push
   if (state.wallet.map(a => a.token_sym).includes(token_sym)) {
@@ -51,6 +52,15 @@ export const setWalletTokenLiquid = (state, { token_sym, amount }) => {
 export const setWalletTokenLocked = (state, { token_sym, amount }) => {
   let token = state.wallet.find(a => a.token_sym === token_sym);
   token.locked = amount;
+};
+
+export const setWalletTokenAvatar = (state, { token_sym, avatar }) => {
+  console.log("setting avatar")
+  console.log(avatar)
+  if (state.wallet.find(a => a.token_sym === token_sym).avatar === "") {
+    let token = state.wallet.find(a => a.token_sym === token_sym);
+    token.avatar = avatar;
+  }
 };
 
 export const setWalletTokenDecimals = (state, { token_sym, amount }) => {

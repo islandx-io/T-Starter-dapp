@@ -12,7 +12,8 @@ export default function() {
         balance: 0,
         liquid: 0,
         locked: 0,
-        decimals: 0
+        decimals: 0,
+        avatar: '',
       },
       {
         token_sym: "PETH",
@@ -20,7 +21,8 @@ export default function() {
         balance: 0,
         liquid: 0,
         locked: 0,
-        decimals: 0
+        decimals: 0,
+        avatar: '',
       }
     ]
   };

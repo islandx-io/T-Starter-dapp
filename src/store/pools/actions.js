@@ -17,9 +17,9 @@ export const getChainPoolByID = async function({ commit, dispatch }, id) {
     console.log(poolTable);
 
     //check dates are unix
-    poolTable.pool_open = new Date(poolTable.pool_open + 'Z').valueOf();
-    poolTable.private_end = new Date(poolTable.private_end + 'Z').valueOf();
-    poolTable.public_end = new Date(poolTable.public_end + 'Z').valueOf();
+    poolTable.pool_open = new Date(poolTable.pool_open + "Z").valueOf();
+    poolTable.private_end = new Date(poolTable.private_end + "Z").valueOf();
+    poolTable.public_end = new Date(poolTable.public_end + "Z").valueOf();
 
     commit("updatePoolOnState", { poolTable, id });
     await dispatch("updatePoolSettings", id);
@@ -462,8 +462,9 @@ export const checkStakedChain = async function(
       ) {
         return false;
       } else if (
-        Object.keys(allocationTable).length > 0 &&
-        allocationTable.constructor === Object || liquid_START >= premium_stake_qty // if already made 1st purchase or if have liquid
+        (Object.keys(allocationTable).length > 0 &&
+          allocationTable.constructor === Object) ||
+        liquid_START >= premium_stake_qty // if already made 1st purchase or if have liquid
       ) {
         return true;
       } else {
@@ -479,7 +480,10 @@ export const checkStakedChain = async function(
 };
 
 // get possible base tokens
-export const getBaseTokens = async function({ commit, getters, dispatch }) {
+export const getBaseTokens = async function(
+  { commit, getters, dispatch },
+  return_avatar=false
+) {
   try {
     const tableResults = await this.$api.getTableRows({
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
@@ -489,10 +493,19 @@ export const getBaseTokens = async function({ commit, getters, dispatch }) {
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
-    
-    let base_token_info_list = tableResults.rows.filter(a => a.enabled === 1).map(a => a.token_info)
 
-    return base_token_info_list;
+    if (return_avatar) {
+      let base_token_info_list = tableResults.rows
+        .filter(a => a.enabled === 1);
+
+      return base_token_info_list;
+    } else {
+      let base_token_info_list = tableResults.rows
+        .filter(a => a.enabled === 1)
+        .map(a => a.token_info);
+
+      return base_token_info_list;
+    }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

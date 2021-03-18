@@ -118,13 +118,14 @@ export const accountExists = async function({ commit, dispatch }, accountName) {
 export const setWalletBaseTokens = async function({ commit, dispatch }) {
   try {
     let base_tokens_raw = [];
-    base_tokens_raw = await dispatch("pools/getBaseTokens", "", { root: true });
+    base_tokens_raw = await dispatch("pools/getBaseTokens", true, { root: true });
+    
 
     for (const asset of base_tokens_raw) {
       let token_reformat = {
-        sym: this.$getSymFromAsset(asset),
-        decimals: this.$getDecimalFromAsset(asset),
-        contract: asset.contract
+        sym: this.$getSymFromAsset(asset.token_info),
+        decimals: this.$getDecimalFromAsset(asset.token_info),
+        contract: asset.token_info.contract
       };
       commit("setWalletToken", {
         token_sym: token_reformat.sym,
@@ -133,6 +134,10 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
       commit("setWalletTokenDecimals", {
         token_sym: token_reformat.sym,
         amount: token_reformat.decimals
+      });
+      commit("setWalletTokenAvatar", {
+        token_sym: token_reformat.sym,
+        avatar: asset.avatar
       });
     }
   } catch (error) {
