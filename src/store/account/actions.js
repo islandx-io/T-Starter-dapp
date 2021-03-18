@@ -246,6 +246,9 @@ export const getChainSTART = async function(
         token_sym: 'START',
         amount: staked_START
       });
+      commit("setWalletStakeMaturities", {
+        arr: stakeBalanceTbl.rows[0].stake_maturities
+      });
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });

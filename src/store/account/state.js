@@ -14,6 +14,7 @@ export default function() {
         locked: 0,
         decimals: 0,
         avatar: '',
+        stake_maturities: [],
       },
       {
         token_sym: "PETH",
