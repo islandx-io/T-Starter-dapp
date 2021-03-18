@@ -78,11 +78,11 @@ export const ifPoolFunded = async function({ commit }, payload) {
   const rpc = this.$api.getRpc();
   // console.log(await rpc.history_get_actions(payload.account));
   let actionsTable = (await rpc.history_get_actions(payload.account)).actions;
-  console.log(
-    actionsTable.filter(
-      a => a.action_trace.act.data.memo === `fund pool:${payload.id}`
-    )
-  );
+  // console.log(
+  //   actionsTable.filter(
+  //     a => a.action_trace.act.data.memo === `fund pool:${payload.id}`
+  //   )
+  // );
   if (
     actionsTable.filter(
       a => a.action_trace.act.data.memo === `fund pool:${payload.id}`

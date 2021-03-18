@@ -492,6 +492,15 @@ export default {
       // return date.formatDate(new Date(timestamp), "YYYY-MM-DD HH:mm");
     },
 
+    formatWhitelist() {
+      //clean whitespace
+      if (this.pool.whitelist.includes(' ')) {
+        this.pool.whitelist = this.pool.whitelist.replace(" ", "")
+      }
+      //split into array
+      this.pool.whitelist=this.pool.whitelist.split(',')
+    },
+
     async setBaseTokenOptions() {
       this.base_tokens_raw = await this.getBaseTokens();
       for (
@@ -680,6 +689,7 @@ export default {
         });
       } else {
         this.checkLinks();
+        this.formatWhitelist();
         try {
           await this.updateChainPool();
           this.$q.notify({

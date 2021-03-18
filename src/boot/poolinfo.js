@@ -22,7 +22,7 @@ const defaultPoolInfo = {
   pool_open: loading,
   private_end: loading,
   public_end: loading,
-  whitelist: {},
+  whitelist: [],
   web_links: loading,
   // Not in contract
   slug: loading,
