@@ -108,7 +108,7 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     admin_address() {
-      return process.env.ADMIN_ADDRESS; // Check if undefined
+      return process.env.ADMIN_ADDRESS;
     },
     poolEmoji() {
       let emojiArray = ["🚀", "💦", "💧", "🐊", "🍞", "🥯", "🌲", "🍣"];
