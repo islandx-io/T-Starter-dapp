@@ -12,7 +12,9 @@ const routes = [
   {
     path: "/wallet/:accountName",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", name: 'wallet', component: () => import("pages/Wallet.vue") }]
+    children: [
+      { path: "", name: "wallet", component: () => import("pages/Wallet.vue") }
+    ]
   },
   {
     path: "/transfer",

@@ -6,14 +6,15 @@
     <section class="body-container">
       <q-table
         v-if="isAuthenticated"
-        class="q-pa-md"
-        :data="data"
+        class="wallet-table q-pa-md"
+        :data="wallet"
         :columns="columns"
-        row-key="name"
+        row-key="token_sym"
         hide-pagination
       >
         <template v-slot:header="props">
           <q-tr :props="props">
+            <q-th auto-width key="expand"></q-th>
             <q-th
               v-for="col in props.cols"
               :key="col.name"
@@ -24,43 +25,102 @@
             </q-th>
           </q-tr>
         </template>
-        <template v-slot:body-cell-token="props">
-          <q-td :props="props" class="row justify-start items-center">
-            <token-avatar
-              :avatar="props.row.token_sym"
-              :avatarSize="35"
-              class="q-mr-sm"
-            />
-            <div>{{ props.row.token_sym }}</div>
-          </q-td>
-        </template>
-        <!-- Buttons -->
-        <template v-slot:body-cell-action="props">
-          <q-td :props="props">
-            <q-btn
-              outline
-              color="negative"
-              @click="tryWithdraw(props)"
-              :disable="props.row.liquid === 0"
-              label="Withdraw"
-            ></q-btn>
-            <q-btn
-              outline
-              color="negative"
-              type="a"
-              target="_blank"
-              :href="buyStartUrl"
-              label="Buy"
-              v-if="props.row.token_sym === 'START'"
-            ></q-btn>
-            <q-btn
-              outline
-              color="negative"
-              @click="viewSTART(props)"
-              label="View"
-              v-if="props.row.token_sym === 'START'"
-            ></q-btn>
-          </q-td>
+
+        <template v-slot:body="props">
+          <q-tr
+            :props="props"
+            :key="props.row.token_sym"
+            @click="
+              if (isStart(props.row.token_sym)) props.expand = !props.expand;
+            "
+            :class="isStart(props.row.token_sym) ? 'cursor-pointer' : ''"
+          >
+            <q-td auto-width>
+              <q-btn
+                size="sm"
+                color="accent"
+                round
+                dense
+                outline
+                :icon="props.expand ? 'remove' : 'add'"
+                v-if="isStart(props.row.token_sym)"
+                class="hover-accent"
+              />
+            </q-td>
+            <!-- Avatar -->
+            <q-td :props="props" :key="props.cols[0].name">
+              <div class="row justify-start items-center">
+                <token-avatar
+                  :avatar="props.cols[0].value"
+                  :avatarSize="35"
+                  class="q-mr-sm"
+                />
+                <div>{{ props.cols[0].value }}</div>
+              </div>
+            </q-td>
+
+            <!-- Contract, Balance, Liquid, Locked -->
+            <q-td
+              :props="props"
+              v-for="col in props.cols.slice(1, 4)"
+              :key="col.name"
+            >
+              {{ col.value }}
+            </q-td>
+
+            <!-- Action -->
+            <q-td
+              :props="props"
+              :key="props.cols[props.cols.length - 1].name"
+              class="q-gutter-x-sm"
+            >
+              <q-btn
+                outline
+                color="negative"
+                type="a"
+                target="_blank"
+                :href="buyStartUrl"
+                label="Buy"
+                v-if="isStart(props.row.token_sym)"
+                class="hover-accent"
+              />
+              <q-btn
+                outline
+                color="negative"
+                @click="tryWithdraw(props)"
+                label="Withdraw"
+                class="hover-accent"
+              />
+            </q-td>
+          </q-tr>
+
+          <!-- START expansion -->
+          <q-tr v-show="props.expand" :props="props">
+            <q-td colspan="100%" no-hover>
+              <div class="row justify-center">
+                <q-table
+                  :data="stakeData"
+                  :columns="stakeColumns"
+                  hide-pagination
+                  class="wallet-inner-table"
+                  separator="none"
+                >
+                  <template v-slot:header="props">
+                    <q-tr :props="props">
+                      <q-th
+                        v-for="col in props.cols"
+                        :key="col.name"
+                        :props="props"
+                        style="font-size: 16px; color: gray"
+                      >
+                        {{ col.label }}
+                      </q-th>
+                    </q-tr>
+                  </template>
+                </q-table>
+              </div>
+            </q-td>
+          </q-tr>
         </template>
       </q-table>
       <q-card
@@ -83,32 +143,30 @@ export default {
     return {
       buyStartUrl:
         "https://t-starter.medium.com/how-to-participate-in-the-t-starter-seed-round-token-sale-8eb6290c3c15",
+      // prettier-ignore
       columns: [
         { name: "token", label: "Token", field: "token_sym", align: "left" },
-        // {
-        //   name: "contract",
-        //   label: "Contract",
-        //   field: "token_contract",
-        //   align: "center"
-        // },
-        {
-          name: "balance",
-          label: "Balance",
-          field: "balance",
-          align: "center"
-        },
+        { name: "balance", label: "Balance", field: "balance", align: "center" },
         { name: "liquid", label: "Liquid", field: "liquid", align: "center" },
         { name: "locked", label: "Locked", field: "locked", align: "center" },
         { name: "action", label: "Action", field: "action", align: "center" }
+      ],
+      // prettier-ignore
+      stakeColumns: [
+        { name: "staked", label: "Staked", field: "amount", align: "center" },
+        { name: "releaseDate", label: "Release date", field: "releaseDate", align: "center" }
+      ],
+      // prettier-ignore
+      stakeData: [
+        { releaseDate: "2021-04-14T00:00:00", amount: "1500.0000 START" },
+        { releaseDate: "2021-04-15T00:00:00", amount: "1500.0000 START" },
+        { releaseDate: "2021-04-17T00:00:00", amount: "500.0000 START" }
       ]
     };
   },
   components: { tokenAvatar },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    data() {
-      return this.wallet;
-    }
+    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"])
   },
 
   methods: {
@@ -119,11 +177,9 @@ export default {
       "setWalletBalances",
       "getChainSTART"
     ]),
-
-    viewSTART() {
-      //TODO figure out how to do this.
+    isStart(val) {
+      return val === "START";
     },
-
     async withdrawTokens(amount_str) {
       const actions = [
         {
@@ -181,5 +237,11 @@ export default {
   height: 200px;
   min-width: 490px;
   margin-bottom: -50px;
+}
+.q-table__container.wallet-inner-table {
+  background-color: $secondary;
+  border: 1px solid #dbdddf;
+  box-shadow: none;
+  border-radius: $card-corner-radius;
 }
 </style>
