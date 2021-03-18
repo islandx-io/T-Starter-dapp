@@ -7,11 +7,7 @@
     <q-card class="col bg-secondary text-black self-stretch">
       <q-item>
         <q-item-section top>
-          <token-avatar
-            :avatar="pool.avatar"
-            :poolID="poolID"
-            :avatarSize="60"
-          />
+          <token-avatar :avatar="pool.avatar" :avatarSize="60" />
         </q-item-section>
         <q-item-section top side>
           <div class="text-accent column items-end justify-between">

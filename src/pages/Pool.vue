@@ -8,11 +8,7 @@
         <div class="join-pane col column">
           <q-item>
             <q-item-section top class="col-shrink">
-              <token-avatar
-                :avatar="pool.avatar"
-                :poolID="poolID"
-                :avatarSize="80"
-              />
+              <token-avatar :avatar="pool.avatar" :avatarSize="80" />
             </q-item-section>
             <q-item-section top class="q-pl-sm">
               <div class="row justify-between content-start items-start">
