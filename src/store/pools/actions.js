@@ -14,7 +14,7 @@ export const getChainPoolByID = async function({ commit, dispatch }, id) {
     });
 
     const poolTable = tableResults.rows[tableResults.rows.length - 1];
-    console.log(poolTable);
+    // console.log(poolTable);
 
     //check dates are unix
     poolTable.pool_open = new Date(poolTable.pool_open + "Z").valueOf();
@@ -221,7 +221,7 @@ export const getCreatedChainPools = async function(
       });
       console.log("Created pools:");
       for (const pool of tableResults.rows) {
-        console.log(pool);
+        // console.log(pool);
         let id = pool.id;
 
         //check dates are unix
@@ -381,9 +381,9 @@ export const getAllocationByPool = async function(
       const allocationTable = tableResults.rows.filter(
         a => a.account === payload.account && a.pool_id === payload.poolID
       )[0];
-      console.log("Allocation:");
+      // console.log("Allocation:");
       if (allocationTable !== undefined) {
-        console.log(allocationTable);
+        // console.log(allocationTable);
         return allocationTable;
       } else {
         return {};

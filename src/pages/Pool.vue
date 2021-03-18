@@ -20,7 +20,7 @@
                   <div class="text-h3 q-pb-md q-pt-sm">{{ pool.title }}</div>
                   <p>
                     Contract:
-                    <a :href="contractURL">{{ pool.swap_ratio.contract }}</a>
+                    <a target="_blank" :href="contractURL">{{ pool.swap_ratio.contract }}</a>
                   </p>
                 </div>
                 <status-badge :poolStatus="pool.pool_status"></status-badge>

@@ -715,7 +715,7 @@ export default {
               color: "green-4",
               textColor: "white",
               icon: "cloud_done",
-              message: "Submitted"
+              message: "Published"
             });
           }
         } catch (error) {
@@ -745,7 +745,7 @@ export default {
               color: "green-4",
               textColor: "white",
               icon: "cloud_done",
-              message: "Submitted, please refresh"
+              message: "Funded, please refresh"
             });
           }
         } catch (error) {
@@ -766,7 +766,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Submitted"
+          message: "Pool closed"
         });
       } catch (error) {
         this.$q.notify({
