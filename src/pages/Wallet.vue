@@ -77,7 +77,7 @@
             >
               <q-btn
                 outline
-                color="negative"
+                color="accent"
                 type="a"
                 target="_blank"
                 :href="buyStartUrl"
@@ -87,7 +87,7 @@
               />
               <q-btn
                 outline
-                color="negative"
+                color="accent"
                 @click="tryWithdraw(props)"
                 :disable="props.row.liquid === 0"
                 label="Withdraw"
@@ -159,7 +159,7 @@ export default {
         { name: "releaseDate", label: "Release date", field: "second", align: "center" }
       ],
       // prettier-ignore
-      stakeData: [],
+      stakeData: []
     };
   },
   components: { tokenAvatar },
@@ -221,9 +221,10 @@ export default {
       await this.getChainWalletTable(this.accountName);
       await this.getChainSTART(this.accountName);
       await this.setWalletBalances(this.accountName);
-      this.stakeData = this.wallet.find(a => a.token_sym === 'START').stake_maturities;
-    },
-
+      this.stakeData = this.wallet.find(
+        a => a.token_sym === "START"
+      ).stake_maturities;
+    }
   },
 
   async mounted() {
