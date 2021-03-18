@@ -22,12 +22,12 @@ export default {
   },
   computed: {
     progressToPercentage() {
-      var result = Number(this.progress);
+      var result = Number.parseFloat(this.progress) * 100;
       if (isNaN(result)) result = 0;
       if (result <= 0) {
         result = "";
       } else {
-        result = result.toFixed(2) * 100 + "%";
+        result = result.toFixed(0) + "%";
       }
       return result;
     }
