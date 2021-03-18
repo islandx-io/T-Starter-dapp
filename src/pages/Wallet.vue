@@ -41,6 +41,7 @@
               outline
               color="negative"
               @click="tryWithdraw(props)"
+              :disable="props.row.liquid === 0"
               label="Withdraw"
             ></q-btn>
             <q-btn
@@ -84,12 +85,12 @@ export default {
         "https://t-starter.medium.com/how-to-participate-in-the-t-starter-seed-round-token-sale-8eb6290c3c15",
       columns: [
         { name: "token", label: "Token", field: "token_sym", align: "left" },
-        {
-          name: "contract",
-          label: "Contract",
-          field: "token_contract",
-          align: "center"
-        },
+        // {
+        //   name: "contract",
+        //   label: "Contract",
+        //   field: "token_contract",
+        //   align: "center"
+        // },
         {
           name: "balance",
           label: "Balance",
