@@ -83,11 +83,13 @@ export default {
   data() {
     return {
       pool: this.$defaultPoolInfo,
-      polling: null
+      polling: null,
+      claimable: false
     };
   },
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
 
     hardCap() {
       if (this.pool.hard_cap === "Loading") {
@@ -105,15 +107,30 @@ export default {
     }
   },
   methods: {
+    ...mapActions("pools", ["getAllocationByPool"]),
+
     getPoolInfo: function() {
       const pool = this.getPoolByID(this.poolID);
       if (pool !== undefined) {
         this.pool = pool;
       }
-    }
+    },
+
+    hasAllocations(data) {
+      return Object.keys(data).length > 0;
+    },
+
+    async getClaimStatus() {
+      let payload = { account: this.accountName, poolID: this.pool.id };
+      let allocation = await this.getAllocationByPool(payload);
+      if (this.hasAllocations(allocation) && this.pool.status === ("success" || "fail")) {
+        this.claimable = true
+      }
+    },
   },
-  mounted() {
+  async mounted() {
     this.getPoolInfo();
+    await this.getClaimStatus();
     // Start polling every 2min for any updates
     this.polling = setInterval(() => {
       this.getPoolInfo();

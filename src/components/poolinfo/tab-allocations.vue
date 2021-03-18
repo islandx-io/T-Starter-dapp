@@ -84,7 +84,6 @@ export default {
     }
   },
   async mounted() {
-    // FIXME If the account name is undefined, the table will never update
     let payload = { account: this.accountName, poolID: this.pool.id };
     this.loadingData = true;
     this.data = await this.getAllocationByPool(payload);
