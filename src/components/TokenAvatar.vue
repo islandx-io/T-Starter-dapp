@@ -1,16 +1,10 @@
 <template>
   <q-avatar :size="`${avatarSize}px`">
-    <q-icon
-      v-if="avatar === 'TLOS'"
-      :size="`${avatarSize}px`"
-      name="fas fa-circle"
-      color="primary"
-    />
     <q-img
-      v-else-if="src"
-      :src="src"
+      v-if="src(avatar)"
+      :src="src(avatar)"
       alt="Avatar"
-      :style="`width:${avatarSize}px; height:${avatarSize}px`"
+      :style="avatarStyle"
     >
       <template v-slot:error>
         <div class="transparent" style="padding: 0" v-html="identicon" />
@@ -27,29 +21,38 @@
 import { toSvg } from "jdenticon";
 export default {
   props: {
+    token: {
+      type: String,
+      default: ""
+    },
     avatar: {
       type: String,
-      default: "",
-      required: true
-    },
-    poolID: {
-      type: Number,
-      default: 0
+      default: ""
     },
     avatarSize: {
       type: Number,
-      default: 60,
-      required: false
+      default: 60
     }
   },
   computed: {
     identicon() {
-      return toSvg(this.poolID, this.avatarSize);
+      let val = this.avatar;
+      if (val === "") val = this.token;
+      return toSvg(val, this.avatarSize);
     },
-    src() {
-      let result = this.avatar;
-      if (this.avatar === "PETH") result = "/tokens/peth.png";
-      else if (this.avatar === "PBTC") result = "/tokens/pbtc.png";
+    avatarStyle() {
+      return `width:${this.avatarSize}px; height:${this.avatarSize}px`;
+    }
+  },
+  methods: {
+    src(avatar) {
+      let result = avatar;
+      if (result === "") {
+        if (this.token === "PETH") result = "/tokens/peth.png";
+        else if (this.token === "PBTC") result = "/tokens/pbtc.png";
+        else if (this.token === "START") result = "/tokens/start.png";
+        else if (this.token === "TLOS") result = "/tokens/tlos.png";
+      }
       return result;
     }
   }

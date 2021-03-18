@@ -53,7 +53,7 @@
                       color="positive"
                       outline
                     />
-                    <token-avatar :avatar="BaseTokenSymbol" :avatarSize="40" />
+                    <token-avatar :token="BaseTokenSymbol" :avatarSize="40" />
                     <div class="text-h4">{{ BaseTokenSymbol }}</div>
                   </div>
                 </div>
@@ -86,11 +86,7 @@
                 </div>
                 <div class="column items-end justify-between content-end">
                   <div class="row q-gutter-x-sm content-end">
-                    <token-avatar
-                      :avatar="pool.avatar"
-                      :poolID="poolID"
-                      :avatarSize="40"
-                    />
+                    <token-avatar :avatar="pool.avatar" :avatarSize="40" />
                     <div class="text-h4">{{ TokenSymbol }}</div>
                   </div>
                 </div>
