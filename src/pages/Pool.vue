@@ -16,7 +16,9 @@
                   <div class="text-h3 q-pb-md q-pt-sm">{{ pool.title }}</div>
                   <p>
                     Contract:
-                    <a target="_blank" :href="contractURL">{{ pool.swap_ratio.contract }}</a>
+                    <a target="_blank" :href="contractURL">{{
+                      pool.swap_ratio.contract
+                    }}</a>
                   </p>
                 </div>
                 <status-badge :poolStatus="pool.pool_status"></status-badge>
@@ -118,7 +120,12 @@
         >
           <q-tab name="details" label="DETAILS" />
           <q-tab name="overview" label="OVERVIEW" />
-          <q-tab name="allocations" label="YOUR ALLOCATION" />
+          <q-tab
+            name="allocations"
+            label="YOUR ALLOCATION"
+            class="allocation-tab"
+            :alert="claimable ? 'accent' : claimable"
+          />
         </q-tabs>
 
         <q-separator />
@@ -175,7 +182,8 @@ export default {
       tab: "details",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
-      polling: null
+      polling: null,
+      claimable: false
     };
   },
   computed: {
@@ -217,9 +225,23 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["getChainPoolByID"]),
+    ...mapActions("pools", ["getChainPoolByID", "getAllocationByPool"]),
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
+    },
+    hasAllocations(data) {
+      return Object.keys(data).length > 0;
+    },
+
+    async getClaimStatus() {
+      let payload = { account: this.accountName, poolID: this.pool.id };
+      let allocation = await this.getAllocationByPool(payload);
+      if (
+        this.hasAllocations(allocation) &&
+        this.pool.status === ("success" || "fail")
+      ) {
+        this.claimable = true;
+      }
     },
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
@@ -229,6 +251,7 @@ export default {
     // get data from chain, write to store, get from store
     await this.loadChainData();
     this.getPoolInfo();
+    await this.getClaimStatus();
     // Start polling
     this.polling = setInterval(() => {
       this.getPoolInfo();
