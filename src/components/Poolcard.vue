@@ -4,7 +4,12 @@
     :to="{ name: 'pooldetails', params: { id: poolID } }"
     :event="clickable ? '' : 'click'"
   >
-    <q-card class="col bg-secondary text-black self-stretch">
+    <q-card
+      :class="
+        `col bg-secondary text-black self-stretch ` +
+          `${claimable ? 'claimable' : ''}`
+      "
+    >
       <q-item>
         <q-item-section top>
           <token-avatar :avatar="pool.avatar" :avatarSize="60" />
@@ -83,7 +88,8 @@ export default {
   data() {
     return {
       pool: this.$defaultPoolInfo,
-      polling: null
+      polling: null,
+      claimable: false
     };
   },
   computed: {
@@ -134,6 +140,9 @@ export default {
   border-radius: $card-corner-radius;
   border-color: $secondary;
   box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
+  &.claimable {
+    border: 1px solid $accent;
+  }
 }
 .q-card:hover {
   transform: scale(1.05);
