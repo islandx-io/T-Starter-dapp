@@ -89,6 +89,7 @@
                 outline
                 color="negative"
                 @click="tryWithdraw(props)"
+                :disable="props.row.liquid === 0"
                 label="Withdraw"
                 class="hover-accent"
               />
@@ -154,15 +155,11 @@ export default {
       ],
       // prettier-ignore
       stakeColumns: [
-        { name: "staked", label: "Staked", field: "amount", align: "center" },
-        { name: "releaseDate", label: "Release date", field: "releaseDate", align: "center" }
+        { name: "staked", label: "Staked", field: "first", align: "center" },
+        { name: "releaseDate", label: "Release date", field: "second", align: "center" }
       ],
       // prettier-ignore
-      stakeData: [
-        { releaseDate: "2021-04-14T00:00:00", amount: "1500.0000 START" },
-        { releaseDate: "2021-04-15T00:00:00", amount: "1500.0000 START" },
-        { releaseDate: "2021-04-17T00:00:00", amount: "500.0000 START" }
-      ]
+      stakeData: [],
     };
   },
   components: { tokenAvatar },
@@ -224,7 +221,9 @@ export default {
       await this.getChainWalletTable(this.accountName);
       await this.getChainSTART(this.accountName);
       await this.setWalletBalances(this.accountName);
-    }
+      this.stakeData = this.wallet.find(a => a.token_sym === 'START').stake_maturities;
+    },
+
   },
 
   async mounted() {
