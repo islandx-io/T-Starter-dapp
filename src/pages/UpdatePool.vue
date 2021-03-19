@@ -710,8 +710,9 @@ export default {
             color: "green-4",
             textColor: "white",
             icon: "cloud_done",
-            message: "Submitted"
+            message: "Updated"
           });
+          this.redirectPoolPage();
         } catch (error) {
           this.$q.notify({
             color: "red-5",
@@ -741,6 +742,7 @@ export default {
               icon: "cloud_done",
               message: "Published"
             });
+            this.redirectPoolPage();
           }
         } catch (error) {
           this.$q.notify({
@@ -769,8 +771,9 @@ export default {
               color: "green-4",
               textColor: "white",
               icon: "cloud_done",
-              message: "Funded, please refresh"
+              message: "Funded"
             });
+            this.redirectPoolPage();
           }
         } catch (error) {
           this.$q.notify({
@@ -806,7 +809,14 @@ export default {
       this.dialog_send_tokens = true;
     },
 
-    onReset() {}
+    onReset() {},
+
+    redirectPoolPage() {
+      this.$router.push({
+        name: "pooldetails",
+        params: { id: this.poolID },
+      });
+    },
 
     // addLinkField() {
     //   console.log(this.pool.web_links);
