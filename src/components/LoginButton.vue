@@ -12,9 +12,8 @@
     <q-btn-group outline>
       <q-btn
         class="hover-accent"
-        text-color="secondary"
+        text-color="black"
         color="secondary"
-        outline
         label="Logout"
         v-if="showLogout"
         @click="
@@ -95,9 +94,7 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
-    return { showLogin: false, error: null, showLogout: false, 
-    balanceSTR: 0,
-    };
+    return { showLogin: false, error: null, showLogout: false, balanceSTR: 0 };
   },
   computed: {
     ...mapGetters("account", [
@@ -105,7 +102,7 @@ export default {
       "accountName",
       "loading",
       "isAutoLoading"
-    ]),
+    ])
   },
   methods: {
     ...mapActions("account", ["login", "logout", "autoLogin"]),
@@ -140,9 +137,10 @@ export default {
         sym: "START",
         accountName: this.accountName
       };
-      this.balanceSTR =  this.$chainStrReformat((await this.getBalanceFromChain(payload)))
-    },
-
+      this.balanceSTR = this.$chainStrReformat(
+        await this.getBalanceFromChain(payload)
+      );
+    }
   },
   async mounted() {
     await this.autoLogin(this.$route.query.returnUrl);
