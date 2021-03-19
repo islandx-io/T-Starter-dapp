@@ -9,19 +9,19 @@
       <h5>{{ this.$toDate(pool.pool_open) }}</h5>
     </div>
     <div v-if="pool.access_type === 'Private'">
-      <h6>Private end time:</h6>
+      <h6>Private Closing Time:</h6>
       <h5>{{ this.$toDate(pool.private_end) }}</h5>
     </div>
     <div>
-      <h6>Public end time:</h6>
+      <h6>Public Closing Time:</h6>
       <h5>{{ this.$toDate(pool.public_end) }}</h5>
     </div>
     <div>
-      <h6>Minimum allocation:</h6>
+      <h6>Minimum Allocation:</h6>
       <h5>{{ this.$chainStrReformat(pool.minimum_swap) }}</h5>
     </div>
     <div>
-      <h6>Maximum allocation:</h6>
+      <h6>Maximum Allocation:</h6>
       <h5>{{ this.$chainStrReformat(pool.maximum_swap) }}</h5>
     </div>
   </div>
