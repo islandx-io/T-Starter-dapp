@@ -5,15 +5,15 @@
       <h5>{{ pool.access_type }}</h5>
     </div>
     <div>
-      <h6>Sale open:</h6>
+      <h6>Opening Time:</h6>
       <h5>{{ this.$toDate(pool.pool_open) }}</h5>
     </div>
     <div v-if="pool.access_type === 'Private'">
-      <h6>Private sale end:</h6>
+      <h6>Private end time:</h6>
       <h5>{{ this.$toDate(pool.private_end) }}</h5>
     </div>
     <div>
-      <h6>Public sale end:</h6>
+      <h6>Public end time:</h6>
       <h5>{{ this.$toDate(pool.public_end) }}</h5>
     </div>
     <div>

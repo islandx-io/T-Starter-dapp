@@ -154,7 +154,7 @@
                   <datetime-field
                     :value.sync="pool_open"
                     :pool="pool"
-                    label="Sale start (UTC) *"
+                    label="Opening time (UTC) *"
                     class="q-pb-md"
                   />
                 </q-item-section>
@@ -164,14 +164,14 @@
                   <datetime-field
                     :value.sync="private_end"
                     :pool="pool"
-                    label="Private sale end (UTC) *"
+                    label="Private end time (UTC) *"
                   />
                 </q-item-section>
                 <q-item-section>
                   <datetime-field
                     :value.sync="public_end"
                     :pool="pool"
-                    label="Public sale end (UTC) *"
+                    label="Public end time (UTC) *"
                   />
                 </q-item-section>
               </q-item>

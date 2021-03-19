@@ -97,7 +97,7 @@
               <h5>{{ pool.participants }}</h5>
             </div>
             <div class="row justify-between">
-              <h6>Sale progress:</h6>
+              <h6>Progress:</h6>
               <h5>{{ progressLabel }}</h5>
             </div>
             <status-progress :progress="pool.progress" />
