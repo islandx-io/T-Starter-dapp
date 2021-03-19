@@ -154,7 +154,7 @@
                   <datetime-field
                     :value.sync="pool_open"
                     :pool="pool"
-                    label="Sale start (UTC) *"
+                    label="Opening time (UTC) *"
                     class="q-pb-md"
                   />
                 </q-item-section>
@@ -164,14 +164,14 @@
                   <datetime-field
                     :value.sync="private_end"
                     :pool="pool"
-                    label="Private sale end (UTC) *"
+                    label="Private end time (UTC) *"
                   />
                 </q-item-section>
                 <q-item-section>
                   <datetime-field
                     :value.sync="public_end"
                     :pool="pool"
-                    label="Public sale end (UTC) *"
+                    label="Public end time (UTC) *"
                   />
                 </q-item-section>
               </q-item>
@@ -710,8 +710,9 @@ export default {
             color: "green-4",
             textColor: "white",
             icon: "cloud_done",
-            message: "Submitted"
+            message: "Updated"
           });
+          this.redirectPoolPage();
         } catch (error) {
           this.$q.notify({
             color: "red-5",
@@ -741,6 +742,7 @@ export default {
               icon: "cloud_done",
               message: "Published"
             });
+            this.redirectPoolPage();
           }
         } catch (error) {
           this.$q.notify({
@@ -769,8 +771,9 @@ export default {
               color: "green-4",
               textColor: "white",
               icon: "cloud_done",
-              message: "Funded, please refresh"
+              message: "Funded"
             });
+            this.redirectPoolPage();
           }
         } catch (error) {
           this.$q.notify({
@@ -806,7 +809,14 @@ export default {
       this.dialog_send_tokens = true;
     },
 
-    onReset() {}
+    onReset() {},
+
+    redirectPoolPage() {
+      this.$router.push({
+        name: "pooldetails",
+        params: { id: this.poolID },
+      });
+    },
 
     // addLinkField() {
     //   console.log(this.pool.web_links);

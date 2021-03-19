@@ -13,7 +13,7 @@ export default function() {
         liquid: 0,
         locked: 0,
         decimals: 0,
-        avatar: '',
+        avatar: "",
         stake_maturities: [],
       },
       {
@@ -23,7 +23,7 @@ export default function() {
         liquid: 0,
         locked: 0,
         decimals: 0,
-        avatar: '',
+        avatar: "",
       }
     ]
   };
