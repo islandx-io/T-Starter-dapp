@@ -144,7 +144,6 @@ export default {
           Object.keys(allocation).length > 0 &&
           joined_pool.status === ("success" || "fail")
         ) {
-          console.log('hey')
           this.claimable = true;
         }
       }
