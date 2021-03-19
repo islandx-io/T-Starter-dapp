@@ -28,14 +28,8 @@ export const setWalletToken = (state, { token_sym, token_contract }) => {
     avatar: ""
   };
   // if token in store update, else push
-  if (state.wallet.map(a => a.token_sym).includes(token_sym)) {
-    state.wallet[
-      state.wallet.findIndex(a => a.token_sym === token_sym)
-    ] = walletObj;
-    // console.log(poolTable);
-  } else {
+  if (!state.wallet.map(a => a.token_sym).includes(token_sym)) {
     state.wallet.push(walletObj);
-    // console.log(poolTable);
   }
 };
 
@@ -57,7 +51,9 @@ export const setWalletTokenLocked = (state, { token_sym, amount }) => {
 export const setWalletTokenAvatar = (state, { token_sym, avatar }) => {
   if (state.wallet.find(a => a.token_sym === token_sym).avatar === "") {
     let token = state.wallet.find(a => a.token_sym === token_sym);
+    console.log(token.avatar)
     token.avatar = avatar;
+    console.log(token.avatar)
   }
 };
 
