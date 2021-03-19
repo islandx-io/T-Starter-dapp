@@ -118,7 +118,7 @@
                     !isAuthenticated ||
                       balance <= $chainToQty(pool.minimum_swap) ||
                       pool.pool_status !== `open` ||
-                      not_enough_start
+                      not_enough_start || joining
                   "
                 />
                 <div v-if="not_enough_start" class="q-pt-sm self-center">
@@ -261,6 +261,7 @@ export default {
       confirm_stake: false,
       stake_warning: false,
       not_enough_start: false,
+      joining: false,
       premium_stake: {},
       base_token_symbol: "",
       showTransaction: false,
@@ -414,6 +415,7 @@ export default {
           icon: "cloud_done",
           message: "Submitted"
         });
+        this.joining = false
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -421,10 +423,12 @@ export default {
           icon: "warning",
           message: `${error}`
         });
+        this.joining = false
       }
     },
 
     async onSubmit() {
+      this.joining = true
       if (!this.isAuthenticated) {
         this.$q.notify({
           color: "red-5",
