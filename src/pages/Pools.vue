@@ -135,6 +135,7 @@ export default {
       return new_id_list;
     },
 
+    // If any joined pools claimable, show alert
     async findClaimable() {
       for (const id of this.joinedIDs) {
         const joined_pool = this.getPoolByID(id);
@@ -149,6 +150,7 @@ export default {
       }
     }
   },
+  
   async mounted() {
     await this.getAllChainPools();
     await this.getCreatedChainPools(this.accountName);
