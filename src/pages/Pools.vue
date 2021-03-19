@@ -53,12 +53,7 @@
           class="poolcard-container"
           @mousedown.stop
         >
-          <Poolcard
-            @isClaimable="claimable=true"
-            v-for="id in joinedIDs_sorted"
-            :key="id"
-            :poolID="id"
-          />
+          <Poolcard v-for="id in joinedIDs_sorted" :key="id" :poolID="id" />
         </q-tab-panel>
 
         <q-tab-panel
@@ -88,7 +83,7 @@ export default {
       tab: "all-pools",
       joinedIDs: [],
       featuredIDs: [],
-      claimable: false,
+      claimable: false
     };
   },
   computed: {
@@ -96,7 +91,8 @@ export default {
       "getAllPoolIDs",
       "getCreatedPoolIDs",
       "getPublishedPoolIDs",
-      "getPoolIDsByStatus"
+      "getPoolIDsByStatus",
+      "getPoolByID"
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     poolIDs() {
@@ -121,7 +117,9 @@ export default {
       "getCreatedChainPools",
       "getJoinedChainPools",
       "getFeaturedChainPools",
-      "getUpcomingPools"
+      "getUpcomingPools",
+      "getChainPoolByID",
+      "getAllocationByPool"
     ]),
 
     sortPools(id_list) {
@@ -135,6 +133,21 @@ export default {
       new_id_list = new_id_list.filter(value => id_list.includes(value));
       // console.log(new_id_list);
       return new_id_list;
+    },
+
+    async findClaimable() {
+      for (const id of this.joinedIDs) {
+        const joined_pool = this.getPoolByID(id);
+        let payload = { account: this.accountName, poolID: id};
+        let allocation = await this.getAllocationByPool(payload);
+        if (
+          Object.keys(allocation).length > 0 &&
+          joined_pool.status === ("success" || "fail")
+        ) {
+          console.log('hey')
+          this.claimable = true;
+        }
+      }
     }
   },
   async mounted() {
@@ -142,6 +155,7 @@ export default {
     await this.getCreatedChainPools(this.accountName);
     this.joinedIDs = await this.getJoinedChainPools(this.accountName);
     this.featuredIDs = await this.getFeaturedChainPools();
+    await this.findClaimable();
   }
 };
 </script>
