@@ -2,7 +2,7 @@
   <div>
     <div v-if="pool.web_links !== 'Loading'">
       <li v-for="link in webLinks" :key="link.id">
-        <a :href="link.value">
+        <a :href="link.value" target="_blank">
           <q-icon size="16px" :name="iconName(link.key)" class="q-pr-xs" />
           {{ link.key.toUpperCase() }}
         </a>
