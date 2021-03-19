@@ -155,8 +155,8 @@ export default {
       ],
       // prettier-ignore
       stakeColumns: [
-        { name: "staked", label: "Staked", field: "first", align: "center" },
-        { name: "releaseDate", label: "Release date", field: "second", align: "center" }
+        { name: "staked", label: "Staked", field: "second", align: "center" },
+        { name: "releaseDate", label: "Release date", field: "first", align: "center" },
       ],
       // prettier-ignore
       stakeData: []
