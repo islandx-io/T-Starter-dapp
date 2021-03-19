@@ -16,7 +16,11 @@
       >
         <q-tab name="all-pools" label="ALL POOLS"></q-tab>
         <q-tab name="featured-pools" label="FEATURED POOLS"></q-tab>
-        <q-tab name="joined-pools" label="POOLS JOINED"></q-tab>
+        <q-tab
+          name="joined-pools"
+          label="POOLS JOINED"
+          :alert="claimable ? 'accent' : claimable"
+        ></q-tab>
         <q-tab name="created-pools" label="POOLS CREATED"></q-tab>
       </q-tabs>
 
@@ -49,7 +53,12 @@
           class="poolcard-container"
           @mousedown.stop
         >
-          <Poolcard v-for="id in joinedIDs_sorted" :key="id" :poolID="id" />
+          <Poolcard
+            @isClaimable="claimable=true"
+            v-for="id in joinedIDs_sorted"
+            :key="id"
+            :poolID="id"
+          />
         </q-tab-panel>
 
         <q-tab-panel
@@ -78,7 +87,8 @@ export default {
     return {
       tab: "all-pools",
       joinedIDs: [],
-      featuredIDs: []
+      featuredIDs: [],
+      claimable: false,
     };
   },
   computed: {
@@ -125,8 +135,7 @@ export default {
       new_id_list = new_id_list.filter(value => id_list.includes(value));
       // console.log(new_id_list);
       return new_id_list;
-    },
-
+    }
   },
   async mounted() {
     await this.getAllChainPools();

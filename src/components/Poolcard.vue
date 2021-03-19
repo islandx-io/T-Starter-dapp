@@ -130,6 +130,7 @@ export default {
       let allocation = await this.getAllocationByPool(payload);
       if (this.hasAllocations(allocation) && this.pool.status === ("success" || "fail")) {
         this.claimable = true
+        this.$emit("isClaimable")
       }
     },
   },
