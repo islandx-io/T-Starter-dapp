@@ -482,7 +482,7 @@ export const checkStakedChain = async function(
 // get possible base tokens
 export const getBaseTokens = async function(
   { commit, getters, dispatch },
-  return_avatar=false
+  return_avatar = false
 ) {
   try {
     const tableResults = await this.$api.getTableRows({
@@ -495,8 +495,7 @@ export const getBaseTokens = async function(
     });
 
     if (return_avatar) {
-      let base_token_info_list = tableResults.rows
-        .filter(a => a.enabled === 1);
+      let base_token_info_list = tableResults.rows.filter(a => a.enabled === 1);
 
       return base_token_info_list;
     } else {
