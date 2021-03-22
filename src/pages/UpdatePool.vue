@@ -342,8 +342,20 @@
 
         <div v-else>You are not the owner of this pool</div>
 
-        <div v-if="pool.status === 'success'">Pool success</div>
-        <div v-if="pool.status === 'fail'">Pool failed</div>
+        <q-banner
+          inline-actions
+          class="text-white bg-green"
+          v-if="pool.status === 'success'"
+          >Pool success!
+        </q-banner>
+
+        <q-banner
+          inline-actions
+          class="text-white bg-red"
+          v-if="pool.status === 'fail'"
+          >Pool failed.
+        </q-banner>
+
       </q-card>
     </section>
 
@@ -814,9 +826,9 @@ export default {
     redirectPoolPage() {
       this.$router.push({
         name: "pooldetails",
-        params: { id: this.poolID },
+        params: { id: this.poolID }
       });
-    },
+    }
 
     // addLinkField() {
     //   console.log(this.pool.web_links);
