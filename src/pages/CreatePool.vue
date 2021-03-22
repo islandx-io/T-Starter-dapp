@@ -3,7 +3,7 @@
     <section class="header-bg row content-center justify-center">
       <h2 class="text-white">Create Pool</h2>
     </section>
-    <section class="body-container">
+    <section class="body-container" v-if="accountName === admin_address">
       <q-card>
         <q-form @submit="onSubmit" @reset="onReset">
           <!-- tokens and adresses -->
@@ -42,6 +42,9 @@
           </q-list>
         </q-form>
       </q-card>
+    </section>
+    <section class="body-container" v-else>
+      <q-card> You are not the administrator</q-card>
     </section>
   </q-page>
 </template>

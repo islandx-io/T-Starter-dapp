@@ -52,7 +52,7 @@
               :label="'Wallet'"
               v-if="isAuthenticated"
             />
-            <q-btn color="accent" to="/pools" label="Pools ⛲" />
+            <q-btn color="accent" to="/pools" :label="'Pools ' + poolEmoji" />
             <q-btn
               color="accent"
               to="/createpool"

@@ -132,14 +132,16 @@ export default {
 
     // TODO get all base tokens dynamically, also show START tokens
     async getBalance() {
-      let payload = {
-        address: "token.start",
-        sym: "START",
-        accountName: this.accountName
-      };
-      this.balanceSTR = this.$chainStrReformat(
-        await this.getBalanceFromChain(payload)
-      );
+      if (this.isAuthenticated) {
+        let payload = {
+          address: "token.start",
+          sym: "START",
+          accountName: this.accountName
+        };
+        this.balanceSTR = this.$chainStrReformat(
+          await this.getBalanceFromChain(payload)
+        );
+      }
     }
   },
   async mounted() {
