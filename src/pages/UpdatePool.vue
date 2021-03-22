@@ -243,8 +243,8 @@
                     lazy-rules
                     :rules="[
                       val =>
-                        (val && val.length > 1 && val.length < 230) ||
-                        'Must specify'
+                        (val.length > 1 && val.length < 230) ||
+                        'Must be below 230 characters'
                     ]"
                     outlined
                     debounce="500"
@@ -260,7 +260,7 @@
                     autogrow
                     label="Description *"
                     lazy-rules
-                    :rules="[val => (val && val.length > 1) || 'Must specify']"
+                    :rules="[val => (val.length > 1 && val.length < 4000) || 'Must be below 4000 characters']"
                     outlined
                     debounce="1000"
                     type="textarea"
@@ -342,6 +342,7 @@
 
         <div v-else>You are not the owner of this pool</div>
 
+        <!-- Pool status banners -->
         <q-banner
           inline-actions
           class="text-white bg-green"
@@ -354,6 +355,20 @@
           class="text-white bg-red"
           v-if="pool.status === 'fail'"
           >Pool failed.
+        </q-banner>
+
+        <q-banner
+          inline-actions
+          class="text-white bg-orange"
+          v-if="pool.status === 'published'"
+          >Pool in progress.
+        </q-banner>
+
+        <q-banner
+          inline-actions
+          class="text-white bg-grey"
+          v-if="pool.status === 'draft'"
+          >Pool not published yet.
         </q-banner>
 
       </q-card>
