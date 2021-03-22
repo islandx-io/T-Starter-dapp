@@ -243,9 +243,11 @@
                     lazy-rules
                     :rules="[
                       val =>
-                        (val.length > 1 && val.length < 230) ||
-                        'Must be below 230 characters'
+                        (val.length > 1) ||
+                        'Must specify'
                     ]"
+                    counter
+                    maxlength="230"
                     outlined
                     debounce="500"
                     style="padding-top:20px"
@@ -260,10 +262,14 @@
                     autogrow
                     label="Description *"
                     lazy-rules
-                    :rules="[val => (val.length > 1 && val.length < 4000) || 'Must be below 4000 characters']"
+                    :rules="[
+                      val => val.length > 1 || 'Must specify'
+                    ]"
                     outlined
                     debounce="1000"
                     type="textarea"
+                    counter
+                    maxlength="4000"
                   />
                 </q-item-section>
               </q-item>
@@ -370,7 +376,6 @@
           v-if="pool.status === 'draft'"
           >Pool not published yet.
         </q-banner>
-
       </q-card>
     </section>
 
