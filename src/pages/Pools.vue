@@ -83,6 +83,7 @@ export default {
       tab: "all-pools",
       joinedIDs: [],
       featuredIDs: [],
+      claimableIDs: [],
       claimable: false
     };
   },
@@ -127,10 +128,12 @@ export default {
       let open_pools = this.getPoolIDsByStatus("open");
       let upcoming_pools_ids = this.getPoolIDsByStatus("upcoming");
       let closed_pools = this.getPoolIDsByStatus("closed");
+      new_id_list = new_id_list.concat(this.claimableIDs);
       new_id_list = new_id_list.concat(open_pools);
       new_id_list = new_id_list.concat(upcoming_pools_ids);
       new_id_list = new_id_list.concat(closed_pools);
       new_id_list = new_id_list.filter(value => id_list.includes(value));
+      new_id_list = [...new Set(new_id_list)]; // remove duplicates
       // console.log(new_id_list);
       return new_id_list;
     },
@@ -146,6 +149,7 @@ export default {
           joined_pool.status === ("success" || "fail")
         ) {
           this.claimable = true;
+          this.claimableIDs.push(id)
         }
       }
     }

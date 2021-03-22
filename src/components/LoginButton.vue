@@ -130,7 +130,6 @@ export default {
       }
     },
 
-    // TODO get all base tokens dynamically, also show START tokens
     async getBalance() {
       if (this.isAuthenticated) {
         let payload = {
