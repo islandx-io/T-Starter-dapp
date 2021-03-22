@@ -135,7 +135,7 @@ export default {
       return process.env.ADMIN_ADDRESS;
     },
     poolEmoji() {
-      let emojiArray = ["🚀", "💦", "💧", "🐊", "🍞", "🥯", "🌲", "🍣"];
+      let emojiArray = ["🚀", "💦", "💧", "🦖", "🧀", "🍞", "🌍", "🛸", "🌊", "🌌"];
       return emojiArray[Math.floor(Math.random() * emojiArray.length)];
     }
   }
