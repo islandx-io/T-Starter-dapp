@@ -88,9 +88,19 @@
               <q-btn
                 outline
                 color="accent"
+                @click="tryReclaim(props)"
+                :disable="props.row.liquid === 0"
+                label="Withdraw"
+                v-if="isStart(props.row.token_sym)"
+                class="hover-accent"
+              />
+              <q-btn
+                outline
+                color="accent"
                 @click="tryWithdraw(props)"
                 :disable="props.row.liquid === 0"
                 label="Withdraw"
+                v-if="!isStart(props.row.token_sym)"
                 class="hover-accent"
               />
             </q-td>
@@ -192,6 +202,20 @@ export default {
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
+    async reclaimTokens(amount_str) {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "reclaimstake",
+          data: {
+            account: this.accountName,
+            quantity: amount_str
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
     async tryWithdraw(props) {
       try {
         let amount_str = this.$toChainString(
@@ -200,6 +224,30 @@ export default {
           props.row.token_sym
         );
         await this.withdrawTokens(amount_str);
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Tokens claimed, please refresh"
+        });
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+      }
+    },
+
+    async tryReclaim(props) {
+      try {
+        let amount_str = this.$toChainString(
+          props.row.liquid,
+          props.row.decimals,
+          props.row.token_sym
+        );
+        await this.reclaimTokens(amount_str);
         this.$q.notify({
           color: "green-4",
           textColor: "white",
