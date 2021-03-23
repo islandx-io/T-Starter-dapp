@@ -443,8 +443,7 @@ export const checkStakedChain = async function(
         account: payload.account,
         poolID: payload.poolID
       });
-      console.log("allocation table");
-      console.log(allocationTable);
+      
 
       // get premium stake
       const premium_stake = await dispatch("getPremiumStake");
