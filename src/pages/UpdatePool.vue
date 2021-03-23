@@ -7,7 +7,7 @@
     <section class="body-container">
       <q-card>
         <q-form
-          v-if="this.accountName === this.pool.owner"
+          v-if="accountName === pool.owner"
           @submit="onSubmit"
           @reset="onReset"
           ref="updateForm"
@@ -241,11 +241,7 @@
                     autogrow
                     label="Tag line *"
                     lazy-rules
-                    :rules="[
-                      val =>
-                        (val.length > 1) ||
-                        'Must specify'
-                    ]"
+                    :rules="[val => val.length > 1 || 'Must specify']"
                     counter
                     maxlength="230"
                     outlined
@@ -262,9 +258,7 @@
                     autogrow
                     label="Description *"
                     lazy-rules
-                    :rules="[
-                      val => val.length > 1 || 'Must specify'
-                    ]"
+                    :rules="[val => val.length > 1 || 'Must specify']"
                     outlined
                     debounce="1000"
                     type="textarea"
@@ -290,7 +284,7 @@
             <q-item>
               <q-toggle
                 v-model="accept"
-                label="I accept the license and terms"
+                label="I accept the terms and conditions"
                 el="accept"
               />
             </q-item>
@@ -346,7 +340,14 @@
           </q-list>
         </q-form>
 
-        <div v-else>You are not the owner of this pool</div>
+        <div v-else-if="pool.owner === 'Loading'" style="min-height: 80px">
+          <q-inner-loading :showing="pool.owner === 'Loading'">
+            <q-spinner-puff size="50px" color="primary" />
+          </q-inner-loading>
+        </div>
+        <div v-else>
+          You are not the owner of this pool
+        </div>
 
         <!-- Pool status banners -->
         <q-banner
@@ -388,9 +389,9 @@
             color="primary"
             text-color="white"
           />
-          <span class="q-ml-sm"
-            >Send tokens to participants? (Additional costs may incur)</span
-          >
+          <span class="q-ml-sm">
+            Send tokens to participants?
+          </span>
         </q-card-section>
 
         <q-card-actions align="right">
@@ -731,7 +732,7 @@ export default {
           color: "red-5",
           textColor: "white",
           icon: "warning",
-          message: "You need to accept the license and terms first"
+          message: "You need to accept the terms and conditions first"
         });
       } else {
         this.checkLinks();
@@ -762,7 +763,7 @@ export default {
           color: "red-5",
           textColor: "white",
           icon: "warning",
-          message: "You need to accept the license and terms first"
+          message: "You need to accept the terms and conditions first"
         });
       } else {
         try {
@@ -793,7 +794,7 @@ export default {
           color: "red-5",
           textColor: "white",
           icon: "warning",
-          message: "You need to accept the license and terms first"
+          message: "You need to accept the terms and conditions first"
         });
       } else {
         try {
