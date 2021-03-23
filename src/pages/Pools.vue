@@ -14,14 +14,14 @@
         align="justify"
         narrow-indicator
       >
-        <q-tab name="all-pools" label="ALL POOLS"></q-tab>
-        <q-tab name="featured-pools" label="FEATURED POOLS"></q-tab>
+        <q-tab name="all-pools" label="ALL"></q-tab>
+        <q-tab name="featured-pools" label="FEATURED"></q-tab>
         <q-tab
           name="joined-pools"
-          label="POOLS JOINED"
+          label="JOINED"
           :alert="claimable ? 'accent' : claimable"
         ></q-tab>
-        <q-tab name="created-pools" label="POOLS CREATED"></q-tab>
+        <q-tab name="created-pools" label="CREATED"></q-tab>
       </q-tabs>
 
       <q-separator></q-separator>
@@ -142,19 +142,19 @@ export default {
     async findClaimable() {
       for (const id of this.joinedIDs) {
         const joined_pool = this.getPoolByID(id);
-        let payload = { account: this.accountName, poolID: id};
+        let payload = { account: this.accountName, poolID: id };
         let allocation = await this.getAllocationByPool(payload);
         if (
           Object.keys(allocation).length > 0 &&
           joined_pool.status === ("success" || "fail")
         ) {
           this.claimable = true;
-          this.claimableIDs.push(id)
+          this.claimableIDs.push(id);
         }
       }
     }
   },
-  
+
   async mounted() {
     await this.getAllChainPools();
     await this.getCreatedChainPools(this.accountName);

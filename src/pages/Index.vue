@@ -149,6 +149,10 @@ export default {
   margin-top: 0px;
   margin-bottom: 15px;
   max-width: 600px;
+  @media only screen and (max-width: 390px) {
+    font-size: 38px;
+    line-height: 50px;
+  }
 }
 .header-container h2 span {
   color: $accent;
