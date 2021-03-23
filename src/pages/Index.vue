@@ -59,6 +59,16 @@ that you may prove what is that good and acceptable and perfect will of God. - R
         </div>
         <Poolcard v-else class="col-shrink" :poolID="-1" />
 
+        <!-- Open pools -->
+        <h2 class="col-12 text-center q-pt-xl">Open Pools</h2>
+        <p class="col-12 text-center" v-if="openIDs.length === 0">
+          There are no open pools at the moment.
+        </p>
+        <div class="poolcard-container col" v-else-if="openIDs.length !== 0">
+          <Poolcard v-for="id in openIDs" :key="'open-' + id" :poolID="id" />
+        </div>
+        <Poolcard v-else class="col-shrink" :poolID="-1" />
+
         <!-- Upcoming pools -->
         <h2 class="col-12 text-center q-pt-xl">Upcoming Pools</h2>
         <p class="col-12 text-center" v-if="noUpcomingPools">
@@ -74,17 +84,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             :poolID="id"
           />
         </div>
-        <Poolcard v-else class="col-shrink" :poolID="-1" />
-
-        <!-- Open pools -->
-        <h2 class="col-12 text-center q-pt-xl">Open Pools</h2>
-        <p class="col-12 text-center" v-if="openIDs.length === 0">
-          There are no open pools at the moment.
-        </p>
-        <div class="poolcard-container col" v-else-if="openIDs.length !== 0">
-          <Poolcard v-for="id in openIDs" :key="'open-' + id" :poolID="id" />
-        </div>
-        <Poolcard v-else class="col-shrink" :poolID="-1" />
+        <Poolcard v-else class="col-shrink" :poolID="-1" />        
 
         <div class="col-12 text-center row justify-center q-pt-md">
           <q-btn
@@ -128,16 +128,12 @@ export default {
     featuredIDs_sorted() {
       //check if published
       let new_featured_ids = [];
-      console.log("featured");
-      console.log(this.featuredIDs);
       for (const id of this.featuredIDs) {
         const temp_pool = this.getPoolByID(id);
         if (temp_pool.status !== "draft") {
           new_featured_ids.push(id);
         }
       }
-      console.log("new feat sort");
-      console.log(new_featured_ids);
       return this.sortPools(new_featured_ids);
     }
   },

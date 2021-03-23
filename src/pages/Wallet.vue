@@ -88,7 +88,7 @@
               <q-btn
                 outline
                 color="accent"
-                @click="tryReclaim(props)"
+                @click.stop="tryReclaim(props)"
                 :disable="props.row.liquid === 0"
                 label="Withdraw"
                 v-if="isStart(props.row.token_sym)"
