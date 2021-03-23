@@ -4,11 +4,11 @@
       <h6>Type:</h6>
       <h5>{{ pool.access_type }}</h5>
     </div>
-    <div>
+    <div v-if="pool.access_type === 'Private'">
       <h6>Whitelist:</h6>
-      <h5>{{ whitelisted ? "Yes" : "No" }}</h5>
+      <h5>{{ hasWhitelist ? "Yes" : "No" }}</h5>
       <q-btn
-        v-if="!whitelisted"
+        v-if="hasWhitelist && !whitelisted"
         outline
         color="primary"
         label="Apply"
@@ -52,10 +52,11 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    hasWhitelist() {
+      return this.pool.whitelist.length <= 0;
+    },
     whitelisted() {
-      if (this.pool.whitelist.length <= 0) {
-        return true;
-      } else if (this.pool.whitelist.includes(this.accountName)) {
+      if (this.pool.whitelist.includes(this.accountName)) {
         return true;
       } else {
         return false;

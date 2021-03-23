@@ -134,6 +134,7 @@ export default {
     admin_address() {
       return process.env.ADMIN_ADDRESS;
     },
+    // prettier-ignore
     poolEmoji() {
       let emojiArray = ["🚀", "💦", "💧", "🦖", "🧀", "🍞", "🌍", "🛸", "🌊", "🌌"];
       return emojiArray[Math.floor(Math.random() * emojiArray.length)];

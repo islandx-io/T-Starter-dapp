@@ -118,7 +118,8 @@
                     !isAuthenticated ||
                       balance <= $chainToQty(pool.minimum_swap) ||
                       pool.pool_status !== `open` ||
-                      not_enough_start || joining
+                      not_enough_start ||
+                      joining
                   "
                 />
                 <div v-if="not_enough_start" class="q-pt-sm self-center">
@@ -233,7 +234,7 @@
               />
               <q-btn
                 flat
-                label="Allocation"
+                label="View Allocation"
                 color="primary"
                 @click="toAllocationsPage"
                 v-close-popup
@@ -415,7 +416,7 @@ export default {
           icon: "cloud_done",
           message: "Submitted"
         });
-        this.joining = false
+        this.joining = false;
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -423,12 +424,12 @@ export default {
           icon: "warning",
           message: `${error}`
         });
-        this.joining = false
+        this.joining = false;
       }
     },
 
     async onSubmit() {
-      this.joining = true
+      this.joining = true;
       if (!this.isAuthenticated) {
         this.$q.notify({
           color: "red-5",
