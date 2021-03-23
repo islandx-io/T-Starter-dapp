@@ -41,6 +41,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
     </section>
     <div class="body-container">
       <section class="row justify-center q-gutter-md">
+        <!-- Featured pools -->
         <h2 class="col-12 text-center">Featured Pools</h2>
         <p class="col-12 text-center" v-if="noFeaturedPools">
           There are no featured pools at the moment.
@@ -57,6 +58,8 @@ that you may prove what is that good and acceptable and perfect will of God. - R
           />
         </div>
         <Poolcard v-else class="col-shrink" :poolID="-1" />
+
+        <!-- Upcoming pools -->
         <h2 class="col-12 text-center q-pt-xl">Upcoming Pools</h2>
         <p class="col-12 text-center" v-if="noUpcomingPools">
           There are no upcoming pools at the moment.
@@ -70,6 +73,16 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             :key="'upcoming-' + id"
             :poolID="id"
           />
+        </div>
+        <Poolcard v-else class="col-shrink" :poolID="-1" />
+
+        <!-- Open pools -->
+        <h2 class="col-12 text-center q-pt-xl">Open Pools</h2>
+        <p class="col-12 text-center" v-if="openPools">
+          There are no open pools at the moment.
+        </p>
+        <div class="poolcard-container col" v-else-if="openIDs.length !== 0">
+          <Poolcard v-for="id in openIDs" :key="'open-' + id" :poolID="id" />
         </div>
         <Poolcard v-else class="col-shrink" :poolID="-1" />
 
@@ -102,8 +115,8 @@ export default {
   },
   computed: {
     ...mapGetters("pools", ["getAllPoolIDs", "getPoolIDsByStatus"]),
-    upcomingPools: function() {
-      let pools = this.getPoolIDsByStatus("upcoming");
+    openIDs: function() {
+      let pools = this.getPoolIDsByStatus("open");
       if (pools === undefined) return [];
       else return pools;
     }
@@ -125,7 +138,7 @@ export default {
     }
   },
   async mounted() {
-    // await this.getAllChainPools();
+    await this.getAllChainPools();
     this.upcomingIDs = await this.getUpcomingChainPools();
     if (this.upcomingIDs.length === 0) this.noUpcomingPools = true;
     this.featuredIDs = await this.getFeaturedChainPools();
