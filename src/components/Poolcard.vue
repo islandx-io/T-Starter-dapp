@@ -42,7 +42,7 @@
         </div>
         <div
           class="col-12"
-          v-if="['open', 'closed'].includes(pool.pool_status)"
+          v-if="['open', 'completed'].includes(pool.pool_status)"
         >
           <div class="text-h6 q-py-xs">Progress</div>
           <status-progress :progress="pool.progress" />

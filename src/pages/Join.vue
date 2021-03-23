@@ -8,7 +8,7 @@
         style="min-height: 100px"
         class="row justify-center content-center "
       >
-        <div v-if="['upcoming', 'closed'].includes(pool.pool_status)">
+        <div v-if="['upcoming', 'completed'].includes(pool.pool_status)">
           Cannot join {{ pool.pool_status }} pools
         </div>
       </q-card>

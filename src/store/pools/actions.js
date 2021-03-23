@@ -174,7 +174,7 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
 
   // Update status when pool is filled
   if (this.$chainToQty(pool.remaining_ask) <= 0) {
-    poolStatus = "closed";
+    poolStatus = "completed";
   }
 
   // Update access type

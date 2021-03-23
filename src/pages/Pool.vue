@@ -61,7 +61,7 @@
               :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
               label="Join pool"
               :disable="pool.pool_status === 'upcoming' || !isAuthenticated"
-              v-if="pool.pool_status !== 'closed'"
+              v-if="pool.pool_status !== 'completed'"
             />
             <q-btn
               v-if="pool.owner === accountName"

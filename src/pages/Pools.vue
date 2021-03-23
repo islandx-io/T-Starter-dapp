@@ -135,11 +135,11 @@ export default {
       let new_id_list = [];
       let open_pools = this.getPoolIDsByStatus("open");
       let upcoming_pools_ids = this.getPoolIDsByStatus("upcoming");
-      let closed_pools = this.getPoolIDsByStatus("closed");
+      let completed_pools = this.getPoolIDsByStatus("completed");
       new_id_list = new_id_list.concat(this.claimableIDs);
       new_id_list = new_id_list.concat(open_pools);
       new_id_list = new_id_list.concat(upcoming_pools_ids);
-      new_id_list = new_id_list.concat(closed_pools);
+      new_id_list = new_id_list.concat(completed_pools);
       new_id_list = new_id_list.filter(value => id_list.includes(value));
       new_id_list = [...new Set(new_id_list)]; // remove duplicates
       // console.log(new_id_list);

@@ -124,12 +124,16 @@ export default {
     featuredIDs_sorted() {
       //check if published
       let new_featured_ids = []
+      console.log("featured")
+      console.log(this.featuredIDs)
       for (const id of this.featuredIDs) {
         const temp_pool = this.getPoolByID(id)
         if (temp_pool.status !== 'draft') {
           new_featured_ids.push(id)
         }
       }
+      console.log("new feat sort")
+      console.log(new_featured_ids)
       return this.sortPools(new_featured_ids);
     }
   },
@@ -144,11 +148,11 @@ export default {
       let new_id_list = [];
       let open_pools = this.getPoolIDsByStatus("open");
       let upcoming_pools_ids = this.getPoolIDsByStatus("upcoming");
-      let closed_pools = this.getPoolIDsByStatus("closed");
+      let completed_pools = this.getPoolIDsByStatus("completed");
       new_id_list = new_id_list.concat(this.claimableIDs);
       new_id_list = new_id_list.concat(open_pools);
       new_id_list = new_id_list.concat(upcoming_pools_ids);
-      new_id_list = new_id_list.concat(closed_pools);
+      new_id_list = new_id_list.concat(completed_pools);
       new_id_list = new_id_list.filter(value => id_list.includes(value));
       new_id_list = [...new Set(new_id_list)]; // remove duplicates
       // console.log(new_id_list);

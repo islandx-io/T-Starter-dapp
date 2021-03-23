@@ -827,7 +827,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Pool closed"
+          message: "Pool completed"
         });
       } catch (error) {
         this.$q.notify({
