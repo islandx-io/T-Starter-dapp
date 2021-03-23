@@ -241,11 +241,7 @@
                     autogrow
                     label="Tag line *"
                     lazy-rules
-                    :rules="[
-                      val =>
-                        (val.length > 1) ||
-                        'Must specify'
-                    ]"
+                    :rules="[val => val.length > 1 || 'Must specify']"
                     counter
                     maxlength="230"
                     outlined
@@ -262,9 +258,7 @@
                     autogrow
                     label="Description *"
                     lazy-rules
-                    :rules="[
-                      val => val.length > 1 || 'Must specify'
-                    ]"
+                    :rules="[val => val.length > 1 || 'Must specify']"
                     outlined
                     debounce="1000"
                     type="textarea"
@@ -288,12 +282,12 @@
           </div>
           <q-list>
             <q-item>
-              <q-toggle
-                v-model="accept"
-                label="I accept the license and terms"
-                el="accept"
-              />
+              <q-checkbox v-model="accept" el="accept" >
+                I agree to the <a :href="TermsandConditions" target="_blank" @click.stop
+                >Terms and Conditions</a>
+              </q-checkbox>
             </q-item>
+
             <q-item class="justify-start">
               <q-item-section class="col-auto">
                 <q-btn label="Update" type="submit" color="primary" />
@@ -423,6 +417,7 @@ export default {
   components: { datetimeField },
   data() {
     return {
+      TermsandConditions: "",
       customDate: "",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
