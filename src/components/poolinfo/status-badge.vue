@@ -28,8 +28,14 @@ export default {
 .open-badge {
   background-color: $positive;
 }
-.closed-badge {
+.completed-badge {
   background-color: $warning;
+}
+.filled-badge {
+  background-color: $primary;
+}
+.failed-badge {
+  background-color: $space;
 }
 .loading-badge {
   background-color: $loading;

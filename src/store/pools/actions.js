@@ -164,8 +164,10 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
   const currentDate = Date.now();
   if (currentDate < pool.pool_open) {
     poolStatus = "upcoming";
-  } else if (currentDate > pool.public_end) {
-    poolStatus = "closed";
+  } else if (currentDate > pool.public_end || pool.remaining_offer <= 0) {
+    poolStatus = "completed";
+    if (pool.status === "success") poolStatus = "filled";
+    else if (pool.stataus === "fail") poolStatus = "failed";
   } else {
     poolStatus = "open";
   }
