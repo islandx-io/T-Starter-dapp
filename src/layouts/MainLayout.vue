@@ -11,27 +11,27 @@
         </q-toolbar-title>
         <div class="gt-xs row">
           <q-btn
+            v-if="accountName === admin_address"
             class="hover-accent"
             color="secondary"
             flat
-            :to="{ name: 'wallet', params: { accountName: accountName } }"
-            :label="'Wallet'"
-            v-if="isAuthenticated"
+            to="/createpool"
+            label="Create pool"
           />
           <q-btn
             class="hover-accent"
             color="secondary"
             flat
             to="/pools"
-            :label="'Pools ' + poolEmoji"
+            label="Pools"
           />
           <q-btn
+            v-if="isAuthenticated"
             class="hover-accent"
             color="secondary"
             flat
-            to="/createpool"
-            label="Create pool"
-            v-if="accountName === admin_address"
+            :to="{ name: 'wallet', params: { accountName: accountName } }"
+            label="Wallet"
           />
           <login-button :key="$route.fullPath" class="q-pl-md" />
         </div>
@@ -47,17 +47,17 @@
         >
           <div class="column items-end q-gutter-y-sm">
             <q-btn
-              color="accent"
-              :to="{ name: 'wallet', params: { accountName: accountName } }"
-              :label="'Wallet'"
-              v-if="isAuthenticated"
-            />
-            <q-btn color="accent" to="/pools" :label="'Pools ' + poolEmoji" />
-            <q-btn
+              v-if="accountName === admin_address"
               color="accent"
               to="/createpool"
               label="Create pool"
-              v-if="accountName === admin_address"
+            />
+            <q-btn color="accent" to="/pools" label="Pools" />
+            <q-btn
+              v-if="isAuthenticated"
+              color="accent"
+              :to="{ name: 'wallet', params: { accountName: accountName } }"
+              label="Wallet"
             />
             <login-button></login-button>
           </div>
@@ -68,7 +68,7 @@
                 color="secondary"
                 flat
                 to="/pools"
-                label="Pools ⛲"
+                label="Pools"
               />
             </q-item>
             <q-item clickable v-close-popup>
@@ -133,11 +133,6 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     admin_address() {
       return process.env.ADMIN_ADDRESS;
-    },
-    // prettier-ignore
-    poolEmoji() {
-      let emojiArray = ["🚀", "💦", "💧", "🦖", "🧀", "🍞", "🌍", "🛸", "🌊", "🌌"];
-      return emojiArray[Math.floor(Math.random() * emojiArray.length)];
     }
   }
 };
