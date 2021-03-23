@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "tab-details",
   props: {
@@ -50,8 +51,15 @@ export default {
     console.log("tab created");
   },
   computed: {
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
     whitelisted() {
-      return this.pool.whitelist.length > 0;
+      if (this.pool.whitelist.length <= 0) {
+        return true;
+      } else if (this.pool.whitelist.includes(this.accountName)) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 };
