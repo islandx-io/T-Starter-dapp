@@ -118,7 +118,9 @@
                     !isAuthenticated ||
                       balance <= $chainToQty(pool.minimum_swap) ||
                       pool.pool_status !== `open` ||
-                      not_enough_start || joining
+                      not_enough_start ||
+                      joining ||
+                      !isWhitelisted
                   "
                 />
                 <div v-if="not_enough_start" class="q-pt-sm self-center">
@@ -135,6 +137,9 @@
               </q-tooltip>
               <q-tooltip v-if="not_enough_start">
                 Not enough START
+              </q-tooltip>
+              <q-tooltip v-if="!isWhitelisted">
+                Not whitelisted for this pool
               </q-tooltip>
             </q-item>
           </div>
@@ -233,7 +238,7 @@
               />
               <q-btn
                 flat
-                label="Allocation"
+                label="View Allocation"
                 color="primary"
                 @click="toAllocationsPage"
                 v-close-popup
@@ -275,6 +280,18 @@ export default {
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    isWhitelisted() {
+      if (
+        this.pool.whitelist.length != 0 &&
+        !this.pool.whitelist.includes(accountName)
+      ) {
+        return true;
+      } else if (this.pool.whitelist.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     BaseTokenSymbol() {
       let idx = this.pool.base_token.sym.indexOf(",") + 1;
       return this.pool.base_token.sym.slice(idx);
@@ -415,7 +432,7 @@ export default {
           icon: "cloud_done",
           message: "Submitted"
         });
-        this.joining = false
+        this.joining = false;
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -423,12 +440,12 @@ export default {
           icon: "warning",
           message: `${error}`
         });
-        this.joining = false
+        this.joining = false;
       }
     },
 
     async onSubmit() {
-      this.joining = true
+      this.joining = true;
       if (!this.isAuthenticated) {
         this.$q.notify({
           color: "red-5",
