@@ -164,17 +164,15 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
   const currentDate = Date.now();
   if (currentDate < pool.pool_open) {
     poolStatus = "upcoming";
-  } else if (currentDate > pool.public_end || pool.remaining_offer <= 0) {
+  } else if (
+    currentDate > pool.public_end ||
+    this.$chainToQty(pool.remaining_offer) <= 0
+  ) {
     poolStatus = "completed";
     if (pool.status === "success") poolStatus = "filled";
-    else if (pool.stataus === "fail") poolStatus = "failed";
+    else if (pool.status === "fail") poolStatus = "failed";
   } else {
     poolStatus = "open";
-  }
-
-  // Update status when pool is filled
-  if (this.$chainToQty(pool.remaining_ask) <= 0) {
-    poolStatus = "completed";
   }
 
   // Update access type
@@ -445,7 +443,6 @@ export const checkStakedChain = async function(
         account: payload.account,
         poolID: payload.poolID
       });
-      
 
       // get premium stake
       const premium_stake = await dispatch("getPremiumStake");
