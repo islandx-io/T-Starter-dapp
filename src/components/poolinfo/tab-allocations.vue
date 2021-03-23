@@ -11,6 +11,14 @@
     <q-btn
       outline
       color="accent"
+      label="Release tokens"
+      class="hover-accent self-end q-mt-md"
+      v-if="hasAllocations && Date.now() > pool.public_end + poolclosedelay && pool.status === 'published'"
+      @click="tryClosePool"
+    />
+    <q-btn
+      outline
+      color="accent"
       label="Claim"
       class="hover-accent self-end q-mt-md"
       v-if="hasAllocations && pool.status === ('success' || 'fail')"
@@ -36,7 +44,8 @@ export default {
   data() {
     return {
       loadingData: true,
-      data: {}
+      data: {},
+      poolclosedelay: 86400000 //24 hours to miliseconds
     };
   },
 
@@ -44,7 +53,7 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     hasAllocations() {
       return Object.keys(this.data).length > 0;
-    }
+    },
   },
 
   methods: {
@@ -64,6 +73,20 @@ export default {
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
+    async closePool() {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "closepool",
+          data: {
+            pool_id: this.pool.id,
+            send_tokens: false,
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
     async tryClaimTokens() {
       try {
         await this.claimTokens();
@@ -73,6 +96,7 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
+        this.$router.go()
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -81,7 +105,29 @@ export default {
           message: `${error}`
         });
       }
-    }
+    },
+
+    async tryClosePool() {
+      try {
+        await this.closePool();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Pool completed"
+        });
+        this.$router.go()
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+      }
+    },
+
+    
   },
   async mounted() {
     let payload = { account: this.accountName, poolID: this.pool.id };
