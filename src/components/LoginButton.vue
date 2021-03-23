@@ -94,7 +94,7 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
-    return { showLogin: false, error: null, showLogout: false, balanceSTR: 0 };
+    return { showLogin: false, error: null, showLogout: false, balanceSTR: "0 START" };
   },
   computed: {
     ...mapGetters("account", [
