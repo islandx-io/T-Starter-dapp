@@ -48,11 +48,11 @@ that you may prove what is that good and acceptable and perfect will of God. - R
         </p>
         <div
           class="poolcard-container col"
-          v-else-if="featuredIDs.length !== 0"
+          v-else-if="featuredIDs_sorted.length !== 0"
         >
           <Poolcard
             class="col"
-            v-for="id in featuredIDs"
+            v-for="id in featuredIDs_sorted"
             :key="'featured-' + id"
             :poolID="id"
           />
@@ -78,7 +78,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
 
         <!-- Open pools -->
         <h2 class="col-12 text-center q-pt-xl">Open Pools</h2>
-        <p class="col-12 text-center" v-if="openPools">
+        <p class="col-12 text-center" v-if="openIDs">
           There are no open pools at the moment.
         </p>
         <div class="poolcard-container col" v-else-if="openIDs.length !== 0">
@@ -114,11 +114,23 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("pools", ["getAllPoolIDs", "getPoolIDsByStatus"]),
+    ...mapGetters("pools", ["getAllPoolIDs", "getPoolIDsByStatus", "getPoolByID"]),
     openIDs: function() {
       let pools = this.getPoolIDsByStatus("open");
       if (pools === undefined) return [];
       else return pools;
+    },
+
+    featuredIDs_sorted() {
+      //check if published
+      let new_featured_ids = []
+      for (const id of this.featuredIDs) {
+        const temp_pool = this.getPoolByID(id)
+        if (temp_pool.status !== 'draft') {
+          new_featured_ids.push(id)
+        }
+      }
+      return this.sortPools(new_featured_ids);
     }
   },
   methods: {
@@ -127,6 +139,23 @@ export default {
       "getFeaturedChainPools",
       "getUpcomingChainPools"
     ]),
+
+    sortPools(id_list) {
+      let new_id_list = [];
+      let open_pools = this.getPoolIDsByStatus("open");
+      let upcoming_pools_ids = this.getPoolIDsByStatus("upcoming");
+      let closed_pools = this.getPoolIDsByStatus("closed");
+      new_id_list = new_id_list.concat(this.claimableIDs);
+      new_id_list = new_id_list.concat(open_pools);
+      new_id_list = new_id_list.concat(upcoming_pools_ids);
+      new_id_list = new_id_list.concat(closed_pools);
+      new_id_list = new_id_list.filter(value => id_list.includes(value));
+      new_id_list = [...new Set(new_id_list)]; // remove duplicates
+      // console.log(new_id_list);
+      return new_id_list;
+    },
+
+
     beforeAppear: function(el) {
       console.log("beforeAppear");
     },

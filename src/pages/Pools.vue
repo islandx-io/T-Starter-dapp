@@ -109,7 +109,15 @@ export default {
       return this.sortPools(this.joinedIDs);
     },
     featuredIDs_sorted() {
-      return this.sortPools(this.featuredIDs);
+      //check if published
+      let new_featured_ids = []
+      for (const id of this.featuredIDs) {
+        const temp_pool = this.getPoolByID(id)
+        if (temp_pool.status !== 'draft') {
+          new_featured_ids.push(id)
+        }
+      }
+      return this.sortPools(new_featured_ids);
     }
   },
   methods: {

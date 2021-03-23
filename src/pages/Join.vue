@@ -262,6 +262,7 @@ export default {
       pool: this.$defaultPoolInfo,
       balance: 0,
       amount: "",
+      allocation: 0,
       alreadyStaked: false,
       confirm_stake: false,
       stake_warning: false,
@@ -312,7 +313,8 @@ export default {
       "getChainAccountInfo",
       "getBalanceFromChain",
       "getPremiumStake",
-      "checkStakedChain"
+      "checkStakedChain",
+      "getAllocationByPool"
     ]),
     zeroNaN(val) {
       if (isNaN(val)) return 0;
@@ -330,6 +332,12 @@ export default {
       );
     },
 
+    async getAllocations() {
+      let payload = { account: this.accountName, poolID: this.pool.id };
+      this.allocation = await this.getAllocationByPool(payload);
+      console.log(this.allocation)
+    },
+
     async getBalance() {
       let payload = {
         address: this.pool.base_token.contract,
@@ -343,8 +351,12 @@ export default {
     setMax() {
       if (this.balance >= this.$chainToQty(this.pool.maximum_swap)) {
         this.amount = this.$chainToQty(this.pool.maximum_swap);
-      } else {
+      } 
+      else {
         this.amount = this.balance;
+      }
+      if (this.amount > (this.$chainToQty(this.pool.maximum_swap) - this.$chainToQty(this.allocation.bid)) ) {
+        this.amount = this.$chainToQty(this.pool.maximum_swap) - this.$chainToQty(this.allocation.bid)
       }
     },
 
@@ -468,6 +480,8 @@ export default {
     await this.loadChainData();
     await this.getPoolInfo();
     console.log(this.pool.access_type);
+
+    await this.getAllocations();
 
     if (this.isAuthenticated) {
       this.getBalance();
