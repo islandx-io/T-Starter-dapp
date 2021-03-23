@@ -42,7 +42,9 @@
         </div>
         <div
           class="col-12"
-          v-if="['open', 'completed'].includes(pool.pool_status)"
+          v-if="
+            ['open', 'completed', 'filled', 'failed'].includes(pool.pool_status)
+          "
         >
           <div class="text-h6 q-py-xs">Progress</div>
           <status-progress :progress="pool.progress" />
@@ -128,10 +130,13 @@ export default {
     async getClaimStatus() {
       let payload = { account: this.accountName, poolID: this.pool.id };
       let allocation = await this.getAllocationByPool(payload);
-      if (this.hasAllocations(allocation) && this.pool.status === ("success" || "fail")) {
-        this.claimable = true
+      if (
+        this.hasAllocations(allocation) &&
+        this.pool.status === ("success" || "fail")
+      ) {
+        this.claimable = true;
       }
-    },
+    }
   },
   async mounted() {
     this.getPoolInfo();

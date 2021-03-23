@@ -8,7 +8,13 @@
         style="min-height: 100px"
         class="row justify-center content-center "
       >
-        <div v-if="['upcoming', 'completed'].includes(pool.pool_status)">
+        <div
+          v-if="
+            ['upcoming', 'completed', 'filled', 'failed'].includes(
+              pool.pool_status
+            )
+          "
+        >
           Cannot join {{ pool.pool_status }} pools
         </div>
       </q-card>
@@ -335,7 +341,7 @@ export default {
     async getAllocations() {
       let payload = { account: this.accountName, poolID: this.pool.id };
       this.allocation = await this.getAllocationByPool(payload);
-      console.log(this.allocation)
+      console.log(this.allocation);
     },
 
     async getBalance() {
@@ -351,12 +357,17 @@ export default {
     setMax() {
       if (this.balance >= this.$chainToQty(this.pool.maximum_swap)) {
         this.amount = this.$chainToQty(this.pool.maximum_swap);
-      } 
-      else {
+      } else {
         this.amount = this.balance;
       }
-      if (this.amount > (this.$chainToQty(this.pool.maximum_swap) - this.$chainToQty(this.allocation.bid)) ) {
-        this.amount = this.$chainToQty(this.pool.maximum_swap) - this.$chainToQty(this.allocation.bid)
+      if (
+        this.amount >
+        this.$chainToQty(this.pool.maximum_swap) -
+          this.$chainToQty(this.allocation.bid)
+      ) {
+        this.amount =
+          this.$chainToQty(this.pool.maximum_swap) -
+          this.$chainToQty(this.allocation.bid);
       }
     },
 
