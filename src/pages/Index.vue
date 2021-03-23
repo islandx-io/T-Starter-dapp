@@ -78,7 +78,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
 
         <!-- Open pools -->
         <h2 class="col-12 text-center q-pt-xl">Open Pools</h2>
-        <p class="col-12 text-center" v-if="openIDs">
+        <p class="col-12 text-center" v-if="openIDs.length === 0">
           There are no open pools at the moment.
         </p>
         <div class="poolcard-container col" v-else-if="openIDs.length !== 0">

@@ -110,11 +110,11 @@ export default {
     },
     featuredIDs_sorted() {
       //check if published
-      let new_featured_ids = []
+      let new_featured_ids = [];
       for (const id of this.featuredIDs) {
-        const temp_pool = this.getPoolByID(id)
-        if (temp_pool.status !== 'draft') {
-          new_featured_ids.push(id)
+        const temp_pool = this.getPoolByID(id);
+        if (temp_pool.status !== "draft") {
+          new_featured_ids.push(id);
         }
       }
       return this.sortPools(new_featured_ids);
@@ -132,18 +132,24 @@ export default {
     ]),
 
     sortPools(id_list) {
-      let new_id_list = [];
-      let open_pools = this.getPoolIDsByStatus("open");
-      let upcoming_pools_ids = this.getPoolIDsByStatus("upcoming");
-      let completed_pools = this.getPoolIDsByStatus("completed");
-      new_id_list = new_id_list.concat(this.claimableIDs);
-      new_id_list = new_id_list.concat(open_pools);
-      new_id_list = new_id_list.concat(upcoming_pools_ids);
-      new_id_list = new_id_list.concat(completed_pools);
-      new_id_list = new_id_list.filter(value => id_list.includes(value));
-      new_id_list = [...new Set(new_id_list)]; // remove duplicates
-      // console.log(new_id_list);
-      return new_id_list;
+      let result = [];
+      let open = this.getPoolIDsByStatus("open");
+      let upcoming = this.getPoolIDsByStatus("upcoming");
+      let completed = this.getPoolIDsByStatus("completed");
+      let filled = this.getPoolIDsByStatus("filled");
+      let failed = this.getPoolIDsByStatus("failed");
+      result = result.concat(
+        this.claimableIDs,
+        open,
+        upcoming,
+        completed,
+        filled,
+        failed
+      );
+      result = result.filter(value => id_list.includes(value));
+      result = [...new Set(result)]; // remove duplicates
+      // console.log(result);
+      return result;
     },
 
     // If any joined pools claimable, show alert
