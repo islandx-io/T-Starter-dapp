@@ -119,7 +119,8 @@
                       balance <= $chainToQty(pool.minimum_swap) ||
                       pool.pool_status !== `open` ||
                       not_enough_start ||
-                      joining
+                      joining ||
+                      !isWhitelisted
                   "
                 />
                 <div v-if="not_enough_start" class="q-pt-sm self-center">
@@ -136,6 +137,9 @@
               </q-tooltip>
               <q-tooltip v-if="not_enough_start">
                 Not enough START
+              </q-tooltip>
+              <q-tooltip v-if="!isWhitelisted">
+                Not whitelisted for this pool
               </q-tooltip>
             </q-item>
           </div>
@@ -276,6 +280,18 @@ export default {
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    isWhitelisted() {
+      if (
+        this.pool.whitelist.length != 0 &&
+        !this.pool.whitelist.includes(accountName)
+      ) {
+        return true;
+      } else if (this.pool.whitelist.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     BaseTokenSymbol() {
       let idx = this.pool.base_token.sym.indexOf(",") + 1;
       return this.pool.base_token.sym.slice(idx);
