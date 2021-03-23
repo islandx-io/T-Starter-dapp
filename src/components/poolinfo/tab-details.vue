@@ -5,6 +5,17 @@
       <h5>{{ pool.access_type }}</h5>
     </div>
     <div>
+      <h6>Whitelist:</h6>
+      <h5>{{ whitelisted ? "Yes" : "No" }}</h5>
+      <q-btn
+        v-if="!whitelisted"
+        outline
+        color="primary"
+        label="Apply"
+        class="q-ml-sm"
+      />
+    </div>
+    <div>
       <h6>Opening Time:</h6>
       <h5>{{ this.$toDate(pool.pool_open) }}</h5>
     </div>
@@ -37,6 +48,11 @@ export default {
   },
   created() {
     console.log("tab created");
+  },
+  computed: {
+    whitelisted() {
+      return this.pool.whitelist.length > 0;
+    }
   }
 };
 </script>
