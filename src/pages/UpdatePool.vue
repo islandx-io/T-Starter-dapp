@@ -337,7 +337,9 @@
                   @click="onClosePool"
                   color="accent"
                   v-if="
-                    Date.now() > pool.public_end && pool.status === 'published'
+                    (this.$chainToQty(pool.remaining_offer) === 0 ||
+                      Date.now() > pool.public_end) &&
+                      pool.status === 'published'
                   "
                 />
               </q-item-section>

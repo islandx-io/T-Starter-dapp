@@ -15,7 +15,7 @@
       class="hover-accent self-end q-mt-md"
       v-if="
         hasAllocations &&
-          Date.now() > pool.public_end + poolclosedelay &&
+          (Date.now() > pool.public_end + poolclosedelay) &&
           pool.status === 'published'
       "
       @click="tryClosePool"
@@ -49,7 +49,8 @@ export default {
     return {
       loadingData: true,
       data: {},
-      poolclosedelay: 86400000 //24 hours to miliseconds
+      // poolclosedelay: 86400000 //24 hours to miliseconds
+      poolclosedelay: 0 //24 hours to miliseconds
     };
   },
 
@@ -120,11 +121,12 @@ export default {
           icon: "cloud_done",
           message: "Pool completed"
         });
-        this.$router.go({
+        this.$router.push({
           name: "pooldetails",
           params: { id: this.pool.id },
           query: { tab: "allocations" }
-        });
+        })
+        this.$router.go();
       } catch (error) {
         this.$q.notify({
           color: "red-5",
