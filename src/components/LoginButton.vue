@@ -12,8 +12,7 @@
     <q-btn-group outline>
       <q-btn
         class="hover-accent"
-        :color="mobileColor"
-        :text-color="mobileView"
+        :text-color="mobileView ? 'black' : 'secondary'"
         outline
         label="Logout"
         v-if="showLogout"
