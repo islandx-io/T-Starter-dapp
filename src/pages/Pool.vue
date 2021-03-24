@@ -70,7 +70,11 @@
               :to="{ name: 'joinpool', params: {} }"
               :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
               label="Join pool"
-              :disable="pool.pool_status === 'upcoming' || !isAuthenticated"
+              :disable="
+                pool.pool_status === 'upcoming' ||
+                  !isAuthenticated ||
+                  !isWhitelisted
+              "
               v-if="
                 !['completed', 'filled', 'failed'].includes(pool.pool_status)
               "
@@ -85,6 +89,9 @@
             />
             <q-tooltip v-if="!isAuthenticated">
               Connect wallet
+            </q-tooltip>
+            <q-tooltip v-if="!isWhitelisted">
+              Not whitelisted. Apply now!
             </q-tooltip>
           </q-item>
         </div>
@@ -204,6 +211,20 @@ export default {
     progressToPercentage() {
       return (this.progress * 100).toFixed(2) + "%";
     },
+
+    isWhitelisted() {
+      if (
+        this.pool.whitelist.length > 0 &&
+        this.pool.whitelist.includes(this.accountName)
+      ) {
+        return true;
+      } else if (this.pool.whitelist.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     contractURL() {
       let contractName = this.pool.swap_ratio.contract;
       if (contractName === "Loading" || contractName === "") return "#";

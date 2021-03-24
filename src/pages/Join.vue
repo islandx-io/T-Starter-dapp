@@ -129,10 +129,10 @@
                       !isWhitelisted
                   "
                 />
-                <div v-if="not_enough_start" class="q-pt-sm self-center">
+                <div v-if="not_enough_start" class="q-pt-sm self-center warning" >
                   You do not have enough START tokens to participate in this
                   pool.
-                  <a :href="buyStartUrl">Get here</a>
+                  <a target="_blank" :href="buyStartUrl">Get here</a>
                 </div>
               </q-item-section>
               <q-tooltip v-if="!isAuthenticated">
@@ -173,6 +173,7 @@
               <q-btn
                 outline
                 type="a"
+                target="_blank"
                 :href="buyStartUrl"
                 label="Buy START"
                 color="accent"
@@ -199,7 +200,7 @@
             </q-card-section>
 
             <q-card-actions align="right">
-              <q-btn flat label="Cancel" color="primary" v-close-popup />
+              <q-btn flat label="Cancel" color="primary" v-close-popup @click="joining = false" />
               <q-btn
                 flat
                 label="Confirm"
@@ -289,8 +290,8 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     isWhitelisted() {
       if (
-        this.pool.whitelist.length != 0 &&
-        !this.pool.whitelist.includes(accountName)
+        this.pool.whitelist.length > 0 &&
+        this.pool.whitelist.includes(this.accountName)
       ) {
         return true;
       } else if (this.pool.whitelist.length === 0) {
@@ -558,5 +559,8 @@ export default {
 a {
   text-decoration: none;
   color: $primary;
+}
+.warning {
+  color: $negative
 }
 </style>

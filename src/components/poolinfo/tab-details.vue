@@ -13,6 +13,9 @@
         color="primary"
         label="Apply"
         class="q-ml-sm"
+        type="a"
+        target="_blank"
+        :href="pool.web_links.filter(a => a.key === 'website').map(a => a.value)"
       />
     </div>
     <div>
@@ -53,7 +56,7 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     hasWhitelist() {
-      return this.pool.whitelist.length <= 0;
+      return this.pool.whitelist.length > 0;
     },
     whitelisted() {
       if (this.pool.whitelist.includes(this.accountName)) {
