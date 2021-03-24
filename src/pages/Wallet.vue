@@ -284,7 +284,6 @@ export default {
 <style lang="scss" scoped>
 .header-bg {
   height: 200px;
-  min-width: 490px;
   margin-bottom: -50px;
 }
 .q-table__container.wallet-inner-table {
