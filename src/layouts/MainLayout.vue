@@ -5,7 +5,12 @@
         <q-toolbar-title>
           <div class="row">
             <router-link to="/" class="router-link">
-              <img src="~assets/logo/logo-light.svg" alt="logo" height="50px" />
+              <img
+                class="header-logo"
+                src="~assets/logo/logo-light.svg"
+                alt="logo"
+                height="50px"
+              />
             </router-link>
           </div>
         </q-toolbar-title>
@@ -158,6 +163,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.header-logo {
+  @media only screen and (max-width: 360px) {
+    height: 42px;
+  }
+}
 .foot-bg {
   background-image: url("~assets/main/clouds-foot.png");
   height: 450px;

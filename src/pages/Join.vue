@@ -129,7 +129,10 @@
                       !isWhitelisted
                   "
                 />
-                <div v-if="not_enough_start" class="q-pt-sm self-center warning" >
+                <div
+                  v-if="not_enough_start"
+                  class="q-pt-sm self-center warning"
+                >
                   You do not have enough START tokens to participate in this
                   pool.
                   <a target="_blank" :href="buyStartUrl">Get here</a>
@@ -200,7 +203,13 @@
             </q-card-section>
 
             <q-card-actions align="right">
-              <q-btn flat label="Cancel" color="primary" v-close-popup @click="joining = false" />
+              <q-btn
+                flat
+                label="Cancel"
+                color="primary"
+                v-close-popup
+                @click="joining = false"
+              />
               <q-btn
                 flat
                 label="Confirm"
@@ -561,6 +570,12 @@ a {
   color: $primary;
 }
 .warning {
-  color: $negative
+  color: $negative;
+}
+.q-form {
+  @media only screen and (max-width: 650px) {
+    grid-column-start: 1;
+    grid-column-end: 4;
+  }
 }
 </style>

@@ -155,7 +155,7 @@ export default {
 <style lang="scss" scoped>
 .q-card {
   transition: all 0.3s ease-in-out;
-  min-width: 300px;
+  min-width: 260px;
   max-width: 600px;
   padding: 10px;
   border-radius: $card-corner-radius;
@@ -179,6 +179,7 @@ export default {
 .q-card .title {
   margin: 0;
   padding: 0;
+  line-height: 22px;
 }
 .q-card .info-value {
   line-height: 30px;
