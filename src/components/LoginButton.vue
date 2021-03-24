@@ -4,15 +4,16 @@
       v-if="!isAuthenticated"
       @click="showLogin = true"
       class="hover-accent"
-      flat
-      color="secondary"
+      :flat="!mobileView"
+      color="accent"
+      :outline="mobileView"
       label="Login"
-      outline
     />
     <q-btn-group outline>
       <q-btn
         class="hover-accent"
-        color="secondary"
+        :color="mobileColor"
+        :text-color="mobileView"
         outline
         label="Logout"
         v-if="showLogout"
@@ -23,7 +24,8 @@
       />
       <q-btn
         v-if="isAuthenticated"
-        color="secondary"
+        :color="mobileView ? 'black' : 'secondary'"
+        :outline="mobileView"
         class="login row justify-end items-center"
         padding="4px xs"
         @click="showLogout = !showLogout"
@@ -100,6 +102,9 @@ export default {
       showLogout: false,
       balanceSTR: "0 START"
     };
+  },
+  props: {
+    mobileView: { default: false, type: Boolean }
   },
   computed: {
     ...mapGetters("account", [

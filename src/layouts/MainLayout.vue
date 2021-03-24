@@ -51,13 +51,10 @@
           position="top"
           full-width
         >
-          <div class="row justify-center q-pa-md">
-            <q-card
-              flat
-              bordered
-              class="column items-center justify-start q-gutter-y-sm"
-              style="background-color: #010035; border: 2px solid white"
-            >
+          <div
+            class="column items-center justify-start q-gutter-y-sm q-py-md bg-secondary"
+          >
+            <div class="row justify-center q-gutter-sm">
               <q-btn
                 v-if="accountName === admin_address"
                 color="secondary"
@@ -69,6 +66,7 @@
               <q-btn
                 color="secondary"
                 text-color="black"
+                outline
                 to="/pools"
                 label="Pools"
               />
@@ -76,12 +74,14 @@
                 v-if="isAuthenticated"
                 color="secondary"
                 text-color="black"
+                outline
                 :to="{ name: 'wallet', params: { accountName: accountName } }"
                 label="Wallet"
                 class="hover-accent"
               />
-              <login-button />
-              <!-- <q-btn
+            </div>
+            <login-button mobileView />
+            <!-- <q-btn
                   round
                   icon="fas fa-times"
                   outline
@@ -89,7 +89,6 @@
                   class="lt-md menu-btn hover-accent"
                   @click="showMenu = false"
                 /> -->
-            </q-card>
           </div>
         </q-dialog>
       </q-toolbar>
