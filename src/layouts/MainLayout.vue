@@ -56,27 +56,27 @@
           >
             <div class="row justify-center q-gutter-sm">
               <q-btn
+                label="Create pool"
                 v-if="accountName === admin_address"
                 color="secondary"
                 text-color="black"
                 to="/createpool"
-                label="Create pool"
                 outline
               />
               <q-btn
+                label="Pools"
                 color="secondary"
                 text-color="black"
                 outline
                 to="/pools"
-                label="Pools"
               />
               <q-btn
+                label="Wallet"
                 v-if="isAuthenticated"
                 color="secondary"
                 text-color="black"
                 outline
                 :to="{ name: 'wallet', params: { accountName: accountName } }"
-                label="Wallet"
                 class="hover-accent"
               />
             </div>

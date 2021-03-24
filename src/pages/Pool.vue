@@ -5,23 +5,28 @@
     <section class="header-bg" />
     <div class="body-container">
       <q-card class="row justify-between content-start q-mb-lg">
-        <div class="join-pane col column">
+        <div class="join-pane col-xs-12 col-sm-7 column">
           <q-item>
             <q-item-section top class="col-shrink">
               <token-avatar :avatar="pool.avatar" :avatarSize="80" />
             </q-item-section>
             <q-item-section top class="q-pl-sm">
-              <div class="row justify-between content-start items-start">
+              <div class="row justify-between content-start items-start ">
                 <div>
                   <div class="text-h3 q-pb-md q-pt-sm">{{ pool.title }}</div>
-                  <p>
+                  <p style="margin-bottom: 0">
                     Contract:
                     <a target="_blank" :href="contractURL">{{
                       pool.swap_ratio.contract
                     }}</a>
                   </p>
                 </div>
-                <status-badge :poolStatus="pool.pool_status"></status-badge>
+                <div class="row col-xs-10 col-sm-shrink">
+                  <status-badge
+                    :poolStatus="pool.pool_status"
+                    style="margin-left: 0"
+                  />
+                </div>
               </div>
             </q-item-section>
           </q-item>
@@ -30,7 +35,7 @@
               {{ pool.tag_line }}
             </p>
           </q-item>
-          <q-item>
+          <q-item v-if="['open', 'upcoming'].includes(pool.pool_status)">
             <div
               class="col row justify-between items-center"
               v-if="pool.pool_status === 'upcoming'"
@@ -40,7 +45,7 @@
                 :deadline="pool.pool_open"
                 :poolID="poolID"
                 @countdown-finished="getPoolInfo"
-              ></status-countdown>
+              />
             </div>
             <div
               class="col row justify-between items-center"
@@ -51,10 +56,15 @@
                 :deadline="pool.public_end"
                 :poolID="poolID"
                 @countdown-finished="getPoolInfo"
-              ></status-countdown>
+              />
             </div>
           </q-item>
-          <q-item>
+          <q-item
+            v-if="
+              !['completed', 'filled', 'failed'].includes(pool.pool_status) ||
+                pool.owner === accountName
+            "
+          >
             <q-btn
               class="col"
               :to="{ name: 'joinpool', params: {} }"
@@ -277,9 +287,9 @@ export default {
   margin-bottom: -50px;
   // background-position-y: 50%;
 }
-.join-pane {
-  min-width: 350px;
-}
+// .join-pane {
+//   min-width: 240px;
+// }
 .token-info {
   min-width: 180px;
 }
@@ -298,5 +308,8 @@ export default {
 a {
   text-decoration: none;
   color: $primary;
+}
+.text-h3 {
+  line-height: 22px;
 }
 </style>

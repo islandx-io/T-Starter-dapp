@@ -83,8 +83,9 @@ export default {
   display: flex;
   @media screen and (max-width: 550px) {
     justify-content: flex-start;
+    line-height: 24px;
   }
-  @media screen and (min-width: 580px) {
+  @media screen and (min-width: 551px) {
     justify-content: flex-end;
   }
 }
