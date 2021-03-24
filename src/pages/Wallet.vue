@@ -149,6 +149,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
+import { date } from "quasar";
 
 export default {
   data() {
@@ -166,7 +167,7 @@ export default {
       // prettier-ignore
       stakeColumns: [
         { name: "staked", label: "Staked", field: "second", align: "center" },
-        { name: "releaseDate", label: "Release date", field: "first", align: "center" },
+        { name: "releaseDate", label: "Release date", field: "first", align: "center", format: val => date.formatDate(val, 'YYYY-MM-DD') },
       ],
       // prettier-ignore
       stakeData: []
