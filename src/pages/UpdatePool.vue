@@ -278,6 +278,7 @@
                     outlined
                     :rules="[whitelistValidate]"
                     debounce="500"
+                    placeholder="Leave empty if no whitelist needed"
                   /> </q-item-section
               ></q-item>
             </q-list>
