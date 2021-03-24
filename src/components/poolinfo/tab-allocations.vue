@@ -120,7 +120,7 @@ export default {
           icon: "cloud_done",
           message: "Pool completed"
         });
-        this.$router.push({
+        this.$router.go({
           name: "pooldetails",
           params: { id: this.pool.id },
           query: { tab: "allocations" }
