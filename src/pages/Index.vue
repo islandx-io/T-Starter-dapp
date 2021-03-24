@@ -76,15 +76,15 @@ that you may prove what is that good and acceptable and perfect will of God. - R
         </p>
         <div
           class="poolcard-container col"
-          v-else-if="upcomingIDs.length !== 0"
+          v-else-if="upcomingIDs_comp.length !== 0"
         >
           <Poolcard
-            v-for="id in upcomingIDs"
+            v-for="id in upcomingIDs_comp"
             :key="'upcoming-' + id"
             :poolID="id"
           />
         </div>
-        <Poolcard v-else class="col-shrink" :poolID="-1" />        
+        <Poolcard v-else class="col-shrink" :poolID="-1" />
 
         <div class="col-12 text-center row justify-center q-pt-md">
           <q-btn
@@ -119,8 +119,14 @@ export default {
       "getPoolIDsByStatus",
       "getPoolByID"
     ]),
-    openIDs: function() {
+    openIDs() {
       let pools = this.getPoolIDsByStatus("open");
+      if (pools === undefined) return [];
+      else return pools;
+    },
+
+    upcomingIDs_comp() {
+      let pools = this.getAllPoolIDs;
       if (pools === undefined) return [];
       else return pools;
     },
@@ -130,7 +136,8 @@ export default {
       let new_featured_ids = [];
       for (const id of this.featuredIDs) {
         const temp_pool = this.getPoolByID(id);
-        if (temp_pool.status !== "draft") {
+        if (temp_pool === undefined) return [];
+        else if (temp_pool.status !== "draft") {
           new_featured_ids.push(id);
         }
       }
@@ -176,11 +183,11 @@ export default {
     }
   },
   async mounted() {
-    await this.getAllChainPools();
-    this.upcomingIDs = await this.getUpcomingChainPools();
-    if (this.upcomingIDs.length === 0) this.noUpcomingPools = true;
     this.featuredIDs = await this.getFeaturedChainPools();
     if (this.featuredIDs.length === 0) this.noFeaturedPools = true;
+    await this.getAllChainPools(); // TODO replace with get open pools
+    // this.upcomingIDs = await this.getUpcomingChainPools();
+    // if (this.upcomingIDs.length === 0) this.noUpcomingPools = true;
   }
 };
 </script>

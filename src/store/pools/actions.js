@@ -272,7 +272,7 @@ export const getJoinedChainPools = async function(
       console.log(pool_id_list);
 
       for (const pool_id of pool_id_list) {
-        await dispatch("getChainPoolByID", pool_id);
+        dispatch("getChainPoolByID", pool_id);
       }
 
       return pool_id_list;
@@ -308,7 +308,7 @@ export const getFeaturedChainPools = async function({
     console.log(pool_id_list);
 
     for (const pool_id of pool_id_list) {
-      await dispatch("getChainPoolByID", pool_id);
+      dispatch("getChainPoolByID", pool_id);
     }
 
     return pool_id_list;
@@ -349,7 +349,7 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
     console.log(pool_id_list);
 
     for (const pool_id of pool_id_list) {
-      await dispatch("getChainPoolByID", pool_id);
+      dispatch("getChainPoolByID", pool_id);  // TODO this is redundant, already have info from chain.
     }
 
     return pool_id_list;

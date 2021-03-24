@@ -119,7 +119,7 @@ export default {
     getPoolInfo: function() {
       const pool = this.getPoolByID(this.poolID);
       if (pool !== undefined) {
-        this.pool = pool;
+        this.pool = this.getPoolByID(this.poolID);
       }
     },
 
