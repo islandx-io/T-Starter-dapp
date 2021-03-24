@@ -13,7 +13,11 @@
       color="accent"
       label="Release tokens"
       class="hover-accent self-end q-mt-md"
-      v-if="hasAllocations && Date.now() > pool.public_end + poolclosedelay && pool.status === 'published'"
+      v-if="
+        hasAllocations &&
+          Date.now() > pool.public_end + poolclosedelay &&
+          pool.status === 'published'
+      "
       @click="tryClosePool"
     />
     <q-btn
@@ -53,7 +57,7 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     hasAllocations() {
       return Object.keys(this.data).length > 0;
-    },
+    }
   },
 
   methods: {
@@ -80,7 +84,7 @@ export default {
           name: "closepool",
           data: {
             pool_id: this.pool.id,
-            send_tokens: false,
+            send_tokens: false
           }
         }
       ];
@@ -96,7 +100,7 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.go()
+        this.$router.go();
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -116,7 +120,11 @@ export default {
           icon: "cloud_done",
           message: "Pool completed"
         });
-        this.$router.go()
+        this.$router.push({
+          name: "pooldetails",
+          params: { id: this.pool.id },
+          query: { tab: "allocations" }
+        });
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -125,9 +133,7 @@ export default {
           message: `${error}`
         });
       }
-    },
-
-    
+    }
   },
   async mounted() {
     let payload = { account: this.accountName, poolID: this.pool.id };
