@@ -104,14 +104,16 @@
               The place to discover and back projects building on Telos
             </p>
           </div>
-          <div class="col-sm-3 column items-center content-end">
+          <div class="col-sm-3 column items-start content-end">
             <div class="text-h6">Contact Us</div>
             <div class="row justify-start">
-              <a href="https://t.me/tstarterio" class="social-link">
-                <q-icon size="28px" name="fab fa-telegram-plane" />
-              </a>
-              <a href="https://medium.com/@t-starter" class="social-link">
-                <q-icon size="28px" name="fab fa-medium-m" />
+              <a
+                v-for="site in socialLinks"
+                :key="site.name"
+                :href="site.link"
+                class="social-link"
+              >
+                <q-icon size="28px" :name="site.icon" />
               </a>
             </div>
           </div>
@@ -128,6 +130,17 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "MainLayout",
+  data() {
+    return {
+      // prettier-ignore
+      socialLinks: [
+        {name: "telegram", icon: "fab fa-telegram-plane", link: "https://t.me/tstarterio"},
+        {name: "medium", icon: "fab fa-medium-m", link: "https://medium.com/@t-starter"},
+        {name: "twitter", icon: "fab fa-twitter", link: "https://twitter.com/T_StarterToken"},
+        {name: "github", icon: "fab fa-github", link: "https://github.com/T-Starter"},
+      ]
+    };
+  },
   components: { LoginButton },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
