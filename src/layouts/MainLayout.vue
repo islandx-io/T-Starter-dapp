@@ -9,7 +9,7 @@
             </router-link>
           </div>
         </q-toolbar-title>
-        <div class="gt-xs row">
+        <div class="gt-sm row">
           <q-btn
             v-if="accountName === admin_address"
             class="hover-accent"
@@ -35,57 +35,63 @@
           />
           <login-button :key="$route.fullPath" class="q-pl-md" />
         </div>
-        <!-- TODO Make mobile friendly -->
-        <q-btn-dropdown
-          class="lt-sm"
-          align="right"
-          dropdown-icon="menu"
-          content-style="background-color: transparent; width: 400px"
-          size="md"
-          menu-anchor="bottom right"
-          stretch
+        <q-btn
+          round
+          icon="menu"
+          outline
+          color="secondary"
+          class="lt-md menu-btn hover-accent"
+          @click="showMenu = true"
+        />
+        <q-dialog
+          v-model="showMenu"
+          transition-show="jump-down"
+          transition-hide="jump-up"
+          content-style="box-shadow: none"
+          position="top"
+          full-width
         >
-          <div class="column items-end q-gutter-y-sm">
-            <q-btn
-              v-if="accountName === admin_address"
-              color="accent"
-              to="/createpool"
-              label="Create pool"
-            />
-            <q-btn color="accent" to="/pools" label="Pools" />
-            <q-btn
-              v-if="isAuthenticated"
-              color="accent"
-              :to="{ name: 'wallet', params: { accountName: accountName } }"
-              label="Wallet"
-            />
-            <login-button></login-button>
-          </div>
-          <!-- <q-list class="column items-end">
-            <q-item clickable v-close-popup>
+          <div class="row justify-center q-pa-md">
+            <q-card
+              flat
+              bordered
+              class="column items-center justify-start q-gutter-y-sm"
+              style="background-color: #010035; border: 2px solid white"
+            >
               <q-btn
-                class="hover-accent"
+                v-if="accountName === admin_address"
                 color="secondary"
-                flat
+                text-color="black"
+                to="/createpool"
+                label="Create pool"
+                outline
+              />
+              <q-btn
+                color="secondary"
+                text-color="black"
                 to="/pools"
                 label="Pools"
               />
-            </q-item>
-            <q-item clickable v-close-popup>
               <q-btn
-                class="hover-accent"
+                v-if="isAuthenticated"
                 color="secondary"
-                flat
-                to="/createpool"
-                label="Create pool"
-                v-if="accountName === admin_address"
+                text-color="black"
+                :to="{ name: 'wallet', params: { accountName: accountName } }"
+                label="Wallet"
+                class="hover-accent"
               />
-            </q-item>
-            <q-item clickable v-close-popup>
-              <login-button></login-button>
-            </q-item>
-          </q-list> -->
-        </q-btn-dropdown>
+              <login-button />
+              <!-- <q-btn
+                  round
+                  icon="fas fa-times"
+                  outline
+                  color="secondary"
+                  class="lt-md menu-btn hover-accent"
+                  @click="showMenu = false"
+                /> -->
+            </q-card>
+          </div>
+        </q-dialog>
       </q-toolbar>
     </q-header>
 
@@ -138,7 +144,8 @@ export default {
         {name: "medium", icon: "fab fa-medium-m", link: "https://medium.com/@t-starter"},
         {name: "twitter", icon: "fab fa-twitter", link: "https://twitter.com/T_StarterToken"},
         {name: "github", icon: "fab fa-github", link: "https://github.com/T-Starter"},
-      ]
+      ],
+      showMenu: false
     };
   },
   components: { LoginButton },

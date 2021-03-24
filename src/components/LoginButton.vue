@@ -12,8 +12,8 @@
     <q-btn-group outline>
       <q-btn
         class="hover-accent"
-        text-color="black"
         color="secondary"
+        outline
         label="Logout"
         v-if="showLogout"
         @click="
@@ -94,7 +94,12 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
-    return { showLogin: false, error: null, showLogout: false, balanceSTR: "0 START" };
+    return {
+      showLogin: false,
+      error: null,
+      showLogout: false,
+      balanceSTR: "0 START"
+    };
   },
   computed: {
     ...mapGetters("account", [

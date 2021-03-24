@@ -89,3 +89,9 @@ h6 {
     color: $secondary;
   }
 }
+
+.menu-btn {
+  & .q-btn__wrapper::before {
+    border: 2px solid currentColor;
+  }
+}
