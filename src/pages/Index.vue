@@ -126,7 +126,7 @@ export default {
     },
 
     upcomingIDs_comp() {
-      let pools = this.getAllPoolIDs;
+      let pools = this.getPoolIDsByStatus("upcoming");
       if (pools === undefined) return [];
       else return pools;
     },
@@ -186,8 +186,8 @@ export default {
     this.featuredIDs = await this.getFeaturedChainPools();
     if (this.featuredIDs.length === 0) this.noFeaturedPools = true;
     await this.getAllChainPools(); // TODO replace with get open pools
-    // this.upcomingIDs = await this.getUpcomingChainPools();
-    // if (this.upcomingIDs.length === 0) this.noUpcomingPools = true;
+    this.upcomingIDs = await this.getUpcomingChainPools();
+    if (this.upcomingIDs.length === 0) this.noUpcomingPools = true;
   }
 };
 </script>
