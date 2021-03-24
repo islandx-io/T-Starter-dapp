@@ -276,15 +276,19 @@
                     autogrow
                     label="Whitelist (CSV)"
                     outlined
+                    :rules="[whitelistValidate]"
+                    debounce="500"
                   /> </q-item-section
               ></q-item>
             </q-list>
           </div>
           <q-list>
             <q-item>
-              <q-checkbox v-model="accept" el="accept" >
-                I agree to the <a :href="TermsandConditions" target="_blank" @click.stop
-                >Terms and Conditions</a>
+              <q-checkbox v-model="accept" el="accept">
+                I agree to the
+                <a :href="TermsandConditions" target="_blank" @click.stop
+                  >Terms and Conditions</a
+                >
               </q-checkbox>
             </q-item>
 
@@ -538,14 +542,32 @@ export default {
     },
 
     formatWhitelist() {
-      // if empty do nothing
-      if (this.pool.whitelist.length !== 0) {
-        //clean whitespace
-        if (this.pool.whitelist.includes(" ")) {
-          this.pool.whitelist = this.pool.whitelist.replace(" ", "");
+      if (!(this.pool.whitelist instanceof Array)) {
+        // if empty do nothing
+        if (this.pool.whitelist.length !== 0) {
+          //clean whitespace
+          if (this.pool.whitelist.includes(" ")) {
+            this.pool.whitelist = this.pool.whitelist.replace(" ", "");
+          }
+          //split into array
+          this.pool.whitelist = this.pool.whitelist.split(",");
         }
-        //split into array
-        this.pool.whitelist = this.pool.whitelist.split(",");
+      }
+    },
+
+    // TODO check accounts exist?
+    whitelistValidate(val) {
+      console.log(val);
+      if (val.length === 0) {
+        return;
+      } else if (val instanceof Array) {
+        return;
+      } else {
+        console.log(val.split(","));
+        return (
+          (val.split(",").length > 1 && val.split(",")[1] != "") ||
+          `Must contain at least two accounts`
+        );
       }
     },
 
@@ -807,7 +829,7 @@ export default {
               icon: "cloud_done",
               message: "Funded"
             });
-            this.$router.go()
+            this.$router.go();
           }
         } catch (error) {
           this.$q.notify({
@@ -829,7 +851,7 @@ export default {
           icon: "cloud_done",
           message: "Pool completed"
         });
-        this.$router.go()
+        this.$router.go();
       } catch (error) {
         this.$q.notify({
           color: "red-5",
