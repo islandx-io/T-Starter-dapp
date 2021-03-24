@@ -166,6 +166,7 @@ export default {
 }
 .q-page-container {
   padding-top: 0 !important;
+  padding-bottom: 40px;
 }
 .social-link {
   padding: 5px 20px 0 0;
