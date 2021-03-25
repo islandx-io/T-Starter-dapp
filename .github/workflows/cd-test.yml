@@ -43,5 +43,4 @@ jobs:
           password: a
           port: 21
           protocol: ftp
-          local-dir: ./dist/spa/
           server-dir: site/
