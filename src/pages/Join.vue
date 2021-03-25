@@ -549,7 +549,7 @@ export default {
 }
 .header-bg {
   height: 160px;
-  min-width: 490px;
+  // min-width: 490px;
   margin-bottom: -50px;
 }
 .inner-card {
@@ -563,7 +563,7 @@ export default {
 .input-amount {
   font-size: 50px;
   color: $primary;
-  min-width: 270px;
+  // min-width: 270px;
 }
 a {
   text-decoration: none;
@@ -572,10 +572,15 @@ a {
 .warning {
   color: $negative;
 }
-.q-form {
-  @media only screen and (max-width: 650px) {
+@media only screen and (max-width: 650px) {
+  .q-form {
     grid-column-start: 1;
     grid-column-end: 4;
+  }
+}
+@media only screen and (max-width: 425px) {
+  .card-container {
+    // grid-template-columns: 10px auto 10px;
   }
 }
 </style>
