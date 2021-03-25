@@ -100,7 +100,7 @@ export default {
       return this.getAllPoolIDs;
     },
     createdPoolIDs() {
-      return this.sortPools(this.getCreatedPoolIDs(this.accountName)); // TODO do like joined, maybe slower?
+      return this.getCreatedPoolIDs(this.accountName); // TODO do like joined, maybe slower?
     },
     publishedPoolIDs() {
       return this.sortPools(this.getPublishedPoolIDs);

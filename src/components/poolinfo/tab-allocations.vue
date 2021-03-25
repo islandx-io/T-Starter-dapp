@@ -49,8 +49,8 @@ export default {
     return {
       loadingData: true,
       data: {},
-      // poolclosedelay: 86400000 //24 hours to miliseconds
-      poolclosedelay: 0 //24 hours to miliseconds
+      poolclosedelay: 86400000 //24 hours to miliseconds
+      // poolclosedelay: 0 //24 hours to miliseconds
     };
   },
 

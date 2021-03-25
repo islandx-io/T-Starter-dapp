@@ -122,6 +122,7 @@
                 :key="site.name"
                 :href="site.link"
                 class="social-link"
+                target="_blank"
               >
                 <q-icon size="28px" :name="site.icon" />
               </a>
