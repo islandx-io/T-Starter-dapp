@@ -216,7 +216,7 @@
 
               <!-- web links -->
               <q-item class="weblink-container">
-                <div v-for="link in webLinks" :key="link.key">
+                <div v-for="link in webLinks.slice(0, -1)" :key="link.key">
                   <q-input
                     outlined
                     v-model="link.value"
@@ -269,7 +269,20 @@
               </q-item>
 
               <!-- Whitelist -->
-              <q-item>
+              <q-checkbox v-model="haveWhitelist" el="haveWhitelist">
+                Whitelist?
+              </q-checkbox>
+
+              <q-item v-if="haveWhitelist">
+                <q-item-section>
+                  <!-- FIXME make dynamic, find doesn't work -->
+                  <q-input
+                    v-model="webLinks[6].value"
+                    label="Whitelist Application URL"
+                    outlined
+                  /> </q-item-section
+              ></q-item>
+              <q-item v-if="haveWhitelist">
                 <q-item-section>
                   <q-input
                     v-model="pool.whitelist"
@@ -283,11 +296,13 @@
               ></q-item>
             </q-list>
           </div>
+
+          <!-- Terms and Conditions -->
           <q-list>
             <q-item>
               <q-checkbox v-model="accept" el="accept">
                 I agree to the
-                <a :href="TermsandConditions" target="_blank" @click.stop
+                <a :href="TermsandConditionsURL" target="_blank" @click.stop
                   >Terms and Conditions</a
                 >
               </q-checkbox>
@@ -431,7 +446,8 @@ export default {
   components: { datetimeField },
   data() {
     return {
-      TermsandConditions: "",
+      TermsandConditionsURL: "",
+      haveWhitelist: false,
       customDate: "",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
@@ -464,6 +480,10 @@ export default {
         {
           key: "whitepaper",
           value: ""
+        },
+        {
+          key: "whitelist",
+          value: ""
         }
       ],
 
@@ -481,7 +501,7 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID"]),
-    // owner: accountName,
+
     admin_address() {
       return process.env.ADMIN_ADDRESS;
     },
@@ -545,16 +565,22 @@ export default {
     },
 
     formatWhitelist() {
-      if (!(this.pool.whitelist instanceof Array)) {
-        // if empty do nothing
-        if (this.pool.whitelist.length !== 0) {
-          //clean whitespace
-          if (this.pool.whitelist.includes(" ")) {
-            this.pool.whitelist = this.pool.whitelist.replace(" ", "");
+      // check if whitelist enabled
+      if (this.haveWhitelist) {
+        if (!(this.pool.whitelist instanceof Array)) {
+          // if empty do nothing
+          if (this.pool.whitelist.length !== 0) {
+            //clean whitespace
+            if (this.pool.whitelist.includes(" ")) {
+              this.pool.whitelist = this.pool.whitelist.replace(" ", "");
+            }
+            //split into array
+            this.pool.whitelist = this.pool.whitelist.split(",");
           }
-          //split into array
-          this.pool.whitelist = this.pool.whitelist.split(",");
         }
+      } else {
+        this.pool.whitelist = ""
+        this.webLinks.find( el => el.key === "whitelist" ).value = ''
       }
     },
 
@@ -609,6 +635,10 @@ export default {
       this.pool_open.date = this.toDateString(this.pool.pool_open);
       this.private_end.date = this.toDateString(this.pool.private_end);
       this.public_end.date = this.toDateString(this.pool.public_end);
+
+      if (this.pool.whitelist.length > 0) {
+        this.haveWhitelist = true;
+      }
     },
     getTokenSymbolFromPool() {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
@@ -631,6 +661,8 @@ export default {
       this.webLinks.find( el => el.key === "twitter" ).value = this.pool.web_links.filter(el => el.key === "twitter").map(a => a.value);
       // prettier-ignore
       this.webLinks.find( el => el.key === "whitepaper" ).value = this.pool.web_links.filter(el => el.key === "whitepaper").map(a => a.value);
+      // prettier-ignore
+      this.webLinks.find( el => el.key === "whitelist" ).value = this.pool.web_links.filter(el => el.key === "whitelist").map(a => a.value);
     },
 
     async loadChainData() {

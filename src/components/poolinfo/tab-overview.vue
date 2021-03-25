@@ -39,7 +39,9 @@ export default {
         result = "fab fa-twitter";
       } else if (siteName === "website") {
         result = "fas fa-globe";
-      }
+      } else if (siteName === "whitelist") {
+        result = "fas fa-clipboard-list";
+      } 
       return result;
     }
   }

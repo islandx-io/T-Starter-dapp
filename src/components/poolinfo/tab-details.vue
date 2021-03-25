@@ -15,7 +15,7 @@
         class="q-ml-sm"
         type="a"
         target="_blank"
-        :href="pool.web_links.filter(a => a.key === 'website').map(a => a.value)"
+        :href="pool.web_links.filter(a => a.key === 'whitelist').map(a => a.value)"
       />
     </div>
     <div>
