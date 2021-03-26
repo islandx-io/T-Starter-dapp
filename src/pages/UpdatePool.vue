@@ -221,6 +221,7 @@
                     outlined
                     v-model="link.value"
                     :label="capitalize(link.key)"
+                    :rules="[validURL]"
                   />
                 </div>
               </q-item>
@@ -280,6 +281,7 @@
                     v-model="webLinks[6].value"
                     label="Whitelist Application URL"
                     outlined
+                    :rules="[validURL]"
                   /> </q-item-section
               ></q-item>
               <q-item v-if="haveWhitelist">
@@ -579,8 +581,8 @@ export default {
           }
         }
       } else {
-        this.pool.whitelist = ""
-        this.webLinks.find( el => el.key === "whitelist" ).value = ''
+        this.pool.whitelist = "";
+        this.webLinks.find(el => el.key === "whitelist").value = "";
       }
     },
 
@@ -597,6 +599,23 @@ export default {
           (val.split(",").length > 1 && val.split(",")[1] != "") ||
           `Must contain at least two accounts`
         );
+      }
+    },
+
+    validURL(str) {
+      var pattern = new RegExp(
+        "^(https?:\\/\\/)?" + // protocol
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+          "(\\#[-a-z\\d_]*)?$",
+        "i"
+      ); // fragment locator
+      if (str.length === 0) {
+        return;
+      } else {
+        return !!pattern.test(str) || "Must be valid URL";
       }
     },
 
