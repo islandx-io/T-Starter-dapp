@@ -142,6 +142,14 @@
       >
         <div>Please connect your wallet</div>
       </q-card>
+
+      <!-- swap tokens -->
+      <q-item class="justify-start">
+        <q-item-section class="col-center">
+        <q-btn label="Swap tokens" type="a" href="https://wallet.telos.net/" target="blank" color="primary" />
+      </q-item-section>
+      </q-item>
+      
     </section>
   </q-page>
 </template>
