@@ -75,9 +75,7 @@
                   !isAuthenticated ||
                   !isWhitelisted
               "
-              v-if="
-                !['completed', 'filled', 'failed'].includes(pool.pool_status)
-              "
+              v-if="['open', 'upcoming'].includes(pool.pool_status)"
             />
             <q-btn
               v-if="pool.owner === accountName"
@@ -120,10 +118,9 @@
             </div>
             <status-progress :progress="pool.progress" />
             <div class="row justify-between">
-              <h5 >{{ progressToPercentage }}</h5>
-              <h5 >{{ progressLabel }}</h5>
+              <h5>{{ progressToPercentage }}</h5>
+              <h5>{{ progressLabel }}</h5>
             </div>
-              
           </div>
         </q-item>
 

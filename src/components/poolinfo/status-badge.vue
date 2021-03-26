@@ -37,7 +37,8 @@ export default {
 .failed-badge {
   background-color: $space;
 }
-.loading-badge {
+.loading-badge,
+.draft-badge {
   background-color: $loading;
 }
 </style>

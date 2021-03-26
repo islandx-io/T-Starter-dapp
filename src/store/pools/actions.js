@@ -162,7 +162,9 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
   // Update status
   var poolStatus = "loading";
   const currentDate = Date.now();
-  if (currentDate < pool.pool_open) {
+  if (pool.status === "draft") {
+    poolStatus = "draft";
+  } else if (currentDate < pool.pool_open) {
     poolStatus = "upcoming";
   } else if (
     currentDate > pool.public_end ||
@@ -349,7 +351,7 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
     console.log(pool_id_list);
 
     for (const pool_id of pool_id_list) {
-      dispatch("getChainPoolByID", pool_id);  // TODO this is redundant, already have info from chain.
+      dispatch("getChainPoolByID", pool_id); // TODO this is redundant, already have info from chain.
     }
 
     return pool_id_list;
