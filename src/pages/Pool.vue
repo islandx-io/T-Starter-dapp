@@ -117,9 +117,13 @@
             </div>
             <div class="row justify-between">
               <h6>Progress:</h6>
-              <h5>{{ progressLabel }}</h5>
             </div>
             <status-progress :progress="pool.progress" />
+            <div class="row justify-between">
+              <h5 >{{ progressToPercentage }}</h5>
+              <h5 >{{ progressLabel }}</h5>
+            </div>
+              
           </div>
         </q-item>
 
@@ -209,7 +213,7 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID"]),
     progressToPercentage() {
-      return (this.progress * 100).toFixed(2) + "%";
+      return (this.pool.progress * 100).toFixed(0) + "%";
     },
 
     isWhitelisted() {

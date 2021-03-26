@@ -7,7 +7,7 @@
       aria-valuemin="0"
       aria-valuemax="1"
     >
-      {{ progressToPercentage }}
+      <!-- {{ progressToPercentage }} -->
     </div>
   </div>
 </template>
