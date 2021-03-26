@@ -5,7 +5,7 @@
     <section class="header-bg" />
     <div class="body-container">
       <q-card class="row justify-between content-start q-mb-lg">
-        <div class="join-pane col-xs-12 col-sm-7 column">
+        <div class="join-pane col-xs-12 col-sm-7 ">
           <q-item>
             <q-item-section top class="col-shrink">
               <token-avatar :avatar="pool.avatar" :avatarSize="80" />
@@ -309,9 +309,10 @@ export default {
   margin-bottom: -50px;
   // background-position-y: 50%;
 }
-// .join-pane {
-//   min-width: 240px;
-// }
+.join-pane {
+  display: grid;
+  grid-template-rows: min-content auto 48px;
+}
 .token-info {
   min-width: 180px;
 }
