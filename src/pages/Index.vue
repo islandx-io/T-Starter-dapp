@@ -117,12 +117,17 @@ export default {
     ...mapGetters("pools", [
       "getAllPoolIDs",
       "getPoolIDsByStatus",
-      "getPoolByID"
+      "getPoolByID",
+      "getPublishedPoolIDs"
     ]),
     openIDs() {
-      let pools = this.getPoolIDsByStatus("open");
-      if (pools === undefined) return [];
-      else return pools;
+      let open_pools = this.getPoolIDsByStatus("open");
+      console.log(open_pools)
+      let published_pools = this.getPublishedPoolIDs;
+      console.log(published_pools)
+      open_pools = open_pools.filter(value => published_pools.includes(value));
+      if (open_pools === undefined) return [];
+      else return open_pools;
     },
 
     upcomingIDs_comp() {
