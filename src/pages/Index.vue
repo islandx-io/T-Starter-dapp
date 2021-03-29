@@ -3,7 +3,13 @@
 that you may prove what is that good and acceptable and perfect will of God. - Romans 12:2 -NKJV -->
   <q-page>
     <section class="header-bg row content-start">
-      <div class="header-container row reverse-wrap justify-between">
+      <space-bubble id="space-bubble1" />
+      <space-bubble id="space-bubble2" />
+      <space-bubble id="space-bubble3" />
+      <div
+        class="header-container row reverse-wrap justify-between"
+        style="z-index: 1"
+      >
         <div class="column justify-start">
           <h2>
             The place to discover and
@@ -105,10 +111,11 @@ that you may prove what is that good and acceptable and perfect will of God. - R
 
 <script>
 import Poolcard from "src/components/Poolcard.vue";
-import RocketLine from "src/components/RocketLine.vue";
+import RocketLine from "src/components/decor/RocketLine.vue";
+import SpaceBubble from "src/components/decor/SpaceBubble.vue";
 import { mapGetters, mapActions } from "vuex";
 export default {
-  components: { Poolcard, RocketLine },
+  components: { Poolcard, RocketLine, SpaceBubble },
   data() {
     return {
       featuredIDs: [],
@@ -201,7 +208,6 @@ export default {
 
 <style lang="scss" scoped>
 .header-bg {
-  // background-image: $header-background-url;
   height: 550px;
 }
 .header-container {
@@ -262,5 +268,25 @@ h2 {
 .fade-enter-active {
   animation: go 2s;
   animation-timing-function: cubic-bezier(0.32, 0.45, 0.07, 1.03);
+}
+#space-bubble1,
+#space-bubble2,
+#space-bubble3 {
+  position: absolute;
+  z-index: 0;
+}
+#space-bubble1 {
+  left: 40px;
+  top: -20px;
+}
+#space-bubble2 {
+  left: 1200px;
+  top: 20px;
+  transform: rotate(180deg);
+}
+#space-bubble3 {
+  left: 2000px;
+  top: -200px;
+  transform: rotate(0deg);
 }
 </style>
