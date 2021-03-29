@@ -131,7 +131,7 @@
                       pool.pool_status !== `open` ||
                       not_enough_start ||
                       joining ||
-                      (!isWhitelisted && pool.access_type === 'Private')
+                      !isWhitelisted
                   "
                 />
                 <div
@@ -152,7 +152,7 @@
               <q-tooltip v-if="not_enough_start">
                 Not enough START
               </q-tooltip>
-              <q-tooltip v-if="(!isWhitelisted && pool.access_type === 'Private')">
+              <q-tooltip v-if="!isWhitelisted">
                 Not whitelisted for this pool
               </q-tooltip>
             </q-item>
