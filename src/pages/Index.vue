@@ -122,9 +122,7 @@ export default {
     ]),
     openIDs() {
       let open_pools = this.getPoolIDsByStatus("open");
-      console.log(open_pools)
       let published_pools = this.getPublishedPoolIDs;
-      console.log(published_pools)
       open_pools = open_pools.filter(value => published_pools.includes(value));
       if (open_pools === undefined) return [];
       else return open_pools;

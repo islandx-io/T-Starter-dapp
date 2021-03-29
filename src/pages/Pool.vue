@@ -73,7 +73,7 @@
               :disable="
                 pool.pool_status === 'upcoming' ||
                   !isAuthenticated ||
-                  !isWhitelisted
+                  (!isWhitelisted && pool.access_type === 'Private')
               "
               v-if="
                 !['completed', 'filled', 'failed'].includes(pool.pool_status)
@@ -90,7 +90,7 @@
             <q-tooltip v-if="!isAuthenticated">
               Connect wallet
             </q-tooltip>
-            <q-tooltip v-if="!isWhitelisted">
+            <q-tooltip v-if="(!isWhitelisted && pool.access_type === 'Private')">
               Not whitelisted. Apply now!
             </q-tooltip>
           </q-item>
