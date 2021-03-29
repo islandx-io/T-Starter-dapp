@@ -318,7 +318,7 @@
                 <q-btn
                   label="Fund"
                   @click="onFund"
-                  :disable="pool.status === 'published' || this.funded"
+                  :disable="pool.status === 'published' || this.funded || (getPoolByID(poolID).title == '')"
                   v-if="pool.status === 'draft'"
                   color="primary"
                 />
@@ -702,10 +702,7 @@ export default {
     },
 
     checkLinks() {
-      // console.log(this.webLinks.filter(el => el.value[0] != ""))
-      console.log(this.webLinks.filter(el => el.value != ""));
       this.cleanedWebLinks = this.webLinks.filter(el => el.value != "");
-      console.log(this.cleanedWebLinks);
     },
 
     async updateChainPool() {
