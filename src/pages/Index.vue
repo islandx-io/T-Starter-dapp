@@ -3,9 +3,7 @@
 that you may prove what is that good and acceptable and perfect will of God. - Romans 12:2 -NKJV -->
   <q-page>
     <section class="header-bg row content-start">
-      <space-bubble class="space-bubble" />
-      <space-bubble class="space-bubble" />
-      <space-bubble class="space-bubble" />
+      <space-bubble v-for="i in [1, 2, 3]" :key="i" />
       <div
         class="header-container row reverse-wrap justify-between"
         style="z-index: 1"
@@ -268,23 +266,5 @@ h2 {
 .fade-enter-active {
   animation: go 2s;
   animation-timing-function: cubic-bezier(0.32, 0.45, 0.07, 1.03);
-}
-.space-bubble {
-  position: absolute;
-  z-index: 0;
-  &:first-of-type {
-    left: 40px;
-    top: -20px;
-  }
-  &:nth-of-type(2) {
-    left: 1200px;
-    top: 20px;
-    transform: rotate(180deg);
-  }
-  &:last-of-type {
-    left: 2000px;
-    top: -200px;
-    transform: rotate(0deg);
-  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <svg width="478px" height="406px">
+  <svg width="478px" height="406px" class="space-bubble">
     <defs>
       <linearGradient
         id="shape-gradient2"

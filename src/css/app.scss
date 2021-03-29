@@ -103,3 +103,22 @@ h6 {
     border: 2px solid currentColor;
   }
 }
+
+.space-bubble {
+  position: absolute;
+  z-index: 0;
+  &:first-of-type {
+    left: 40px;
+    top: -20px;
+  }
+  &:nth-of-type(2) {
+    left: 1200px;
+    top: 20px;
+    transform: rotate(180deg);
+  }
+  &:last-of-type {
+    left: 2000px;
+    top: -200px;
+    transform: rotate(0deg);
+  }
+}
