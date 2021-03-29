@@ -1,6 +1,9 @@
 <template>
-  <q-chip :class="poolStatus + '-badge text-weight-bold'" text-color="secondary"
-    >{{ statusMessage }}
+  <q-chip
+    :class="poolStatus + '-badge text-weight-bold'"
+    text-color="secondary"
+  >
+    {{ statusMessage }}
   </q-chip>
 </template>
 
@@ -11,11 +14,16 @@ export default {
     poolStatus: {
       type: String,
       required: true
+    },
+    badgeText: {
+      type: String,
+      default: ""
     }
   },
   computed: {
     statusMessage() {
-      return this.poolStatus[0].toUpperCase() + this.poolStatus.slice(1);
+      if (this.badgeText !== "") return this.badgeText;
+      else return this.poolStatus[0].toUpperCase() + this.poolStatus.slice(1);
     }
   }
 };
@@ -25,16 +33,19 @@ export default {
 .upcoming-badge {
   background-color: $accent;
 }
-.open-badge {
+.open-badge,
+.success-badge {
   background-color: $positive;
 }
-.completed-badge {
+.completed-badge,
+.published-badge {
   background-color: $warning;
 }
 .filled-badge {
   background-color: $primary;
 }
-.failed-badge {
+.failed-badge,
+.fail-badge {
   background-color: $space;
 }
 .loading-badge,

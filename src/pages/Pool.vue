@@ -311,7 +311,8 @@ export default {
 }
 .join-pane {
   display: grid;
-  grid-template-rows: min-content auto 48px;
+  grid-template-rows: min-content auto;
+  grid-auto-rows: min-content min-content;
 }
 .token-info {
   min-width: 180px;
@@ -334,5 +335,14 @@ a {
 }
 .text-h3 {
   line-height: 22px;
+}
+@media only screen and (max-width: 375px) {
+  .q-card {
+    padding: 5px;
+  }
+  .body-container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }
 </style>
