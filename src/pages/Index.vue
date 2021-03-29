@@ -40,9 +40,10 @@ that you may prove what is that good and acceptable and perfect will of God. - R
       </div>
     </section>
     <div class="body-container">
-      <section class="row justify-center q-gutter-md">
+      <section class="row justify-center q-gutter-lg">
         <!-- Featured pools -->
         <h2 class="col-12 text-center">Featured Pools</h2>
+        <rocket-line class="col-12 text-center" />
         <p class="col-12 text-center" v-if="noFeaturedPools">
           There are no featured pools at the moment.
         </p>
@@ -61,6 +62,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
 
         <!-- Open pools -->
         <h2 class="col-12 text-center q-pt-xl">Open Pools</h2>
+        <rocket-line class="col-12 text-center" />
         <p class="col-12 text-center" v-if="openIDs.length === 0">
           There are no open pools at the moment.
         </p>
@@ -71,6 +73,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
 
         <!-- Upcoming pools -->
         <h2 class="col-12 text-center q-pt-xl">Upcoming Pools</h2>
+        <rocket-line class="col-12 text-center" />
         <p class="col-12 text-center" v-if="noUpcomingPools">
           There are no upcoming pools at the moment.
         </p>
@@ -102,9 +105,10 @@ that you may prove what is that good and acceptable and perfect will of God. - R
 
 <script>
 import Poolcard from "src/components/Poolcard.vue";
+import RocketLine from "src/components/RocketLine.vue";
 import { mapGetters, mapActions } from "vuex";
 export default {
-  components: { Poolcard },
+  components: { Poolcard, RocketLine },
   data() {
     return {
       featuredIDs: [],
@@ -220,6 +224,9 @@ export default {
 }
 .body-container {
   padding-top: 50px;
+}
+h2 {
+  margin-bottom: 10px;
 }
 // Rocket
 @keyframes up_down {

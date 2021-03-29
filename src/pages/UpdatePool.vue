@@ -13,8 +13,8 @@
           ref="updateForm"
         >
           <!-- tokens and adresses -->
-          <div class="form-col-container">
-            <q-list dense>
+          <div class="row">
+            <q-list dense class="col-xs-12 col-sm-12 col-md-6 q-mb-md">
               <q-item>
                 <q-item-section>
                   <q-input
@@ -181,7 +181,7 @@
               </div> -->
               <!-- Image -->
             </q-list>
-            <q-list class="col" dense>
+            <q-list class="col-xs-12 col-sm-12 col-md-6 " dense>
               <q-item>
                 <q-item-section>
                   <q-input
@@ -247,7 +247,6 @@
                     maxlength="230"
                     outlined
                     debounce="500"
-                    style="padding-top:20px"
                   />
                 </q-item-section>
               </q-item>
@@ -270,9 +269,11 @@
               </q-item>
 
               <!-- Whitelist -->
-              <q-checkbox v-model="haveWhitelist" el="haveWhitelist">
-                Whitelist?
-              </q-checkbox>
+              <q-item>
+                <q-checkbox v-model="haveWhitelist" el="haveWhitelist">
+                  Whitelist?
+                </q-checkbox>
+              </q-item>
 
               <q-item v-if="haveWhitelist">
                 <q-item-section>
@@ -282,8 +283,9 @@
                     label="Whitelist Application URL"
                     outlined
                     :rules="[validURL]"
-                  /> </q-item-section
-              ></q-item>
+                  />
+                </q-item-section>
+              </q-item>
               <q-item v-if="haveWhitelist">
                 <q-item-section>
                   <q-input
@@ -360,6 +362,14 @@
                   "
                 />
               </q-item-section>
+              <q-item-section>
+                <div>
+                  <status-badge
+                    :poolStatus="pool.status"
+                    :badgeText="poolStatusText"
+                  />
+                </div>
+              </q-item-section>
             </q-item>
           </q-list>
         </q-form>
@@ -372,35 +382,6 @@
         <div v-else>
           You are not the owner of this pool
         </div>
-
-        <!-- Pool status banners -->
-        <q-banner
-          inline-actions
-          class="text-white bg-green"
-          v-if="pool.status === 'success'"
-          >Pool success!
-        </q-banner>
-
-        <q-banner
-          inline-actions
-          class="text-white bg-red"
-          v-if="pool.status === 'fail'"
-          >Pool failed.
-        </q-banner>
-
-        <q-banner
-          inline-actions
-          class="text-white bg-orange"
-          v-if="pool.status === 'published'"
-          >Pool in progress.
-        </q-banner>
-
-        <q-banner
-          inline-actions
-          class="text-white bg-grey"
-          v-if="pool.status === 'draft'"
-          >Pool not published yet.
-        </q-banner>
       </q-card>
     </section>
 
@@ -443,9 +424,10 @@
 import { date } from "quasar";
 import datetimeField from "src/components/poolcreation/datetime-field.vue";
 import { mapGetters, mapActions } from "vuex";
+import statusBadge from "src/components/poolinfo/status-badge";
 
 export default {
-  components: { datetimeField },
+  components: { datetimeField, statusBadge },
   data() {
     return {
       TermsandConditionsURL: "",
@@ -458,35 +440,15 @@ export default {
       public_end: { date: "" },
 
       cleanedWebLinks: [],
+      // prettier-ignore
       webLinks: [
-        {
-          key: "website",
-          value: ""
-        },
-        {
-          key: "github",
-          value: ""
-        },
-        {
-          key: "medium",
-          value: ""
-        },
-        {
-          key: "telegram",
-          value: ""
-        },
-        {
-          key: "twitter",
-          value: ""
-        },
-        {
-          key: "whitepaper",
-          value: ""
-        },
-        {
-          key: "whitelist",
-          value: ""
-        }
+        { key: "website", value: "" },
+        { key: "github", value: "" },
+        { key: "medium", value: "" },
+        { key: "telegram", value: "" },
+        { key: "twitter", value: "" },
+        { key: "whitepaper", value: ""},
+        { key: "whitelist", value: "" }
       ],
 
       base_token_symbol: "PBTC",
@@ -539,6 +501,13 @@ export default {
       let token = this.base_token_symbol;
       if (token === "") return "Base token";
       else return token;
+    },
+    poolStatusText() {
+      let status = this.pool.status;
+      if (status === "published") return "Pool in progress ";
+      else if (status === "fail") return "Pool failed";
+      else if (status === "success") return "Pool sucess";
+      else return "";
     }
   },
 
@@ -954,29 +923,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// .header-bg,
-.body-container,
-.q-card {
-  min-width: 450px;
-}
 .header-bg {
   height: 200px;
-  min-width: 490px;
   margin-bottom: -50px;
 }
-.base-grid-container {
+.weblink-container {
   display: grid;
   align-items: stretch;
   grid-template-rows: min-content;
-}
-.form-col-container {
-  @extend .base-grid-container;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-}
-.weblink-container {
-  @extend .base-grid-container;
   grid-column-gap: 10px;
-  grid-row-gap: 24px;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-row-gap: 3px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+@media only screen and (max-width: 650px) {
+  .q-card {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .body-container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }
 </style>
