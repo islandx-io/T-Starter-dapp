@@ -108,7 +108,12 @@
         <div class="col-12 row justify-between ">
           <div class="col-sm-4">
             <router-link to="/" class="router-link q-pb-sm">
-              <img src="~assets/logo/logo-light.svg" alt="logo" height="50px" />
+              <img
+                src="~assets/logo/logo-light.svg"
+                alt="logo"
+                height="50px"
+                id="foot-logo"
+              />
             </router-link>
             <p class="text-body1">
               The place to discover and back projects building on Telos
@@ -164,9 +169,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.header-logo {
-  @media only screen and (max-width: 360px) {
+@media only screen and (max-width: 360px) {
+  .header-logo {
     height: 42px;
+  }
+  #foot-logo {
+    height: 45px;
   }
 }
 .foot-bg {
