@@ -88,6 +88,14 @@ h6 {
   &:hover .q-btn__wrapper .q-btn__content {
     color: $secondary;
   }
+  &.disabled {
+    color: gray !important;
+  }
+  &:hover.disabled .q-btn__wrapper::before {
+    color: gray;
+    background-color: gray;
+    border-color: gray;
+  }
 }
 
 .menu-btn {
