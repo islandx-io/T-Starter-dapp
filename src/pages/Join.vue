@@ -30,7 +30,9 @@
         <q-form @submit="onSubmit">
           <div>
             <div class="row justify-center">
-              <h2>{{ pool.title }}</h2>
+              <h2 style="line-height: 45px; text-align: center">
+                {{ pool.title }}
+              </h2>
             </div>
 
             <!---------->
@@ -38,9 +40,9 @@
             <!---------->
             <q-item dense class="text-h6">From</q-item>
             <q-card flat bordered class="inner-card row ">
-              <div class="row ">
+              <div class="row q-gutter-x-md items-center">
                 <q-input
-                  class="col input-amount q-pr-lg"
+                  class="col input-amount q-my-sm"
                   color="primary"
                   v-model="amount"
                   :rules="[validateInput]"
@@ -49,8 +51,7 @@
                   maxlength="7"
                   autofocus
                 />
-                <div class="column items-end justify-between">
-                  <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
+                <div class="column items-end justify-between q-my-sm">
                   <div class="row q-gutter-x-sm">
                     <q-btn
                       class="col-shrink"
@@ -65,17 +66,21 @@
                 </div>
               </div>
             </q-card>
-            <div class="row justify-between" style="padding: 5px 20px">
+            <div
+              class="row justify-between q-gutter-x-md"
+              style="padding: 5px 20px"
+            >
               <div>
-                Minimum:
+                Min:
                 {{ zeroNaN($chainToQty(pool.minimum_swap)) }}
                 {{ BaseTokenSymbol }}
               </div>
               <div>
-                Maximum:
+                Max:
                 {{ zeroNaN($chainToQty(pool.maximum_swap)) }}
                 {{ BaseTokenSymbol }}
               </div>
+              <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
             </div>
 
             <q-item class="justify-center">
@@ -563,8 +568,14 @@ export default {
 .input-amount {
   font-size: 50px;
   color: $primary;
-  // min-width: 270px;
 }
+.q-field,
+.input-amount {
+  min-width: 200px;
+}
+// .input-info div {
+//   min-width: 150px;
+// }
 a {
   text-decoration: none;
   color: $primary;
@@ -576,6 +587,10 @@ a {
   .q-form {
     grid-column-start: 1;
     grid-column-end: 4;
+  }
+  .body-container {
+    padding-left: 0;
+    padding-right: 0;
   }
 }
 @media only screen and (max-width: 425px) {
