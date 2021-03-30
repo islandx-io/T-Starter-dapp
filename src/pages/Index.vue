@@ -3,7 +3,11 @@
 that you may prove what is that good and acceptable and perfect will of God. - Romans 12:2 -NKJV -->
   <q-page>
     <section class="header-bg row content-start">
-      <div class="header-container row reverse-wrap justify-between">
+      <space-bubble v-for="i in [1, 2, 3]" :key="i" />
+      <div
+        class="header-container row reverse-wrap justify-between"
+        style="z-index: 1"
+      >
         <div class="column justify-start">
           <h2>
             The place to discover and
@@ -105,10 +109,11 @@ that you may prove what is that good and acceptable and perfect will of God. - R
 
 <script>
 import Poolcard from "src/components/Poolcard.vue";
-import RocketLine from "src/components/RocketLine.vue";
+import RocketLine from "src/components/decor/RocketLine.vue";
+import SpaceBubble from "src/components/decor/SpaceBubble.vue";
 import { mapGetters, mapActions } from "vuex";
 export default {
-  components: { Poolcard, RocketLine },
+  components: { Poolcard, RocketLine, SpaceBubble },
   data() {
     return {
       featuredIDs: [],
@@ -201,7 +206,6 @@ export default {
 
 <style lang="scss" scoped>
 .header-bg {
-  // background-image: $header-background-url;
   height: 550px;
 }
 .header-container {
