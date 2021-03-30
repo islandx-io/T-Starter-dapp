@@ -115,10 +115,16 @@ h6 {
     left: 1200px;
     top: 20px;
     transform: rotate(180deg);
+    & path {
+      animation-delay: 1.3s;
+    }
   }
   &:last-of-type {
     left: 2000px;
     top: -200px;
     transform: rotate(0deg);
+    & path {
+      animation-delay: 2.1s;
+    }
   }
 }
