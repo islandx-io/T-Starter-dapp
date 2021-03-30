@@ -4,7 +4,7 @@
       <h6>Type:</h6>
       <h5>{{ pool.access_type }}</h5>
     </div>
-    <div v-if="pool.access_type === 'Private'">
+    <div >
       <h6>Whitelist:</h6>
       <h5>{{ hasWhitelist ? "Yes" : "No" }}</h5>
       <q-btn

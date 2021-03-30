@@ -75,6 +75,7 @@ export const logout = async function({ commit }) {
 
   if (this.$router.currentRoute.path !== "/") {
     this.$router.push({ path: "/" });
+    this.$router.go()
   }
 };
 

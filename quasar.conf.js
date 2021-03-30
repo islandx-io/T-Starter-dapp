@@ -52,7 +52,8 @@ module.exports = function(/* ctx */) {
         HYPERION_ENDPOINT: process.env.HYPERION_ENDPOINT,
         CONTRACT_ADDRESS: process.env.CONTRACT_ADDRESS,
         CONTRACT_TABLE: process.env.CONTRACT_TABLE,
-        ADMIN_ADDRESS: process.env.ADMIN_ADDRESS
+        ADMIN_ADDRESS: process.env.ADMIN_ADDRESS,
+        BUY_START_URL: process.env.BUY_START_URL,
       },
 
       // transpile: false,
