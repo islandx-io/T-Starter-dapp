@@ -118,9 +118,9 @@ export const accountExists = async function({ commit, dispatch }, accountName) {
 export const setWalletBaseTokens = async function({ commit, dispatch }) {
   try {
     let base_tokens_raw = [];
-    base_tokens_raw = await dispatch("pools/getBaseTokens", true, { root: true });
-    
-
+    base_tokens_raw = await dispatch("pools/getBaseTokens", true, {
+      root: true
+    });
     for (const asset of base_tokens_raw) {
       let token_reformat = {
         sym: this.$getSymFromAsset(asset.token_info),
@@ -145,20 +145,70 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
   }
 };
 
+export const setWalletPoolTokens = async function(
+  { commit, dispatch },
+  account
+) {
+  try {
+    let txns = await dispatch("pools/getReceivedPoolTokenTxns", account, {
+      root: true
+    });
+    // TODO Filter out duplicates
+    for (const t of txns) {
+      let sym = t.action_trace.act.data.symbol;
+      let contract = t.action_trace.act.account;
+      let balance = this.$chainToQty(
+        await dispatch(
+          "pools/getBalanceFromChain",
+          {
+            accountName: account,
+            address: contract,
+            sym: sym
+          },
+          { root: true }
+        )
+      );
+      commit("setWalletToken", {
+        token_sym: sym,
+        token_contract: t.action_trace.act.account
+      });
+      commit("setWalletTokenDecimals", {
+        token_sym: sym,
+        amount: this.$chainToDecimals(t.action_trace.act.data.quantity)
+      });
+      commit("setWalletTokenAvatar", {
+        token_sym: sym,
+        avatar: ""
+      });
+      commit("setWalletTokenBalance", {
+        token_sym: sym,
+        amount: balance
+      });
+      console.log({ done: sym });
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
 // set balances in state of each token in wallet
-export const setWalletBalances = async function({ commit, getters, dispatch }, account) {
+export const setWalletBalances = async function(
+  { commit, getters, dispatch },
+  account
+) {
   try {
     const wallet = getters.wallet;
 
     for (const token_info of wallet) {
-
       let payload = {
         address: token_info.token_contract,
         sym: token_info.token_sym,
         accountName: account
       };
 
-      let token_str = await dispatch("pools/getBalanceFromChain", payload, { root: true } );
+      let token_str = await dispatch("pools/getBalanceFromChain", payload, {
+        root: true
+      });
       let balance = this.$chainToQty(token_str);
       commit("setWalletTokenBalance", {
         token_sym: token_info.token_sym,
@@ -239,11 +289,11 @@ export const getChainSTART = async function(
       const liquid_START = this.$chainToQty(stakeBalanceTbl.rows[0].liquid);
 
       commit("setWalletTokenLiquid", {
-        token_sym: 'START',
+        token_sym: "START",
         amount: liquid_START
       });
       commit("setWalletTokenLocked", {
-        token_sym: 'START',
+        token_sym: "START",
         amount: staked_START
       });
       commit("setWalletStakeMaturities", {

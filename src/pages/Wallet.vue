@@ -11,6 +11,7 @@
         :columns="columns"
         row-key="token_sym"
         hide-pagination
+        :pagination="{ rowsPerPage: 500 }"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -195,7 +196,8 @@ export default {
       "setWalletBaseTokens",
       "getChainWalletTable",
       "setWalletBalances",
-      "getChainSTART"
+      "getChainSTART",
+      "setWalletPoolTokens"
     ]),
     isStart(val) {
       return val === "START";
@@ -281,6 +283,7 @@ export default {
       await this.getChainWalletTable(this.accountName);
       await this.getChainSTART(this.accountName);
       await this.setWalletBalances(this.accountName);
+      await this.setWalletPoolTokens(this.accountName);
       this.stakeData = this.wallet.find(
         a => a.token_sym === "START"
       ).stake_maturities;

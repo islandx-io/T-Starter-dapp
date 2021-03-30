@@ -95,23 +95,15 @@ export const ifPoolFunded = async function({ commit }, payload) {
 };
 
 // Get received pool tokens
-export const receivedPoolTokens = async function(
+export const getReceivedPoolTokenTxns = async function(
   { commit, dispatch },
-  payload
+  account
 ) {
   const rpc = this.$api.getRpc();
-  let actionsTable = (await rpc.history_get_actions(payload.account)).actions;
-  let receivedTokenActions = actionsTable.filter(
+  let actionsTable = (await rpc.history_get_actions(account)).actions;
+  let result = actionsTable.filter(
     a => a.action_trace.act.data.memo === "allocation of pool tokens"
   );
-  let result = [];
-  receivedTokenActions.forEach(a => {
-    dispatch("getBalanceFromChain", {
-      accountName: payload.account,
-      address: a.action_trace.act.account,
-      sym: a.action_trace.act.symbol
-    }).then(res => result.push(res));
-  });
   return result;
 };
 
