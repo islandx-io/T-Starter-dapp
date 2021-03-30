@@ -284,6 +284,7 @@ export default {
       await this.getChainSTART(this.accountName);
       await this.setWalletBalances(this.accountName);
       await this.setWalletPoolTokens(this.accountName);
+      // TODO Add loading element for poolTokens
       this.stakeData = this.wallet.find(
         a => a.token_sym === "START"
       ).stake_maturities;

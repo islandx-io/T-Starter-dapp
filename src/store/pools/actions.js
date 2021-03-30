@@ -101,10 +101,10 @@ export const getReceivedPoolTokenTxns = async function(
 ) {
   const rpc = this.$api.getRpc();
   let actionsTable = (await rpc.history_get_actions(account)).actions;
-  let result = actionsTable.filter(
+  let txns = actionsTable.filter(
     a => a.action_trace.act.data.memo === "allocation of pool tokens"
   );
-  return result;
+  return txns;
 };
 
 // Get balance from chain for given address and token

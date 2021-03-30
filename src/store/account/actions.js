@@ -146,17 +146,44 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
 };
 
 export const setWalletPoolTokens = async function(
-  { commit, dispatch },
+  { commit, dispatch, rootGetters },
   account
 ) {
+  // TODO Improve responsiveness: Present data before searching for the avatar
   try {
+    // Get "allocation of pool tokens" transactions
     let txns = await dispatch("pools/getReceivedPoolTokenTxns", account, {
       root: true
     });
     // TODO Filter out duplicates
+    const rpc = this.$api.getRpc();
     for (const t of txns) {
+      // Get pool ID (id => pool => avatar)
+      let res = await rpc.history_get_transaction(
+        t.action_trace.trx_id,
+        t.block_num
+      );
+      let traces = res.traces;
+      let poolID = Number(
+        traces.find(a => a.act.data.pool_id !== undefined).act.data.pool_id
+      );
+
+      // Get pool
+      let pool = rootGetters["pools/getPoolByID"](poolID);
+      if (pool === undefined) {
+        await dispatch("pools/getChainPoolByID", poolID, { root: true });
+        pool = rootGetters["pools/getPoolByID"](poolID);
+      }
+
+      // Get avatar
+      let avatar = "";
+      if (pool !== undefined) avatar = pool.avatar;
+
+      // Symbol, contract
       let sym = t.action_trace.act.data.symbol;
       let contract = t.action_trace.act.account;
+
+      // Balance
       let balance = this.$chainToQty(
         await dispatch(
           "pools/getBalanceFromChain",
@@ -168,6 +195,8 @@ export const setWalletPoolTokens = async function(
           { root: true }
         )
       );
+
+      // Commits
       commit("setWalletToken", {
         token_sym: sym,
         token_contract: t.action_trace.act.account
@@ -178,13 +207,12 @@ export const setWalletPoolTokens = async function(
       });
       commit("setWalletTokenAvatar", {
         token_sym: sym,
-        avatar: ""
+        avatar: avatar
       });
       commit("setWalletTokenBalance", {
         token_sym: sym,
         amount: balance
       });
-      console.log({ done: sym });
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
