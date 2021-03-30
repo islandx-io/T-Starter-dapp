@@ -29,10 +29,13 @@
         padding="4px xs"
         @click="showLogout = !showLogout"
       >
-        <div class="account-badge">
+        <div class="account-badge" @click="copyAccountName">
           <div>
             {{ accountName }}
           </div>
+          <q-tooltip>
+            Tap to copy
+          </q-tooltip>
         </div>
         <div class="q-px-sm text-black" style="min-width: 130px">
           {{ balanceSTR }}
@@ -94,6 +97,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import { copyToClipboard } from "quasar";
 
 export default {
   data() {
@@ -118,7 +122,16 @@ export default {
   methods: {
     ...mapActions("account", ["login", "logout", "autoLogin"]),
     ...mapActions("pools", ["getBalanceFromChain"]),
-
+    copyAccountName() {
+      copyToClipboard(this.accountName).then(() => {
+        this.$q.notify({
+          color: "green-4",
+          textColor: "secondary",
+          message: "Copied to clipboard",
+          timeout: 1000
+        });
+      });
+    },
     async onLogin(idx) {
       this.error = null;
       const error = await this.login({ idx });
