@@ -77,12 +77,10 @@ export const getChainAccountInfo = async function({ commit }, accountName) {
 export const ifPoolFunded = async function({ commit }, payload) {
   const rpc = this.$api.getRpc();
   // console.log(await rpc.history_get_actions(payload.account));
-  let actionsTable = (await rpc.history_get_actions(payload.account)).actions;
-  // console.log(
-  //   actionsTable.filter(
-  //     a => a.action_trace.act.data.memo === `fund pool:${payload.id}`
-  //   )
-  // );
+  let actionsTable = (await rpc.history_get_actions(payload.account, 0, 10000)).actions;
+  console.log(
+    actionsTable
+  );
   if (
     actionsTable.filter(
       a => a.action_trace.act.data.memo === `fund pool:${payload.id}`
@@ -100,7 +98,7 @@ export const getReceivedPoolTokenTxns = async function(
   account
 ) {
   const rpc = this.$api.getRpc();
-  let actionsTable = (await rpc.history_get_actions(account)).actions;
+  let actionsTable = (await rpc.history_get_actions(account, 0, 10000)).actions; //TODO check this limit, make faster
   let txns = actionsTable.filter(
     a => a.action_trace.act.data.memo === "allocation of pool tokens"
   );
