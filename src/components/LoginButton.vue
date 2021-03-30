@@ -34,7 +34,9 @@
             {{ accountName }}
           </div>
         </div>
-        <div class="q-px-sm text-black">{{ balanceSTR }}</div>
+        <div class="q-px-sm text-black" style="min-width: 130px">
+          {{ balanceSTR }}
+        </div>
       </q-btn>
     </q-btn-group>
     <q-dialog v-model="showLogin">
