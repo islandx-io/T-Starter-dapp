@@ -66,7 +66,7 @@
               v-for="col in props.cols.slice(1, 4)"
               :key="col.name"
             >
-              {{ col.value }}
+              {{ col.value.toFixed(props.row.decimals) }}
             </q-td>
 
             <!-- Action -->
@@ -166,7 +166,7 @@ export default {
   data() {
     return {
       buyStartUrl:
-        process.env.BUY_STAT_URL,
+        process.env.BUY_START_URL,
       // prettier-ignore
       columns: [
         { name: "token", label: "Token", field: "token_sym", align: "left" },
