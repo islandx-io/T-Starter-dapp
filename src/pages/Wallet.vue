@@ -166,7 +166,7 @@ export default {
   data() {
     return {
       buyStartUrl:
-        "https://t-starter.medium.com/how-to-participate-in-the-t-starter-seed-round-token-sale-8eb6290c3c15",
+        process.env.BUY_STAT_URL,
       // prettier-ignore
       columns: [
         { name: "token", label: "Token", field: "token_sym", align: "left" },

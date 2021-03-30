@@ -175,6 +175,16 @@ export default {
     this.joinedIDs = await this.getJoinedChainPools(this.accountName);
     this.featuredIDs = await this.getFeaturedChainPools();
     await this.findClaimable();
+  },
+
+  watch: {
+    async accountName() {
+      await this.getAllChainPools();
+      await this.getCreatedChainPools(this.accountName);
+      this.joinedIDs = await this.getJoinedChainPools(this.accountName);
+      this.featuredIDs = await this.getFeaturedChainPools();
+      await this.findClaimable();
+    }
   }
 };
 </script>

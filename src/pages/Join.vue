@@ -294,8 +294,7 @@ export default {
       showTransaction: false,
       transaction: null,
       explorerUrl: process.env.NETWORK_EXPLORER,
-      buyStartUrl:
-        "https://t-starter.medium.com/how-to-participate-in-the-t-starter-seed-round-token-sale-8eb6290c3c15"
+      buyStartUrl: process.env.BUY_START_URL
     };
   },
   components: { tokenAvatar },
