@@ -76,6 +76,46 @@
               :key="props.cols[props.cols.length - 1].name"
               class="q-gutter-x-sm"
             >
+            
+              <!-- withdraw start -->
+              <q-btn
+                outline
+                color="accent"
+                @click.stop="tryReclaim(props)"
+                label="Withdraw"
+                v-if="isStart(props.row.token_sym) && props.row.liquid !== 0"
+                class="hover-accent"
+              />
+              <!-- withdraw liquid -->
+              <q-btn
+                outline
+                color="accent"
+                @click="tryWithdraw(props)"
+                label="Withdraw"
+                v-if="!isStart(props.row.token_sym) && props.row.liquid !== 0"
+                class="hover-accent"
+              />
+              <!-- receive token -->
+              <q-btn
+                outline
+                color="accent"
+                @click="toReceiveTokens(props)"
+                label="Receive"
+                v-if="baseTokenSymbols.includes(props.row.token_sym)"
+                class="hover-accent"
+              />
+              <!-- buy telos -->
+              <q-btn
+                outline
+                color="accent"
+                label="Buy"
+                v-if="props.row.token_sym === 'TLOS'"
+                class="hover-accent"
+                type="a"
+                target="_blank"
+                href="https://telos.net/buy/"
+              />
+              <!-- buy START -->
               <q-btn
                 outline
                 color="accent"
@@ -86,22 +126,13 @@
                 v-if="isStart(props.row.token_sym)"
                 class="hover-accent"
               />
+              <!-- stake -->
               <q-btn
                 outline
                 color="accent"
-                @click.stop="tryReclaim(props)"
-                :disable="props.row.liquid === 0"
-                label="Withdraw"
+                label="Stake"
+                @click.stop="tryStake(props)"
                 v-if="isStart(props.row.token_sym)"
-                class="hover-accent"
-              />
-              <q-btn
-                outline
-                color="accent"
-                @click="tryWithdraw(props)"
-                :disable="props.row.liquid === 0"
-                label="Withdraw"
-                v-if="!isStart(props.row.token_sym)"
                 class="hover-accent"
               />
             </q-td>
@@ -147,7 +178,7 @@
       <!-- swap tokens -->
       <q-item class="justify-center q-pt-md">
         <q-btn
-          label="Swap tokens"
+          label="MANAGE TOKENS ON TELOS WEB WALLET"
           type="a"
           href="https://wallet.telos.net/"
           target="blank"
@@ -168,6 +199,7 @@ export default {
     return {
       buyStartUrl:
         process.env.BUY_START_URL,
+      baseTokenSymbols: ["TLOS", 'PBTC', "PETH"], // TODO make dynamic
       // prettier-ignore
       columns: [
         { name: "token", label: "Token", field: "token_sym", align: "left" },
@@ -245,6 +277,19 @@ export default {
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
+    async updateStake() {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "updatestake",
+          data: {
+            account: this.accountName,
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
     async tryWithdraw(props) {
       try {
         let amount_str = this.$toChainString(
@@ -293,6 +338,25 @@ export default {
       }
     },
 
+    async tryStake() {
+      try {
+        await this.updateStake();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Staked Tokens Updated"
+        });
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+      }
+    },
+
     async reloadWalletInfo() {
       await this.setWalletBaseTokens();
       await this.getChainWalletTable(this.accountName);
@@ -303,7 +367,11 @@ export default {
       this.stakeData = this.wallet.find(
         a => a.token_sym === "START"
       ).stake_maturities;
-    }
+    },
+
+    toReceiveTokens(props) {
+
+    },
   },
 
   async mounted() {
