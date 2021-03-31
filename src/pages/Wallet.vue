@@ -67,7 +67,7 @@
               v-for="col in props.cols.slice(1, 4)"
               :key="col.name"
             >
-              {{ col.value.toFixed(props.row.decimals) }}
+              {{ formatTable(col, props) }}
             </q-td>
 
             <!-- Action -->
@@ -171,9 +171,15 @@ export default {
       // prettier-ignore
       columns: [
         { name: "token", label: "Token", field: "token_sym", align: "left" },
-        { name: "balance", label: "Balance", field: "balance", align: "center" },
+        { name: "balance", label: "Balance", field: "balance", align: "center", },
         { name: "liquid", label: "Liquid", field: "liquid", align: "center" },
-        { name: "staked", label: "Staked", field: "staked", align: "center" },
+        { name: "staked", label: "Staked", field: "staked", align: "center", format(val) {
+          if (val > 0) {
+            return val
+          } else {
+            return ""
+          }
+        }},
         { name: "action", label: "Action", field: "action", align: "center" }
       ],
       // prettier-ignore
@@ -199,6 +205,15 @@ export default {
       "getChainSTART",
       "setWalletPoolTokens"
     ]),
+
+    formatTable(col, props) {
+      if (col.value === "") {
+        return ""
+      } else {
+        return col.value.toFixed(props.row.decimals)
+      }
+    },
+
     isStart(val) {
       return val === "START";
     },
