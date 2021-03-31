@@ -3,7 +3,14 @@
 that you may prove what is that good and acceptable and perfect will of God. - Romans 12:2 -NKJV -->
   <q-page>
     <section class="header-bg row content-start">
-      <space-bubble v-for="i in [1, 2, 3]" :key="i" />
+      <div
+        class="col-12 row justify-between q-px-xl"
+        style="z-index: 0; position: absolute"
+      >
+        <space-bubble class="gt-xs" />
+        <space-bubble class="gt-sm" />
+        <space-bubble class="gt-lg" />
+      </div>
       <div
         class="header-container row reverse-wrap justify-between"
         style="z-index: 1"
@@ -266,5 +273,20 @@ h2 {
 .fade-enter-active {
   animation: go 2s;
   animation-timing-function: cubic-bezier(0.32, 0.45, 0.07, 1.03);
+}
+.space-bubble {
+  width: 450px;
+  &:nth-of-type(2) {
+    transform: rotate(180deg);
+    & path {
+      animation-delay: 1.3s;
+    }
+  }
+  &:nth-of-type(3) {
+    transform: rotate(0deg);
+    & path {
+      animation-delay: 2.1s;
+    }
+  }
 }
 </style>
