@@ -23,7 +23,7 @@ export const setWalletToken = (state, { token_sym, token_contract }) => {
     token_contract: token_contract,
     balance: 0,
     liquid: 0,
-    locked: 0,
+    staked: 0,
     decimals: 0,
     avatar: ""
   };
@@ -43,9 +43,9 @@ export const setWalletTokenLiquid = (state, { token_sym, amount }) => {
   token.liquid = amount;
 };
 
-export const setWalletTokenLocked = (state, { token_sym, amount }) => {
+export const setWalletTokenStaked = (state, { token_sym, amount }) => {
   let token = state.wallet.find(a => a.token_sym === token_sym);
-  token.locked = amount;
+  token.staked = amount;
 };
 
 export const setWalletTokenAvatar = (state, { token_sym, avatar }) => {

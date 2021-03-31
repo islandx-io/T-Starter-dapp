@@ -173,7 +173,7 @@ export default {
         { name: "token", label: "Token", field: "token_sym", align: "left" },
         { name: "balance", label: "Balance", field: "balance", align: "center" },
         { name: "liquid", label: "Liquid", field: "liquid", align: "center" },
-        { name: "locked", label: "Locked", field: "locked", align: "center" },
+        { name: "staked", label: "Staked", field: "staked", align: "center" },
         { name: "action", label: "Action", field: "action", align: "center" }
       ],
       // prettier-ignore

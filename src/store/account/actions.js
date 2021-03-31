@@ -321,7 +321,7 @@ export const getChainSTART = async function(
         token_sym: "START",
         amount: liquid_START
       });
-      commit("setWalletTokenLocked", {
+      commit("setWalletTokenStaked", {
         token_sym: "START",
         amount: staked_START
       });

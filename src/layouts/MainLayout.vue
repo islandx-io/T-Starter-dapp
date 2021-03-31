@@ -164,7 +164,7 @@ export default {
         {name: "github", icon: "fab fa-github", link: "https://github.com/T-Starter"},
       ],
       showMenu: false,
-      apply_for_pool_URL: "https://forms.gle/phugArn3rXSmiT5z9"
+      apply_for_pool_URL: "https://forms.gle"
     };
   },
   components: { LoginButton },
