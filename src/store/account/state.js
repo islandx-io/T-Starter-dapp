@@ -16,15 +16,6 @@ export default function() {
         avatar: "",
         stake_maturities: [],
       },
-      {
-        token_sym: "PETH",
-        token_contract: "eth.ptokens",
-        balance: 0,
-        liquid: 0,
-        locked: 0,
-        decimals: 0,
-        avatar: "",
-      }
     ]
   };
 }
