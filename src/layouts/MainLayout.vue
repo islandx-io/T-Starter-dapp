@@ -132,6 +132,14 @@
                 <q-icon size="28px" :name="site.icon" />
               </a>
             </div>
+            <div class="text-h6">
+              <a
+                :href="apply_for_pool_URL"
+                class="text-link"
+                target="_blank"
+              >
+              Apply for Pool</a>
+            </div>
           </div>
         </div>
         <p>Copyright 2021. T-STARTER. All Rights Reserved</p>
@@ -155,7 +163,8 @@ export default {
         {name: "twitter", icon: "fab fa-twitter", link: "https://twitter.com/T_StarterToken"},
         {name: "github", icon: "fab fa-github", link: "https://github.com/T-Starter"},
       ],
-      showMenu: false
+      showMenu: false,
+      apply_for_pool_URL: "https://forms.gle/phugArn3rXSmiT5z9"
     };
   },
   components: { LoginButton },
@@ -188,12 +197,21 @@ export default {
   padding-bottom: 40px;
 }
 .social-link {
-  padding: 5px 20px 0 0;
+  padding: 5px 20px 10px 0;
   text-decoration: none;
   transition: all 0.15s ease-in-out;
   color: $secondary;
   &:hover {
     color: $accent;
   }
+}
+.text-link {
+  padding: 5px 20px 0 0;
+  text-decoration: underline;
+  color: $secondary;
+  &:hover {
+    color: $accent;
+  }
+
 }
 </style>
