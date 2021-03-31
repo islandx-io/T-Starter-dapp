@@ -43,54 +43,68 @@
       </q-btn>
     </q-btn-group>
     <q-dialog v-model="showLogin">
-      <q-list>
-        <q-item
-          v-for="(wallet, idx) in $ual.authenticators"
-          :key="wallet.getStyle().text"
-          v-ripple
-          :style="{
-            background: wallet.getStyle().background,
-            color: wallet.getStyle().textColor
-          }"
-        >
-          <q-item-section class="cursor-pointer" avatar @click="onLogin(idx)">
-            <img :src="wallet.getStyle().icon" width="30" />
-          </q-item-section>
-          <q-item-section class="cursor-pointer" @click="onLogin(idx)">
-            {{ wallet.getStyle().text }}
-          </q-item-section>
-          <q-item-section class="flex" avatar>
-            <q-spinner
-              v-if="loading === wallet.getStyle().text"
-              :color="wallet.getStyle().textColor"
-              size="2em"
-            />
-            <q-btn
-              v-else
-              :color="wallet.getStyle().textColor"
-              icon="get_app"
-              @click="openUrl(wallet.getOnboardingLink())"
-              target="_blank"
-              dense
-              flat
-              size="12px"
-            >
-              <q-tooltip>
-                Get app
-              </q-tooltip>
-            </q-btn>
-          </q-item-section>
-        </q-item>
-        <q-item
-          v-if="error"
-          :active="!!error"
-          active-class="bg-red-1 text-grey-8"
-        >
-          <q-item-section>
-            {{ error }}
-          </q-item-section>
-        </q-item>
-      </q-list>
+      <div
+        class="column items-center q-gutter-y-sm q-pa-md"
+        style="box-shadow: none"
+      >
+        <q-list class="shadow-5">
+          <q-item
+            v-for="(wallet, idx) in $ual.authenticators"
+            :key="wallet.getStyle().text"
+            v-ripple
+            :style="{
+              background: wallet.getStyle().background,
+              color: wallet.getStyle().textColor
+            }"
+          >
+            <q-item-section class="cursor-pointer" avatar @click="onLogin(idx)">
+              <img :src="wallet.getStyle().icon" width="30" />
+            </q-item-section>
+            <q-item-section class="cursor-pointer" @click="onLogin(idx)">
+              {{ wallet.getStyle().text }}
+            </q-item-section>
+            <q-item-section class="flex" avatar>
+              <q-spinner
+                v-if="loading === wallet.getStyle().text"
+                :color="wallet.getStyle().textColor"
+                size="2em"
+              />
+              <q-btn
+                v-else
+                :color="wallet.getStyle().textColor"
+                icon="get_app"
+                @click="openUrl(wallet.getOnboardingLink())"
+                target="_blank"
+                dense
+                flat
+                size="12px"
+              >
+                <q-tooltip>
+                  Get app
+                </q-tooltip>
+              </q-btn>
+            </q-item-section>
+          </q-item>
+          <q-item
+            v-if="error"
+            :active="!!error"
+            active-class="bg-red-1 text-grey-8"
+          >
+            <q-item-section>
+              {{ error }}
+            </q-item-section>
+          </q-item>
+        </q-list>
+        <q-btn
+          label="Create New Account"
+          class="hover-accent text-secondary"
+          outline
+          flat
+          type="a"
+          href="https://telos.net/create-account/"
+          target="_blank"
+        />
+      </div>
     </q-dialog>
   </div>
 </template>
