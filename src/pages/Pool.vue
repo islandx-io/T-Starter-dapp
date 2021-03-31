@@ -69,7 +69,7 @@
               class="col"
               :to="{ name: 'joinpool', params: {} }"
               :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
-              label="Join pool"
+              :label="isAuthenticated ? 'Join pool' : 'Login to join'"
               :disable="
                 pool.pool_status === 'upcoming' ||
                   !isAuthenticated ||
@@ -88,7 +88,7 @@
             <q-tooltip v-if="!isAuthenticated">
               Connect wallet
             </q-tooltip>
-            <q-tooltip v-if="(!isWhitelisted && pool.access_type === 'Private')">
+            <q-tooltip v-if="!isWhitelisted && pool.access_type === 'Private'">
               Not whitelisted. Apply now!
             </q-tooltip>
           </q-item>
