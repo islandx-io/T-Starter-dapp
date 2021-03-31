@@ -1,7 +1,12 @@
 <template>
   <q-avatar :size="`${avatarSize}px`">
+    <q-spinner-puff
+      v-if="src(avatar) === 'Loading'"
+      :style="avatarStyle"
+      color="primary"
+    />
     <q-img
-      v-if="src(avatar)"
+      v-else-if="src(avatar)"
       :src="src(avatar)"
       alt="Avatar"
       :style="avatarStyle"

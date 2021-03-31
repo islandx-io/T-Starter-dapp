@@ -158,11 +158,21 @@ export const setWalletPoolTokens = async function(
     // TODO Filter out duplicates
     const rpc = this.$api.getRpc();
     for (const t of txns) {
+      // Symbol, contract
+      let sym = t.act.data.symbol;
+      let contract = t.act.account;
+
+      commit("setWalletToken", {
+        token_sym: sym,
+        token_contract: t.act.account
+      });
+      commit("setWalletTokenDecimals", {
+        token_sym: sym,
+        amount: this.$chainToDecimals(t.act.data.quantity)
+      });
+
       // Get pool ID (id => pool => avatar)
-      let res = await rpc.history_get_transaction(
-        t.action_trace.trx_id,
-        t.block_num
-      );
+      let res = await rpc.history_get_transaction(t.trx_id, t.block_num);
       let traces = res.traces;
       let poolID = Number(
         traces.find(a => a.act.data.pool_id !== undefined).act.data.pool_id
@@ -179,9 +189,10 @@ export const setWalletPoolTokens = async function(
       let avatar = "";
       if (pool !== undefined) avatar = pool.avatar;
 
-      // Symbol, contract
-      let sym = t.action_trace.act.data.symbol;
-      let contract = t.action_trace.act.account;
+      commit("setWalletTokenAvatar", {
+        token_sym: sym,
+        avatar: avatar
+      });
 
       // Balance
       let balance = this.$chainToQty(
@@ -196,19 +207,6 @@ export const setWalletPoolTokens = async function(
         )
       );
 
-      // Commits
-      commit("setWalletToken", {
-        token_sym: sym,
-        token_contract: t.action_trace.act.account
-      });
-      commit("setWalletTokenDecimals", {
-        token_sym: sym,
-        amount: this.$chainToDecimals(t.action_trace.act.data.quantity)
-      });
-      commit("setWalletTokenAvatar", {
-        token_sym: sym,
-        avatar: avatar
-      });
       commit("setWalletTokenBalance", {
         token_sym: sym,
         amount: balance
