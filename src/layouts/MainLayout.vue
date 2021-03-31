@@ -120,6 +120,15 @@
             </p>
           </div>
           <div class="col-sm-3 column items-start content-end">
+            <div class="text-h6">
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSeQE7zDFlxxWmAN-pKDfik6OcgtReJ8oiviIpCUkOAGk6Ez7Q/viewform"
+                class="social-link"
+                target="_blank"
+              >
+                Apply for listing
+              </a>
+            </div>
             <div class="text-h6">Contact Us</div>
             <div class="row justify-start">
               <a
@@ -131,14 +140,6 @@
               >
                 <q-icon size="28px" :name="site.icon" />
               </a>
-            </div>
-            <div class="text-h6">
-              <a
-                :href="apply_for_pool_URL"
-                class="text-link"
-                target="_blank"
-              >
-              Apply for Pool</a>
             </div>
           </div>
         </div>
@@ -163,8 +164,7 @@ export default {
         {name: "twitter", icon: "fab fa-twitter", link: "https://twitter.com/T_StarterToken"},
         {name: "github", icon: "fab fa-github", link: "https://github.com/T-Starter"},
       ],
-      showMenu: false,
-      apply_for_pool_URL: "https://forms.gle"
+      showMenu: false
     };
   },
   components: { LoginButton },
@@ -204,14 +204,5 @@ export default {
   &:hover {
     color: $accent;
   }
-}
-.text-link {
-  padding: 5px 20px 0 0;
-  text-decoration: underline;
-  color: $secondary;
-  &:hover {
-    color: $accent;
-  }
-
 }
 </style>

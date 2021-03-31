@@ -42,7 +42,7 @@
         </div>
       </q-btn>
     </q-btn-group>
-    <q-dialog v-model="showLogin">
+    <q-dialog v-model="showLogin" content-style="background-color: #000000aa">
       <div style="box-shadow: none">
         <q-carousel
           v-model="dialogSlide"
@@ -122,7 +122,7 @@
               <p>
                 Create a Telos account through the official telos.net portal and
                 then login with the wallet of your choice. We recommend using
-                Anchor.
+                Anchor for desktop and Wombat for mobile.
               </p>
               <div class="row justify-between">
                 <q-btn
