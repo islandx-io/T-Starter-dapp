@@ -69,7 +69,7 @@
               class="col"
               :to="{ name: 'joinpool', params: {} }"
               :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
-              label="Join pool"
+              :label="isAuthenticated ? 'Join pool' : 'Login to join'"
               :disable="
                 pool.pool_status === 'upcoming' ||
                   !isAuthenticated ||

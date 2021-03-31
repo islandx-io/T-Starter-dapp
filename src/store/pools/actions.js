@@ -1,4 +1,4 @@
-import { date } from "quasar";
+import axios from "axios";
 
 // Get pool info from chain by id, put into store
 export const getChainPoolByID = async function({ commit, dispatch }, id) {
@@ -77,10 +77,9 @@ export const getChainAccountInfo = async function({ commit }, accountName) {
 export const ifPoolFunded = async function({ commit }, payload) {
   const rpc = this.$api.getRpc();
   // console.log(await rpc.history_get_actions(payload.account));
-  let actionsTable = (await rpc.history_get_actions(payload.account, 0, 10000)).actions;
-  console.log(
-    actionsTable
-  );
+  let actionsTable = (await rpc.history_get_actions(payload.account, 0, 10000))
+    .actions;
+  console.log(actionsTable);
   if (
     actionsTable.filter(
       a => a.action_trace.act.data.memo === `fund pool:${payload.id}`
@@ -93,16 +92,14 @@ export const ifPoolFunded = async function({ commit }, payload) {
 };
 
 // Get received pool tokens
-export const getReceivedPoolTokenTxns = async function(
-  { commit, dispatch },
-  account
-) {
-  const rpc = this.$api.getRpc();
-  let actionsTable = (await rpc.history_get_actions(account, 0, 10000)).actions; //TODO check this limit, make faster
-  let txns = actionsTable.filter(
-    a => a.action_trace.act.data.memo === "allocation of pool tokens"
+export const getReceivedPoolTokenTxns = async function({}, account) {
+  let response = await axios(
+    `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}` +
+      `/v2/history/get_actions?account=${account}` +
+      `&limit=1000&sort=desc&transfer.to=${account}` +
+      `&transfer.memo=allocation%20of%20pool%20tokens`
   );
-  return txns;
+  return response.data.actions;
 };
 
 // Get balance from chain for given address and token
