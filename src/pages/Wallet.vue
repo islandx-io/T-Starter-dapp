@@ -99,7 +99,7 @@
               <q-btn
                 outline
                 color="accent"
-                @click="toReceiveTokens(props)"
+                :to="{ path: '/receive', query: { token_sym: props.row.token_sym } }"
                 label="Receive"
                 v-if="baseTokenSymbols.includes(props.row.token_sym)"
                 class="hover-accent"

@@ -32,7 +32,6 @@ const routes = [
     children: [{ path: "", component: () => import("pages/Pools.vue") }]
   },
   {
-    // TODO decide on how slugs and IDs will be handled
     path: "/pools/:id",
     component: () => import("layouts/MainLayout.vue"),
     children: [
@@ -63,6 +62,11 @@ const routes = [
         component: () => import("pages/UpdatePool.vue")
       }
     ]
+  },
+  {
+    path: "/receive",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ path: "", component: () => import("pages/ReceiveTokens.vue") }]
   },
 
   // Always leave this as last one,

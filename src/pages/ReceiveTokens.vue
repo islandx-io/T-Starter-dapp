@@ -1,6 +1,9 @@
 <template>
-  <q-page padding>
-    <!-- content -->
+  <q-page>
+    <section >
+      <div>I am receiving {{$route.query}}</div>
+    </section>
+
   </q-page>
 </template>
 
