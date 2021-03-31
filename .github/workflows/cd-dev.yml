@@ -44,4 +44,4 @@ jobs:
           port: 21
           protocol: ftp
           local-dir: ./dist/spa/
-          server-dir: /home/inode/dev-app.tstarter.io/
+          server-dir: /dev-app.tstarter.io/
