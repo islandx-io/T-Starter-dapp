@@ -21,8 +21,7 @@
         flat
         :padding="actionButtonPadding"
         icon="fas fa-wallet"
-        @click="tryWithdraw(props)"
-        label="Withdraw"
+        @click.stop="tryWithdraw(props)"
         v-if="!isStart(props.row.token_sym) && props.row.liquid !== 0"
       >
         <q-tooltip>Withdraw</q-tooltip>
@@ -39,6 +38,7 @@
         }"
         v-if="baseTokenSymbols.includes(props.row.token_sym)"
         class="hover-accent"
+        @click.stop
       >
         <q-tooltip>Receive</q-tooltip>
       </q-btn>
@@ -67,6 +67,7 @@
         :href="buyStartUrl"
         v-if="isStart(props.row.token_sym)"
         class="hover-accent"
+        @click.stop
       >
         <q-tooltip>Buy</q-tooltip>
       </q-btn>
@@ -86,12 +87,11 @@
     <q-btn
       outline
       flat
-      padding="xs 0"
+      padding="5px 0"
       class="hover-accent"
       icon="fas fa-ellipsis-v"
       v-if="this.$children.length > 4"
-      @click="truncateActions = !truncateActions"
-      @click.stop
+      @click.stop="truncateActions = !truncateActions"
     >
       <q-tooltip>More</q-tooltip>
     </q-btn>
@@ -105,7 +105,7 @@ export default {
       buyStartUrl: process.env.BUY_START_URL,
       baseTokenSymbols: ["TLOS", "PBTC", "PETH"], // TODO make dynamic
       truncateActions: true,
-      actionButtonPadding: "xs 8px"
+      actionButtonPadding: "5px 8px"
     };
   },
   props: {

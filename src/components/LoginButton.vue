@@ -20,6 +20,7 @@
           @click="copyAccountName"
           :label="accountName"
           padding="3px 5px"
+          style="padding-left: 4px"
         >
           <q-tooltip>
             Copy
