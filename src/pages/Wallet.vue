@@ -72,80 +72,7 @@
 
             <!-- Action -->
             <q-td :props="props" :key="props.cols[props.cols.length - 1].name">
-              <!-- withdraw start -->
-              <q-btn
-                outline
-                flat
-                icon="fas fa-wallet"
-                @click.stop="tryReclaim(props)"
-                v-if="isStart(props.row.token_sym) && props.row.liquid !== 0"
-                class="hover-accent"
-              >
-                <q-tooltip>Withdraw</q-tooltip>
-              </q-btn>
-              <!-- withdraw liquid -->
-              <q-btn
-                outline
-                flat
-                icon="fas fa-wallet"
-                color="accent"
-                @click="tryWithdraw(props)"
-                label="Withdraw"
-                v-if="!isStart(props.row.token_sym) && props.row.liquid !== 0"
-              >
-                <q-tooltip>Withdraw</q-tooltip>
-              </q-btn>
-              <!-- receive token -->
-              <q-btn
-                outline
-                flat
-                icon="fas fa-sign-in-alt"
-                :to="{
-                  path: '/receive',
-                  query: { token_sym: props.row.token_sym }
-                }"
-                v-if="baseTokenSymbols.includes(props.row.token_sym)"
-                class="hover-accent"
-              >
-                <q-tooltip>Receive</q-tooltip>
-              </q-btn>
-              <!-- buy telos -->
-              <q-btn
-                outline
-                flat
-                icon="far fa-credit-card"
-                v-if="props.row.token_sym === 'TLOS'"
-                class="hover-accent"
-                type="a"
-                target="_blank"
-                href="https://telos.net/buy/"
-              >
-                <q-tooltip>Buy</q-tooltip>
-              </q-btn>
-              <!-- buy START -->
-              <q-btn
-                outline
-                flat
-                icon="far fa-credit-card"
-                type="a"
-                target="_blank"
-                :href="buyStartUrl"
-                v-if="isStart(props.row.token_sym)"
-                class="hover-accent"
-              >
-                <q-tooltip>Buy</q-tooltip>
-              </q-btn>
-              <!-- stake -->
-              <q-btn
-                outline
-                flat
-                icon="fas fa-thumbtack"
-                @click.stop="tryStake(props)"
-                v-if="isStart(props.row.token_sym)"
-                class="hover-accent"
-              >
-                <q-tooltip>Receive released staked</q-tooltip>
-              </q-btn>
+              <wallet-actions :props="props" :accountName="accountName" />
             </q-td>
           </q-tr>
 
@@ -203,13 +130,12 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
+import walletActions from "src/components/wallet/WalletActions";
 import { date } from "quasar";
 
 export default {
   data() {
     return {
-      buyStartUrl: process.env.BUY_START_URL,
-      baseTokenSymbols: ["TLOS", "PBTC", "PETH"], // TODO make dynamic
       // prettier-ignore
       columns: [
         { name: "token", label: "Token", field: "token_sym", align: "left" },
@@ -233,7 +159,7 @@ export default {
       stakeData: []
     };
   },
-  components: { tokenAvatar },
+  components: { tokenAvatar, walletActions },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"])
   },
@@ -256,117 +182,6 @@ export default {
       }
     },
 
-    isStart(val) {
-      return val === "START";
-    },
-    async withdrawTokens(amount_str) {
-      const actions = [
-        {
-          account: process.env.CONTRACT_ADDRESS,
-          name: "withdraw",
-          data: {
-            account: this.accountName,
-            quantity: amount_str
-          }
-        }
-      ];
-      const transaction = await this.$store.$api.signTransaction(actions);
-    },
-
-    async reclaimTokens(amount_str) {
-      const actions = [
-        {
-          account: process.env.CONTRACT_ADDRESS,
-          name: "reclaimstake",
-          data: {
-            account: this.accountName,
-            quantity: amount_str
-          }
-        }
-      ];
-      const transaction = await this.$store.$api.signTransaction(actions);
-    },
-
-    async updateStake() {
-      const actions = [
-        {
-          account: process.env.CONTRACT_ADDRESS,
-          name: "updatestake",
-          data: {
-            account: this.accountName
-          }
-        }
-      ];
-      const transaction = await this.$store.$api.signTransaction(actions);
-    },
-
-    async tryWithdraw(props) {
-      try {
-        let amount_str = this.$toChainString(
-          props.row.liquid,
-          props.row.decimals,
-          props.row.token_sym
-        );
-        await this.withdrawTokens(amount_str);
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Tokens claimed, please refresh"
-        });
-      } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
-      }
-    },
-
-    async tryReclaim(props) {
-      try {
-        let amount_str = this.$toChainString(
-          props.row.liquid,
-          props.row.decimals,
-          props.row.token_sym
-        );
-        await this.reclaimTokens(amount_str);
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Tokens claimed, please refresh"
-        });
-      } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
-      }
-    },
-
-    async tryStake() {
-      try {
-        await this.updateStake();
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Staked Tokens Updated"
-        });
-      } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
-      }
-    },
-
     async reloadWalletInfo() {
       await this.setWalletBaseTokens();
       await this.getChainWalletTable(this.accountName);
@@ -379,7 +194,11 @@ export default {
       ).stake_maturities;
     },
 
-    toReceiveTokens(props) {}
+    toReceiveTokens(props) {},
+
+    isStart(val) {
+      return val === "START";
+    }
   },
 
   async mounted() {
