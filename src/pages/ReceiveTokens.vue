@@ -20,12 +20,26 @@ import QRCode from "qrcode";
 const QR = new QRCodeStyling({
   width: 300,
   height: 300,
-  data: "https://www.facebook.com/",
+  data: "",
   image:
-    "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
+    "/tokens/bitcoin.svg",
   dotsOptions: {
-    color: "#4267b2",
-    type: "rounded"
+    type: "dots",
+    color: "#fdb435",
+    gradient: {
+      type: "radial",
+      rotation: 0.7853981633974483,
+      colorStops: [
+        {
+          offset: 0,
+          color: "#f2cb3a"
+        },
+        {
+          offset: 1,
+          color: "#6a1a4c"
+        }
+      ]
+    }
   },
   backgroundOptions: {
     color: "#e9ebee"
@@ -64,8 +78,7 @@ export default {
       this.BTCaddress = pbridge_api.data.nativeDepositAddress || [];
 
       this.QRcode = await this.generateQR(this.BTCaddress);
-      console.log(this.qrCode);
-
+      this.qrCode.update({data: this.BTCaddress})
     }
   },
   mounted() {
