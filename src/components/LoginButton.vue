@@ -9,46 +9,40 @@
       :outline="mobileView"
       label="Login"
     />
-    <q-btn-group outline>
-      <q-btn
-        class="group-btn"
-        :icon="showLogout ? 'fas fa-caret-right' : 'fas fa-caret-left'"
-        @click="showLogout = !showLogout"
-        :outline="mobileView"
-        v-if="!showLogout"
-        split
-        padding="2px"
-      />
-      <q-btn
-        class="group-btn"
-        label="Logout"
-        padding="4px 8px"
-        :outline="mobileView"
-        v-if="showLogout"
-        @click="
-          showLogout = false;
-          logout();
-        "
-      />
-      <q-btn
-        v-if="isAuthenticated"
-        :color="mobileView ? 'black' : 'secondary'"
-        :outline="mobileView"
-        class="login row justify-end items-center"
-        padding="4px xs"
-      >
-        <div class="account-badge" @click="copyAccountName">
-          <div>
-            {{ accountName }}
-          </div>
+    <q-btn-group
+      :outline="mobileView"
+      class="q-pa-xs bg-secondary"
+      v-if="isAuthenticated"
+    >
+      <q-btn-group class="row justify-end items-center">
+        <q-btn
+          class="account-badge"
+          @click="copyAccountName"
+          :label="accountName"
+          padding="3px 5px"
+        >
           <q-tooltip>
-            Tap to copy
+            Copy
           </q-tooltip>
-        </div>
-        <div class="q-px-sm text-black" style="min-width: 130px">
-          {{ balanceSTR }}
-        </div>
-      </q-btn>
+        </q-btn>
+        <q-btn
+          class="account-badge"
+          icon="far fa-times-circle"
+          padding="0"
+          style="font-size: 12px; padding: 0 5px 0 2px"
+          @click="logout()"
+        >
+          <q-tooltip>
+            Logout
+          </q-tooltip>
+        </q-btn>
+      </q-btn-group>
+      <div
+        class="self-center text-center text-black"
+        style="min-width: 130px; font-weight: 500 "
+      >
+        {{ balanceSTR }}
+      </div>
     </q-btn-group>
     <q-dialog v-model="showLogin" content-style="background-color: #000000aa">
       <div style="box-shadow: none">
@@ -190,7 +184,7 @@ export default {
         this.$q.notify({
           color: "green-4",
           textColor: "secondary",
-          message: "Copied to clipboard",
+          message: "Copied account name to clipboard",
           timeout: 1000
         });
       });
@@ -238,27 +232,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.login {
-  padding-right: 0;
-}
-.login .account-badge {
-  display: flex;
-  align-items: center;
-  border-radius: 10px;
-  max-height: 28px;
-  padding: 4px 10px;
+.account-badge {
+  padding: 0;
   background-color: $space;
-  font-size: 14px;
   font-weight: bold;
   color: $secondary;
-}
-.q-carousel__slide {
-  overflow-x: hidden;
-  width: 300px;
-}
-.group-btn {
-  background-color: $secondary;
-  color: black;
   transition: all 0.15s ease-in-out;
   &:hover {
     background-color: $accent !important;
@@ -272,5 +250,9 @@ export default {
   &:hover .q-btn__wrapper .q-btn__content {
     color: $secondary;
   }
+}
+.q-carousel__slide {
+  overflow-x: hidden;
+  width: 300px;
 }
 </style>
