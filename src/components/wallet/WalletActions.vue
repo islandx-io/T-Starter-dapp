@@ -23,6 +23,7 @@
         icon="fas fa-wallet"
         @click.stop="tryWithdraw(props)"
         v-if="!isStart(props.row.token_sym) && props.row.liquid !== 0"
+        class="hover-accent"
       >
         <q-tooltip>Withdraw</q-tooltip>
       </q-btn>
