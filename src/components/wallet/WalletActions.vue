@@ -232,4 +232,7 @@ export default {
   color: $primary;
   display: none;
 }
+.q-btn {
+  font-size: 12px;
+}
 </style>
