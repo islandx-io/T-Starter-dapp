@@ -4,7 +4,9 @@
       <div>I am receiving {{ $route.query }}</div>
       <div v-if="devWarning">Don't do real payments</div>
       <div>{{ BTCaddress }}</div>
-      <img  :src="qrCode">
+      <img :src="QRcode" />
+
+      <div id="canvas"></div>
     </section>
   </q-page>
 </template>
@@ -15,32 +17,32 @@ import { mapGetters, mapActions } from "vuex";
 import QRCodeStyling from "qr-code-styling";
 import QRCode from "qrcode";
 
-// const qrCode = new QRCodeStyling({
-//   width: 300,
-//   height: 300,
-//   data: "https://www.facebook.com/",
-//   image:
-//     "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
-//   dotsOptions: {
-//     color: "#4267b2",
-//     type: "rounded"
-//   },
-//   backgroundOptions: {
-//     color: "#e9ebee"
-//   },
-//   imageOptions: {
-//     crossOrigin: "anonymous",
-//     margin: 20
-//   }
-// });
-// qrCode.append(document.getElementById("qrCode"));
+const QR = new QRCodeStyling({
+  width: 300,
+  height: 300,
+  data: "https://www.facebook.com/",
+  image:
+    "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
+  dotsOptions: {
+    color: "#4267b2",
+    type: "rounded"
+  },
+  backgroundOptions: {
+    color: "#e9ebee"
+  },
+  imageOptions: {
+    crossOrigin: "anonymous",
+    margin: 20
+  }
+});
 
 export default {
   data() {
     return {
       devWarning: process.env.DEVELOPMENT,
       BTCaddress: "",
-      qrCode: ""
+      QRcode: "",
+      qrCode: QR
     };
   },
   computed: {
@@ -61,12 +63,15 @@ export default {
       );
       this.BTCaddress = pbridge_api.data.nativeDepositAddress || [];
 
-      this.qrCode = await this.generateQR(this.BTCaddress);
+      this.QRcode = await this.generateQR(this.BTCaddress);
+      console.log(this.qrCode);
+
     }
   },
   mounted() {
     this.setBTCaddress();
-    
+    this.qrCode.append(document.getElementById("canvas"));
+
   }
 };
 </script>
