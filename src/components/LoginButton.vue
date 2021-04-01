@@ -11,10 +11,19 @@
     />
     <q-btn-group outline>
       <q-btn
-        class="hover-accent"
-        :text-color="mobileView ? 'black' : 'secondary'"
-        outline
+        class="group-btn"
+        :icon="showLogout ? 'fas fa-caret-right' : 'fas fa-caret-left'"
+        @click="showLogout = !showLogout"
+        :outline="mobileView"
+        v-if="!showLogout"
+        split
+        padding="2px"
+      />
+      <q-btn
+        class="group-btn"
         label="Logout"
+        padding="4px 8px"
+        :outline="mobileView"
         v-if="showLogout"
         @click="
           showLogout = false;
@@ -27,7 +36,6 @@
         :outline="mobileView"
         class="login row justify-end items-center"
         padding="4px xs"
-        @click="showLogout = !showLogout"
       >
         <div class="account-badge" @click="copyAccountName">
           <div>
@@ -247,5 +255,22 @@ export default {
 .q-carousel__slide {
   overflow-x: hidden;
   width: 300px;
+}
+.group-btn {
+  background-color: $secondary;
+  color: black;
+  transition: all 0.15s ease-in-out;
+  &:hover {
+    background-color: $accent !important;
+    border-color: $accent !important;
+    color: $secondary !important;
+  }
+  &:hover .q-btn__wrapper::before {
+    background-color: $accent;
+    border-color: $accent;
+  }
+  &:hover .q-btn__wrapper .q-btn__content {
+    color: $secondary;
+  }
 }
 </style>
