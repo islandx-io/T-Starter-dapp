@@ -71,70 +71,81 @@
             </q-td>
 
             <!-- Action -->
-            <q-td
-              :props="props"
-              :key="props.cols[props.cols.length - 1].name"
-              class="q-gutter-x-sm"
-            >
-            
+            <q-td :props="props" :key="props.cols[props.cols.length - 1].name">
               <!-- withdraw start -->
               <q-btn
                 outline
-                color="accent"
+                flat
+                icon="fas fa-wallet"
                 @click.stop="tryReclaim(props)"
-                label="Withdraw"
                 v-if="isStart(props.row.token_sym) && props.row.liquid !== 0"
                 class="hover-accent"
-              />
+              >
+                <q-tooltip>Withdraw</q-tooltip>
+              </q-btn>
               <!-- withdraw liquid -->
               <q-btn
                 outline
+                flat
+                icon="fas fa-wallet"
                 color="accent"
                 @click="tryWithdraw(props)"
                 label="Withdraw"
                 v-if="!isStart(props.row.token_sym) && props.row.liquid !== 0"
-                class="hover-accent"
-              />
+              >
+                <q-tooltip>Withdraw</q-tooltip>
+              </q-btn>
               <!-- receive token -->
               <q-btn
                 outline
-                color="accent"
-                :to="{ path: '/receive', query: { token_sym: props.row.token_sym } }"
-                label="Receive"
+                flat
+                icon="fas fa-sign-in-alt"
+                :to="{
+                  path: '/receive',
+                  query: { token_sym: props.row.token_sym }
+                }"
                 v-if="baseTokenSymbols.includes(props.row.token_sym)"
                 class="hover-accent"
-              />
+              >
+                <q-tooltip>Receive</q-tooltip>
+              </q-btn>
               <!-- buy telos -->
               <q-btn
                 outline
-                color="accent"
-                label="Buy"
+                flat
+                icon="far fa-credit-card"
                 v-if="props.row.token_sym === 'TLOS'"
                 class="hover-accent"
                 type="a"
                 target="_blank"
                 href="https://telos.net/buy/"
-              />
+              >
+                <q-tooltip>Buy</q-tooltip>
+              </q-btn>
               <!-- buy START -->
               <q-btn
                 outline
-                color="accent"
+                flat
+                icon="far fa-credit-card"
                 type="a"
                 target="_blank"
                 :href="buyStartUrl"
-                label="Buy"
                 v-if="isStart(props.row.token_sym)"
                 class="hover-accent"
-              />
+              >
+                <q-tooltip>Buy</q-tooltip>
+              </q-btn>
               <!-- stake -->
               <q-btn
                 outline
-                color="accent"
-                label="Stake"
+                flat
+                icon="fas fa-thumbtack"
                 @click.stop="tryStake(props)"
                 v-if="isStart(props.row.token_sym)"
                 class="hover-accent"
-              />
+              >
+                <q-tooltip>Receive released staked</q-tooltip>
+              </q-btn>
             </q-td>
           </q-tr>
 
@@ -197,9 +208,8 @@ import { date } from "quasar";
 export default {
   data() {
     return {
-      buyStartUrl:
-        process.env.BUY_START_URL,
-      baseTokenSymbols: ["TLOS", 'PBTC', "PETH"], // TODO make dynamic
+      buyStartUrl: process.env.BUY_START_URL,
+      baseTokenSymbols: ["TLOS", "PBTC", "PETH"], // TODO make dynamic
       // prettier-ignore
       columns: [
         { name: "token", label: "Token", field: "token_sym", align: "left" },
@@ -240,9 +250,9 @@ export default {
 
     formatTable(col, props) {
       if (col.value === "") {
-        return ""
+        return "";
       } else {
-        return col.value.toFixed(props.row.decimals)
+        return col.value.toFixed(props.row.decimals);
       }
     },
 
@@ -283,7 +293,7 @@ export default {
           account: process.env.CONTRACT_ADDRESS,
           name: "updatestake",
           data: {
-            account: this.accountName,
+            account: this.accountName
           }
         }
       ];
@@ -369,9 +379,7 @@ export default {
       ).stake_maturities;
     },
 
-    toReceiveTokens(props) {
-
-    },
+    toReceiveTokens(props) {}
   },
 
   async mounted() {
