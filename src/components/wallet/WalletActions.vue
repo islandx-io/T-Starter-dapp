@@ -27,7 +27,7 @@
         <q-tooltip>Withdraw</q-tooltip>
       </q-btn>
       <!-- receive token -->
-      <q-btn
+      <!-- <q-btn
         outline
         flat
         :padding="actionButtonPadding"
@@ -36,6 +36,19 @@
           path: '/receive',
           query: { token_sym: props.row.token_sym }
         }"
+        v-if="baseTokenSymbols.includes(props.row.token_sym)"
+        class="hover-accent"
+        @click.stop
+      > -->
+      <!-- TODO receive token implement this in code -->
+      <q-btn
+        outline
+        flat
+        :padding="actionButtonPadding"
+        icon="fas fa-sign-in-alt"
+        target="_blank"
+        type="a"
+        :href="pTokenBridgeLink(props.row.token_sym)"
         v-if="baseTokenSymbols.includes(props.row.token_sym)"
         class="hover-accent"
         @click.stop
@@ -113,9 +126,20 @@ export default {
     accountName: { require: true }
   },
   methods: {
+    pTokenBridgeLink(sym) {
+      if (sym === "TLOS") {
+        return "https://dapp.ptokens.io/tlos-on-eth/issue-redeem";
+      } else if (sym === "PBTC") {
+        return "https://dapp.ptokens.io/pbtc-on-telos/issue-redeem";
+      } else if (sym === "PETH") {
+        return "https://dapp.ptokens.io/peth-on-telos/issue-redeem";
+      }
+    },
+
     isStart(val) {
       return val === "START";
     },
+
     async withdrawTokens(amount_str) {
       const actions = [
         {
