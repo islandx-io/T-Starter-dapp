@@ -54,9 +54,11 @@ export default {
   data() {
     return {
       devWarning: process.env.DEVELOPMENT,
+      receiveLink: "",
       BTCaddress: "",
       QRcode: "",
-      qrCode: QR
+      qrCode: QR,
+
     };
   },
   computed: {
@@ -82,6 +84,17 @@ export default {
     }
   },
   mounted() {
+    if (this.$route.query.token_sym === 'TLOS') {
+      this.receiveLink = "https://dapp.ptokens.io/tlos-on-eth/issue-redeem"
+    } else if (this.$route.query.token_sym === 'PBTC') {
+      this.receiveLink = "https://dapp.ptokens.io/pbtc-on-telos/issue-redeem"
+    } else if (this.$route.query.token_sym === 'PETH') {
+      this.receiveLink = "https://dapp.ptokens.io/peth-on-telos/issue-redeem"
+    }
+
+    window.location.replace(this.receiveLink)
+
+
     this.setBTCaddress();
     this.qrCode.append(document.getElementById("canvas"));
 
