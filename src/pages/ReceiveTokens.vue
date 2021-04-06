@@ -55,7 +55,7 @@
                 padding="xs"
               />
               <q-btn
-                label="Etherium"
+                label="Ethereum"
                 v-if="selectedToken.toUpperCase() === 'PETH'"
                 @click="selectedNetwork = 'etherium'"
                 :class="
