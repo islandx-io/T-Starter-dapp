@@ -110,6 +110,10 @@ import QRCodeStyling from "qr-code-styling";
 import QRCode from "qrcode";
 import { copyToClipboard } from "quasar";
 import tokenAvatar from "src/components/TokenAvatar";
+import { pERC20 } from "ptokens-perc20";
+import { HttpProvider } from "ptokens-providers";
+import { Node } from "ptokens-node";
+import Web3 from 'web3'
 
 const QR = new QRCodeStyling({
   width: 250,
@@ -196,12 +200,62 @@ export default {
 
       this.QRcode = await this.generateQR(this.BTCaddress);
       this.qrCode.update({ data: this.BTCaddress });
-    }
+    },
+
+    async ethereumLogin() {
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        console.log(accounts)
+      }
+    },
+
+    
   },
-  mounted() {
+  async mounted() {
     this.setBTCaddress();
     this.qrCode.append(document.getElementById("canvas"));
     this.selectedToken = this.$route.query.token_sym;
+
+    this.ethereumLogin();
+
+    // testing metamask peth
+    // const ethEnabled = () => {
+    //   console.log("hello eth?")
+    //   if (window.ethereum) {
+    //     console.log("eth connect")
+    //     window.web3 = new Web3(window.ethereum);
+    //     window.ethereum.enable();
+    //     return true;
+    //   }
+    //   return false;
+    // };
+
+  
+
+    // if (window.web3) {
+    //   const pweth = new pERC20({
+    //     pToken: "PWETH",
+    //     ethProvider: window.ethereum,
+
+    //     hostBlockchain: "telos",
+    //     hostNetwork: "mainnet",
+    //     nativeBlockchain: "ethereum",
+    //     nativeNetwork: "mainnet"
+    //   });
+    //   console.log(pweth);
+
+    //   // pweth
+    //   //   .issue(1000000000, "fuzzywazziee", { gas: 20000, gasPrice: 75e9 })
+    //   //   .once("nativeTxBroadcasted", tx => tx)
+    //   //   .once("nativeTxConfirmed", tx => tx)
+    //   //   .once("nodeReceivedTx", report => report)
+    //   //   .once("nodeBroadcastedTx", report => report)
+    //   //   .once("hostTxConfirmed", tx => tx)
+    //   //   .then(res => res);
+    // } else {
+    //   console.log("No web3 detected");
+    // }
   }
 };
 </script>
