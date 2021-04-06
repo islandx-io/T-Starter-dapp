@@ -63,9 +63,9 @@
               <q-btn
                 label="Ethereum"
                 v-if="selectedToken.toUpperCase() === 'PETH'"
-                @click="selectedNetwork = 'etherium'"
+                @click="selectedNetwork = 'ethereum'"
                 :class="
-                  selectedNetwork === 'etherium' ? 'selected-network' : ''
+                  selectedNetwork === 'ethereum' ? 'selected-network' : ''
                 "
                 flat
                 size="lg"
@@ -73,36 +73,37 @@
                 padding="xs"
               />
             </div>
-            <div class="text-subtitle1 q-py-md">
+            <div
+              class="text-subtitle1 q-py-md"
+              v-if="selectedNetwork !== 'ethereum'"
+            >
               Deposit {{ depositTokenStr }} to the following address
             </div>
             <div v-if="devWarning">Don't do real payments</div>
-            <!-- <img :src="QRcode" /> -->
+            <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
+            <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" />
             <div
-              class="column items-center"
-              v-show="selectedNetwork === 'telos'"
+              class="text-subtitle1"
+              v-show="
+                selectedNetwork === 'telos' || selectedNetwork === 'bitcoin'
+              "
             >
-              <div id="canvas" />
-              <div class="text-subtitle1">
-                {{ address }}
-                <q-btn
-                  flat
-                  v-if="address !== ''"
-                  @click="copyAddress(address)"
-                  icon="far fa-clone"
-                  padding="0"
-                  color="positive"
-                  size="sm"
-                />
-              </div>
-            </div>
-            <div class="column">
+              {{ selectedAddress }}
               <q-btn
+                flat
+                v-if="selectedAddress !== ''"
+                @click="copyAddress(selectedAddress)"
+                icon="far fa-clone"
+                padding="0"
+                color="positive"
+                size="sm"
+              />
+            </div>
+            <!-- <q-btn
                 v-if="selectedNetwork !== 'telos'"
                 color="primary"
                 label="Generate new deposit address"
-              />
-            </div>
+              /> -->
           </div>
         </div>
       </q-card>
@@ -118,14 +119,12 @@ import QRCode from "qrcode";
 import { copyToClipboard } from "quasar";
 import tokenAvatar from "src/components/TokenAvatar";
 
-const QR = new QRCodeStyling({
-  width: 250,
-  height: 250,
+const qrStyling = {
   data: "",
   qrOptions: {
     typeNumber: "0",
     mode: "Byte",
-    errorCorrectionLevel: "L"
+    errorCorrectionLevel: "Q"
   },
   dotsOptions: {
     type: "rounded",
@@ -160,7 +159,7 @@ const QR = new QRCodeStyling({
     crossOrigin: "anonymous",
     margin: 20
   }
-});
+};
 
 export default {
   components: { tokenAvatar },
@@ -168,9 +167,11 @@ export default {
     return {
       devWarning: process.env.DEVELOPMENT,
       receiveLink: "",
-      address: "",
-      QRcode: "",
-      qrCode: QR,
+      qrCodes: {
+        tlos: new QRCodeStyling({ width: 180, height: 180, ...qrStyling }),
+        btc: new QRCodeStyling({ width: 270, height: 270, ...qrStyling })
+      },
+      btcAddress: "",
       selectedNetwork: "telos",
       tokens: ["pBTC", "pETH", "TLOS"],
       selectedToken: "pBTC"
@@ -179,13 +180,20 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     depositTokenStr() {
-      if (this.selectedToken === "pETH") {
+      if (this.selectedToken.toUpperCase() === "PETH") {
         if (this.selectedNetwork === "telos") return "pETH";
         else return "ETH";
+      } else if (this.selectedToken.toUpperCase() === "TLOS") {
+        if (this.selectedNetwork === "telos") return "TLOS";
+        else return "TLOS (ERC20)";
       } else {
         if (this.selectedNetwork === "telos") return "pBTC";
         else return "BTC";
       }
+    },
+    selectedAddress() {
+      if (this.selectedNetwork === "telos") return this.accountName;
+      else return this.btcAddress;
     }
   },
   methods: {
@@ -194,7 +202,7 @@ export default {
         this.$q.notify({
           color: "green-4",
           textColor: "secondary",
-          message: "Copied account name to clipboard",
+          message: "Copied account to clipboard",
           timeout: 1000
         });
       });
@@ -206,20 +214,19 @@ export default {
         console.error(err);
       }
     },
-
-    async setBTCaddress() {
+    async setAddresses() {
       const pbridge_api = await axios.get(
         `https://pbtcontelos-node-1a.ngrok.io/pbtc-on-telos/get-native-deposit-address/${this.accountName}`
       );
-      this.address = pbridge_api.data.nativeDepositAddress || [];
-
-      this.QRcode = await this.generateQR(this.address);
-      this.qrCode.update({ data: this.address });
+      this.btcAddress = pbridge_api.data.nativeDepositAddress || [];
+      this.qrCodes.btc.update({ data: this.btcAddress });
+      this.qrCodes.tlos.update({ data: this.accountName });
     }
   },
   mounted() {
-    this.setBTCaddress();
-    this.qrCode.append(document.getElementById("canvas"));
+    this.setAddresses();
+    this.qrCodes.tlos.append(document.getElementById("tlos-qr-canvas"));
+    this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     this.selectedToken = this.$route.query.token_sym;
   }
 };
