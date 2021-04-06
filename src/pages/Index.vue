@@ -7,9 +7,9 @@ that you may prove what is that good and acceptable and perfect will of God. - R
         class="col-12 row justify-between q-px-xl"
         style="z-index: 0; position: absolute"
       >
-        <space-bubble class="gt-xs" />
-        <space-bubble class="gt-sm" />
-        <space-bubble class="gt-lg" />
+        <space-bubble class="gt-xs" duration="8s" />
+        <space-bubble class="gt-sm" duration="14s" delay="2s" />
+        <space-bubble class="gt-lg" duration="12s" delay="1.3s" />
       </div>
       <div
         class="header-container row reverse-wrap justify-between"
@@ -276,17 +276,15 @@ h2 {
 }
 .space-bubble {
   width: 450px;
+  position: relative;
+  &:nth-of-type(1) {
+    transform: rotate(-20deg) scale(0.85);
+  }
   &:nth-of-type(2) {
-    transform: rotate(180deg);
-    & path {
-      animation-delay: 1.3s;
-    }
+    top: -80px;
   }
   &:nth-of-type(3) {
     transform: rotate(0deg);
-    & path {
-      animation-delay: 2.1s;
-    }
   }
 }
 </style>

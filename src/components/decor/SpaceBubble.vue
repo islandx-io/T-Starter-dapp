@@ -14,6 +14,7 @@
     </defs>
     <path
       fill="url(#shape-gradient2)"
+      :style="`animation-duration: ${duration}; animation-delay: ${delay}`"
       d="M57.512,28.844 
       C41.937,43.215 29.659,61.585 21.596,80.726 
       C10.238,107.690 5.415,136.934 2.113,166.013 
@@ -28,7 +29,16 @@
 </template>
 
 <script>
-export default {};
+export default {
+  props: {
+    duration: {
+      default: "10s"
+    },
+    delay: {
+      default: "0.5s"
+    }
+  }
+};
 </script>
 <style lang="scss" scoped>
 @keyframes morph {
@@ -40,8 +50,6 @@ export default {};
 }
 svg path {
   animation: morph;
-  animation-duration: 10s;
-  animation-delay: 0.5s;
   animation-iteration-count: infinite;
   animation-timing-function: ease;
 }
