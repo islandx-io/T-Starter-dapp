@@ -69,6 +69,19 @@
           />
         </q-tab-panel>
       </q-tab-panels>
+      <q-card
+        outline
+        flat
+        class="column items-center text-secondary q-gutter-y-md"
+        id="notify-banner"
+      >
+        <h1 class="text-center">Stay Updated</h1>
+        <div class="text-h6 text-center" style="max-width: 570px">
+          Subscribe to receive anouncements about new pools and other relevant
+          events.
+        </div>
+        <q-btn label="Subscribe" outline class="hover-accent" />
+      </q-card>
     </section>
   </q-page>
 </template>
@@ -200,5 +213,22 @@ export default {
 .body-container {
   padding-left: 0;
   padding-right: 0;
+}
+#notify-banner {
+  background-image: url("~assets/index/clouds-head.png");
+  // height: 550px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  margin: 0 30px 0 30px;
+  & h1 {
+    font-weight: 600;
+    font-size: 80px;
+    padding: 0;
+    margin: 0;
+    @media only screen and (max-width: 610px) {
+      font-size: 12vw;
+      line-height: 16vw;
+    }
+  }
 }
 </style>
