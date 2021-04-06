@@ -104,6 +104,31 @@
                 color="primary"
                 label="Generate new deposit address"
               /> -->
+
+            <!-- If metamask isn't installed start onboarding process -->
+            <q-btn
+              v-if="
+                selectedNetwork === 'ethereum' &&
+                  isMetaMaskInstalled &&
+                  !metamaskConnected
+              "
+              color="primary"
+              label="Connect Ethereum Wallet"
+              @click="ethereumConnect()"
+            />
+            <!-- Else login with metamask -->
+            <q-btn
+              v-if="selectedNetwork === 'ethereum' && !isMetaMaskInstalled"
+              color="primary"
+              label="Install metamask now!"
+              @click="metamaskOnboarding()"
+              :disable="isDisabled"
+            />
+            <!-- Input amount of peth/telos? -->
+            <div v-if="selectedNetwork === 'ethereum' && isMetaMaskInstalled && metamaskConnected">
+              <q-input v-model="amount" label="ETH" />
+              <q-btn color="primary" label="Issue" @click="pegIn()" />
+            </div>
           </div>
         </div>
       </q-card>
@@ -118,6 +143,12 @@ import QRCodeStyling from "qr-code-styling";
 import QRCode from "qrcode";
 import { copyToClipboard } from "quasar";
 import tokenAvatar from "src/components/TokenAvatar";
+import { pERC20 } from "ptokens-perc20";
+import { HttpProvider } from "ptokens-providers";
+import { Node } from "ptokens-node";
+import Web3 from "web3";
+import MetaMaskOnboarding from "@metamask/onboarding";
+import { BigNumber } from "bignumber.js";
 
 const qrStyling = {
   data: "",
@@ -174,7 +205,10 @@ export default {
       btcAddress: "",
       selectedNetwork: "telos",
       tokens: ["pBTC", "pETH", "TLOS"],
-      selectedToken: "pBTC"
+      selectedToken: "pBTC",
+      isDisabled: false,
+      ethAccounts: [],
+      amount: 0
     };
   },
   computed: {
@@ -194,8 +228,31 @@ export default {
     selectedAddress() {
       if (this.selectedNetwork === "telos") return this.accountName;
       else return this.btcAddress;
+    },
+
+    selectedEthAccount() {
+      return window.ethereum.selectedAddress;
+    },
+
+    //Created check function to see if the MetaMask extension is installed
+    isMetaMaskInstalled() {
+      //Have to check the ethereum binding on the window object to see if it's installed
+      const { ethereum } = window;
+      return Boolean(ethereum && ethereum.isMetaMask);
+    },
+
+    metamaskConnected() {
+      if (
+        window.ethereum._state.accounts.length > 0 ||
+        this.ethAccounts.length > 0
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     }
   },
+
   methods: {
     copyAddress(adress) {
       copyToClipboard(adress).then(() => {
@@ -207,6 +264,11 @@ export default {
         });
       });
     },
+
+    toWei(number) {
+      return new BigNumber(String(number) + "e18");
+    },
+
     async generateQR(text) {
       try {
         return await QRCode.toDataURL(text);
@@ -214,6 +276,7 @@ export default {
         console.error(err);
       }
     },
+
     async setAddresses() {
       const pbridge_api = await axios.get(
         `https://pbtcontelos-node-1a.ngrok.io/pbtc-on-telos/get-native-deposit-address/${this.accountName}`
@@ -221,6 +284,52 @@ export default {
       this.btcAddress = pbridge_api.data.nativeDepositAddress || [];
       this.qrCodes.btc.update({ data: this.btcAddress });
       this.qrCodes.tlos.update({ data: this.accountName });
+    },
+
+    metamaskOnboarding() {
+      this.isDisabled = true;
+      const onboarding = new MetaMaskOnboarding();
+      onboarding.startOnboarding();
+    },
+
+    async ethereumConnect() {
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        const accounts = await ethereum.request({
+          method: "eth_requestAccounts"
+        });
+        this.ethAccounts = await ethereum.request({ method: "eth_accounts" });
+        console.log(this.ethAccounts);
+      }
+    },
+
+    pegIn() {
+      if (window.web3) {
+        const pweth = new pERC20({
+          pToken: "PETH",
+          ethProvider: window.ethereum,
+
+          hostBlockchain: "telos",
+          hostNetwork: "mainnet",
+          nativeBlockchain: "ethereum",
+          nativeNetwork: "mainnnet"
+        });
+        console.log(pweth);
+
+        pweth
+          .issue(this.toWei(this.amount), this.accountName, {
+            gas: 30000,
+            gasPrice: 75e9
+          })
+          .once("nativeTxBroadcasted", tx => tx)
+          .once("nativeTxConfirmed", tx => tx)
+          .once("nodeReceivedTx", report => report)
+          .once("nodeBroadcastedTx", report => report)
+          .once("hostTxConfirmed", tx => tx)
+          .then(res => res);
+      } else {
+        console.log("No web3 detected");
+      }
     }
   },
   mounted() {
@@ -228,6 +337,8 @@ export default {
     this.qrCodes.tlos.append(document.getElementById("tlos-qr-canvas"));
     this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     this.selectedToken = this.$route.query.token_sym;
+
+    // this.ethereumConnect();
   }
 };
 </script>
