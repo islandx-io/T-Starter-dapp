@@ -153,7 +153,7 @@ export default {
       QRcode: "",
       qrCode: QR,
       selectedNetwork: "telos",
-      tokens: ["pBTC", "pETH"],
+      tokens: ["pBTC", "pETH", "TLOS"],
       selectedToken: "pBTC"
     };
   },
