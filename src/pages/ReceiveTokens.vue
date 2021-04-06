@@ -9,10 +9,16 @@
         <div>
           <div class="column items-center">
             <q-btn-dropdown no-caps flat class="q-ml-md">
-              <template v-slot:label>
+              <template v-slot:label class="row items-center">
                 <h2>
                   Receive
-                  <token-avatar :token="selectedToken" :avatarSize="55" />
+                </h2>
+                <token-avatar
+                  class="q-mx-sm"
+                  :token="selectedToken"
+                  :avatarSize="55"
+                />
+                <h2>
                   {{ selectedToken }}
                 </h2>
               </template>
@@ -78,10 +84,11 @@
             >
               <div id="canvas" />
               <div class="text-subtitle1">
-                {{ BTCaddress }}
+                {{ address }}
                 <q-btn
                   flat
-                  @click="copyAddress(BTCaddress)"
+                  v-if="address !== ''"
+                  @click="copyAddress(address)"
                   icon="far fa-clone"
                   padding="0"
                   color="positive"
@@ -115,23 +122,35 @@ const QR = new QRCodeStyling({
   width: 250,
   height: 250,
   data: "",
-  image: "/tokens/bitcoin.svg",
+  qrOptions: {
+    typeNumber: "0",
+    mode: "Byte",
+    errorCorrectionLevel: "L"
+  },
   dotsOptions: {
-    type: "dots",
-    color: "#fdb435",
+    type: "rounded",
+    color: "black"
+  },
+  cornersSquareOptions: { type: "extra-rounded", color: "black" },
+  cornersSquareOptionsHelper: {
+    colorType: { single: true, gradient: false },
     gradient: {
-      type: "radial",
-      rotation: 0.7853981633974483,
-      colorStops: [
-        {
-          offset: 0,
-          color: "#f2cb3a"
-        },
-        {
-          offset: 1,
-          color: "#6a1a4c"
-        }
-      ]
+      linear: true,
+      radial: false,
+      color1: "black",
+      color2: "black",
+      rotation: "0"
+    }
+  },
+  cornersDotOptions: { type: "", color: "black" },
+  cornersDotOptionsHelper: {
+    colorType: { single: true, gradient: false },
+    gradient: {
+      linear: true,
+      radial: false,
+      color1: "black",
+      color2: "black",
+      rotation: "0"
     }
   },
   backgroundOptions: {
@@ -149,7 +168,7 @@ export default {
     return {
       devWarning: process.env.DEVELOPMENT,
       receiveLink: "",
-      BTCaddress: "",
+      address: "",
       QRcode: "",
       qrCode: QR,
       selectedNetwork: "telos",
@@ -192,10 +211,10 @@ export default {
       const pbridge_api = await axios.get(
         `https://pbtcontelos-node-1a.ngrok.io/pbtc-on-telos/get-native-deposit-address/${this.accountName}`
       );
-      this.BTCaddress = pbridge_api.data.nativeDepositAddress || [];
+      this.address = pbridge_api.data.nativeDepositAddress || [];
 
-      this.QRcode = await this.generateQR(this.BTCaddress);
-      this.qrCode.update({ data: this.BTCaddress });
+      this.QRcode = await this.generateQR(this.address);
+      this.qrCode.update({ data: this.address });
     }
   },
   mounted() {
@@ -219,10 +238,7 @@ export default {
 }
 h2 {
   line-height: 45px;
-  text-align: center;
   margin: 10px 0;
-  text-align: center;
-  align-items: center;
   font-size: 35px;
 }
 .networks {
