@@ -75,7 +75,7 @@ export const logout = async function({ commit }) {
 
   if (this.$router.currentRoute.path !== "/") {
     this.$router.push({ path: "/" });
-    this.$router.go()
+    this.$router.go();
   }
 };
 
@@ -158,60 +158,63 @@ export const setWalletPoolTokens = async function(
     });
     // TODO Filter out duplicates
     const rpc = this.$api.getRpc();
+    const chainToDecimals = this.$chainToDecimals;
+    const chainToQty = this.$chainToQty;
     for (const t of txns) {
-      // Symbol, contract
-      let sym = t.act.data.symbol;
-      let contract = t.act.account;
+      (async function() {
+        // Symbol, contract
+        let sym = t.act.data.symbol;
+        let contract = t.act.account;
 
-      commit("setWalletToken", {
-        token_sym: sym,
-        token_contract: t.act.account
-      });
-      commit("setWalletTokenDecimals", {
-        token_sym: sym,
-        amount: this.$chainToDecimals(t.act.data.quantity)
-      });
+        commit("setWalletToken", {
+          token_sym: sym,
+          token_contract: t.act.account
+        });
+        commit("setWalletTokenDecimals", {
+          token_sym: sym,
+          amount: chainToDecimals(t.act.data.quantity)
+        });
 
-      // Get pool ID (id => pool => avatar)
-      let res = await rpc.history_get_transaction(t.trx_id, t.block_num);
-      let traces = res.traces;
-      let poolID = Number(
-        traces.find(a => a.act.data.pool_id !== undefined).act.data.pool_id
-      );
+        // Get pool ID (id => pool => avatar)
+        let res = await rpc.history_get_transaction(t.trx_id, t.block_num);
+        let traces = res.traces;
+        let poolID = Number(
+          traces.find(a => a.act.data.pool_id !== undefined).act.data.pool_id
+        );
 
-      // Get pool
-      let pool = rootGetters["pools/getPoolByID"](poolID);
-      if (pool === undefined) {
-        await dispatch("pools/getChainPoolByID", poolID, { root: true });
-        pool = rootGetters["pools/getPoolByID"](poolID);
-      }
+        // Get pool
+        let pool = rootGetters["pools/getPoolByID"](poolID);
+        if (pool === undefined) {
+          await dispatch("pools/getChainPoolByID", poolID, { root: true });
+          pool = rootGetters["pools/getPoolByID"](poolID);
+        }
 
-      // Get avatar
-      let avatar = "";
-      if (pool !== undefined) avatar = pool.avatar;
+        // Get avatar
+        let avatar = "";
+        if (pool !== undefined) avatar = pool.avatar;
 
-      commit("setWalletTokenAvatar", {
-        token_sym: sym,
-        avatar: avatar
-      });
+        commit("setWalletTokenAvatar", {
+          token_sym: sym,
+          avatar: avatar
+        });
 
-      // Balance
-      let balance = this.$chainToQty(
-        await dispatch(
-          "pools/getBalanceFromChain",
-          {
-            accountName: account,
-            address: contract,
-            sym: sym
-          },
-          { root: true }
-        )
-      );
-
-      commit("setWalletTokenBalance", {
-        token_sym: sym,
-        amount: balance
-      });
+        // Balance
+        let balance = chainToQty(
+          await dispatch(
+            "pools/getBalanceFromChain",
+            {
+              accountName: account,
+              address: contract,
+              sym: sym
+            },
+            { root: true }
+          )
+        );
+        commit("setWalletTokenBalance", {
+          token_sym: sym,
+          amount: balance
+        });
+      })();
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
