@@ -57,9 +57,9 @@
               <q-btn
                 label="Ethereum"
                 v-if="selectedToken.toUpperCase() === 'PETH'"
-                @click="selectedNetwork = 'etherium'"
+                @click="selectedNetwork = 'ethereum'"
                 :class="
-                  selectedNetwork === 'etherium' ? 'selected-network' : ''
+                  selectedNetwork === 'ethereum' ? 'selected-network' : ''
                 "
                 flat
                 size="lg"
@@ -210,7 +210,7 @@ export default {
       }
     },
 
-    
+
   },
   async mounted() {
     this.setBTCaddress();
