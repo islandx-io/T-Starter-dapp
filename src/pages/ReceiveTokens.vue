@@ -62,20 +62,7 @@
               />
               <q-btn
                 label="Ethereum"
-                v-if="selectedToken.toUpperCase() === 'PETH'"
-                @click="selectedNetwork = 'ethereum'"
-                :class="
-                  selectedNetwork === 'ethereum' ? 'selected-network' : ''
-                "
-                flat
-                size="lg"
-                no-caps
-                padding="xs"
-              />
-              <!-- If TLOS token selected, on ethereum network -->
-              <q-btn
-                label="Ethereum"
-                v-if="selectedToken.toUpperCase() === 'TLOS'"
+                v-if="['PETH', 'TLOS'].includes(selectedToken.toUpperCase())"
                 @click="selectedNetwork = 'ethereum'"
                 :class="
                   selectedNetwork === 'ethereum' ? 'selected-network' : ''
@@ -113,39 +100,54 @@
               />
             </div>
             <q-btn
-                v-if="selectedNetwork === 'bitcoin'"
-                color="primary"
-                label="Generate new deposit address"
-              />
+              v-if="selectedNetwork === 'bitcoin'"
+              color="primary"
+              label="Generate new deposit address"
+            />
 
-            <!-- If metamask isn't installed start onboarding process -->
-            <q-btn
-              v-if="
-                selectedNetwork === 'ethereum' &&
-                  isMetaMaskInstalled &&
-                  !metamaskConnected
-              "
-              color="primary"
-              label="Connect Ethereum Wallet"
-              @click="ethereumConnect()"
-            />
-            <!-- Else login with metamask -->
-            <q-btn
-              v-if="selectedNetwork === 'ethereum' && !isMetaMaskInstalled"
-              color="primary"
-              label="Install metamask now!"
-              @click="metamaskOnboarding()"
-              :disable="isDisabled"
-            />
-            <!-- Input amount of eth to peth -->
-            <div v-if="selectedNetwork === 'ethereum' && selectedToken.toUpperCase() === 'PETH' && isMetaMaskInstalled && metamaskConnected">
-              <q-input v-model="amount" label="ETH" />
-              <q-btn color="primary" label="Issue" @click="pegIn()" />
-            </div>
-            <!-- Input amount of tlos erc20 to tlos -->
-            <div v-if="selectedNetwork === 'ethereum' && selectedToken.toUpperCase() === 'TLOS' && isMetaMaskInstalled && metamaskConnected">
-              <q-input v-model="amount" label="TLOS (ERC-20)" />
-              <q-btn color="primary" label="Redeem" @click="pegOut()" />
+            <div
+              v-if="selectedNetwork === 'ethereum'"
+              class="column items-center q-pt-md q-gutter-y-sm"
+            >
+              <!-- If metamask isn't installed start onboarding process -->
+              <q-btn
+                v-if="isMetaMaskInstalled && !metamaskConnected"
+                color="primary"
+                label="Connect Metamask"
+                @click="ethereumConnect()"
+              />
+              <!-- Else login with metamask -->
+              <div v-if="!isMetaMaskInstalled">
+                Install or enable metamask first.
+              </div>
+              <q-btn
+                v-if="!isMetaMaskInstalled"
+                color="primary"
+                label="Install metamask"
+                @click="metamaskOnboarding()"
+              />
+              <!-- Input amount of eth to peth -->
+              <div
+                v-if="
+                  selectedToken.toUpperCase() === 'PETH' &&
+                    isMetaMaskInstalled &&
+                    metamaskConnected
+                "
+              >
+                <q-input v-model="amount" label="ETH" />
+                <q-btn color="primary" label="Issue" @click="pegIn()" />
+              </div>
+              <!-- Input amount of tlos erc20 to tlos -->
+              <div
+                v-if="
+                  selectedToken.toUpperCase() === 'TLOS' &&
+                    isMetaMaskInstalled &&
+                    metamaskConnected
+                "
+              >
+                <q-input v-model="amount" label="TLOS (ERC-20)" />
+                <q-btn color="primary" label="Redeem" @click="pegOut()" />
+              </div>
             </div>
           </div>
         </div>
@@ -224,7 +226,6 @@ export default {
       selectedNetwork: "telos",
       tokens: ["pBTC", "pETH", "TLOS"],
       selectedToken: "pBTC",
-      isDisabled: false,
       ethAccounts: [],
       amount: 0
     };
@@ -305,7 +306,6 @@ export default {
     },
 
     metamaskOnboarding() {
-      this.isDisabled = true;
       const onboarding = new MetaMaskOnboarding();
       onboarding.startOnboarding();
     },
@@ -351,17 +351,13 @@ export default {
       }
     },
 
-    pegOut() {
-
-    },
-
+    pegOut() {}
   },
   mounted() {
     this.setAddresses();
     this.qrCodes.tlos.append(document.getElementById("tlos-qr-canvas"));
     this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     this.selectedToken = this.$route.query.token_sym;
-
   }
 };
 </script>
