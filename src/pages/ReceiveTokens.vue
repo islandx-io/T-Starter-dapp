@@ -107,26 +107,28 @@
 
             <!-- If metamask isn't installed start onboarding process -->
             <q-btn
-              v-if="selectedNetwork === 'ethereum' && isMetaMaskInstalled && !metamaskConnected"
+              v-if="
+                selectedNetwork === 'ethereum' &&
+                  isMetaMaskInstalled &&
+                  !metamaskConnected
+              "
               color="primary"
               label="Connect Ethereum Wallet"
               @click="ethereumConnect()"
             />
             <!-- Else login with metamask -->
             <q-btn
-              v-if="selectedNetwork === 'ethereum' && !isMetaMaskInstalled "
+              v-if="selectedNetwork === 'ethereum' && !isMetaMaskInstalled"
               color="primary"
               label="Install metamask now!"
               @click="metamaskOnboarding()"
               :disable="isDisabled"
             />
-            <q-btn
-              v-if="selectedNetwork === 'ethereum' && isMetaMaskInstalled"
-              color="primary"
-              label="Issue"
-              @click="pegIn()"
-            />
-            {{ethAccounts}}
+            <!-- Input amount of peth/telos? -->
+            <div v-if="selectedNetwork === 'ethereum' && isMetaMaskInstalled && metamaskConnected">
+              <q-input v-model="amount" label="ETH" />
+              <q-btn color="primary" label="Issue" @click="pegIn()" />
+            </div>
           </div>
         </div>
       </q-card>
@@ -205,7 +207,8 @@ export default {
       tokens: ["pBTC", "pETH", "TLOS"],
       selectedToken: "pBTC",
       isDisabled: false,
-      ethAccounts: []
+      ethAccounts: [],
+      amount: 0
     };
   },
   computed: {
@@ -227,6 +230,10 @@ export default {
       else return this.btcAddress;
     },
 
+    selectedEthAccount() {
+      return window.ethereum.selectedAddress;
+    },
+
     //Created check function to see if the MetaMask extension is installed
     isMetaMaskInstalled() {
       //Have to check the ethereum binding on the window object to see if it's installed
@@ -235,10 +242,13 @@ export default {
     },
 
     metamaskConnected() {
-      if (this.ethAccounts.length > 0) {
-        return true
+      if (
+        window.ethereum._state.accounts.length > 0 ||
+        this.ethAccounts.length > 0
+      ) {
+        return true;
       } else {
-        return false
+        return false;
       }
     }
   },
@@ -256,7 +266,7 @@ export default {
     },
 
     toWei(number) {
-      return new BigNumber(String(number)+"e18")
+      return new BigNumber(String(number) + "e18");
     },
 
     async generateQR(text) {
@@ -288,7 +298,7 @@ export default {
         const accounts = await ethereum.request({
           method: "eth_requestAccounts"
         });
-        this.ethAccounts = await ethereum.request({ method: 'eth_accounts' });
+        this.ethAccounts = await ethereum.request({ method: "eth_accounts" });
         console.log(this.ethAccounts);
       }
     },
@@ -307,7 +317,10 @@ export default {
         console.log(pweth);
 
         pweth
-          .issue(this.toWei(0.1), this.accountName, { gas: 30000, gasPrice: 75e9 })
+          .issue(this.toWei(this.amount), this.accountName, {
+            gas: 30000,
+            gasPrice: 75e9
+          })
           .once("nativeTxBroadcasted", tx => tx)
           .once("nativeTxConfirmed", tx => tx)
           .once("nodeReceivedTx", report => report)
