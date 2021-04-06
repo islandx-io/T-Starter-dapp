@@ -72,6 +72,19 @@
                 no-caps
                 padding="xs"
               />
+              <!-- If TLOS token selected, on ethereum network -->
+              <q-btn
+                label="Ethereum"
+                v-if="selectedToken.toUpperCase() === 'TLOS'"
+                @click="selectedNetwork = 'ethereum'"
+                :class="
+                  selectedNetwork === 'ethereum' ? 'selected-network' : ''
+                "
+                flat
+                size="lg"
+                no-caps
+                padding="xs"
+              />
             </div>
             <div
               class="text-subtitle1 q-py-md"
@@ -99,11 +112,11 @@
                 size="sm"
               />
             </div>
-            <!-- <q-btn
-                v-if="selectedNetwork !== 'telos'"
+            <q-btn
+                v-if="selectedNetwork === 'bitcoin'"
                 color="primary"
                 label="Generate new deposit address"
-              /> -->
+              />
 
             <!-- If metamask isn't installed start onboarding process -->
             <q-btn
@@ -124,10 +137,15 @@
               @click="metamaskOnboarding()"
               :disable="isDisabled"
             />
-            <!-- Input amount of peth/telos? -->
-            <div v-if="selectedNetwork === 'ethereum' && isMetaMaskInstalled && metamaskConnected">
+            <!-- Input amount of eth to peth -->
+            <div v-if="selectedNetwork === 'ethereum' && selectedToken.toUpperCase() === 'PETH' && isMetaMaskInstalled && metamaskConnected">
               <q-input v-model="amount" label="ETH" />
               <q-btn color="primary" label="Issue" @click="pegIn()" />
+            </div>
+            <!-- Input amount of tlos erc20 to tlos -->
+            <div v-if="selectedNetwork === 'ethereum' && selectedToken.toUpperCase() === 'TLOS' && isMetaMaskInstalled && metamaskConnected">
+              <q-input v-model="amount" label="TLOS (ERC-20)" />
+              <q-btn color="primary" label="Redeem" @click="pegOut()" />
             </div>
           </div>
         </div>
@@ -303,6 +321,7 @@ export default {
       }
     },
 
+    // ETH to PETH
     pegIn() {
       if (window.web3) {
         const pweth = new pERC20({
@@ -330,7 +349,12 @@ export default {
       } else {
         console.log("No web3 detected");
       }
-    }
+    },
+
+    pegOut() {
+
+    },
+
   },
   mounted() {
     this.setAddresses();
@@ -338,7 +362,6 @@ export default {
     this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     this.selectedToken = this.$route.query.token_sym;
 
-    // this.ethereumConnect();
   }
 };
 </script>
