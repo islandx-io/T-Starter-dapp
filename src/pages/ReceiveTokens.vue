@@ -104,20 +104,29 @@
                 color="primary"
                 label="Generate new deposit address"
               /> -->
-              
-              <!-- Dewald se ethereum login stuff -->
-              <q-btn
-                v-if="selectedNetwork === 'ethereum' && isMetaMaskInstalled"
-                color="primary"
-                label="Connect Ethereum Wallet"
-                @click="ethereumConnect()"
-              />
-              <q-btn
-                v-if="selectedNetwork === 'ethereum' && !isMetaMaskInstalled"
-                color="primary"
-                label="Install metamask now!"
-                @click="ethereumConnect()"
-              />
+
+            <!-- If metamask isn't installed start onboarding process -->
+            <q-btn
+              v-if="selectedNetwork === 'ethereum' && isMetaMaskInstalled && !metamaskConnected"
+              color="primary"
+              label="Connect Ethereum Wallet"
+              @click="ethereumConnect()"
+            />
+            <!-- Else login with metamask -->
+            <q-btn
+              v-if="selectedNetwork === 'ethereum' && !isMetaMaskInstalled "
+              color="primary"
+              label="Install metamask now!"
+              @click="metamaskOnboarding()"
+              :disable="isDisabled"
+            />
+            <q-btn
+              v-if="selectedNetwork === 'ethereum' && isMetaMaskInstalled"
+              color="primary"
+              label="Issue"
+              @click="pegIn()"
+            />
+            {{ethAccounts}}
           </div>
         </div>
       </q-card>
@@ -136,7 +145,8 @@ import { pERC20 } from "ptokens-perc20";
 import { HttpProvider } from "ptokens-providers";
 import { Node } from "ptokens-node";
 import Web3 from "web3";
-import MetaMaskOnboarding from '@metamask/onboarding';
+import MetaMaskOnboarding from "@metamask/onboarding";
+import { BigNumber } from "bignumber.js";
 
 const qrStyling = {
   data: "",
@@ -194,6 +204,8 @@ export default {
       selectedNetwork: "telos",
       tokens: ["pBTC", "pETH", "TLOS"],
       selectedToken: "pBTC",
+      isDisabled: false,
+      ethAccounts: []
     };
   },
   computed: {
@@ -222,9 +234,13 @@ export default {
       return Boolean(ethereum && ethereum.isMetaMask);
     },
 
-    isDisabled() {
-      return true
-    },
+    metamaskConnected() {
+      if (this.ethAccounts.length > 0) {
+        return true
+      } else {
+        return false
+      }
+    }
   },
 
   methods: {
@@ -238,6 +254,11 @@ export default {
         });
       });
     },
+
+    toWei(number) {
+      return new BigNumber(String(number)+"e18")
+    },
+
     async generateQR(text) {
       try {
         return await QRCode.toDataURL(text);
@@ -245,6 +266,7 @@ export default {
         console.error(err);
       }
     },
+
     async setAddresses() {
       const pbridge_api = await axios.get(
         `https://pbtcontelos-node-1a.ngrok.io/pbtc-on-telos/get-native-deposit-address/${this.accountName}`
@@ -254,10 +276,10 @@ export default {
       this.qrCodes.tlos.update({ data: this.accountName });
     },
 
-    
-
     metamaskOnboarding() {
-
+      this.isDisabled = true;
+      const onboarding = new MetaMaskOnboarding();
+      onboarding.startOnboarding();
     },
 
     async ethereumConnect() {
@@ -266,9 +288,36 @@ export default {
         const accounts = await ethereum.request({
           method: "eth_requestAccounts"
         });
-        console.log(accounts);
+        this.ethAccounts = await ethereum.request({ method: 'eth_accounts' });
+        console.log(this.ethAccounts);
       }
     },
+
+    pegIn() {
+      if (window.web3) {
+        const pweth = new pERC20({
+          pToken: "PETH",
+          ethProvider: window.ethereum,
+
+          hostBlockchain: "telos",
+          hostNetwork: "mainnet",
+          nativeBlockchain: "ethereum",
+          nativeNetwork: "mainnnet"
+        });
+        console.log(pweth);
+
+        pweth
+          .issue(this.toWei(0.1), this.accountName, { gas: 30000, gasPrice: 75e9 })
+          .once("nativeTxBroadcasted", tx => tx)
+          .once("nativeTxConfirmed", tx => tx)
+          .once("nodeReceivedTx", report => report)
+          .once("nodeBroadcastedTx", report => report)
+          .once("hostTxConfirmed", tx => tx)
+          .then(res => res);
+      } else {
+        console.log("No web3 detected");
+      }
+    }
   },
   mounted() {
     this.setAddresses();
@@ -276,43 +325,7 @@ export default {
     this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     this.selectedToken = this.$route.query.token_sym;
 
-    this.ethereumConnect();
-
-    // testing metamask peth
-    // const ethEnabled = () => {
-    //   console.log("hello eth?")
-    //   if (window.ethereum) {
-    //     console.log("eth connect")
-    //     window.web3 = new Web3(window.ethereum);
-    //     window.ethereum.enable();
-    //     return true;
-    //   }
-    //   return false;
-    // };
-
-    // if (window.web3) {
-    //   const pweth = new pERC20({
-    //     pToken: "PWETH",
-    //     ethProvider: window.ethereum,
-
-    //     hostBlockchain: "telos",
-    //     hostNetwork: "mainnet",
-    //     nativeBlockchain: "ethereum",
-    //     nativeNetwork: "mainnet"
-    //   });
-    //   console.log(pweth);
-
-    //   // pweth
-    //   //   .issue(1000000000, "fuzzywazziee", { gas: 20000, gasPrice: 75e9 })
-    //   //   .once("nativeTxBroadcasted", tx => tx)
-    //   //   .once("nativeTxConfirmed", tx => tx)
-    //   //   .once("nodeReceivedTx", report => report)
-    //   //   .once("nodeBroadcastedTx", report => report)
-    //   //   .once("hostTxConfirmed", tx => tx)
-    //   //   .then(res => res);
-    // } else {
-    //   console.log("No web3 detected");
-    // }
+    // this.ethereumConnect();
   }
 };
 </script>
