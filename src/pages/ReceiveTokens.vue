@@ -104,6 +104,20 @@
                 color="primary"
                 label="Generate new deposit address"
               /> -->
+              
+              <!-- Dewald se ethereum login stuff -->
+              <q-btn
+                v-if="selectedNetwork === 'ethereum' && isMetaMaskInstalled"
+                color="primary"
+                label="Connect Ethereum Wallet"
+                @click="ethereumConnect()"
+              />
+              <q-btn
+                v-if="selectedNetwork === 'ethereum' && !isMetaMaskInstalled"
+                color="primary"
+                label="Install metamask now!"
+                @click="ethereumConnect()"
+              />
           </div>
         </div>
       </q-card>
@@ -121,7 +135,8 @@ import tokenAvatar from "src/components/TokenAvatar";
 import { pERC20 } from "ptokens-perc20";
 import { HttpProvider } from "ptokens-providers";
 import { Node } from "ptokens-node";
-import Web3 from 'web3'
+import Web3 from "web3";
+import MetaMaskOnboarding from '@metamask/onboarding';
 
 const qrStyling = {
   data: "",
@@ -178,7 +193,7 @@ export default {
       btcAddress: "",
       selectedNetwork: "telos",
       tokens: ["pBTC", "pETH", "TLOS"],
-      selectedToken: "pBTC"
+      selectedToken: "pBTC",
     };
   },
   computed: {
@@ -198,8 +213,20 @@ export default {
     selectedAddress() {
       if (this.selectedNetwork === "telos") return this.accountName;
       else return this.btcAddress;
-    }
+    },
+
+    //Created check function to see if the MetaMask extension is installed
+    isMetaMaskInstalled() {
+      //Have to check the ethereum binding on the window object to see if it's installed
+      const { ethereum } = window;
+      return Boolean(ethereum && ethereum.isMetaMask);
+    },
+
+    isDisabled() {
+      return true
+    },
   },
+
   methods: {
     copyAddress(adress) {
       copyToClipboard(adress).then(() => {
@@ -227,11 +254,19 @@ export default {
       this.qrCodes.tlos.update({ data: this.accountName });
     },
 
-    async ethereumLogin() {
+    
+
+    metamaskOnboarding() {
+
+    },
+
+    async ethereumConnect() {
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        console.log(accounts)
+        const accounts = await ethereum.request({
+          method: "eth_requestAccounts"
+        });
+        console.log(accounts);
       }
     },
   },
@@ -241,7 +276,7 @@ export default {
     this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     this.selectedToken = this.$route.query.token_sym;
 
-    this.ethereumLogin();
+    this.ethereumConnect();
 
     // testing metamask peth
     // const ethEnabled = () => {
@@ -254,8 +289,6 @@ export default {
     //   }
     //   return false;
     // };
-
-  
 
     // if (window.web3) {
     //   const pweth = new pERC20({
