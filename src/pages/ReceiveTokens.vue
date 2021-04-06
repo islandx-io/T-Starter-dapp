@@ -8,15 +8,37 @@
         </q-btn>
         <div>
           <div class="column items-center">
-            <h2 style="line-height: 45px; text-align: center">
-              Receive {{ $route.query.token_sym }}
-            </h2>
+            <q-btn-dropdown no-caps flat class="q-ml-md">
+              <template v-slot:label>
+                <h2>
+                  Receive
+                  <token-avatar :token="selectedToken" :avatarSize="55" />
+                  {{ selectedToken }}
+                </h2>
+              </template>
+              <q-list>
+                <q-item
+                  clickable
+                  v-close-popup
+                  v-for="token in tokens"
+                  :key="token"
+                  @click="
+                    selectedToken = token;
+                    selectedNetwork = 'telos';
+                  "
+                >
+                  <q-item-section>
+                    <q-item-label>{{ token }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
             <div class="text-subtitle1 q-pb-sm">From network</div>
             <div class="networks row q-gutter-x-md">
               <q-btn
                 label="Telos"
-                @click="network = 'telos'"
-                :class="network === 'telos' ? 'selected-network' : ''"
+                @click="selectedNetwork = 'telos'"
+                :class="selectedNetwork === 'telos' ? 'selected-network' : ''"
                 flat
                 size="lg"
                 no-caps
@@ -24,8 +46,21 @@
               />
               <q-btn
                 label="Bitcoin"
-                @click="network = 'bitcoin'"
-                :class="network === 'bitcoin' ? 'selected-network' : ''"
+                v-if="selectedToken.toUpperCase() === 'PBTC'"
+                @click="selectedNetwork = 'bitcoin'"
+                :class="selectedNetwork === 'bitcoin' ? 'selected-network' : ''"
+                flat
+                size="lg"
+                no-caps
+                padding="xs"
+              />
+              <q-btn
+                label="Etherium"
+                v-if="selectedToken.toUpperCase() === 'PETH'"
+                @click="selectedNetwork = 'etherium'"
+                :class="
+                  selectedNetwork === 'etherium' ? 'selected-network' : ''
+                "
                 flat
                 size="lg"
                 no-caps
@@ -33,20 +68,32 @@
               />
             </div>
             <div class="text-subtitle1 q-py-md">
-              Deposit {{ currency }} to the following address
+              Deposit {{ depositTokenStr }} to the following address
             </div>
             <div v-if="devWarning">Don't do real payments</div>
             <!-- <img :src="QRcode" /> -->
-            <div id="canvas" />
-            <div class="text-subtitle1">
-              {{ BTCaddress }}
+            <div
+              class="column items-center"
+              v-show="selectedNetwork === 'telos'"
+            >
+              <div id="canvas" />
+              <div class="text-subtitle1">
+                {{ BTCaddress }}
+                <q-btn
+                  flat
+                  @click="copyAddress(BTCaddress)"
+                  icon="far fa-clone"
+                  padding="0"
+                  color="positive"
+                  size="sm"
+                />
+              </div>
+            </div>
+            <div class="column">
               <q-btn
-                flat
-                @click="copyAddress(BTCaddress)"
-                icon="far fa-clone"
-                padding="0"
-                color="positive"
-                size="sm"
+                v-if="selectedNetwork !== 'telos'"
+                color="primary"
+                label="Generate new deposit address"
               />
             </div>
           </div>
@@ -62,6 +109,7 @@ import { mapGetters, mapActions } from "vuex";
 import QRCodeStyling from "qr-code-styling";
 import QRCode from "qrcode";
 import { copyToClipboard } from "quasar";
+import tokenAvatar from "src/components/TokenAvatar";
 
 const QR = new QRCodeStyling({
   width: 250,
@@ -96,18 +144,29 @@ const QR = new QRCodeStyling({
 });
 
 export default {
+  components: { tokenAvatar },
   data() {
     return {
       devWarning: process.env.DEVELOPMENT,
       BTCaddress: "",
       QRcode: "",
       qrCode: QR,
-      network: "telos",
-      currency: "pBTC"
+      selectedNetwork: "telos",
+      tokens: ["pBTC", "pETH"],
+      selectedToken: "pBTC"
     };
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"])
+    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
+    depositTokenStr() {
+      if (this.selectedToken === "pETH") {
+        if (this.selectedNetwork === "telos") return "pETH";
+        else return "ETH";
+      } else {
+        if (this.selectedNetwork === "telos") return "pBTC";
+        else return "BTC";
+      }
+    }
   },
   methods: {
     copyAddress(adress) {
@@ -141,6 +200,7 @@ export default {
   mounted() {
     this.setBTCaddress();
     this.qrCode.append(document.getElementById("canvas"));
+    this.selectedToken = this.$route.query.token_sym;
   }
 };
 </script>
@@ -150,12 +210,20 @@ export default {
   display: grid;
   align-items: stretch;
   grid-template-columns: 50px auto 50px;
+  padding-bottom: 40px;
 }
 .header-bg {
   height: 160px;
   margin-bottom: -50px;
 }
-
+h2 {
+  line-height: 45px;
+  text-align: center;
+  margin: 10px 0;
+  text-align: center;
+  align-items: center;
+  font-size: 35px;
+}
 .networks {
   .q-btn {
     background-color: silver;

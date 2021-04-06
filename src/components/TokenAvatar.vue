@@ -53,10 +53,11 @@ export default {
     src(avatar) {
       let result = avatar;
       if (result === "") {
-        if (this.token === "PETH") result = "/tokens/peth.png";
-        else if (this.token === "PBTC") result = "/tokens/pbtc.png";
-        else if (this.token === "START") result = "/tokens/start.png";
-        else if (this.token === "TLOS") result = "/tokens/tlos.png";
+        let token = this.token.toUpperCase();
+        if (token === "PETH") result = "/tokens/peth.png";
+        else if (token === "PBTC") result = "/tokens/pbtc.png";
+        else if (token === "START") result = "/tokens/start.png";
+        else if (token === "TLOS") result = "/tokens/tlos.png";
       }
       return result;
     }
