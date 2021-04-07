@@ -91,7 +91,6 @@
           >
             Deposit {{ depositTokenStr }} to the following address
           </div>
-          <div v-if="devWarning">Don't do real payments</div>
           <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
           <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" />
           <div
@@ -199,7 +198,11 @@
           </div>
         </div>
       </q-card>
+      <q-banner inline-actions class="text-white bg-red" v-if="devMode">
+      Do not make real payments! This is under development.
+    </q-banner>
     </section>
+    
   </q-page>
 </template>
 
