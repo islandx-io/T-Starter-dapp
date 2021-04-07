@@ -79,7 +79,7 @@
             >
               Deposit {{ depositTokenStr }} to the following address
             </div>
-            <div v-if="devWarning">Don't do real payments</div>
+            <div v-if="devMode">Don't do real payments</div>
             <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
             <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" />
             <div
@@ -137,7 +137,12 @@
                 "
               >
                 <q-input v-model="amount" label="ETH" />
-                <q-btn color="primary" label="Issue" @click="pegIn()" />
+                <q-btn
+                  color="primary"
+                  label="Issue"
+                  @click="pegIn()"
+                  :disable="devMode"
+                />
               </div>
               <!-- Input amount of tlos erc20 to tlos -->
               <div
@@ -148,7 +153,12 @@
                 "
               >
                 <q-input v-model="amount" label="TLOS (ERC-20)" />
-                <q-btn color="primary" label="Redeem" @click="pegOut()" />
+                <q-btn
+                  color="primary"
+                  label="Redeem"
+                  @click="pegOut()"
+                  :disable="devMode"
+                />
               </div>
             </div>
           </div>
@@ -220,7 +230,7 @@ export default {
   components: { tokenAvatar },
   data() {
     return {
-      devWarning: process.env.DEVELOPMENT,
+      devMode: Boolean(process.env.DEVELOPMENT),
       receiveLink: "",
       qrCodes: {
         tlos: new QRCodeStyling({ width: 180, height: 180, ...qrStyling }),
@@ -265,10 +275,7 @@ export default {
     },
 
     metamaskConnected() {
-      if (
-        window.ethereum._state.accounts.length > 0 ||
-        this.ethAccounts.length > 0
-      ) {
+      if (window.ethereum.selectedAddress > 0 || this.ethAccounts.length > 0) {
         return true;
       } else {
         return false;
@@ -289,7 +296,7 @@ export default {
     },
 
     toWei(number) {
-      return new BigNumber(String(number) + "e18");
+      return BigNumber(number).multipliedBy(10 ** 18);
     },
 
     async generateQR(text) {
@@ -368,7 +375,7 @@ export default {
 
         // optionals
         ethProvider: window.ethereum, // or instance of Web3 provider
-        eosRpc: "https://telos.caleos.io", // or also an instance of JsonRpc
+        eosRpc: "https://telos.caleos.io" // or also an instance of JsonRpc
       });
 
       telos
