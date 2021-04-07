@@ -22,7 +22,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             building on Telos
           </h2>
 
-          <div class="q-gutter-x-md">
+          <div class="q-gutter-x-sm">
             <q-btn
               class="hover-accent"
               color="secondary"
