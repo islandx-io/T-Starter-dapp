@@ -50,6 +50,19 @@
                     {{ token }}
                   </q-item-label>
                 </q-item-section>
+                <q-item-section side>
+                  <q-btn
+                    icon="fas fa-external-link-alt"
+                    class="hover-accent"
+                    type="a"
+                    target="_blank"
+                    :href="pTokenBridgeLink(token)"
+                    size="12px"
+                    round
+                    flat
+                  />
+                  <q-tooltip>pTokens dapp</q-tooltip>
+                </q-item-section>
               </q-item>
             </q-list>
           </q-btn-dropdown>
@@ -327,6 +340,17 @@ export default {
   },
 
   methods: {
+    pTokenBridgeLink(sym) {
+      sym = sym.toUpperCase();
+      if (sym === "TLOS") {
+        return "https://dapp.ptokens.io/tlos-on-eth/issue-redeem";
+      } else if (sym === "PBTC") {
+        return "https://dapp.ptokens.io/pbtc-on-telos/issue-redeem";
+      } else if (sym === "PETH") {
+        return "https://dapp.ptokens.io/peth-on-telos/issue-redeem";
+      }
+    },
+
     copyAddress(adress) {
       copyToClipboard(adress).then(() => {
         this.$q.notify({
@@ -491,6 +515,9 @@ h2 {
 .q-item:hover {
   background-color: $dark;
   color: $secondary;
+  & .q-btn {
+    color: $secondary;
+  }
 }
 @media only screen and (max-width: 425px) {
   #btc-qr-canvas {
