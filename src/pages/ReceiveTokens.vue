@@ -166,12 +166,13 @@ import QRCode from "qrcode";
 import { copyToClipboard } from "quasar";
 import tokenAvatar from "src/components/TokenAvatar";
 import { pERC20 } from "ptokens-perc20";
+import { pEosioToken } from "ptokens-peosio-token";
 import { HttpProvider } from "ptokens-providers";
 import { Node } from "ptokens-node";
 import Web3 from "web3";
 import MetaMaskOnboarding from "@metamask/onboarding";
 import { BigNumber } from "bignumber.js";
-import { constants, eth } from 'ptokens-utils'
+import { constants, eth } from "ptokens-utils";
 
 const qrStyling = {
   data: "",
@@ -356,18 +357,25 @@ export default {
 
     //TLOS (ERC20) to TLOS
     pegOut() {
-      const telos = new pERC20({
-        pToken: constants.pTokens.TLOS,
-        ethProvider: window.ethereum,
+      const telos = new pEosioToken({
+        pToken: "TLOS",
 
-        blockchain: "ETH",
-        network: constants.networks.EthereumRopsten,
+        // if you want to be more detailed
+        hostBlockchain: "ETH",
+        hostNetwork: "mainnet", // possible values are testnet_jungle2, testnet_ropsten and mainnet
+        nativeBlockchain: "Telos",
+        nativeNetwork: "mainnet",
 
-        telosRpc: "https://telos.caleos.io",
+        // optionals
+        ethProvider: window.ethereum, // or instance of Web3 provider
+        eosRpc: "https://telos.caleos.io", // or also an instance of JsonRpc
       });
 
       telos
-        .redeem(this.amount, this.accountName, { blocksBehind: 3, expireSeconds: 60, permission: 'active' })
+        .redeem(this.toWei(this.amount), this.accountName, {
+          gasPrice: 100e9,
+          gas: 200000
+        })
         .once("hostTxConfirmed", tx => tx)
         .once("nodeReceivedTx", report => report)
         .once("nodeBroadcastedTx", report => report)
