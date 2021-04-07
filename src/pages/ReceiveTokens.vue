@@ -100,11 +100,12 @@
               />
             </div>
             <q-btn
+              class="q-mt-md"
               v-if="selectedNetwork === 'bitcoin'"
+              @click="setAddresses"
               color="primary"
               label="Generate new deposit address"
             />
-
             <div
               v-if="selectedNetwork === 'ethereum'"
               class="column items-center q-pt-md q-gutter-y-sm"
@@ -133,8 +134,15 @@
                     isMetaMaskInstalled &&
                     metamaskConnected
                 "
+                class="column items-center q-gutter-y-sm"
               >
-                <q-input v-model="amount" label="ETH" />
+                <q-input
+                  v-model="amount"
+                  label="ETH"
+                  outlined
+                  placeholder="0"
+                  autofocus
+                />
                 <q-btn color="primary" label="Issue" @click="pegIn()" />
               </div>
               <!-- Input amount of tlos erc20 to tlos -->
@@ -144,8 +152,15 @@
                     isMetaMaskInstalled &&
                     metamaskConnected
                 "
+                class="column items-center q-gutter-y-sm"
               >
-                <q-input v-model="amount" label="TLOS (ERC-20)" />
+                <q-input
+                  v-model="amount"
+                  label="TLOS (ERC-20)"
+                  outlined
+                  placeholder="0"
+                  autofocus
+                />
                 <q-btn color="primary" label="Redeem" @click="pegOut()" />
               </div>
             </div>
@@ -368,6 +383,7 @@ export default {
   align-items: stretch;
   grid-template-columns: 50px auto 50px;
   padding-bottom: 40px;
+  margin: 0 20px 0 20px;
 }
 .header-bg {
   height: 160px;
