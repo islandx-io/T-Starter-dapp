@@ -91,6 +91,8 @@
           >
             Deposit {{ depositTokenStr }} to the following address
           </div>
+          <!-- leave this div, it needs to be there for some reason -->
+          <div> </div>
           <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
           <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" />
           <div
@@ -377,7 +379,7 @@ export default {
     pegIn() {
       if (window.web3) {
         this.txnPending = true;
-        const pweth = new pERC20({
+        const peth = new pERC20({
           pToken: "PETH",
           ethProvider: window.ethereum,
 
@@ -386,9 +388,8 @@ export default {
           nativeBlockchain: "ethereum",
           nativeNetwork: "mainnnet"
         });
-        console.log(pweth);
 
-        pweth
+        peth
           .issue(this.toWei(this.amount), this.accountName, {
             gas: 30000,
             gasPrice: 75e9
