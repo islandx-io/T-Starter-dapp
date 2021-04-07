@@ -54,7 +54,7 @@
             </q-list>
           </q-btn-dropdown>
           <div class="text-subtitle1 q-pb-sm">From network</div>
-          <div class="networks row justify-center q-gutter-x-md q-gutter-y-sm">
+          <div class="networks row justify-center">
             <q-btn
               label="Telos"
               @click="selectedNetwork = 'telos'"
@@ -163,6 +163,7 @@
                 autofocus
                 @keyup.enter="pegIn()"
                 :disable="devMode"
+                :loading="txnPending"
               />
               <q-btn
                 color="primary"
@@ -188,6 +189,7 @@
                 autofocus
                 @keyup.enter="pegOut()"
                 :disable="devMode"
+                :loading="txnPending"
               />
               <q-btn
                 color="primary"
@@ -276,7 +278,8 @@ export default {
       tokens: ["pBTC", "pETH", "TLOS"],
       selectedToken: "pBTC",
       ethAccounts: [],
-      amount: 0
+      amount: 0,
+      txnPending: false
     };
   },
   computed: {
@@ -370,6 +373,7 @@ export default {
     // ETH to PETH
     pegIn() {
       if (window.web3) {
+        this.txnPending = true;
         const pweth = new pERC20({
           pToken: "PETH",
           ethProvider: window.ethereum,
@@ -391,7 +395,10 @@ export default {
           .once("nodeReceivedTx", report => report)
           .once("nodeBroadcastedTx", report => report)
           .once("hostTxConfirmed", tx => tx)
-          .then(res => res);
+          .then(res => res)
+          .finally(() => {
+            this.txnPending = false;
+          });
       } else {
         console.log("No web3 detected");
       }
@@ -399,6 +406,7 @@ export default {
 
     //TLOS (ERC20) to TLOS
     pegOut() {
+      this.txnPending = true;
       const telos = new pEosioToken({
         pToken: "TLOS",
 
@@ -422,7 +430,10 @@ export default {
         .once("nodeReceivedTx", report => report)
         .once("nodeBroadcastedTx", report => report)
         .once("nativeTxConfirmed", tx => tx)
-        .then(res => res);
+        .then(res => res)
+        .finally(() => {
+          this.txnPending = false;
+        });
     }
   },
 
@@ -464,6 +475,7 @@ h2 {
     color: $secondary;
     width: 120px;
     align-items: center;
+    margin: 5px 10px;
     @media only screen and (max-width: 375px) {
       width: 100px;
     }
@@ -484,5 +496,8 @@ h2 {
   #address.bitcoin-net {
     width: 200px;
   }
+}
+.q-input {
+  max-width: 200px;
 }
 </style>
