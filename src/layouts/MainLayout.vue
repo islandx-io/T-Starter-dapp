@@ -120,15 +120,17 @@
             </p>
           </div>
           <div class="col-sm-3 column items-start content-end">
-            <div class="text-h6">
-              <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSeQE7zDFlxxWmAN-pKDfik6OcgtReJ8oiviIpCUkOAGk6Ez7Q/viewform"
-                class="social-link"
-                target="_blank"
-              >
-                Apply for listing
-              </a>
-            </div>
+            <q-btn
+              class="hover-accent text-h6"
+              color="accent"
+              style="margin-left: -10px"
+              flat
+              type="a"
+              href="https://docs.google.com/forms/d/e/1FAIpQLSeQE7zDFlxxWmAN-pKDfik6OcgtReJ8oiviIpCUkOAGk6Ez7Q/viewform"
+              label="List project"
+              no-caps
+              padding="5px 10px"
+            />
             <div class="text-h6">Contact Us</div>
             <div class="row justify-start">
               <a
