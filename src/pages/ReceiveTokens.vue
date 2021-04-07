@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <section class="header-bg" />
-    <section class="body-container" style="max-width: 580px">
+    <section class="body-container" style="max-width: 580px" v-if="isAuthenticated">
       <q-card>
         <q-btn :to="`/wallet/${accountName}`" flat round class="self-start">
           <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
@@ -218,8 +218,15 @@
       <q-banner inline-actions class="text-white bg-red" v-if="devMode">
       Do not make real payments! This is under development.
     </q-banner>
-    </section>
-    
+    </section>   
+    <section class="body-container" style="max-width: 580px" v-else>
+      <q-card
+        class="row justify-center content-center "
+        style="min-height: 100px"
+      >
+        <div class="text-subtitle1 q-py-md text-center">Please login</div>
+      </q-card>
+    </section> 
   </q-page>
 </template>
 
