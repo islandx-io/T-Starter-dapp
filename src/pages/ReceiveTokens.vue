@@ -99,10 +99,12 @@
                 size="sm"
               />
             </div>
+            <!-- Create new btc address -->
             <q-btn
               v-if="selectedNetwork === 'bitcoin'"
               color="primary"
               label="Generate new deposit address"
+              @click="setAddresses()"
             />
 
             <div
@@ -169,6 +171,7 @@ import { Node } from "ptokens-node";
 import Web3 from "web3";
 import MetaMaskOnboarding from "@metamask/onboarding";
 import { BigNumber } from "bignumber.js";
+import { constants, eth } from 'ptokens-utils'
 
 const qrStyling = {
   data: "",
@@ -351,8 +354,28 @@ export default {
       }
     },
 
-    pegOut() {}
+    //TLOS (ERC20) to TLOS
+    pegOut() {
+      const telos = new pERC20({
+        pToken: constants.pTokens.TLOS,
+        ethProvider: window.ethereum,
+
+        blockchain: "ETH",
+        network: constants.networks.EthereumRopsten,
+
+        telosRpc: "https://telos.caleos.io",
+      });
+
+      telos
+        .redeem(this.amount, this.accountName, { blocksBehind: 3, expireSeconds: 60, permission: 'active' })
+        .once("hostTxConfirmed", tx => tx)
+        .once("nodeReceivedTx", report => report)
+        .once("nodeBroadcastedTx", report => report)
+        .once("nativeTxConfirmed", tx => tx)
+        .then(res => res);
+    }
   },
+
   mounted() {
     this.setAddresses();
     this.qrCodes.tlos.append(document.getElementById("tlos-qr-canvas"));
