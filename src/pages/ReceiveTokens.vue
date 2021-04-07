@@ -1,170 +1,205 @@
 <template>
-  <q-page class="column">
+  <q-page>
     <section class="header-bg" />
-    <div class="self-center flex-shrink">
-      <q-card class="card-container">
+    <section class="body-container" style="max-width: 580px">
+      <q-card>
         <q-btn :to="`/wallet/${accountName}`" flat round class="self-start">
-          <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px;" />
+          <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
         </q-btn>
-        <div>
-          <div class="column items-center">
-            <q-btn-dropdown no-caps flat class="q-ml-md">
-              <template v-slot:label class="row items-center">
+        <div class="column items-center">
+          <q-btn-dropdown
+            no-caps
+            flat
+            class="q-ml-md bg-secondary"
+            padding="xs"
+            style="margin: 8px"
+          >
+            <template v-slot:label>
+              <div class="flex items-center justify-center wrap q-pa-sm">
                 <h2>
                   Receive
                 </h2>
-                <token-avatar
-                  class="q-mx-sm"
-                  :token="selectedToken"
-                  :avatarSize="55"
-                />
-                <h2>
-                  {{ selectedToken }}
-                </h2>
-              </template>
-              <q-list>
-                <q-item
-                  clickable
-                  v-close-popup
-                  v-for="token in tokens"
-                  :key="token"
-                  @click="
-                    selectedToken = token;
-                    selectedNetwork = 'telos';
-                  "
-                >
-                  <q-item-section>
-                    <q-item-label>{{ token }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
-            <div class="text-subtitle1 q-pb-sm">From network</div>
-            <div class="networks row q-gutter-x-md">
-              <q-btn
-                label="Telos"
-                @click="selectedNetwork = 'telos'"
-                :class="selectedNetwork === 'telos' ? 'selected-network' : ''"
-                flat
-                size="lg"
-                no-caps
-                padding="xs"
-              />
-              <q-btn
-                label="Bitcoin"
-                v-if="selectedToken.toUpperCase() === 'PBTC'"
-                @click="selectedNetwork = 'bitcoin'"
-                :class="selectedNetwork === 'bitcoin' ? 'selected-network' : ''"
-                flat
-                size="lg"
-                no-caps
-                padding="xs"
-              />
-              <q-btn
-                label="Ethereum"
-                v-if="['PETH', 'TLOS'].includes(selectedToken.toUpperCase())"
-                @click="selectedNetwork = 'ethereum'"
-                :class="
-                  selectedNetwork === 'ethereum' ? 'selected-network' : ''
+                <div class="row items-center justify-center">
+                  <token-avatar :token="selectedToken" :avatarSize="55" />
+                  <h2>
+                    {{ selectedToken }}
+                  </h2>
+                </div>
+              </div>
+            </template>
+            <q-list class="bg-secondary">
+              <q-item
+                clickable
+                v-close-popup
+                v-for="token in tokens"
+                :key="token"
+                @click="
+                  selectedToken = token;
+                  selectedNetwork = 'telos';
                 "
                 flat
                 size="lg"
                 no-caps
                 padding="xs"
-              />
-            </div>
+              >
+                <q-item-section avatar>
+                  <token-avatar :token="token" :avatarSize="40" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label style="font-weight: 500">
+                    {{ token }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+          <div class="text-subtitle1 q-pb-sm">From network</div>
+          <div class="networks row justify-center q-gutter-x-md q-gutter-y-sm">
+            <q-btn
+              label="Telos"
+              @click="selectedNetwork = 'telos'"
+              :class="selectedNetwork === 'telos' ? 'selected-network' : ''"
+              flat
+              size="lg"
+              no-caps
+              padding="xs"
+            />
+            <q-btn
+              label="Bitcoin"
+              v-if="selectedToken.toUpperCase() === 'PBTC'"
+              @click="selectedNetwork = 'bitcoin'"
+              :class="selectedNetwork === 'bitcoin' ? 'selected-network' : ''"
+              flat
+              size="lg"
+              no-caps
+              padding="xs"
+            />
+            <q-btn
+              label="Ethereum"
+              v-if="['PETH', 'TLOS'].includes(selectedToken.toUpperCase())"
+              @click="selectedNetwork = 'ethereum'"
+              :class="selectedNetwork === 'ethereum' ? 'selected-network' : ''"
+              flat
+              size="lg"
+              no-caps
+              padding="xs"
+            />
+          </div>
+          <div
+            class="text-subtitle1 q-py-md text-center"
+            v-if="selectedNetwork !== 'ethereum'"
+          >
+            Deposit {{ depositTokenStr }} to the following address
+          </div>
+          <div v-if="devWarning">Don't do real payments</div>
+          <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
+          <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" />
+          <div
+            class="col text-subtitle1 row q-gutter-x-sm q-mx-md"
+            v-show="
+              selectedNetwork === 'telos' || selectedNetwork === 'bitcoin'
+            "
+          >
             <div
-              class="text-subtitle1 q-py-md"
-              v-if="selectedNetwork !== 'ethereum'"
-            >
-              Deposit {{ depositTokenStr }} to the following address
-            </div>
-            <div v-if="devMode">Don't do real payments</div>
-            <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
-            <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" />
-            <div
-              class="text-subtitle1"
-              v-show="
-                selectedNetwork === 'telos' || selectedNetwork === 'bitcoin'
-              "
+              id="address"
+              :class="`col ${selectedNetwork}-net`"
+              style="word-wrap: break-word;"
             >
               {{ selectedAddress }}
-              <q-btn
-                flat
-                v-if="selectedAddress !== ''"
-                @click="copyAddress(selectedAddress)"
-                icon="far fa-clone"
-                padding="0"
-                color="positive"
-                size="sm"
-              />
             </div>
             <!-- Create new btc address -->
             <q-btn
-              v-if="selectedNetwork === 'bitcoin'"
-              color="primary"
-              label="Generate new deposit address"
-              @click="setAddresses()"
+              flat
+              v-if="selectedAddress !== ''"
+              @click="copyAddress(selectedAddress)"
+              icon="far fa-clone"
+              padding="0"
+              color="positive"
+              size="sm"
             />
-
+          </div>
+          <q-btn
+            class="q-mt-md"
+            v-if="selectedNetwork === 'bitcoin'"
+            @click="setAddresses"
+            color="primary"
+            label="Generate new address"
+          />
+          <div
+            v-if="selectedNetwork === 'ethereum'"
+            class="column items-center q-pt-md q-gutter-y-sm"
+          >
+            <!-- If metamask isn't installed start onboarding process -->
+            <q-btn
+              v-if="isMetaMaskInstalled && !metamaskConnected"
+              color="primary"
+              label="Connect Metamask"
+              @click="ethereumConnect()"
+            />
+            <!-- Else login with metamask -->
+            <div v-if="!isMetaMaskInstalled">
+              Install or enable metamask first.
+            </div>
+            <q-btn
+              v-if="!isMetaMaskInstalled"
+              color="primary"
+              label="Install metamask"
+              @click="metamaskOnboarding()"
+            />
+            <!-- Input amount of eth to peth -->
             <div
-              v-if="selectedNetwork === 'ethereum'"
-              class="column items-center q-pt-md q-gutter-y-sm"
+              v-if="
+                selectedToken.toUpperCase() === 'PETH' &&
+                  isMetaMaskInstalled &&
+                  metamaskConnected
+              "
+              class="column items-center q-gutter-y-md"
             >
-              <!-- If metamask isn't installed start onboarding process -->
-              <q-btn
-                v-if="isMetaMaskInstalled && !metamaskConnected"
-                color="primary"
-                label="Connect Metamask"
-                @click="ethereumConnect()"
+              <q-input
+                v-model="amount"
+                label="ETH"
+                outlined
+                placeholder="0"
+                autofocus
+                @keyup.enter="pegIn()"
+                :disable="devMode"
               />
-              <!-- Else login with metamask -->
-              <div v-if="!isMetaMaskInstalled">
-                Install or enable metamask first.
-              </div>
               <q-btn
-                v-if="!isMetaMaskInstalled"
                 color="primary"
-                label="Install metamask"
-                @click="metamaskOnboarding()"
+                label="Issue"
+                @click="pegIn()"
+                :disable="devMode"
               />
-              <!-- Input amount of eth to peth -->
-              <div
-                v-if="
-                  selectedToken.toUpperCase() === 'PETH' &&
-                    isMetaMaskInstalled &&
-                    metamaskConnected
-                "
-              >
-                <q-input v-model="amount" label="ETH" />
-                <q-btn
-                  color="primary"
-                  label="Issue"
-                  @click="pegIn()"
-                  :disable="devMode"
-                />
-              </div>
-              <!-- Input amount of tlos erc20 to tlos -->
-              <div
-                v-if="
-                  selectedToken.toUpperCase() === 'TLOS' &&
-                    isMetaMaskInstalled &&
-                    metamaskConnected
-                "
-              >
-                <q-input v-model="amount" label="TLOS (ERC-20)" />
-                <q-btn
-                  color="primary"
-                  label="Redeem"
-                  @click="pegOut()"
-                  :disable="devMode"
-                />
-              </div>
+            </div>
+            <!-- Input amount of tlos erc20 to tlos -->
+            <div
+              v-if="
+                selectedToken.toUpperCase() === 'TLOS' &&
+                  isMetaMaskInstalled &&
+                  metamaskConnected
+              "
+              class="column items-center q-gutter-y-md"
+            >
+              <q-input
+                v-model="amount"
+                label="TLOS (ERC-20)"
+                outlined
+                placeholder="0"
+                autofocus
+                @keyup.enter="pegOut()"
+                :disable="devMode"
+              />
+              <q-btn
+                color="primary"
+                label="Redeem"
+                @click="pegOut()"
+                :disable="devMode"
+              />
             </div>
           </div>
         </div>
       </q-card>
-    </div>
+    </section>
   </q-page>
 </template>
 
@@ -401,11 +436,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.card-container {
+.q-card {
   display: grid;
   align-items: stretch;
   grid-template-columns: 50px auto 50px;
   padding-bottom: 40px;
+  & div {
+    margin: 0;
+    @media only screen and (max-width: 585px) {
+      grid-column-start: 1;
+      grid-column-end: 4;
+    }
+  }
 }
 .header-bg {
   height: 160px;
@@ -413,7 +455,7 @@ export default {
 }
 h2 {
   line-height: 45px;
-  margin: 10px 0;
+  margin: 0 10px;
   font-size: 35px;
 }
 .networks {
@@ -422,9 +464,25 @@ h2 {
     color: $secondary;
     width: 120px;
     align-items: center;
+    @media only screen and (max-width: 375px) {
+      width: 100px;
+    }
   }
   .q-btn.selected-network {
     background-color: $space;
+  }
+}
+.q-item:hover {
+  background-color: $dark;
+  color: $secondary;
+}
+@media only screen and (max-width: 425px) {
+  #btc-qr-canvas {
+    margin: -30px -20px;
+    transform: scale(0.8);
+  }
+  #address.bitcoin-net {
+    width: 200px;
   }
 }
 </style>
