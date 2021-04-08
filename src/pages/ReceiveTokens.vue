@@ -227,11 +227,17 @@
               />
             </div>
           </div>
+          <q-banner
+            rounded
+            inline-actions
+            class="text-white bg-negative"
+            style="margin-top: 15px"
+            v-if="devMode"
+          >
+            Do not make real payments! This is under development.
+          </q-banner>
         </div>
       </q-card>
-      <q-banner inline-actions class="text-white bg-red" v-if="devMode">
-        Do not make real payments! This is under development.
-      </q-banner>
     </section>
   </q-page>
 </template>
