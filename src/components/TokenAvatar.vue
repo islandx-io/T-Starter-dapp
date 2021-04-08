@@ -15,7 +15,7 @@
         <div class="transparent" style="padding: 0" v-html="identicon" />
       </template>
       <template v-slot:loading>
-        <q-spinner-puff color="primary" />
+        <q-spinner-puff color="primary" :style="avatarStyle" />
       </template>
     </q-img>
     <div v-else v-html="identicon" />
