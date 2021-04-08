@@ -134,15 +134,17 @@
               {{ selectedAddress }}
             </div>
             <!-- Create new btc address -->
-            <q-btn
-              flat
-              v-if="selectedAddress !== ''"
-              @click="copyAddress(selectedAddress)"
-              icon="far fa-clone"
-              padding="0"
-              color="positive"
-              size="sm"
-            />
+            <div class="row content-center q-pl-sm">
+              <q-btn
+                flat
+                v-if="selectedAddress !== ''"
+                @click="copyAddress(selectedAddress)"
+                icon="far fa-clone"
+                padding="0"
+                color="positive"
+                size="sm"
+              />
+            </div>
           </div>
           <q-btn
             class="q-mt-md"
