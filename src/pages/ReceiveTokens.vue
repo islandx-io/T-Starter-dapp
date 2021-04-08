@@ -1,7 +1,19 @@
 <template>
   <q-page>
     <section class="header-bg" />
-    <section class="body-container" style="max-width: 580px" v-if="isAuthenticated">
+    <section
+      class="body-container"
+      style="max-width: 580px"
+      v-if="!isAuthenticated"
+    >
+      <q-card
+        class="row justify-center content-center "
+        style="min-height: 100px"
+      >
+        <div class="text-subtitle1 q-py-md text-center">Please login</div>
+      </q-card>
+    </section>
+    <section class="body-container" style="max-width: 580px" v-else>
       <q-card>
         <q-btn :to="`/wallet/${accountName}`" flat round class="self-start">
           <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
@@ -105,7 +117,7 @@
             Deposit {{ depositTokenStr }} to the following address
           </div>
           <!-- leave this div, it needs to be there for some reason -->
-          <div> </div>
+          <div></div>
           <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
           <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" />
           <div
@@ -216,17 +228,9 @@
         </div>
       </q-card>
       <q-banner inline-actions class="text-white bg-red" v-if="devMode">
-      Do not make real payments! This is under development.
-    </q-banner>
-    </section>   
-    <section class="body-container" style="max-width: 580px" v-else>
-      <q-card
-        class="row justify-center content-center "
-        style="min-height: 100px"
-      >
-        <div class="text-subtitle1 q-py-md text-center">Please login</div>
-      </q-card>
-    </section> 
+        Do not make real payments! This is under development.
+      </q-banner>
+    </section>
   </q-page>
 </template>
 
@@ -388,6 +392,8 @@ export default {
       this.btcAddress = pbridge_api.data.nativeDepositAddress || [];
       this.qrCodes.btc.update({ data: this.btcAddress });
       this.qrCodes.tlos.update({ data: this.accountName });
+      this.qrCodes.tlos.append(document.getElementById("tlos-qr-canvas"));
+      this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     },
 
     metamaskOnboarding() {
@@ -474,8 +480,6 @@ export default {
 
   mounted() {
     this.setAddresses();
-    this.qrCodes.tlos.append(document.getElementById("tlos-qr-canvas"));
-    this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     this.selectedToken = this.$route.query.token_sym;
   }
 };
