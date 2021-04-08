@@ -23,7 +23,7 @@
       <h5>{{ this.$toDate(pool.pool_open) }}</h5>
     </div>
     <div v-if="pool.access_type === 'Private'">
-      <h6>Closing Time (Private):</h6>
+      <h6>Closing Time (Premium):</h6>
       <h5>{{ this.$toDate(pool.private_end) }}</h5>
     </div>
     <div v-if="pool.public_end > pool.private_end">

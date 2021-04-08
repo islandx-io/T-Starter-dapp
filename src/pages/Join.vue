@@ -159,7 +159,7 @@
           </div>
         </q-form>
 
-        <!-- Not enough START to participate in private pool -->
+        <!-- Not enough START to participate in premium pool -->
         <q-dialog v-model="stake_warning">
           <q-card>
             <q-card-section class="row items-center">
@@ -169,11 +169,11 @@
                 class="q-pr-sm"
                 color="primary"
               />
-              <div class="text-h6">Private pool</div>
+              <div class="text-h6">Premium pool</div>
             </q-card-section>
 
             <q-card-section class="q-pt-none">
-              You don't have enough START tokens to participate in a private
+              You don't have enough START tokens to participate in a premium
               pool.
             </q-card-section>
 
@@ -203,7 +203,7 @@
             </q-card-section>
             <q-card-section>
               <span>
-                Confirm staking additional 500 START tokens for private access?
+                Confirm staking additional 500 START tokens for premium access?
               </span>
             </q-card-section>
 
@@ -386,7 +386,7 @@ export default {
     },
 
     checkAllowed() {
-      // TODO check if whitelisted, joinable, private, public, balance (start tokens),
+      // TODO check if whitelisted, joinable, premium, public, balance (start tokens),
     },
 
     async loadChainData() {
@@ -396,9 +396,8 @@ export default {
     async joinPoolTransaction() {
       const actions = [];
       if (this.pool.access_type === "Private" && !this.alreadyStaked) {
-        console.log("this is private");
         actions.push(
-          // send start if private
+          // send start if premium
           {
             account: this.premium_stake.contract,
             name: "transfer",
@@ -513,13 +512,13 @@ export default {
     }
     this.premium_stake = await this.getPremiumStake();
 
-    // check stake if private pool
+    // check stake if premium pool
     this.alreadyStaked = await this.checkStakedChain({
       account: this.accountName,
       poolID: this.poolID
     });
 
-    // if START balance not enough and is private pool, show dialog to buy
+    // if START balance not enough and is premium pool, show dialog to buy
     let payload = {
       address: this.premium_stake.contract,
       sym: "START",

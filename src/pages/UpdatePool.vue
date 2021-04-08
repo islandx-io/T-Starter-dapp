@@ -164,7 +164,7 @@
                   <datetime-field
                     :value.sync="private_end"
                     :pool="pool"
-                    label="Private end time (UTC) *"
+                    label="Premium end time (UTC) *"
                   />
                 </q-item-section>
                 <q-item-section>
@@ -908,7 +908,6 @@ export default {
   async mounted() {
     await this.loadChainData();
     await this.getPoolInfo();
-    //TODO get possible base tokens
     await this.setBaseTokenOptions();
 
     // check if already funded
