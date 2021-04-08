@@ -395,7 +395,7 @@ export default {
 
     async joinPoolTransaction() {
       const actions = [];
-      if (this.pool.access_type === "Private" && !this.alreadyStaked) {
+      if (this.pool.access_type === "Premium" && !this.alreadyStaked) {
         actions.push(
           // send start if premium
           {
@@ -491,7 +491,7 @@ export default {
         });
       } else {
         // this.checkAllowed();
-        if (!this.alreadyStaked && this.pool.access_type === "Private") {
+        if (!this.alreadyStaked && this.pool.access_type === "Premium") {
           this.confirm_stake = true;
         } else {
           this.tryTransaction();
@@ -530,7 +530,7 @@ export default {
     console.log("Start balance:" + start_balance);
     if (
       start_balance < this.$chainToQty(this.premium_stake.quantity) &&
-      this.pool.access_type === "Private"
+      this.pool.access_type === "Premium"
     ) {
       this.stake_warning = true;
       this.not_enough_start = true;

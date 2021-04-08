@@ -22,11 +22,11 @@
       <h6>Opening Time:</h6>
       <h5>{{ this.$toDate(pool.pool_open) }}</h5>
     </div>
-    <div v-if="pool.access_type === 'Private'">
+    <div v-if="pool.access_type === 'Premium'">
       <h6>Closing Time (Premium):</h6>
-      <h5>{{ this.$toDate(pool.private_end) }}</h5>
+      <h5>{{ this.$toDate(pool.premium_end) }}</h5>
     </div>
-    <div v-if="pool.public_end > pool.private_end">
+    <div v-if="pool.public_end > pool.premium_end">
       <h6>Closing Time (Public):</h6>
       <h5>{{ this.$toDate(pool.public_end) }}</h5>
     </div>

@@ -20,7 +20,7 @@ const defaultPoolInfo = {
   total_raise: loading,
   participants: loading,
   pool_open: loading,
-  private_end: loading,
+  premium_end: loading,
   public_end: loading,
   whitelist: [],
   web_links: loading,
