@@ -621,7 +621,7 @@ export default {
       this.BaseTokenSymFromChain();
 
       this.pool_open.date = this.toDateString(this.pool.pool_open);
-      this.premium_end.date = this.toDateString(this.pool.premium_end);
+      this.premium_end.date = this.toDateString(this.pool.private_end);
       this.public_end.date = this.toDateString(this.pool.public_end);
 
       if (this.pool.whitelist.length > 0) {
@@ -708,7 +708,7 @@ export default {
               this.selected_base_token.sym
             ),
             pool_open: this.pool.pool_open,
-            premium_end: this.pool.premium_end,
+            premium_end: this.pool.private_end,
             public_end: this.pool.public_end,
             whitelist: this.pool.whitelist,
             web_links: this.cleanedWebLinks
@@ -767,7 +767,7 @@ export default {
 
     async onSubmit() {
       this.pool.pool_open = this.pool_open.date;
-      this.pool.premium_end = this.premium_end.date;
+      this.pool.private_end = this.premium_end.date;
       this.pool.public_end = this.public_end.date;
       console.log({ "Submitted start date": this.pool.pool_open });
       if (this.accept !== true || !this.isAuthenticated) {

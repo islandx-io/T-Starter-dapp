@@ -51,7 +51,7 @@ export const getAllChainPools = async function({ commit, dispatch }) {
 
       //check dates are unix
       pool.pool_open = new Date(pool.pool_open + "Z").valueOf();
-      pool.premium_end = new Date(pool.premium_end + "Z").valueOf();
+      pool.private_end = new Date(pool.private_end + "Z").valueOf();
       pool.public_end = new Date(pool.public_end + "Z").valueOf();
 
       const poolTable = pool;
@@ -187,11 +187,11 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
 
   // Update access type
   var access_type = "Premium";
-  if (pool.premium_end >= pool.public_end) {
+  if (pool.private_end >= pool.public_end) {
     access_type = "Premium";
-  } else if (pool.premium_end <= pool.pool_open) {
+  } else if (pool.private_end <= pool.pool_open) {
     access_type = "Public";
-  } else if (currentDate > pool.premium_end) {
+  } else if (currentDate > pool.private_end) {
     access_type = "Public";
   }
 
@@ -236,7 +236,7 @@ export const getCreatedChainPools = async function(
 
         //check dates are unix
         pool.pool_open = new Date(pool.pool_open + "Z").valueOf();
-        pool.premium_end = new Date(pool.premium_end + "Z").valueOf();
+        pool.private_end = new Date(pool.private_end + "Z").valueOf();
         pool.public_end = new Date(pool.public_end + "Z").valueOf();
 
         const poolTable = pool;
