@@ -6,15 +6,12 @@
       style="max-width: 580px"
       v-if="!isAuthenticated"
     >
-      <q-card
-        class="row justify-center content-center "
-        style="min-height: 100px"
-      >
-        <div class="text-subtitle1 q-py-md text-center">Please login</div>
+      <q-card class="not-authenticated">
+        <div class="text-subtitle1">Please login</div>
       </q-card>
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
-      <q-card>
+      <q-card class="authenticated">
         <q-btn :to="`/wallet/${accountName}`" flat round class="self-start">
           <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
         </q-btn>
@@ -495,15 +492,24 @@ export default {
 
 <style lang="scss" scoped>
 .q-card {
-  display: grid;
-  align-items: stretch;
-  grid-template-columns: 50px auto 50px;
-  padding-bottom: 40px;
-  & div {
-    margin: 0;
-    @media only screen and (max-width: 585px) {
-      grid-column-start: 1;
-      grid-column-end: 4;
+  &.not-authenticated {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    min-height: 100px;
+  }
+  &.authenticated {
+    display: grid;
+    align-items: stretch;
+    grid-template-columns: 50px auto 50px;
+    padding-bottom: 40px;
+    & div {
+      margin: 0;
+      @media only screen and (max-width: 585px) {
+        grid-column-start: 1;
+        grid-column-end: 4;
+      }
     }
   }
 }
