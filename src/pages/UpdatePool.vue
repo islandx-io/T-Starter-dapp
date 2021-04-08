@@ -849,7 +849,7 @@ export default {
               icon: "cloud_done",
               message: "Funded"
             });
-            this.$router.go();
+            this.redirectPoolPage();
           }
         } catch (error) {
           this.$q.notify({
@@ -871,7 +871,7 @@ export default {
           icon: "cloud_done",
           message: "Pool completed"
         });
-        this.$router.go();
+        this.redirectPoolPage();
       } catch (error) {
         this.$q.notify({
           color: "red-5",
