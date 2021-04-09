@@ -186,15 +186,15 @@
                 outlined
                 placeholder="0"
                 autofocus
-                @keyup.enter="pegIn()"
+                @keyup.enter="tryPegIn()"
                 :disable="devMode"
                 :loading="txnPending"
               />
               <q-btn
                 color="primary"
                 label="Issue"
-                @click="pegIn()"
-                :disable="devMode"
+                @click="tryPegIn()"
+                :disable="devMode || txnPending === true"
               />
             </div>
             <!-- Input amount of tlos erc20 to tlos -->
@@ -212,18 +212,20 @@
                 outlined
                 placeholder="0"
                 autofocus
-                @keyup.enter="pegOut()"
+                @keyup.enter="tryPegOut()"
                 :disable="devMode"
                 :loading="txnPending"
               />
               <q-btn
                 color="primary"
                 label="Redeem"
-                @click="pegOut()"
-                :disable="devMode"
+                @click="tryPegOut()"
+                :disable="devMode || txnPending === true"
               />
             </div>
           </div>
+          <!-- TODO make this pretty -->
+          <div class="h2">{{ txStatusMessage }}</div>
           <q-banner
             rounded
             inline-actions
@@ -314,7 +316,8 @@ export default {
       selectedToken: "pBTC",
       ethAccounts: [],
       amount: 0,
-      txnPending: false
+      txnPending: false,
+      txStatusMessage: ""
     };
   },
   computed: {
@@ -381,15 +384,8 @@ export default {
 
     async getCurrentGasPrice() {
       web3 = new Web3(window.ethereum);
-      let gas_wei = await web3.eth.getGasPrice()
-      console.log(gas_wei)
-      // let gas_gwei = this.weiToGwei(gas_wei)
-      // console.log(gas_gwei)
-      return gas_wei
-    },
-
-    weiToGwei(wei) {
-      return BigNumber(wei).multipliedBy(10 ** -9)
+      let gas_wei = await web3.eth.getGasPrice();
+      return gas_wei;
     },
 
     toWei(number) {
@@ -422,7 +418,7 @@ export default {
 
     async ethereumConnect() {
       if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
+        window.ethereum = new Web3(window.ethereum);
         const accounts = await ethereum.request({
           method: "eth_requestAccounts"
         });
@@ -431,10 +427,31 @@ export default {
       }
     },
 
+    async tryPegIn() {
+      try {
+        this.txnPending = true;
+        await this.pegIn();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Completed"
+        });
+        this.txnPending = false;
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+        this.txnPending = false;
+      }
+    },
+
     // ETH to PETH
     async pegIn() {
-      if (window.web3) {
-        this.txnPending = true;
+      if (window.ethereum) {
         const peth = new pERC20({
           pToken: "PETH",
           ethProvider: window.ethereum,
@@ -445,28 +462,59 @@ export default {
           nativeNetwork: "mainnnet"
         });
 
-        peth
-          .issue(this.toWei(this.amount), this.accountName, {
-            gas: 30000,
-            gasPrice: await this.getCurrentGasPrice()
-          })
-          .once("nativeTxBroadcasted", tx => tx)
-          .once("nativeTxConfirmed", tx => tx)
-          .once("nodeReceivedTx", report => report)
-          .once("nodeBroadcastedTx", report => report)
-          .once("hostTxConfirmed", tx => tx)
-          .then(res => res)
-          .finally(() => {
-            this.txnPending = false;
-          });
+        try {
+          const transaction = await peth
+            .issue(this.toWei(this.amount), this.accountName, {
+              gas: 200000,
+              gasPrice: await this.getCurrentGasPrice()
+            })
+            .once(
+              "nativeTxBroadcasted",
+              tx => (this.txStatusMessage = "Broadcasted...")
+            )
+            .once(
+              "nativeTxConfirmed",
+              tx => (this.txStatusMessage = "Confirmed...")
+            )
+            .once("nodeReceivedTx", report => console.log(report))
+            .once("nodeBroadcastedTx", report => console.log(report))
+            .once(
+              "hostTxConfirmed",
+              tx => (this.txStatusMessage = "Transaction Completed")
+            )
+            .then(res => console.log(res));
+        } catch (e) {
+          throw e.cause.message;
+        }
       } else {
         console.log("No web3 detected");
       }
     },
 
+    async tryPegOut() {
+      try {
+        this.txnPending = true;
+        await this.pegOut();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Submitted"
+        });
+        this.txnPending = false;
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+        this.txnPending = false;
+      }
+    },
+
     //TLOS (ERC20) to TLOS
     async pegOut() {
-      this.txnPending = true;
       const telos = new pEosioToken({
         pToken: "TLOS",
 
@@ -481,19 +529,32 @@ export default {
         eosRpc: "https://telos.caleos.io" // or also an instance of JsonRpc
       });
 
-      telos
-        .redeem(this.toWei(this.amount), this.accountName, {
-          gasPrice: await this.getCurrentGasPrice(),
-          gas: 200000
-        })
-        .once("hostTxConfirmed", tx => tx)
-        .once("nodeReceivedTx", report => report)
-        .once("nodeBroadcastedTx", report => report)
-        .once("nativeTxConfirmed", tx => tx)
-        .then(res => res)
-        .finally(() => {
-          this.txnPending = false;
-        });
+      try {
+        const transaction = await telos
+          .redeem(this.toWei(this.amount), this.accountName, {
+            gasPrice: await this.getCurrentGasPrice(),
+            gas: 200000
+          })
+          .once("hostTxConfirmed", tx => {
+            this.txStatusMessage = "Host transaction confirmed";
+            console.log(tx);
+          })
+          .once("nodeReceivedTx", report => {
+            this.txStatusMessage = "Node received transaction";
+            console.log(report);
+          })
+          .once("nodeBroadcastedTx", report => {
+            this.txStatusMessage = "Node broadcasted transaction";
+            console.log(report);
+          })
+          .once("nativeTxConfirmed", tx => {
+            this.txStatusMessage = "Transaction Completed";
+            console.log(tx);
+          })
+          .then(res => console.log(res));
+      } catch (e) {
+        throw e.cause.message;
+      }
     }
   },
 
