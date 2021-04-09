@@ -80,7 +80,7 @@
           Subscribe to receive anouncements about new pools and other relevant
           events.
         </div>
-        <q-btn label="Subscribe" outline class="hover-accent" />
+        <q-btn label="Subscribe" outline class="hover-accent" type="a" target="_blank" href="https://t.me/tstarterio" />
       </q-card>
     </section>
   </q-page>
