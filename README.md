@@ -2,7 +2,7 @@
 
 # T-STARTER
 
-The place to discover and back projects building on Telos.
+*The place to discover and back projects building on Telos.*
 
 **Find us here:**
 
