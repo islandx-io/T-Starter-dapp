@@ -1,8 +1,12 @@
-# Telos Quasar Template (telos-template)
+![main banner](public/tstarterbanner.png)
 
-A template for using Vue+Quasar to build a Telos webapp
+# T-STARTER
+The place to discover and back projects building on Telos.
 
-## Install the dependencies
+<img src="public/icons/fa/telegram-plane-brands.svg" href="https://t.me/tstarterio" width="20" >
+- 
+
+## Installation
 
 ### Install yarn package manager 
 Follow the installation instructions at:
@@ -16,7 +20,7 @@ yarn global add @quasar/cli
 ### Clone this repo to your local machine
 ### Copy the example .env file to .env
 ```bash
-cp .env.example .env
+cp .env.dev .env
 ```
 ## Prep the environment
 From within the ui-template folder:
