@@ -301,7 +301,8 @@ export default {
   components: { tokenAvatar },
   data() {
     return {
-      devMode: Boolean(process.env.DEVELOPMENT),
+      // devMode: Boolean(process.env.DEVELOPMENT),
+      devMode: false,
       receiveLink: "",
       qrCodes: {
         tlos: new QRCodeStyling({ width: 180, height: 180, ...qrStyling }),
