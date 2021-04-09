@@ -379,6 +379,19 @@ export default {
       });
     },
 
+    async getCurrentGasPrice() {
+      web3 = new Web3(window.ethereum);
+      let gas_wei = await web3.eth.getGasPrice()
+      console.log(gas_wei)
+      // let gas_gwei = this.weiToGwei(gas_wei)
+      // console.log(gas_gwei)
+      return gas_wei
+    },
+
+    weiToGwei(wei) {
+      return BigNumber(wei).multipliedBy(10 ** -9)
+    },
+
     toWei(number) {
       return BigNumber(number).multipliedBy(10 ** 18);
     },
@@ -419,7 +432,7 @@ export default {
     },
 
     // ETH to PETH
-    pegIn() {
+    async pegIn() {
       if (window.web3) {
         this.txnPending = true;
         const peth = new pERC20({
@@ -435,7 +448,7 @@ export default {
         peth
           .issue(this.toWei(this.amount), this.accountName, {
             gas: 30000,
-            gasPrice: 75e9
+            gasPrice: await this.getCurrentGasPrice()
           })
           .once("nativeTxBroadcasted", tx => tx)
           .once("nativeTxConfirmed", tx => tx)
@@ -452,7 +465,7 @@ export default {
     },
 
     //TLOS (ERC20) to TLOS
-    pegOut() {
+    async pegOut() {
       this.txnPending = true;
       const telos = new pEosioToken({
         pToken: "TLOS",
@@ -470,7 +483,7 @@ export default {
 
       telos
         .redeem(this.toWei(this.amount), this.accountName, {
-          gasPrice: 100e9,
+          gasPrice: await this.getCurrentGasPrice(),
           gas: 200000
         })
         .once("hostTxConfirmed", tx => tx)
