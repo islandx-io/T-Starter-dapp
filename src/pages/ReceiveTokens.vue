@@ -457,9 +457,9 @@ export default {
         pToken: "TLOS",
 
         // if you want to be more detailed
-        hostBlockchain: "ETH",
+        hostBlockchain: "ethereum",
         hostNetwork: "mainnet", // possible values are testnet_jungle2, testnet_ropsten and mainnet
-        nativeBlockchain: "Telos",
+        nativeBlockchain: "telos",
         nativeNetwork: "mainnet",
 
         // optionals
