@@ -464,7 +464,7 @@ export default {
           nativeBlockchain: "ethereum",
           nativeNetwork: "mainnet",
 
-          telosRpc: "https://telos.caleos.io" //  FIXME process.env.HYPERION_ENDPOINT, use instead
+          telosRpc: "https://telos.caleos.io" //  TODO process.env.HYPERION_ENDPOINT, use instead
         });
 
         try {
@@ -526,6 +526,7 @@ export default {
 
     //TLOS (ERC20) to TLOS
     async pegOut() {
+      this.txStatusMessage = "Preparing for transaction"
       const telos = new pEosioToken({
         pToken: "TLOS",
 
@@ -537,7 +538,7 @@ export default {
 
         // optionals
         ethProvider: window.ethereum, // or instance of Web3 provider
-        telosRpc: "https://telos.caleos.io" //  FIXME process.env.HYPERION_ENDPOINT, use instead
+        telosRpc: "https://telos.caleos.io" //  TODO process.env.HYPERION_ENDPOINT, use instead
       });
 
       try {
