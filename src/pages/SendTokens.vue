@@ -16,10 +16,11 @@
         <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
       </q-btn>
         <div class="row items-center justify-center">
+
           <h2>
             Sending:
           </h2>
-          <token-avatar :token="selectedToken" :avatarSize="55" />
+          <token-avatar :token="selectedToken" :avatar="this.avatar" :avatarSize="55" />
           <h2>
             {{ selectedToken }}
           </h2>
@@ -99,9 +100,12 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
 
     token_contract() {
-      return this.wallet.find(a => a.token_sym === this.selectedToken)
-        .token_contract;
-    }
+      return this.wallet.find(a => a.token_sym === this.selectedToken).token_contract;
+    },
+
+    avatar() {
+      return this.wallet.find(a => a.token_sym === this.selectedToken).avatar;
+    },
   },
   methods: {
     ...mapActions("account", ["accountExists"]),
