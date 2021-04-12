@@ -2,47 +2,45 @@
 
 # T-STARTER
 
-*The place to discover and back projects building on Telos.*
+_The place to discover and back projects building on Telos._
 
-**Find us here:**
-
-| Website | Medium | Telegram | Twitter |
-|:---:|:---:|:---:|:---:|
-| [<img src="public/icons/fa/globe-solid.svg" width="20" >](https://app.tstarter.io/) | [<img src="public/icons/fa/medium-m-brands.svg" width="20" >](https://medium.com/@t-starter) | [<img src="public/icons/fa/telegram-plane-brands.svg" width="20" >](https://t.me/tstarterio) | [<img src="public/icons/fa/twitter-brands.svg" width="20" >](https://twitter.com/T_StarterToken) |
-
----
+[<img src="public/icons/fa/globe-solid.svg" width="20" class="social-link" >](https://app.tstarter.io/)
+[<img src="public/icons/fa/medium-m-brands.svg" width="20" class="social-link" >](https://medium.com/@t-starter)
+[<img src="public/icons/fa/telegram-plane-brands.svg" width="20" class="social-link">](https://t.me/tstarterio)
+[<img src="public/icons/fa/twitter-brands.svg" width="20" class="social-link">](https://twitter.com/T_StarterToken)
 
 ## Installation
 
-### Install yarn package manager
-
+**Install yarn package manager.**  
 Follow the installation instructions at:
 https://classic.yarnpkg.com/en/
 
-### Add Vue and Quasar packages
+**Add Vue and Quasar packages**
 
 ```bash
 yarn global add @vue/cli
 yarn global add @quasar/cli
 ```
 
-### Clone this repo to your local machine
+**Clone this repo to your local machine**
 
-### Copy the example .env file to .env
+**Copy the example .env file to .env**
 
 ```bash
 cp .env.dev .env
 ```
 
-## Prep the environment
+**Prep the environment**
 
-From within the ui-template folder:
+Run the following in the same directory as the `package.json` file:
 
 ```bash
 yarn
 ```
 
-## Start the app in development mode (hot-code reloading, error reporting, etc.)
+## Start the app in development mode
+
+(Development mode enables hot-code reloading, error reporting, etc.)
 
 ```bash
 quasar dev
@@ -60,10 +58,13 @@ yarn run lint
 quasar build
 ```
 
-### Customize the configuration
+## More Information
 
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
+- [Quasar](https://quasar.dev/)
+- To customize the web-app's configuration, see [configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
 
-### More Information
-
-See [https://quasar.dev](https://quasar.dev/).
+<style>
+.social-link {
+    padding: 0 5px
+}
+</style>
