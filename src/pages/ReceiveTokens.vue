@@ -571,7 +571,8 @@ export default {
 
   mounted() {
     this.setAddresses();
-    this.selectedToken = this.$route.query.token_sym;
+    if (this.$route.query.token_sym !== undefined)
+      this.selectedToken = this.$route.query.token_sym;
   }
 };
 </script>
