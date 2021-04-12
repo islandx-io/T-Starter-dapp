@@ -418,7 +418,7 @@ export default {
 
     async ethereumConnect() {
       if (window.ethereum) {
-        window.ethereum = new Web3(window.ethereum);
+        web3 = new Web3(window.ethereum);
         const accounts = await ethereum.request({
           method: "eth_requestAccounts"
         });
