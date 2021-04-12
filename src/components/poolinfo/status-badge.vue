@@ -44,7 +44,7 @@ export default {
 .filled-badge {
   background-color: $primary;
 }
-.failed-badge,
+.cancelled-badge,
 .fail-badge {
   background-color: $space;
 }

@@ -40,8 +40,8 @@
         </q-btn>
       </q-btn-group>
       <div
-        class="self-center text-center text-black"
-        style="min-width: 130px; font-weight: 500 "
+        class="self-center text-center text-black q-px-sm"
+        style="min-width: 130px; font-weight: 500"
       >
         {{ balanceSTR }}
       </div>

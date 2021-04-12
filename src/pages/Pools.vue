@@ -80,7 +80,14 @@
           Subscribe to receive anouncements about new pools and other relevant
           events.
         </div>
-        <q-btn label="Subscribe" outline class="hover-accent" type="a" target="_blank" href="https://t.me/tstarterio" />
+        <q-btn
+          label="Subscribe"
+          outline
+          class="hover-accent"
+          type="a"
+          target="_blank"
+          href="https://t.me/tstarterio"
+        />
       </q-card>
     </section>
   </q-page>
@@ -150,14 +157,14 @@ export default {
       let upcoming = this.getPoolIDsByStatus("upcoming");
       let completed = this.getPoolIDsByStatus("completed");
       let filled = this.getPoolIDsByStatus("filled");
-      let failed = this.getPoolIDsByStatus("failed");
+      let cancelled = this.getPoolIDsByStatus("cancelled");
       result = result.concat(
         this.claimableIDs,
         open,
         upcoming,
         completed,
         filled,
-        failed
+        cancelled
       );
       result = result.filter(value => id_list.includes(value));
       result = [...new Set(result)]; // remove duplicates

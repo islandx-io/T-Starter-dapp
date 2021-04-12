@@ -10,7 +10,7 @@
       >
         <div
           v-if="
-            ['upcoming', 'completed', 'filled', 'failed'].includes(
+            ['upcoming', 'completed', 'filled', 'cancelled'].includes(
               pool.pool_status
             )
           "
@@ -110,7 +110,7 @@
                 {{ TokenSymbol }}
               </div>
               <div>
-                Remaining: 
+                Remaining:
                 {{ zeroNaN($chainToQty(pool.remaining_offer).toFixed(0)) }}
                 {{ TokenSymbol }}
               </div>

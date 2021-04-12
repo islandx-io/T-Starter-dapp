@@ -12,7 +12,12 @@
                 height="50px"
               />
             </router-link>
-            <q-chip class='text-weight-bold vertical-bottom' text-color="positive" padding>
+            <q-chip
+              class="text-weight-bold vertical-bottom q-mt-sm"
+              color="secondary"
+              text-color="teal"
+              padding
+            >
               BETA
             </q-chip>
           </div>
@@ -143,7 +148,7 @@
                 class="social-link"
                 target="_blank"
               >
-                <q-icon size="28px" :name="site.icon" />
+                <q-icon size="24px" :name="site.icon" />
               </a>
             </div>
           </div>
@@ -164,6 +169,7 @@ export default {
     return {
       // prettier-ignore
       socialLinks: [
+        {name: "web", icon: "fas fa-globe", link: "https://tstarter.io/"},
         {name: "telegram", icon: "fab fa-telegram-plane", link: "https://t.me/tstarterio"},
         {name: "medium", icon: "fab fa-medium-m", link: "https://medium.com/@t-starter"},
         {name: "twitter", icon: "fab fa-twitter", link: "https://twitter.com/T_StarterToken"},

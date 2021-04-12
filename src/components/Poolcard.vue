@@ -43,7 +43,9 @@
         <div
           class="col-12"
           v-if="
-            ['open', 'completed', 'filled', 'failed'].includes(pool.pool_status)
+            ['open', 'completed', 'filled', 'cancelled'].includes(
+              pool.pool_status
+            )
           "
         >
           <div class="text-h6 q-py-xs">Progress</div>

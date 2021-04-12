@@ -185,14 +185,14 @@ export default {
       let upcoming = this.getPoolIDsByStatus("upcoming");
       let completed = this.getPoolIDsByStatus("completed");
       let filled = this.getPoolIDsByStatus("filled");
-      let failed = this.getPoolIDsByStatus("failed");
+      let cancelled = this.getPoolIDsByStatus("cancelled");
       result = result.concat(
         this.claimableIDs,
         open,
         upcoming,
         completed,
         filled,
-        failed
+        cancelled
       );
       result = result.filter(value => id_list.includes(value));
       result = [...new Set(result)]; // remove duplicates
