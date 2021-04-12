@@ -4,10 +4,10 @@
 
 _The place to discover and back projects building on Telos._
 
-[<img src="public/icons/fa/globe-solid.svg" width="20" class="social-link" >](https://app.tstarter.io/)
-[<img src="public/icons/fa/medium-m-brands.svg" width="20" class="social-link" >](https://medium.com/@t-starter)
-[<img src="public/icons/fa/telegram-plane-brands.svg" width="20" class="social-link">](https://t.me/tstarterio)
-[<img src="public/icons/fa/twitter-brands.svg" width="20" class="social-link">](https://twitter.com/T_StarterToken)
+[<img src="public/icons/fa/globe-solid.svg" width="20">](https://app.tstarter.io/)
+[<img src="public/icons/fa/medium-m-brands.svg" width="20">](https://medium.com/@t-starter)
+[<img src="public/icons/fa/telegram-plane-brands.svg" width="20">](https://t.me/tstarterio)
+[<img src="public/icons/fa/twitter-brands.svg" width="20">](https://twitter.com/T_StarterToken)
 
 ## Installation
 
@@ -62,9 +62,3 @@ quasar build
 
 - [Quasar](https://quasar.dev/)
 - To customize the web-app's configuration, see [configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
-
-<style>
-.social-link {
-    padding: 0 5px
-}
-</style>
