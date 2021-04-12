@@ -83,7 +83,7 @@
                 <q-table
                   :data="stakeData"
                   :columns="stakeColumns"
-                  hide-pagination
+                  :hide-pagination="stakeData.length <= 5"
                   class="wallet-inner-table"
                   separator="none"
                 >
