@@ -383,7 +383,7 @@
             <q-spinner-puff size="50px" color="primary" />
           </q-inner-loading>
         </div>
-        <div v-else>
+        <div v-else class="text-center">
           You are not the owner of this pool
         </div>
       </q-card>
