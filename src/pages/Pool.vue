@@ -61,8 +61,9 @@
           </q-item>
           <q-item
             v-if="
-              !['completed', 'filled', 'failed'].includes(pool.pool_status) ||
-                pool.owner === accountName
+              !['completed', 'filled', 'cancelled'].includes(
+                pool.pool_status
+              ) || pool.owner === accountName
             "
           >
             <q-btn

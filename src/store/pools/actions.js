@@ -180,7 +180,7 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
   ) {
     poolStatus = "completed";
     if (pool.status === "success") poolStatus = "filled";
-    else if (pool.status === "fail") poolStatus = "failed";
+    else if (pool.status === "fail") poolStatus = "cancelled";
   } else {
     poolStatus = "open";
   }

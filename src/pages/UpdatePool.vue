@@ -320,7 +320,11 @@
                 <q-btn
                   label="Fund"
                   @click="onFund"
-                  :disable="pool.status === 'published' || this.funded || (getPoolByID(poolID).title == '')"
+                  :disable="
+                    pool.status === 'published' ||
+                      this.funded ||
+                      getPoolByID(poolID).title == ''
+                  "
                   v-if="pool.status === 'draft'"
                   color="primary"
                 />
@@ -504,9 +508,9 @@ export default {
     },
     poolStatusText() {
       let status = this.pool.status;
-      if (status === "published") return "Pool in progress ";
-      else if (status === "fail") return "Pool failed";
-      else if (status === "success") return "Pool sucess";
+      if (status === "published") return "Pool in progress";
+      else if (status === "fail") return "Pool cancelled";
+      else if (status === "success") return "Pool succeeded";
       else return "";
     }
   },
