@@ -12,8 +12,18 @@
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
       <q-card>
-        <h2>Sending: {{selectedToken}}</h2>
-        {{this.$route.query}}
+      <q-btn :to="`/wallet/${accountName}`" flat round class="self-start">
+        <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
+      </q-btn>
+        <div class="row items-center justify-center">
+          <h2>
+            Sending:
+          </h2>
+          <token-avatar :token="selectedToken" :avatarSize="55" />
+          <h2>
+            {{ selectedToken }}
+          </h2>
+        </div>
         <div v-if="isAuthenticated">
           <q-input
             outlined
@@ -70,8 +80,10 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import tokenAvatar from "src/components/TokenAvatar";
 
 export default {
+  components: { tokenAvatar },
   data() {
     return {
       to: null,
@@ -80,15 +92,20 @@ export default {
       showTransaction: null,
       transaction: null,
       explorerUrl: process.env.NETWORK_EXPLORER,
-      selectedToken: "TLOS",
-
+      selectedToken: "TLOS"
     };
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"])
+    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
+
+    token_contract() {
+      return this.wallet.find(a => a.token_sym === this.selectedToken)
+        .token_contract;
+    }
   },
   methods: {
     ...mapActions("account", ["accountExists"]),
+
     async send() {
       if (!(await this.accountExists(this.to))) {
         this.$q.notify({
@@ -100,12 +117,14 @@ export default {
 
       const actions = [
         {
-          account: "eosio.token",
+          account: this.token_contract,
           name: "transfer",
           data: {
             from: this.accountName.toLowerCase(),
             to: this.to,
-            quantity: `${parseFloat(this.amount).toFixed(4)} TLOS`,
+            quantity: `${parseFloat(this.amount).toFixed(4)} ${
+              this.selectedToken
+            }`,
             memo: this.memo
           }
         }
@@ -121,18 +140,13 @@ export default {
   mounted() {
     if (this.$route.query.token_sym !== undefined)
       this.selectedToken = this.$route.query.token_sym;
-
-    
-    
   }
 };
 </script>
 
 <style lang="scss" scoped>
-
 .header-bg {
   height: 160px;
   margin-bottom: -50px;
 }
-
 </style>
