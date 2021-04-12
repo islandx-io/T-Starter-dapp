@@ -28,7 +28,7 @@
         <q-tooltip>Withdraw</q-tooltip>
       </q-btn>
       <!-- receive token -->
-      <!-- <q-btn
+      <q-btn
         outline
         flat
         :padding="actionButtonPadding"
@@ -40,9 +40,8 @@
         v-if="baseTokenSymbols.includes(props.row.token_sym)"
         class="hover-accent"
         @click.stop
-      > -->
-      <!-- TODO receive token implement this in code -->
-      <q-btn
+      >
+      <!-- <q-btn
         outline
         flat
         :padding="actionButtonPadding"
@@ -53,7 +52,7 @@
         v-if="baseTokenSymbols.includes(props.row.token_sym)"
         class="hover-accent"
         @click.stop
-      >
+      > -->
         <q-tooltip>Receive</q-tooltip>
       </q-btn>
       <!-- buy telos -->

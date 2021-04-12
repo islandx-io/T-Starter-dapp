@@ -3,7 +3,7 @@
     <q-header class="bg-transparent q-pt-xs">
       <q-toolbar class="toolbar items-center">
         <q-toolbar-title>
-          <div class="row">
+          <div class="row items-center">
             <router-link to="/" class="router-link">
               <img
                 class="header-logo"
@@ -12,6 +12,9 @@
                 height="50px"
               />
             </router-link>
+            <q-chip class='text-weight-bold vertical-bottom' text-color="positive" padding>
+              BETA
+            </q-chip>
           </div>
         </q-toolbar-title>
         <div class="gt-sm row">
