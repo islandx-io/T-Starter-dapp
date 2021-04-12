@@ -248,6 +248,7 @@ import QRCodeStyling from "qr-code-styling";
 import QRCode from "qrcode";
 import { copyToClipboard } from "quasar";
 import tokenAvatar from "src/components/TokenAvatar";
+import { pBTC } from "ptokens-pbtc";
 import { pERC20 } from "ptokens-perc20";
 import { pEosioToken } from "ptokens-peosio-token";
 import { HttpProvider } from "ptokens-providers";
@@ -451,7 +452,9 @@ export default {
 
     // ETH to PETH
     async pegIn() {
+
       if (window.ethereum) {
+        this.txStatusMessage = "Preparing for transaction"
         const peth = new pERC20({
           pToken: "PETH",
           ethProvider: window.ethereum,
@@ -459,7 +462,9 @@ export default {
           hostBlockchain: "telos",
           hostNetwork: "mainnet",
           nativeBlockchain: "ethereum",
-          nativeNetwork: "mainnnet"
+          nativeNetwork: "mainnet",
+
+          telosRpc: "https://telos.caleos.io" //  FIXME process.env.HYPERION_ENDPOINT, use instead
         });
 
         try {
@@ -468,20 +473,26 @@ export default {
               gas: 200000,
               gasPrice: await this.getCurrentGasPrice()
             })
-            .once(
-              "nativeTxBroadcasted",
-              tx => (this.txStatusMessage = "Broadcasted...")
-            )
-            .once(
-              "nativeTxConfirmed",
-              tx => (this.txStatusMessage = "Confirmed...")
-            )
-            .once("nodeReceivedTx", report => console.log(report))
-            .once("nodeBroadcastedTx", report => console.log(report))
-            .once(
-              "hostTxConfirmed",
-              tx => (this.txStatusMessage = "Transaction Completed")
-            )
+            .once("nativeTxBroadcasted", tx => {
+              this.txStatusMessage = "Native transaction broadcasted";
+              console.log(tx)
+            })
+            .once("nativeTxConfirmed", tx => {
+              this.txStatusMessage = "Native transaction confirmed";
+              console.log(tx);
+            })
+            .once("nodeReceivedTx", report => {
+              this.txStatusMessage = "Node received transaction";
+              console.log(tx);
+            })
+            .once("nodeBroadcastedTx", report => {
+              this.txStatusMessage = "Node broadcasted transaction";
+              console.log(tx);
+            })
+            .once("hostTxConfirmed", tx => {
+              this.txStatusMessage = "Host transaction confirmed";
+              console.log(tx);
+            })
             .then(res => console.log(res));
         } catch (e) {
           throw e.cause.message;
@@ -526,7 +537,7 @@ export default {
 
         // optionals
         ethProvider: window.ethereum, // or instance of Web3 provider
-        eosRpc: "https://telos.caleos.io" // or also an instance of JsonRpc
+        telosRpc: "https://telos.caleos.io" //  FIXME process.env.HYPERION_ENDPOINT, use instead
       });
 
       try {
