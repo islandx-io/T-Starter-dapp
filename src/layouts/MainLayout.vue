@@ -13,8 +13,9 @@
               />
             </router-link>
             <q-chip
-              class="text-weight-bold vertical-bottom"
-              text-color="positive"
+              class="text-weight-bold vertical-bottom q-mt-sm"
+              color="secondary"
+              text-color="teal"
               padding
             >
               BETA
