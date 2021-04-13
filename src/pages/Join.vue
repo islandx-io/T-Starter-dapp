@@ -158,6 +158,26 @@
           </div>
         </q-form>
 
+        <!-- Legal disclaimer -->
+        <q-dialog v-model="disclaimer_show">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">Alert</div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum
+              repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis
+              perferendis totam, ea at omnis vel numquam exercitationem aut,
+              natus minima, porro labore.
+            </q-card-section>
+
+            <q-card-actions align="right">
+              <q-btn flat label="Agree" color="primary" v-close-popup />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
         <!-- Not enough START to participate in premium pool -->
         <q-dialog v-model="stake_warning">
           <q-card>
@@ -286,6 +306,7 @@ export default {
       alreadyStaked: false,
       confirm_stake: false,
       stake_warning: false,
+      disclaimer_show: false,
       not_enough_start: false,
       joining: false,
       premium_access_fee: {},
@@ -301,6 +322,7 @@ export default {
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+
     isWhitelisted() {
       if (
         this.pool.whitelist.length > 0 &&
@@ -348,7 +370,10 @@ export default {
       "getPlatformToken"
     ]),
     restrictDecimal() {
-      this.amount = this.$toFixedDown(this.amount, this.$getDecimalFromAsset(this.pool.base_token));
+      this.amount = this.$toFixedDown(
+        this.amount,
+        this.$getDecimalFromAsset(this.pool.base_token)
+      );
     },
 
     zeroNaN(val) {
@@ -370,7 +395,14 @@ export default {
     async getAllocations() {
       let payload = { account: this.accountName, poolID: this.pool.id };
       this.allocation = await this.getAllocationByPool(payload);
-      console.log(this.allocation);
+      console.log("Allocation:")
+      console.log(this.$chainToQty(this.allocation.bid));
+      // show disclaimer if user hasn't participated yet
+      if (this.$chainToQty(this.allocation.bid) > 0) {
+        this.disclaimer_show = false
+      } else {
+        this.disclaimer_show = true
+      }
     },
 
     async getBalance() {
