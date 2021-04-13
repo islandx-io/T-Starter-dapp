@@ -41,7 +41,7 @@
         class="hover-accent"
         @click.stop
       >
-      <!-- <q-btn
+        <!-- <q-btn
         outline
         flat
         :padding="actionButtonPadding"
@@ -130,7 +130,7 @@ export default {
   computed: {
     // TODO If staked tokens can be released. i.e. past release date
     canRelease() {
-      return false
+      return false;
     }
   },
 
@@ -268,4 +268,6 @@ export default {
 .q-btn {
   font-size: 12px;
 }
+
+
 </style>
