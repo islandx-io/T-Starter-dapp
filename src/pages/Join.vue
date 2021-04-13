@@ -533,7 +533,7 @@ export default {
     console.log("Start balance:" + start_balance);
     if (
       start_balance < this.$chainToQty(this.premium_access_fee) &&
-      this.pool.access_type === "Premium"
+      this.pool.access_type === "Premium" && !this.alreadyStaked
     ) {
       this.stake_warning = true;
       this.not_enough_start = true;

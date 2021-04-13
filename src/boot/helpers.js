@@ -11,6 +11,7 @@ const chainToQty = function(str, decimals = -1) {
   }
 };
 
+// Gets amount of decimal from chain string e.g. 4 from "0.0000 TLOS"
 const chainToDecimals = function(str) {
   if (str.length > 0) {
     let commaidx = str.indexOf(".") + 1;
@@ -20,6 +21,7 @@ const chainToDecimals = function(str) {
   } else return 0;
 };
 
+// Gets symbol from chain string e.g. TLOS from "0.0000 TLOS"
 const chainToSym = function(str) {
   try {
     return str.split(" ")[1];
@@ -42,10 +44,12 @@ const chainStrReformat = function(str, decimals = -1) {
   }
 };
 
+// Takes value to Telos asset format of "5.000 TLOS"
 const toChainString = function(number, decimals, symbol) {
   return String(parseFloat(number).toFixed(decimals)) + String(" " + symbol);
 };
 
+// Formats utc date to local time 
 const toDate = function(timeStamp) {
   if (timeStamp === "Loading") return timeStamp;
   else return date.formatDate(timeStamp, "DD MMMM YYYY @ HH:mm (UTC Z)");
