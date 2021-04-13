@@ -244,7 +244,7 @@ export default {
         else {
           let baseSym = this.pool.base_token.sym.split(",")[1];
           let [quantity, sym] = this.pool.swap_ratio.quantity.split(" ");
-          return `1 ${baseSym} = ${parseFloat(quantity).toFixed(0)} ${sym}`;
+          return `1 ${baseSym} = ${parseFloat(quantity)} ${sym}`;
         }
       } catch (error) {
         return "Error";
