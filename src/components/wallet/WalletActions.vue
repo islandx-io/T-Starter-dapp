@@ -84,13 +84,13 @@
       >
         <q-tooltip>Buy</q-tooltip>
       </q-btn>
-      <!-- stake -->
+      <!-- update stake -->
       <q-btn
         outline
         flat
         :padding="actionButtonPadding"
         icon="fas fa-thumbtack"
-        @click.stop="tryStake(props)"
+        @click.stop="tryUpdateStake(props)"
         v-if="isStart(props.row.token_sym)"
         class="hover-accent"
       >
@@ -125,6 +125,14 @@ export default {
     props: {},
     accountName: { require: true }
   },
+
+  computed: {
+    // TODO If staked tokens can be released. i.e. past release date
+    canRelease() {
+      return false
+    }
+  },
+
   methods: {
     pTokenBridgeLink(sym) {
       if (sym === "TLOS") {
@@ -229,7 +237,7 @@ export default {
       }
     },
 
-    async tryStake() {
+    async tryUpdateStake() {
       try {
         await this.updateStake();
         this.$q.notify({

@@ -61,7 +61,7 @@
               </div>
             </q-td>
 
-            <!-- Contract, Balance, Liquid, Locked -->
+            <!-- Contract, Balance, Liquid, Staked -->
             <q-td
               :props="props"
               v-for="col in props.cols.slice(1, 4)"
@@ -141,7 +141,7 @@ export default {
         { name: "token", label: "Token", field: "token_sym", align: "left" },
         { name: "balance", label: "Balance", field: "balance", align: "center", },
         { name: "liquid", label: "Liquid", field: "liquid", align: "center" },
-        { name: "staked", label: "Staked", field: "staked", align: "center", format(val) {
+        { name: "unstaking", label: "Unstaking", field: "unstaking", align: "center", format(val) {
           if (val > 0) {
             return val
           } else {
