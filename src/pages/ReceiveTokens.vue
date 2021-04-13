@@ -225,7 +225,23 @@
             </div>
           </div>
           <!-- TODO make this pretty -->
-          <div class="h2">{{ txStatusMessage }}</div>
+          <q-linear-progress
+            indeterminate
+            size="25px"
+            color="primary"
+            track-color="secondary"
+            rounded
+            style="margin-top: 15px"
+            v-if="txnPending"
+          >
+            <div class="absolute-full flex flex-center">
+              <q-badge
+                text-color="black"
+                color="secondary"
+                :label="txStatusMessage"
+              />
+            </div>
+          </q-linear-progress>
           <q-banner
             rounded
             inline-actions
@@ -452,9 +468,8 @@ export default {
 
     // ETH to PETH
     async pegIn() {
-
       if (window.ethereum) {
-        this.txStatusMessage = "Preparing for transaction"
+        this.txStatusMessage = "Preparing for transaction";
         const peth = new pERC20({
           pToken: "PETH",
           ethProvider: window.ethereum,
@@ -475,7 +490,7 @@ export default {
             })
             .once("nativeTxBroadcasted", tx => {
               this.txStatusMessage = "Native transaction broadcasted";
-              console.log(tx)
+              console.log(tx);
             })
             .once("nativeTxConfirmed", tx => {
               this.txStatusMessage = "Native transaction confirmed";
