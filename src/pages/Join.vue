@@ -582,7 +582,7 @@ export default {
 // }
 .input-amount {
   font-size: 50px;
-  font-size: 4vw;
+  font-size: 4vmax;
   color: $primary;
 }
 .q-field,
