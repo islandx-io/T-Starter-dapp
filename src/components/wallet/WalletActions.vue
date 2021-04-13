@@ -70,7 +70,7 @@
         <q-tooltip>Buy</q-tooltip>
       </q-btn>
       <!-- buy START -->
-      <q-btn
+      <!-- <q-btn
         outline
         flat
         :padding="actionButtonPadding"
@@ -83,7 +83,7 @@
         @click.stop
       >
         <q-tooltip>Buy</q-tooltip>
-      </q-btn>
+      </q-btn> -->
       <!-- update stake -->
       <q-btn
         outline
@@ -97,6 +97,7 @@
         <q-tooltip>Unstake released tokens</q-tooltip>
       </q-btn>
     </div>
+    <!-- more button -->
     <q-btn
       outline
       flat
