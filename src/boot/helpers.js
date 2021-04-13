@@ -65,6 +65,12 @@ const getSymFromAsset = function(asset) {
   return sym;
 };
 
+const toFixedDown = function(num, decimals) {
+  var re = new RegExp("(\\d+\\.\\d{" + decimals + "})(\\d)"),
+    m = num.toString().match(re);
+  return m ? parseFloat(m[1]) : num.valueOf();
+};
+
 export default ({ Vue, store }) => {
   Vue.prototype.$chainToQty = chainToQty;
   Vue.prototype.$toChainString = toChainString;
@@ -74,6 +80,7 @@ export default ({ Vue, store }) => {
   Vue.prototype.$getDecimalFromAsset = getDecimalFromAsset;
   Vue.prototype.$getSymFromAsset = getSymFromAsset;
   Vue.prototype.$chainToDecimals = chainToDecimals;
+  Vue.prototype.$toFixedDown = toFixedDown;
   store["$chainToQty"] = chainToQty;
   store["$chainToSym"] = chainToSym;
   store["$toChainString"] = toChainString;
