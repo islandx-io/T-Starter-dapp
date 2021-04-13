@@ -47,9 +47,8 @@
                   v-model="amount"
                   :rules="[validateInput]"
                   borderless
+                  @input="restrictDecimal"
                   placeholder="0"
-                  maxlength="7"
-                  autofocus
                 />
                 <div class="column items-end justify-between q-my-sm">
                   <div class="row q-gutter-x-sm">
@@ -348,6 +347,9 @@ export default {
       "getAllocationByPool",
       "getPlatformToken"
     ]),
+    restrictDecimal() {
+      this.amount = this.$toFixedDown(this.amount, this.$getDecimalFromAsset(this.pool.base_token));
+    },
 
     zeroNaN(val) {
       if (isNaN(val)) return 0;
@@ -544,7 +546,8 @@ export default {
     console.log("Start balance:" + start_balance);
     if (
       start_balance < this.$chainToQty(this.premium_access_fee) &&
-      this.pool.access_type === "Premium" && !this.alreadyStaked
+      this.pool.access_type === "Premium" &&
+      !this.alreadyStaked
     ) {
       this.stake_warning = true;
       this.not_enough_start = true;
@@ -579,6 +582,7 @@ export default {
 // }
 .input-amount {
   font-size: 50px;
+  font-size: 4vw;
   color: $primary;
 }
 .q-field,

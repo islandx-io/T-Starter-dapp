@@ -73,6 +73,7 @@ const toFixedDown = function(num, decimals) {
   var re = new RegExp("(\\d+\\.\\d{" + decimals + "})(\\d)"),
     m = num.toString().match(re);
   return m ? parseFloat(m[1]) : num.valueOf();
+  // Or just Math.floor(num * 10**decimals) / 10**decimals
 };
 
 export default ({ Vue, store }) => {
