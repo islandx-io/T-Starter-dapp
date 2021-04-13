@@ -289,7 +289,8 @@ export default {
       stake_warning: false,
       not_enough_start: false,
       joining: false,
-      premium_stake: {},
+      premium_access_fee: {},
+      platform_token: { sym: "4,START", contract: "token.start" },
       base_token_symbol: "",
       showTransaction: false,
       transaction: null,
@@ -334,7 +335,8 @@ export default {
       "getBalanceFromChain",
       "getPremiumStake",
       "checkStakedChain",
-      "getAllocationByPool"
+      "getAllocationByPool",
+      "getPlatformToken"
     ]),
     zeroNaN(val) {
       if (isNaN(val)) return 0;
@@ -399,12 +401,12 @@ export default {
         actions.push(
           // send start if premium
           {
-            account: this.premium_stake.contract,
+            account: this.platform_token.contract,
             name: "transfer",
             data: {
               from: this.accountName,
               to: process.env.CONTRACT_ADDRESS,
-              quantity: this.premium_stake.quantity,
+              quantity: this.premium_access_fee,
               memo: "Staking"
             }
           }
@@ -510,7 +512,8 @@ export default {
     if (this.isAuthenticated) {
       this.getBalance();
     }
-    this.premium_stake = await this.getPremiumStake();
+    this.premium_access_fee = await this.getPremiumStake();
+    this.platform_token = await this.getPlatformToken();
 
     // check stake if premium pool
     this.alreadyStaked = await this.checkStakedChain({
@@ -520,7 +523,7 @@ export default {
 
     // if START balance not enough and is premium pool, show dialog to buy
     let payload = {
-      address: this.premium_stake.contract,
+      address: this.platform_token.contract,
       sym: "START",
       accountName: this.accountName
     };
@@ -529,7 +532,7 @@ export default {
     );
     console.log("Start balance:" + start_balance);
     if (
-      start_balance < this.$chainToQty(this.premium_stake.quantity) &&
+      start_balance < this.$chainToQty(this.premium_access_fee) &&
       this.pool.access_type === "Premium"
     ) {
       this.stake_warning = true;
