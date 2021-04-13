@@ -72,7 +72,11 @@
 
             <!-- Action -->
             <q-td :props="props" :key="props.cols[props.cols.length - 1].name">
-              <wallet-actions :props="props" :accountName="accountName" />
+              <wallet-actions
+                :props="props"
+                :accountName="accountName"
+                :stakeData="stakeData"
+              />
             </q-td>
           </q-tr>
 
@@ -153,7 +157,7 @@ export default {
       // prettier-ignore
       stakeColumns: [
         { name: "staked", label: "Staked", field: "second", align: "center" },
-        { name: "releaseDate", label: "Release date", field: "first", align: "center", format: val => date.formatDate(val, 'YYYY-MM-DD') },
+        { name: "releaseDate", label: "Release date (UTC)", field: "first", align: "center", format: val => date.formatDate(val, 'YYYY-MM-DD') },
       ],
       // prettier-ignore
       stakeData: []

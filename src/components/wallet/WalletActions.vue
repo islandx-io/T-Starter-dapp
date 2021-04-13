@@ -91,10 +91,10 @@
         :padding="actionButtonPadding"
         icon="fas fa-thumbtack"
         @click.stop="tryUpdateStake(props)"
-        v-if="isStart(props.row.token_sym)"
+        v-if="isStart(props.row.token_sym) && canRelease"
         class="hover-accent"
       >
-        <q-tooltip>Unstake released tokens</q-tooltip>
+        <q-tooltip>Unstake</q-tooltip>
       </q-btn>
     </div>
     <!-- more button -->
@@ -124,12 +124,17 @@ export default {
   },
   props: {
     props: {},
-    accountName: { require: true }
+    accountName: { require: true },
+    stakeData: {}
   },
 
   computed: {
     // TODO If staked tokens can be released. i.e. past release date
     canRelease() {
+      let now = new Date();
+      this.stakeData.forEach(el => {
+        if (now > Date.parse(el.first + "Z")) return true;
+      });
       return false;
     }
   },
@@ -268,6 +273,4 @@ export default {
 .q-btn {
   font-size: 12px;
 }
-
-
 </style>

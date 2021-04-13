@@ -93,7 +93,7 @@
             <q-card flat bordered class="inner-card row ">
               <div class="col row justify-between items-center ">
                 <div class="col input-amount q-pr-lg">
-                  {{ zeroNaN(amount * $chainToQty(pool.swap_ratio.quantity)) }}
+                  {{ tokenToAmount }}
                 </div>
                 <div class="column items-end justify-between content-end">
                   <div class="row q-gutter-x-sm content-end">
@@ -325,6 +325,16 @@ export default {
     TokenSymbol() {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
       return this.pool.swap_ratio.quantity.slice(idx);
+    },
+    tokenToAmount() {
+      let swap_qty = this.pool.swap_ratio.quantity;
+      let result = 0;
+      if (swap_qty) {
+        result = this.zeroNaN(this.amount * this.$chainToQty(swap_qty));
+        let decimals = this.$chainToDecimals(swap_qty);
+        result = this.$toFixedDown(result, decimals);
+      }
+      return result;
     }
   },
 
@@ -338,6 +348,7 @@ export default {
       "getAllocationByPool",
       "getPlatformToken"
     ]),
+
     zeroNaN(val) {
       if (isNaN(val)) return 0;
       else return val;
