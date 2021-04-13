@@ -77,9 +77,8 @@ export const getChainAccountInfo = async function({ commit }, accountName) {
 export const ifPoolFunded = async function({ commit }, payload) {
   const rpc = this.$api.getRpc();
   // console.log(await rpc.history_get_actions(payload.account));
-  let actionsTable = (await rpc.history_get_actions(payload.account, 0, 10000))
-    .actions;
-  console.log(actionsTable);
+  let actionsTable = (await rpc.history_get_actions(payload.account, 0, 10000)).actions; // TODO this limit might become a problem
+  // console.log(actionsTable);
   if (
     actionsTable.filter(
       a => a.action_trace.act.data.memo === `fund pool:${payload.id}`
@@ -422,10 +421,33 @@ export const getPremiumStake = async function({ commit, getters, dispatch }) {
       show_payer: false // Optional: Show ram payer
     });
 
-    const premium_stake = tableResults.rows[0].premium_stake;
+    const premium_access_fee = tableResults.rows[0].premium_access_fee;
     // console.log("Premium stake amount");
-    // console.log(premium_stake);
-    return premium_stake;
+    // console.log(premium_access_fee);
+    return premium_access_fee;
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+//get platform token (START)
+export const getPlatformToken = async function({ commit, getters, dispatch }) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: "settings", // Table name
+      limit: 100,
+      index_position: 1,
+      key_type: "i64",
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+
+    const platform_token = tableResults.rows[0].platform_token;
+    // console.log("Premium stake amount");
+    // console.log(premium_access_fee);
+    return platform_token;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -457,9 +479,9 @@ export const checkStakedChain = async function(
       });
 
       // get premium stake
-      const premium_stake = await dispatch("getPremiumStake");
-      let premium_stake_qty = this.$chainToQty(premium_stake.quantity);
-      // console.log(premium_stake_qty)
+      const premium_access_fee = await dispatch("getPremiumStake");
+      let premium_access_fee_qty = this.$chainToQty(premium_access_fee);
+      // console.log(premium_access_fee_qty)
 
       const staked_START = this.$chainToQty(stakeBalanceTbl.rows[0].staked);
       const liquid_START = this.$chainToQty(stakeBalanceTbl.rows[0].liquid);
@@ -474,7 +496,7 @@ export const checkStakedChain = async function(
       } else if (
         (Object.keys(allocationTable).length > 0 &&
           allocationTable.constructor === Object) ||
-        liquid_START >= premium_stake_qty // if already made 1st purchase or if have liquid
+        liquid_START >= premium_access_fee_qty // if already made 1st purchase or if have liquid
       ) {
         return true;
       } else {
