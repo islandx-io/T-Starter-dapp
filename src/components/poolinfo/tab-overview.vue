@@ -41,7 +41,9 @@ export default {
         result = "fas fa-globe";
       } else if (siteName === "whitelist") {
         result = "fas fa-clipboard-list";
-      } 
+      } else if (siteName === "whitepaper") {
+        result = "fas fa-scroll";
+      }
       return result;
     }
   }
