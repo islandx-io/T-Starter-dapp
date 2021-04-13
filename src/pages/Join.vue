@@ -162,12 +162,12 @@
         <q-dialog v-model="disclaimer_show">
           <q-card>
             <q-card-section>
-              <div class="text-h6">Alert</div>
+              <div class="text-h6">Disclaimer</div>
             </q-card-section>
 
             <q-card-section class="q-pt-none">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum
-              repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis
+              repellendus sit voluptate voluptas eveniet porro. Your soul belongs to me. Rerum blanditiis
               perferendis totam, ea at omnis vel numquam exercitationem aut,
               natus minima, porro labore.
             </q-card-section>
