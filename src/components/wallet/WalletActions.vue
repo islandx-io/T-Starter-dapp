@@ -131,11 +131,18 @@ export default {
   computed: {
     // TODO If staked tokens can be released. i.e. past release date
     canRelease() {
-      let now = new Date();
+      let now = new Date().valueOf();
+      let can_release = false
       this.stakeData.forEach(el => {
-        if (now > Date.parse(el.first + "Z")) return true;
+        if (now > Date.parse(el.first + "Z")) {
+          can_release = true
+          }
       });
-      return false;
+      if (can_release === true) {
+        return true
+      } else {
+        return false;
+      }
     }
   },
 
