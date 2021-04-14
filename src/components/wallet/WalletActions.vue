@@ -94,7 +94,7 @@
         v-if="isStart(props.row.token_sym) && canRelease"
         class="hover-accent"
       >
-        <q-tooltip>Unstake</q-tooltip>
+        <q-tooltip>Reclaim released stake</q-tooltip>
       </q-btn>
     </div>
     <!-- more button -->
@@ -214,8 +214,9 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Tokens claimed, please refresh"
+          message: "Tokens claimed"
         });
+        this.$router.go()
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -238,8 +239,9 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Tokens claimed, please refresh"
+          message: "Tokens claimed"
         });
+        this.$router.go()
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -259,6 +261,7 @@ export default {
           icon: "cloud_done",
           message: "Staked Tokens Updated"
         });
+        this.$router.go()
       } catch (error) {
         this.$q.notify({
           color: "red-5",
