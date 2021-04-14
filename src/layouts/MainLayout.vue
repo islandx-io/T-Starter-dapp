@@ -1,219 +1,136 @@
 <template>
-  <q-layout view="hhh Lpr lff">
-    <q-header class="bg-transparent q-pt-xs">
-      <q-toolbar class="toolbar items-center">
-        <q-toolbar-title>
-          <div class="row items-center">
-            <router-link to="/" class="router-link">
-              <img
-                class="header-logo"
-                src="~assets/logo/logo-light.svg"
-                alt="logo"
-                height="50px"
-              />
-            </router-link>
-            <q-chip
-              class="text-weight-bold vertical-bottom q-mt-sm"
-              color="secondary"
-              text-color="teal"
-              padding
-            >
-              BETA
-            </q-chip>
-          </div>
-        </q-toolbar-title>
-        <div class="gt-sm row">
-          <q-btn
-            v-if="accountName === admin_address"
-            class="hover-accent"
-            color="secondary"
-            flat
-            to="/createpool"
-            label="Create pool"
-          />
-          <q-btn
-            class="hover-accent"
-            color="secondary"
-            flat
-            to="/pools"
-            label="Pools"
-          />
-          <q-btn
-            v-if="isAuthenticated"
-            class="hover-accent"
-            color="secondary"
-            flat
-            :to="{ name: 'wallet', params: { accountName: accountName } }"
-            label="Wallet"
-          />
-          <login-button :key="$route.fullPath" class="q-pl-md" />
-        </div>
+  <q-layout view="lHh Lpr lFf">
+    <q-header elevated>
+      <q-toolbar>
         <q-btn
+          flat
+          dense
           round
           icon="menu"
-          outline
-          color="secondary"
-          class="lt-md menu-btn hover-accent"
-          @click="showMenu = true"
+          aria-label="Menu"
+          @click="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-dialog
-          v-model="showMenu"
-          transition-show="jump-down"
-          transition-hide="jump-up"
-          content-style="box-shadow: none"
-          position="top"
-          full-width
-        >
-          <div
-            class="column items-center justify-start q-gutter-y-sm q-py-md bg-secondary"
-          >
-            <div class="row justify-center q-gutter-sm">
-              <q-btn
-                label="Create pool"
-                v-if="accountName === admin_address"
-                color="secondary"
-                text-color="black"
-                to="/createpool"
-                outline
-              />
-              <q-btn
-                label="Pools"
-                color="secondary"
-                text-color="black"
-                outline
-                to="/pools"
-              />
-              <q-btn
-                label="Wallet"
-                v-if="isAuthenticated"
-                color="secondary"
-                text-color="black"
-                outline
-                :to="{ name: 'wallet', params: { accountName: accountName } }"
-                class="hover-accent"
-              />
-            </div>
-            <login-button mobileView />
-            <!-- <q-btn
-                  round
-                  icon="fas fa-times"
-                  outline
-                  color="secondary"
-                  class="lt-md menu-btn hover-accent"
-                  @click="showMenu = false"
-                /> -->
-          </div>
-        </q-dialog>
+
+        <q-toolbar-title>
+          Telos Vue/Quasar App Template
+        </q-toolbar-title>
+
+        <login-button></login-button>
+        <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
+
+    <q-drawer
+      v-model="leftDrawerOpen"
+      show-if-above
+      bordered
+      content-class="bg-grey-1"
+    >
+      <q-list>
+        <q-item-label header class="text-grey-8">
+          Example pages
+        </q-item-label>
+        <ExamplePage
+          v-for="link in examplePages"
+          :key="link.title"
+          v-bind="link"
+        />
+        <q-item-label header class="text-grey-8">
+          Essential Links
+        </q-item-label>
+        <EssentialLink
+          v-for="link in essentialLinks"
+          :key="link.title"
+          v-bind="link"
+        />
+      </q-list>
+    </q-drawer>
 
     <q-page-container>
       <router-view />
     </q-page-container>
-
-    <section class="foot-bg row items-stretch">
-      <div class="footer-container row items-end justify-center">
-        <div class="col-12 row justify-between ">
-          <div class="col-sm-4">
-            <router-link to="/" class="router-link q-pb-sm">
-              <img
-                src="~assets/logo/logo-light.svg"
-                alt="logo"
-                height="50px"
-                id="foot-logo"
-              />
-            </router-link>
-            <p class="text-body1">
-              The place to discover and back projects building on Telos
-            </p>
-          </div>
-          <div class="col-sm-3 column items-start content-end">
-            <q-btn
-              class="hover-accent text-h6"
-              color="accent"
-              style="margin-left: -10px"
-              flat
-              type="a"
-              href="https://docs.google.com/forms/d/e/1FAIpQLSeQE7zDFlxxWmAN-pKDfik6OcgtReJ8oiviIpCUkOAGk6Ez7Q/viewform"
-              label="List project"
-              no-caps
-              padding="5px 10px"
-            />
-            <div class="text-h6">Contact Us</div>
-            <div class="row justify-start">
-              <a
-                v-for="site in socialLinks"
-                :key="site.name"
-                :href="site.link"
-                class="social-link"
-                target="_blank"
-              >
-                <q-icon size="24px" :name="site.icon" />
-              </a>
-            </div>
-          </div>
-        </div>
-        <p>Copyright 2021. T-STARTER. All Rights Reserved</p>
-      </div>
-    </section>
   </q-layout>
 </template>
 
 <script>
+import EssentialLink from "components/EssentialLink.vue";
+import ExamplePage from "components/ExamplePage.vue";
 import LoginButton from "components/LoginButton.vue";
-import { mapGetters, mapActions } from "vuex";
+
+const pagesData = [
+  {
+    title: "Account",
+    caption: "Account profile and Hyperion history query example",
+    icon: "face",
+    path: "/account/exampleuser1"
+  },
+  {
+    title: "Transfer",
+    caption: "Transfer example, sending/signing actions",
+    icon: "send",
+    path: "/transfer"
+  },
+  {
+    title: "Streaming",
+    caption: "Hyperion event streaming example",
+    icon: "filter_alt",
+    path: "/streaming"
+  }
+];
+
+const linksData = [
+  {
+    title: "Use this template!",
+    caption: "github.com/telosnetwork/ui-template",
+    icon: "fas fa-rocket",
+    link: "https://github.com/telosnetwork/ui-template"
+  },{
+    title: "Telos Github",
+    caption: "github.com/telosnetwork",
+    icon: "fab fa-github",
+    link: "https://github.com/telosnetwork"
+  },
+  {
+    title: "Telos Docs",
+    caption: "docs.telos.net",
+    icon: "menu_book",
+    link: "https://docs.telos.net"
+  },
+  {
+    title: "Telos Dev Telegram",
+    caption: "t.me/dappstelos",
+    icon: "code",
+    link: "https://t.me/dappstelos"
+  },
+  {
+    title: "Telos Testnet Faucet",
+    caption: "app.telos.net/testnet/developers",
+    icon: "opacity",
+    link: "https://app.telos.net/testnet/developers"
+  },
+  {
+    title: "Quasar Docs",
+    caption: "quasar.dev",
+    icon: "school",
+    link: "https://quasar.dev"
+  },
+  {
+    title: "Quasar Awesome",
+    caption: "Community Quasar projects",
+    icon: "favorite",
+    link: "https://awesome.quasar.dev"
+  }
+];
 
 export default {
   name: "MainLayout",
+  components: { EssentialLink, ExamplePage, LoginButton },
   data() {
     return {
-      // prettier-ignore
-      socialLinks: [
-        {name: "web", icon: "fas fa-globe", link: "https://tstarter.io/"},
-        {name: "telegram", icon: "fab fa-telegram-plane", link: "https://t.me/tstarterio"},
-        {name: "medium", icon: "fab fa-medium-m", link: "https://medium.com/@t-starter"},
-        {name: "twitter", icon: "fab fa-twitter", link: "https://twitter.com/T_StarterToken"},
-        {name: "github", icon: "fab fa-github", link: "https://github.com/T-Starter"},
-      ],
-      showMenu: false
+      leftDrawerOpen: false,
+      essentialLinks: linksData,
+      examplePages: pagesData
     };
-  },
-  components: { LoginButton },
-  computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"]),
-    admin_address() {
-      return process.env.ADMIN_ADDRESS;
-    }
   }
 };
 </script>
-
-<style lang="scss" scoped>
-@media only screen and (max-width: 360px) {
-  .header-logo {
-    height: 42px;
-  }
-  #foot-logo {
-    height: 45px;
-  }
-}
-.foot-bg {
-  background-image: url("~assets/main/clouds-foot.png");
-  height: 450px;
-  padding-top: 100px;
-  color: $secondary;
-}
-.q-page-container {
-  padding-top: 0 !important;
-  padding-bottom: 40px;
-}
-.social-link {
-  padding: 5px 20px 10px 0;
-  text-decoration: none;
-  transition: all 0.15s ease-in-out;
-  color: $secondary;
-  &:hover {
-    color: $accent;
-  }
-}
-</style>

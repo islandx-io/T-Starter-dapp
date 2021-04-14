@@ -134,7 +134,7 @@ const historyColumns = [
       }
       return lines.join("\n");
     },
-    sortable: false,
+    sortable: false
   }
 ];
 
