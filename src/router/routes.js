@@ -4,11 +4,11 @@ const routes = [
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/Index.vue") }]
   },
-  {
-    path: "/account/:accountName",
-    component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Account.vue") }]
-  },
+  // {
+  //   path: "/account/:accountName",
+  //   component: () => import("layouts/MainLayout.vue"),
+  //   children: [{ path: "", component: () => import("pages/Account.vue") }]
+  // },
   {
     path: "/wallet/:accountName",
     component: () => import("layouts/MainLayout.vue"),
@@ -16,16 +16,16 @@ const routes = [
       { path: "", name: "wallet", component: () => import("pages/Wallet.vue") }
     ]
   },
-  {
-    path: "/transfer",
-    component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Transfer.vue") }]
-  },
-  {
-    path: "/streaming",
-    component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Streaming.vue") }]
-  },
+  // {
+  //   path: "/transfer",
+  //   component: () => import("layouts/MainLayout.vue"),
+  //   children: [{ path: "", component: () => import("pages/Transfer.vue") }]
+  // },
+  // {
+  //   path: "/streaming",
+  //   component: () => import("layouts/MainLayout.vue"),
+  //   children: [{ path: "", component: () => import("pages/Streaming.vue") }]
+  // },
   {
     path: "/pools",
     component: () => import("layouts/MainLayout.vue"),
