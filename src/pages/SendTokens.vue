@@ -11,43 +11,65 @@
       </q-card>
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
-      <q-card>
-      <q-btn :to="`/wallet/${accountName}`" flat round class="self-start">
-        <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
-      </q-btn>
-        <div class="row items-center justify-center">
-
-          <h2>
-            Sending:
-          </h2>
-          <token-avatar :token="selectedToken" :avatar="this.avatar" :avatarSize="55" />
-          <h2>
-            {{ selectedToken }}
-          </h2>
-        </div>
-        <div v-if="isAuthenticated">
-          <q-input
-            outlined
-            autocapitalize="off"
-            bottom-slots
-            v-model="to"
-            label="To"
-            counter
-            maxlength="12"
+      <q-card class="authenticated">
+        <q-btn :to="`/wallet/${accountName}`" flat round class="self-start">
+          <q-icon
+            class="hover-accent"
+            name="fas fa-chevron-circle-left"
+            style="font-size: 50px"
           />
-          <q-input
-            outlined
-            bottom-slots
-            :suffix="selectedToken"
-            v-model="amount"
-            label="Amount"
-            counter
-            type="number"
-            maxlength="12"
-          >
-          </q-input>
-          <q-input outlined bottom-slots v-model="memo" label="Memo" counter />
-          <q-btn size="xl" round dense flat icon="send" @click="send" />
+        </q-btn>
+        <div class="column">
+          <div class="row items-center justify-center q-pa-sm">
+            <h2>Send</h2>
+            <div class="row items-center justify-center">
+              <token-avatar :token="selectedToken" :avatarSize="55" />
+              <h2>
+                {{ selectedToken }}
+              </h2>
+            </div>
+          </div>
+          <div v-if="isAuthenticated" class="q-gutter-y-sm">
+            <q-input
+              outlined
+              autocapitalize="off"
+              bottom-slots
+              v-model="to"
+              label="To"
+              counter
+              maxlength="12"
+            />
+            <q-input
+              outlined
+              bottom-slots
+              :suffix="selectedToken"
+              v-model="amount"
+              label="Amount"
+              counter
+              type="number"
+              maxlength="12"
+            >
+            </q-input>
+            <q-input
+              outlined
+              bottom-slots
+              v-model="memo"
+              label="Memo"
+              counter
+            />
+          </div>
+          <div class="text-center">
+            <q-btn
+              class="hover-accent"
+              size="xl"
+              dense
+              flat
+              @click="send"
+              :icon="roundSend"
+            >
+              <q-tooltip>Send</q-tooltip>
+            </q-btn>
+          </div>
           <q-dialog v-model="showTransaction" confirm>
             <q-card>
               <q-card-section class="row">
@@ -82,6 +104,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
+import { roundSend } from "@quasar/extras/material-icons-round";
 
 export default {
   components: { tokenAvatar },
@@ -100,12 +123,13 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
 
     token_contract() {
-      return this.wallet.find(a => a.token_sym === this.selectedToken).token_contract;
+      return this.wallet.find(a => a.token_sym === this.selectedToken)
+        .token_contract;
     },
 
     avatar() {
       return this.wallet.find(a => a.token_sym === this.selectedToken).avatar;
-    },
+    }
   },
   methods: {
     ...mapActions("account", ["accountExists"]),
@@ -140,7 +164,9 @@ export default {
       }
     }
   },
-
+  created() {
+    this.roundSend = roundSend;
+  },
   mounted() {
     if (this.$route.query.token_sym !== undefined)
       this.selectedToken = this.$route.query.token_sym;
@@ -149,8 +175,35 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.q-card {
+  &.not-authenticated {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    min-height: 100px;
+  }
+  &.authenticated {
+    display: grid;
+    align-items: stretch;
+    grid-template-columns: 50px auto 50px;
+    padding-bottom: 40px;
+    & div {
+      margin: 0;
+      @media only screen and (max-width: 585px) {
+        grid-column-start: 1;
+        grid-column-end: 4;
+      }
+    }
+  }
+}
 .header-bg {
   height: 160px;
   margin-bottom: -50px;
+}
+h2 {
+  line-height: 45px;
+  margin: 0 10px;
+  font-size: 35px;
 }
 </style>

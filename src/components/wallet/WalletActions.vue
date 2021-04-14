@@ -101,7 +101,7 @@
         outline
         flat
         :padding="actionButtonPadding"
-        icon="send"
+        :icon="roundSend"
         :to="{
           path: '/send',
           query: { token_sym: props.row.token_sym }
@@ -129,6 +129,8 @@
 </template>
 
 <script>
+import { roundSend } from "@quasar/extras/material-icons-round";
+
 export default {
   data() {
     return {
@@ -144,18 +146,22 @@ export default {
     stakeData: {}
   },
 
+  created() {
+    this.roundSend = roundSend;
+  },
+
   computed: {
     // TODO If staked tokens can be released. i.e. past release date
     canRelease() {
       let now = new Date().valueOf();
-      let can_release = false
+      let can_release = false;
       this.stakeData.forEach(el => {
         if (now > Date.parse(el.first + "Z")) {
-          can_release = true
-          }
+          can_release = true;
+        }
       });
       if (can_release === true) {
-        return true
+        return true;
       } else {
         return false;
       }
@@ -232,7 +238,7 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.go()
+        this.$router.go();
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -257,7 +263,7 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.go()
+        this.$router.go();
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -277,7 +283,7 @@ export default {
           icon: "cloud_done",
           message: "Staked Tokens Updated"
         });
-        this.$router.go()
+        this.$router.go();
       } catch (error) {
         this.$q.notify({
           color: "red-5",
