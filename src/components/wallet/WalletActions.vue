@@ -96,6 +96,22 @@
       >
         <q-tooltip>Reclaim released stake</q-tooltip>
       </q-btn>
+      <!-- send tokens -->
+      <q-btn
+        outline
+        flat
+        :padding="actionButtonPadding"
+        icon="send"
+        :to="{
+          path: '/send',
+          query: { token_sym: props.row.token_sym }
+        }"
+        v-if="props.row.balance > 0"
+        class="hover-accent"
+        @click.stop
+      >
+        <q-tooltip>Send</q-tooltip>
+      </q-btn>
     </div>
     <!-- more button -->
     <q-btn

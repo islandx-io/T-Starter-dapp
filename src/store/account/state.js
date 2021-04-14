@@ -13,8 +13,8 @@ export default function() {
         liquid: 0,
         staked: 0,
         unstaking: 0,
-        decimals: 0,
-        avatar: "",
+        decimals: 4,
+        avatar: "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
         stake_maturities: [],
       },
       {
@@ -24,8 +24,8 @@ export default function() {
         liquid: 0,
         staked: 0,
         unstaking: 0,
-        decimals: 0,
-        avatar: "",
+        decimals: 4,
+        avatar: "https://raw.githubusercontent.com/Telos-Swaps/Tokens/main/icons/TLOS.png",
         stake_maturities: [],
       },
     ]

@@ -68,6 +68,11 @@ const routes = [
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/ReceiveTokens.vue") }]
   },
+  {
+    path: "/send",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ path: "", component: () => import("pages/SendTokens.vue") }]
+  },
 
   // Always leave this as last one,
   // but you can also remove it
