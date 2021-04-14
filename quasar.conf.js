@@ -20,16 +20,16 @@ module.exports = function(/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
-    boot: ["ual", "hyperion", "api"],
+    boot: ["ual", "hyperion", "api", "poolinfo", "helpers"],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
-    css: ["app.sass"],
+    css: ["app.scss"],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
       // 'mdi-v5',
-      'fontawesome-v5',
+      "fontawesome-v5",
       // 'eva-icons',
       // 'themify',
       // 'line-awesome',
@@ -49,7 +49,12 @@ module.exports = function(/* ctx */) {
         NETWORK_PORT: parseInt(process.env.NETWORK_PORT),
         NETWORK_PROTOCOL: process.env.NETWORK_PROTOCOL,
         NETWORK_EXPLORER: process.env.NETWORK_EXPLORER,
-        HYPERION_ENDPOINT: process.env.HYPERION_ENDPOINT
+        HYPERION_ENDPOINT: process.env.HYPERION_ENDPOINT,
+        CONTRACT_ADDRESS: process.env.CONTRACT_ADDRESS,
+        CONTRACT_TABLE: process.env.CONTRACT_TABLE,
+        ADMIN_ADDRESS: process.env.ADMIN_ADDRESS,
+        BUY_START_URL: process.env.BUY_START_URL,
+        DEVELOPMENT: process.env.DEVELOPMENT,
       },
 
       // transpile: false,
