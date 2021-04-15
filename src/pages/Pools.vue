@@ -86,7 +86,7 @@
           class="hover-accent"
           type="a"
           target="_blank"
-          href="https://t.me/tstarterio"
+          href="https://t.me/joinchat/WgQUJEvd0jRmM2Q0"
         />
       </q-card>
     </section>
