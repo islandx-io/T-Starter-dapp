@@ -56,7 +56,7 @@ export default {
   data() {
     return {
       // id: -1,
-      owner: "fuzzytestnet",
+      owner: "",
       pool_type: "fixed"
     };
   },
