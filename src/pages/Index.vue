@@ -201,13 +201,13 @@ export default {
     },
 
     beforeAppear: function(el) {
-      console.log("beforeAppear");
+      // console.log("beforeAppear");
     },
     appear: function(el) {
-      console.log("appear!");
+      // console.log("appear!");
     },
     afterAppear: function(el) {
-      console.log("afterAppear!");
+      // console.log("afterAppear!");
     }
   },
   async mounted() {

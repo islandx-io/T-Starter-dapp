@@ -123,6 +123,7 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
 
+    //TODO get this info from chain?
     token_contract() {
       return this.wallet.find(a => a.token_sym === this.selectedToken)
         .token_contract;
