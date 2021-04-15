@@ -509,7 +509,7 @@ export default {
             //   this.txStatusMessage = "Host transaction confirmed";
             //   console.log(tx);
             // })
-            .then(res => console.log(res));
+            // .then(res => console.log(res));
         } catch (e) {
           throw e.cause.message;
         }
