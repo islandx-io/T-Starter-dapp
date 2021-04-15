@@ -95,6 +95,9 @@
               size="lg"
               no-caps
               padding="xs"
+              type="a"
+              target="_blank"
+              :href="pTokenBridgeLink('PBTC')"
             />
             <q-btn
               label="Ethereum"
@@ -105,23 +108,27 @@
               size="lg"
               no-caps
               padding="xs"
-            />
+              type="a"
+              target="_blank"
+              :href="selectedToken.toUpperCase() === 'PETH' ? pTokenBridgeLink('PETH') : pTokenBridgeLink('TLOS')"
+            >
+              <q-tooltip>pTokens dapp</q-tooltip>
+            </q-btn>
           </div>
           <div
             class="text-subtitle1 q-py-md text-center"
-            v-if="selectedNetwork !== 'ethereum'"
+            v-if="selectedNetwork === 'telos'"
           >
             Deposit {{ depositTokenStr }} to the following address
           </div>
           <!-- leave this div, it needs to be there for some reason -->
           <div></div>
           <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
-          <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" />
+          <!-- <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" /> -->
+          <!-- Address info -->
           <div
             class="col text-subtitle1 row q-gutter-x-sm q-mx-md"
-            v-show="
-              selectedNetwork === 'telos' || selectedNetwork === 'bitcoin'
-            "
+            v-show="selectedNetwork === 'telos'"
           >
             <div
               id="address"
@@ -130,7 +137,7 @@
             >
               {{ selectedAddress }}
             </div>
-            <!-- Create new btc address -->
+            <!-- Copy address button -->
             <div class="row content-center q-pl-sm">
               <q-btn
                 flat
@@ -143,26 +150,28 @@
               />
             </div>
           </div>
-          <q-btn
+          <!-- Generate address button -->
+          <!-- <q-btn
             class="q-mt-md"
             v-if="selectedNetwork === 'bitcoin'"
             @click="setAddresses"
             color="primary"
             label="Generate new address"
-          />
-          <div
+          /> -->
+          <!-- Ethereum receive  -->
+          <!-- <div
             v-if="selectedNetwork === 'ethereum'"
             class="column items-center q-pt-md q-gutter-y-sm"
-          >
-            <!-- If metamask isn't installed start onboarding process -->
-            <q-btn
+          > -->
+          <!-- If metamask isn't installed start onboarding process -->
+          <!-- <q-btn
               v-if="isMetaMaskInstalled && !metamaskConnected"
               color="primary"
               label="Connect Metamask"
               @click="ethereumConnect()"
-            />
-            <!-- Else login with metamask -->
-            <div v-if="!isMetaMaskInstalled">
+            /> -->
+          <!-- Else login with metamask -->
+          <!-- <div v-if="!isMetaMaskInstalled">
               Install or enable metamask first.
             </div>
             <q-btn
@@ -170,9 +179,9 @@
               color="primary"
               label="Install metamask"
               @click="metamaskOnboarding()"
-            />
-            <!-- Input amount of eth to peth -->
-            <div
+            /> -->
+          <!-- Input amount of eth to peth -->
+          <!-- <div
               v-if="
                 selectedToken.toUpperCase() === 'PETH' &&
                   isMetaMaskInstalled &&
@@ -196,9 +205,9 @@
                 @click="tryPegIn()"
                 :disable="devMode || txnPending === true"
               />
-            </div>
-            <!-- Input amount of tlos erc20 to tlos -->
-            <div
+            </div> -->
+          <!-- Input amount of tlos erc20 to tlos -->
+          <!-- <div
               v-if="
                 selectedToken.toUpperCase() === 'TLOS' &&
                   isMetaMaskInstalled &&
@@ -223,9 +232,9 @@
                 :disable="devMode || txnPending === true"
               />
             </div>
-          </div>
+          </div> -->
           <!-- TODO make this pretty -->
-          <q-linear-progress
+          <!-- <q-linear-progress
             indeterminate
             size="25px"
             color="primary"
@@ -241,7 +250,7 @@
                 :label="txStatusMessage"
               />
             </div>
-          </q-linear-progress>
+          </q-linear-progress> -->
           <q-banner
             rounded
             inline-actions
@@ -320,8 +329,8 @@ export default {
   components: { tokenAvatar },
   data() {
     return {
-      // devMode: Boolean(process.env.DEVELOPMENT),
-      devMode: false,
+      devMode: Boolean(process.env.DEVELOPMENT),
+      // devMode: false,
       receiveLink: "",
       qrCodes: {
         tlos: new QRCodeStyling({ width: 180, height: 180, ...qrStyling }),
@@ -496,20 +505,20 @@ export default {
               this.txStatusMessage = "Native transaction confirmed";
               console.log(tx.transactionHash);
               this.txnPending = false;
-            })
-            // .once("nodeReceivedTx", report => {
-            //   this.txStatusMessage = "Node received transaction";
-            //   console.log(tx);
-            // })
-            // .once("nodeBroadcastedTx", report => {
-            //   this.txStatusMessage = "Node broadcasted transaction";
-            //   console.log(tx);
-            // })
-            // .once("hostTxConfirmed", tx => {
-            //   this.txStatusMessage = "Host transaction confirmed";
-            //   console.log(tx);
-            // })
-            // .then(res => console.log(res));
+            });
+          // .once("nodeReceivedTx", report => {
+          //   this.txStatusMessage = "Node received transaction";
+          //   console.log(tx);
+          // })
+          // .once("nodeBroadcastedTx", report => {
+          //   this.txStatusMessage = "Node broadcasted transaction";
+          //   console.log(tx);
+          // })
+          // .once("hostTxConfirmed", tx => {
+          //   this.txStatusMessage = "Host transaction confirmed";
+          //   console.log(tx);
+          // })
+          // .then(res => console.log(res));
         } catch (e) {
           throw e.cause.message;
         }
