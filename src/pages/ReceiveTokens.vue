@@ -496,18 +496,18 @@ export default {
               this.txStatusMessage = "Native transaction confirmed";
               console.log(tx);
             })
-            .once("nodeReceivedTx", report => {
-              this.txStatusMessage = "Node received transaction";
-              console.log(tx);
-            })
-            .once("nodeBroadcastedTx", report => {
-              this.txStatusMessage = "Node broadcasted transaction";
-              console.log(tx);
-            })
-            .once("hostTxConfirmed", tx => {
-              this.txStatusMessage = "Host transaction confirmed";
-              console.log(tx);
-            })
+            // .once("nodeReceivedTx", report => {
+            //   this.txStatusMessage = "Node received transaction";
+            //   console.log(tx);
+            // })
+            // .once("nodeBroadcastedTx", report => {
+            //   this.txStatusMessage = "Node broadcasted transaction";
+            //   console.log(tx);
+            // })
+            // .once("hostTxConfirmed", tx => {
+            //   this.txStatusMessage = "Host transaction confirmed";
+            //   console.log(tx);
+            // })
             .then(res => console.log(res));
         } catch (e) {
           throw e.cause.message;
@@ -566,18 +566,18 @@ export default {
             this.txStatusMessage = "Host transaction confirmed";
             console.log(tx);
           })
-          .once("nodeReceivedTx", report => {
-            this.txStatusMessage = "Node received transaction";
-            console.log(report);
-          })
-          .once("nodeBroadcastedTx", report => {
-            this.txStatusMessage = "Node broadcasted transaction";
-            console.log(report);
-          })
-          .once("nativeTxConfirmed", tx => {
-            this.txStatusMessage = "Transaction Completed";
-            console.log(tx);
-          })
+          // .once("nodeReceivedTx", report => {
+          //   this.txStatusMessage = "Node received transaction";
+          //   console.log(report);
+          // })
+          // .once("nodeBroadcastedTx", report => {
+          //   this.txStatusMessage = "Node broadcasted transaction";
+          //   console.log(report);
+          // })
+          // .once("nativeTxConfirmed", tx => {
+          //   this.txStatusMessage = "Transaction Completed";
+          //   console.log(tx);
+          // })
           .then(res => console.log(res));
       } catch (e) {
         throw e.cause.message;
