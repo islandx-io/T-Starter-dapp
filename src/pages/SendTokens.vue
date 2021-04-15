@@ -56,6 +56,7 @@
               v-model="memo"
               label="Memo"
               counter
+              maxlength="255"
             />
           </div>
           <div class="text-center">
@@ -127,6 +128,10 @@ export default {
         .token_contract;
     },
 
+    token_decimals() {
+      return this.wallet.find(a => a.token_sym === this.selectedToken).decimals;
+    },
+
     avatar() {
       return this.wallet.find(a => a.token_sym === this.selectedToken).avatar;
     }
@@ -150,7 +155,7 @@ export default {
           data: {
             from: this.accountName.toLowerCase(),
             to: this.to,
-            quantity: `${parseFloat(this.amount).toFixed(4)} ${
+            quantity: `${parseFloat(this.amount).toFixed(this.token_decimals)} ${
               this.selectedToken
             }`,
             memo: this.memo

@@ -211,6 +211,7 @@ export default {
     }
   },
   async mounted() {
+    console.log("Go to the ant, you sluggard! Consider her ways and be wise,")
     this.featuredIDs = await this.getFeaturedChainPools();
     if (this.featuredIDs.length === 0) this.noFeaturedPools = true;
     await this.getAllChainPools(); // TODO replace with get open pools
