@@ -494,7 +494,8 @@ export default {
             })
             .once("nativeTxConfirmed", tx => {
               this.txStatusMessage = "Native transaction confirmed";
-              console.log(tx);
+              console.log(tx.transactionHash);
+              this.txnPending = false;
             })
             // .once("nodeReceivedTx", report => {
             //   this.txStatusMessage = "Node received transaction";
@@ -541,7 +542,7 @@ export default {
 
     //TLOS (ERC20) to TLOS
     async pegOut() {
-      this.txStatusMessage = "Preparing for transaction"
+      this.txStatusMessage = "Preparing for transaction";
       const telos = new pEosioToken({
         pToken: "TLOS",
 
@@ -564,21 +565,22 @@ export default {
           })
           .once("hostTxConfirmed", tx => {
             this.txStatusMessage = "Host transaction confirmed";
-            console.log(tx);
-          })
-          // .once("nodeReceivedTx", report => {
-          //   this.txStatusMessage = "Node received transaction";
-          //   console.log(report);
-          // })
-          // .once("nodeBroadcastedTx", report => {
-          //   this.txStatusMessage = "Node broadcasted transaction";
-          //   console.log(report);
-          // })
-          // .once("nativeTxConfirmed", tx => {
-          //   this.txStatusMessage = "Transaction Completed";
-          //   console.log(tx);
-          // })
-          .then(res => console.log(res));
+            console.log(tx.transactionHash);
+            this.txnPending = false;
+          });
+        // .once("nodeReceivedTx", report => {
+        //   this.txStatusMessage = "Node received transaction";
+        //   console.log(report);
+        // })
+        // .once("nodeBroadcastedTx", report => {
+        //   this.txStatusMessage = "Node broadcasted transaction";
+        //   console.log(report);
+        // })
+        // .once("nativeTxConfirmed", tx => {
+        //   this.txStatusMessage = "Transaction Completed";
+        //   console.log(tx);
+        // })
+        // .then(res => console.log(res));
       } catch (e) {
         throw e.cause.message;
       }
