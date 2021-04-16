@@ -166,10 +166,28 @@
             </q-card-section>
 
             <q-card-section class="q-pt-none">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum
-              repellendus sit voluptate voluptas eveniet porro. Your soul belongs to me. Rerum blanditiis
-              perferendis totam, ea at omnis vel numquam exercitationem aut,
-              natus minima, porro labore.
+              T-Starter is a smart contract based token swap and sale
+              platform. Although the smart contracts, interfaces, code and logic
+              (altogether, the Service) that are available for use on
+              T-Starter have been audited by 3rd parties, T-Starter makes
+              no express warranties as to the completeness, safety, absense of
+              bugs or errors in the Service. T-Starter further disclaims all
+              liability or loss from its users due to the users' own negligence,
+              lack of knowledge, or lack of adequate safety measures on the part
+              of the users. In no way shall T-Starter be held liable for loss
+              of funds due to users' own malfeasance, ignorance, negligence, or
+              due to unforeseen network costs such as gas fees or fluctuations
+              in price. The platform and the Services are presented "as is", and
+              by utilising the Service, users warrant that they are aware of the
+              risks associated with interacting with smart contracts,
+              cryptocurrency, cryptocurrency wallets, and blockchain based
+              systems. Users' transactions cannot be reversed once sent, and
+              users have the sole responsibility to verify all information,
+              including but not limited to smart contract addresses and network
+              addresses, prior to interacting with or participating in the
+              Service. By clicking "Agree" below, the user expressly warrants
+              that he/she has read this Disclaimer and agrees to be bound by the
+              covenants set herein.
             </q-card-section>
 
             <q-card-actions align="right">
@@ -395,13 +413,13 @@ export default {
     async getAllocations() {
       let payload = { account: this.accountName, poolID: this.pool.id };
       this.allocation = await this.getAllocationByPool(payload);
-      console.log("Allocation:")
+      console.log("Allocation:");
       console.log(this.$chainToQty(this.allocation.bid));
       // show disclaimer if user hasn't participated yet
       if (this.$chainToQty(this.allocation.bid) > 0) {
-        this.disclaimer_show = false
+        this.disclaimer_show = false;
       } else {
-        this.disclaimer_show = true
+        this.disclaimer_show = true;
       }
     },
 
