@@ -389,11 +389,11 @@ export default {
     pTokenBridgeLink(sym) {
       sym = sym.toUpperCase();
       if (sym === "TLOS") {
-        return "https://dapp.ptokens.io/tlos-on-eth/issue-redeem";
+        return "https://dapp.ptokens.io/swap?pToken=tlos-on-eth";
       } else if (sym === "PBTC") {
-        return "https://dapp.ptokens.io/pbtc-on-telos/issue-redeem";
+        return "https://dapp.ptokens.io/swap?pToken=pbtc-on-telos";
       } else if (sym === "PETH") {
-        return "https://dapp.ptokens.io/peth-on-telos/issue-redeem";
+        return "https://dapp.ptokens.io/swap?pToken=peth-on-telos";
       }
     },
 
