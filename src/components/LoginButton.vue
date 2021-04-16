@@ -70,7 +70,7 @@
                   background: wallet.getStyle().background,
                   color: wallet.getStyle().textColor
                 }"
-                v-show="wallet.getStyle().text === 'Telos Sign' && isMobile || !isMobile"
+                v-show="wallet.getStyle().text === 'Telos Sign' && isMobile || !isMobile || PlatformInfo.is.ios && wallet.getStyle().text === 'Anchor' && isMoblie" 
               >
                 <q-item-section
                   class="cursor-pointer"
