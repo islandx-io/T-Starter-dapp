@@ -70,6 +70,7 @@
                   background: wallet.getStyle().background,
                   color: wallet.getStyle().textColor
                 }"
+                v-show="wallet.getStyle().text === 'Telos Sign' && isMobile || !isMobile"
               >
                 <q-item-section
                   class="cursor-pointer"
@@ -156,6 +157,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { copyToClipboard } from "quasar";
+import { Platform } from "quasar";
 
 export default {
   data() {
@@ -176,7 +178,13 @@ export default {
       "accountName",
       "loading",
       "isAutoLoading"
-    ])
+    ]),
+    isMobile() {
+      return Platform.is.mobile;
+    },
+    PlatformInfo() {
+      return Platform
+    }
   },
   methods: {
     ...mapActions("account", ["login", "logout", "autoLogin"]),
