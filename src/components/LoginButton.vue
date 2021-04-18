@@ -234,8 +234,12 @@ export default {
     }
   },
   async mounted() {
-    // await this.autoLogin(this.$route.query.returnUrl);
+    await this.autoLogin(this.$route.query.returnUrl);
     await this.getBalance();
+    // Start polling every 1min for any updates
+    this.polling = setInterval( async () => {
+      await this.getBalance();;
+    }, 30000);
   }
 };
 </script>

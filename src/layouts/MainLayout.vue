@@ -46,7 +46,7 @@
             :to="{ name: 'wallet', params: { accountName: accountName } }"
             label="Wallet"
           />
-          <login-button :key="$route.fullPath" class="q-pl-md" />
+          <login-button  class="q-pl-md" />
         </div>
         <q-btn
           round
