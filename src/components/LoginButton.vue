@@ -234,7 +234,7 @@ export default {
     }
   },
   async mounted() {
-    await this.autoLogin(this.$route.query.returnUrl);
+    // await this.autoLogin(this.$route.query.returnUrl);
     await this.getBalance();
   }
 };
