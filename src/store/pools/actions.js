@@ -35,7 +35,7 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: process.env.CONTRACT_TABLE, // Table name
-      limit: 100, // Maximum number of rows that we want to get
+      limit: 1000, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
@@ -222,7 +222,7 @@ export const getCreatedChainPools = async function(
         code: process.env.CONTRACT_ADDRESS, // Contract that we target
         scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
         table: process.env.CONTRACT_TABLE, // Table name
-        limit: 100,
+        limit: 1000,
         index_position: 2,
         key_type: "i64",
         lower_bound: owner,
@@ -261,7 +261,7 @@ export const getJoinedChainPools = async function(
         code: process.env.CONTRACT_ADDRESS, // Contract that we target
         scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
         table: "poolaccounts", // Table name
-        limit: 100,
+        limit: 1000,
         index_position: 3,
         key_type: "i64",
         lower_bound: user,
@@ -305,7 +305,7 @@ export const getFeaturedChainPools = async function({
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: "settings", // Table name
-      limit: 100,
+      limit: 1000,
       index_position: 1,
       key_type: "i64",
       reverse: false, // Optional: Get reversed data
@@ -335,7 +335,7 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: process.env.CONTRACT_TABLE, // Table name
-      limit: 100, // Maximum number of rows that we want to get
+      limit: 1000, // Maximum number of rows that we want to get
       index_position: 3,
       key_type: "i64",
       // lower_bound: 1, // show all published pools
@@ -380,7 +380,7 @@ export const getAllocationByPool = async function(
         code: process.env.CONTRACT_ADDRESS, // Contract that we target
         scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
         table: "poolaccounts", // Table name
-        limit: 100,
+        limit: 1000,
         index_position: 2,
         key_type: "i64",
         lower_bound: payload.poolID,
@@ -414,7 +414,7 @@ export const getPremiumStake = async function({ commit, getters, dispatch }) {
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: "settings", // Table name
-      limit: 100,
+      limit: 1000,
       index_position: 1,
       key_type: "i64",
       reverse: false, // Optional: Get reversed data
@@ -437,7 +437,7 @@ export const getPlatformToken = async function({ commit, getters, dispatch }) {
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: "settings", // Table name
-      limit: 100,
+      limit: 1000,
       index_position: 1,
       key_type: "i64",
       reverse: false, // Optional: Get reversed data
@@ -464,7 +464,7 @@ export const checkStakedChain = async function(
         code: process.env.CONTRACT_ADDRESS, // Contract that we target
         scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
         table: "stakebalance", // Table name
-        limit: 100,
+        limit: 1000,
         index_position: 1,
         key_type: "i64",
         lower_bound: payload.account,
@@ -521,7 +521,7 @@ export const getBaseTokens = async function(
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: "tokens", // Table name
-      limit: 100,
+      limit: 1000,
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });

@@ -264,7 +264,7 @@ export const getChainWalletTable = async function(
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: account, // Account that owns the data
       table: "wallets", // Table name
-      limit: 100,
+      limit: 1000,
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
@@ -306,7 +306,7 @@ export const getChainSTART = async function(
         code: process.env.CONTRACT_ADDRESS, // Contract that we target
         scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
         table: "stakebalance", // Table name
-        limit: 100,
+        limit: 1000,
         index_position: 1,
         key_type: "i64",
         lower_bound: account,
