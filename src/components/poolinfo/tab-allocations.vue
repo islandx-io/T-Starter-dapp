@@ -15,7 +15,7 @@
       class="hover-accent self-end q-mt-md"
       v-if="
         hasAllocations &&
-          (Date.now() > pool.public_end + poolclosedelay) &&
+          Date.now() > pool.public_end + poolclosedelay &&
           pool.status === 'published'
       "
       @click="tryClosePool"
@@ -32,6 +32,14 @@
     <q-inner-loading :showing="loadingData">
       <q-spinner-puff size="50px" color="primary" />
     </q-inner-loading>
+    <q-card v-if="hasAllocations">
+      <q-card-section>
+        Your tokens will be sent as soon as the pool is closed. In the event
+        that the number of participating accounts becomed too big for the Telos
+        blockchain to send all tokens in a single transaction, you will be able
+        to claim your allocation from this tab.
+      </q-card-section>
+    </q-card>
   </div>
 </template>
 
@@ -125,7 +133,7 @@ export default {
           name: "pooldetails",
           params: { id: this.pool.id },
           query: { tab: "allocations" }
-        })
+        });
         this.$router.go();
       } catch (error) {
         this.$q.notify({
