@@ -183,7 +183,7 @@ export default {
         return "";
       } else {
         // console.log(props.row.decimals)
-        console.log(col.value)
+        // console.log(col.value)
         if (col.value === undefined) {
           return ""
         } else {
