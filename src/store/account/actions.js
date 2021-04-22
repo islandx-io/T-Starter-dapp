@@ -150,7 +150,6 @@ export const setWalletPoolTokens = async function(
   { commit, dispatch, rootGetters },
   account
 ) {
-  // TODO Improve responsiveness: Present data before searching for the avatar
   try {
     if (account != null) {
       // Get tokens on platform

@@ -182,7 +182,14 @@ export default {
       if (col.value === "") {
         return "";
       } else {
-        return col.value.toFixed(props.row.decimals);
+        // console.log(props.row.decimals)
+        console.log(col.value)
+        if (col.value === undefined) {
+          return ""
+        } else {
+          return col.value.toFixed(props.row.decimals);
+        }
+        
       }
     },
 
