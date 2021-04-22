@@ -35,7 +35,7 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: process.env.CONTRACT_TABLE, // Table name
-      limit: 1000, // Maximum number of rows that we want to get
+      limit: 10000, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
@@ -380,11 +380,11 @@ export const getAllocationByPool = async function(
         code: process.env.CONTRACT_ADDRESS, // Contract that we target
         scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
         table: "poolaccounts", // Table name
-        limit: 1000,
-        index_position: 2,
+        limit: 10000,
+        index_position: 3,
         key_type: "i64",
-        lower_bound: payload.poolID,
-        upper_bound: payload.poolID,
+        lower_bound: payload.account,
+        upper_bound: payload.account,
         reverse: false, // Optional: Get reversed data
         show_payer: false // Optional: Show ram payer
       });
