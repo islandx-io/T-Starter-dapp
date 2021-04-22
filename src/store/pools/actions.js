@@ -90,7 +90,7 @@ export const ifPoolFunded = async function({ commit }, payload) {
   }
 };
 
-// Get received pool tokens
+// DEPRECATED. Get received pool tokens
 export const getReceivedPoolTokenTxns = async function({}, account) {
   let response = await axios(
     `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}` +
@@ -98,7 +98,29 @@ export const getReceivedPoolTokenTxns = async function({}, account) {
       `&limit=1000&sort=desc&transfer.to=${account}` +
       `&transfer.memo=allocation%20of%20pool%20tokens`
   );
+  // console.log(response.data.actions)
   return response.data.actions;
+};
+
+// Get tokens from pooltokens table
+export const getPoolTokens = async function({ commit, dispatch }) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: 'pooltokens', // Table name
+      limit: 10000, // Maximum number of rows that we want to get
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+
+    // const poolTable = tableResults.rows[tableResults.rows.length - 1];
+    // console.log(tableResults.rows)
+    return tableResults.rows
+
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
 };
 
 // Get balance from chain for given address and token
@@ -464,7 +486,7 @@ export const checkStakedChain = async function(
         code: process.env.CONTRACT_ADDRESS, // Contract that we target
         scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
         table: "stakebalance", // Table name
-        limit: 1000,
+        limit: 10000,
         index_position: 1,
         key_type: "i64",
         lower_bound: payload.account,
@@ -521,7 +543,7 @@ export const getBaseTokens = async function(
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: "tokens", // Table name
-      limit: 1000,
+      limit: 10000,
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });

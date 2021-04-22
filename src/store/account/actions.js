@@ -152,69 +152,59 @@ export const setWalletPoolTokens = async function(
 ) {
   // TODO Improve responsiveness: Present data before searching for the avatar
   try {
-    // Get "allocation of pool tokens" transactions
-    let txns = await dispatch("pools/getReceivedPoolTokenTxns", account, {
-      root: true
-    });
-    // TODO Filter out duplicates
-    const rpc = this.$api.getRpc();
-    const chainToDecimals = this.$chainToDecimals;
-    const chainToQty = this.$chainToQty;
-    for (const t of txns) {
-      (async function() {
-        // Symbol, contract
-        let sym = t.act.data.symbol;
-        let contract = t.act.account;
+    if (account != null) {
+      // Get tokens on platform
+      let pooltokens = await dispatch("pools/getPoolTokens", "", {
+        root: true
+      });
+      const getDecimalFromAsset = this.$getDecimalFromAsset;
+      const getSymFromAsset = this.$getSymFromAsset;
+      const chainToDecimals = this.$chainToDecimals;
+      const chainToQty = this.$chainToQty;
+      // console.log(pooltokens);
+      for (const pooltoken of pooltokens) {
+        (async function() {
+          // Get decimal, symbol, contract, avatar
+          let decimal = getDecimalFromAsset(pooltoken.token_info);
+          let sym = getSymFromAsset(pooltoken.token_info);
+          let contract = pooltoken.token_info.contract;
+          let avatar = pooltoken.avatar;
 
-        commit("setWalletToken", {
-          token_sym: sym,
-          token_contract: t.act.account
-        });
-        commit("setWalletTokenDecimals", {
-          token_sym: sym,
-          amount: chainToDecimals(t.act.data.quantity)
-        });
+          // get balance
+          let balance = chainToQty(
+            await dispatch(
+              "pools/getBalanceFromChain",
+              {
+                accountName: account,
+                address: contract,
+                sym: sym
+              },
+              { root: true }
+            )
+          );
 
-        // Get pool ID (id => pool => avatar)
-        let res = await rpc.history_get_transaction(t.trx_id, t.block_num);
-        let traces = res.traces;
-        let poolID = Number(
-          traces.find(a => a.act.data.pool_id !== undefined).act.data.pool_id
-        );
-
-        // Get pool
-        let pool = rootGetters["pools/getPoolByID"](poolID);
-        if (pool === undefined) {
-          await dispatch("pools/getChainPoolByID", poolID, { root: true });
-          pool = rootGetters["pools/getPoolByID"](poolID);
-        }
-
-        // Get avatar
-        let avatar = "";
-        if (pool !== undefined) avatar = pool.avatar;
-
-        commit("setWalletTokenAvatar", {
-          token_sym: sym,
-          avatar: avatar
-        });
-
-        // Balance
-        let balance = chainToQty(
-          await dispatch(
-            "pools/getBalanceFromChain",
-            {
-              accountName: account,
-              address: contract,
-              sym: sym
-            },
-            { root: true }
-          )
-        );
-        commit("setWalletTokenBalance", {
-          token_sym: sym,
-          amount: balance
-        });
-      })();
+          // if has balance, update store
+          // Update wallet store
+          if (balance > 0) {
+            commit("setWalletToken", {
+              token_sym: sym,
+              token_contract: account
+            });
+            commit("setWalletTokenDecimals", {
+              token_sym: sym,
+              amount: decimal
+            });
+            commit("setWalletTokenAvatar", {
+              token_sym: sym,
+              avatar: avatar
+            });
+            commit("setWalletTokenBalance", {
+              token_sym: sym,
+              amount: balance
+            });
+          }
+        })();
+      }
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -264,7 +254,7 @@ export const getChainWalletTable = async function(
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: account, // Account that owns the data
       table: "wallets", // Table name
-      limit: 1000,
+      limit: 10000,
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
@@ -315,10 +305,12 @@ export const getChainSTART = async function(
         show_payer: false // Optional: Show ram payer
       });
 
-      console.log(stakeBalanceTbl)
+      // console.log(stakeBalanceTbl);
       const staked_START = this.$chainToQty(stakeBalanceTbl.rows[0].staked);
       const liquid_START = this.$chainToQty(stakeBalanceTbl.rows[0].liquid);
-      const unstaking_START = this.$chainToQty(stakeBalanceTbl.rows[0].unstaking);
+      const unstaking_START = this.$chainToQty(
+        stakeBalanceTbl.rows[0].unstaking
+      );
 
       commit("setWalletTokenLiquid", {
         token_sym: "START",

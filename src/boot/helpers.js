@@ -55,14 +55,14 @@ const toDate = function(timeStamp) {
   else return date.formatDate(timeStamp, "DD MMMM YYYY @ HH:mm (UTC Z)");
 };
 
-// Gets decimal from base token asset
+// Gets decimal from base token asset { "sym": "4,START", "contract": "token.start" }
 const getDecimalFromAsset = function(asset) {
   let idx = asset.sym.indexOf(",");
   let decimal = asset.sym.slice(0, idx);
   return decimal;
 };
 
-// Gets symbol from base token asset
+// Gets symbol from base token asset { "sym": "4,START", "contract": "token.start" }
 const getSymFromAsset = function(asset) {
   let idx = asset.sym.indexOf(",") + 1;
   let sym = asset.sym.slice(idx);
