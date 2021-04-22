@@ -75,13 +75,19 @@ export const getChainAccountInfo = async function({ commit }, accountName) {
 
 // if pool is funded with the token
 export const ifPoolFunded = async function({ commit }, payload) {
-  const rpc = this.$api.getRpc();
-  // console.log(await rpc.history_get_actions(payload.account));
-  let actionsTable = (await rpc.history_get_actions(payload.account, 0, 10000)).actions; // TODO this limit might become a problem
-  // console.log(actionsTable);
+
+  // Get response with tokens sent to pools.start with memo fund pool
+  let response = await axios(
+    `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}` +
+      `/v2/history/get_actions?account=${payload.account}` +
+      `&limit=1000&sort=desc&transfer.to=${process.env.CONTRACT_ADDRESS}` +
+      `&transfer.memo=fund pool`
+  );
+  // console.log(response.data.actions)
+
   if (
-    actionsTable.filter(
-      a => a.action_trace.act.data.memo === `fund pool:${payload.id}`
+    response.data.actions.filter(
+      a => a.act.data.memo === `fund pool:${payload.id}`
     ).length > 0
   ) {
     return true;
