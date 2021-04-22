@@ -332,7 +332,7 @@ export default {
       base_token_symbol: "",
       showTransaction: false,
       transaction: null,
-      explorerUrl: process.env.NETWORK_EXPLORER,
+      // explorerUrl: this.currentChain.NETWORK_EXPLORER,
       buyStartUrl: process.env.BUY_START_URL
     };
   },
@@ -340,6 +340,11 @@ export default {
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("blockchains", ["currentChain"]),
+
+    explorerUrl() {
+      return this.currentChain.NETWORK_EXPLORER
+    },
 
     isWhitelisted() {
       if (

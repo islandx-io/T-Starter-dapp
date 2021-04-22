@@ -67,11 +67,17 @@ export default {
       memo: null,
       showTransaction: null,
       transaction: null,
-      explorerUrl: process.env.NETWORK_EXPLORER
+      // explorerUrl: process.env.NETWORK_EXPLORER
     };
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"])
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("blockchains", ["currentChain"]),
+
+    explorerUrl() {
+      return this.currentChain.NETWORK_EXPLORER
+    },
+
   },
   methods: {
     ...mapActions("account", ["accountExists"]),

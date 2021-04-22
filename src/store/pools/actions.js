@@ -74,11 +74,12 @@ export const getChainAccountInfo = async function({ commit }, accountName) {
 };
 
 // if pool is funded with the token
-export const ifPoolFunded = async function({ commit }, payload) {
+export const ifPoolFunded = async function({ commit, getters }, payload) {
+  let currentChain = getters['blockchains/currentChain'];
 
   // Get response with tokens sent to pools.start with memo fund pool
   let response = await axios(
-    `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}` +
+    `${currentChain.NETWORK_PROTOCOL}://${currentChain.NETWORK_HOST}` +
       `/v2/history/get_actions?account=${payload.account}` +
       `&limit=1000&sort=desc&transfer.to=${process.env.CONTRACT_ADDRESS}` +
       `&transfer.memo=fund pool`
@@ -96,10 +97,11 @@ export const ifPoolFunded = async function({ commit }, payload) {
   }
 };
 
-// DEPRECATED. Get received pool tokens
-export const getReceivedPoolTokenTxns = async function({}, account) {
+// Get received pool tokens
+export const getReceivedPoolTokenTxns = async function({getters}, account) {
+  let currentChain = getters['blockchains/currentChain'];
   let response = await axios(
-    `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}` +
+    `${currentChain.NETWORK_PROTOCOL}://${currentChain.NETWORK_HOST}` +
       `/v2/history/get_actions?account=${account}` +
       `&limit=1000&sort=desc&transfer.to=${account}` +
       `&transfer.memo=allocation%20of%20pool%20tokens`

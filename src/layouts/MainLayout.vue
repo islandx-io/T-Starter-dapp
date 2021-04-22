@@ -22,7 +22,7 @@
             </q-chip>
           </div>
         </q-toolbar-title>
-        <div class="gt-sm row">
+        <div class="gt-sm row items-center">
           <q-btn
             v-if="accountName === admin_address"
             class="hover-accent"
@@ -46,8 +46,10 @@
             :to="{ name: 'wallet', params: { accountName: accountName } }"
             label="Wallet"
           />
-          <login-button  class="q-pl-md" />
+          <login-button class="q-pl-md" />
+          <chain-selector class="q-pl-md" />
         </div>
+        <!-- Mobile menu -->
         <q-btn
           round
           icon="menu"
@@ -94,6 +96,7 @@
               />
             </div>
             <login-button mobileView />
+            <chain-selector />
             <!-- <q-btn
                   round
                   icon="fas fa-times"
@@ -161,6 +164,7 @@
 
 <script>
 import LoginButton from "components/LoginButton.vue";
+import ChainSelector from "components/ChainSelector.vue";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
@@ -178,7 +182,7 @@ export default {
       showMenu: false
     };
   },
-  components: { LoginButton },
+  components: { LoginButton, ChainSelector },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     admin_address() {
