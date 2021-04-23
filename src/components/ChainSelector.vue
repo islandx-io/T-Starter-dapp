@@ -33,7 +33,7 @@
         >
           <div class="flex items-center justify-center wrap q-pa-xs">
             <div class="row items-center justify-center">
-              <token-avatar :token="chain" avatarSize="23" />
+              <token-avatar :token="chain" :avatarSize="23" />
               <h2>
                 {{ chain }}
               </h2>
