@@ -1,49 +1,47 @@
 <template>
-  <div >
-     <q-btn-dropdown
-            no-caps
-            flat
-            class="q-ml-md bg-secondary"
-            padding="xs"
-            style="margin: 0px"
-            color="black"
-          >
-            <template v-slot:label>
-              <div class="flex items-center justify-center wrap q-pa-xs">
-                <div class="row items-center justify-center">
-                  <token-avatar :token="selectedChain" :avatarSize="23" />
-                  <h2>
-                    {{ selectedChain }}
-                  </h2>
-                </div>
-              </div>
-            </template>
-            <q-list class="bg-secondary">
-              <q-item
-                clickable
-                v-close-popup
-                v-for="chain in chainOptions"
-                :key="chain"
-                @click="
-                  selectedChain = chain;
-                "
-                flat
-                size="lg"
-                no-caps
-                padding="xs"
-              >
-                <q-item-section avatar>
-                  <token-avatar :token="chain" :avatarSize="23" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label style="font-weight: 500">
-                    {{ chain }}
-                  </q-item-label>
-                </q-item-section>
-                
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+  <div>
+    <q-btn-dropdown
+      no-caps
+      flat
+      class="q-ml-md bg-secondary"
+      padding="xs"
+      style="margin: 0px"
+      color="black"
+      outline
+    >
+      <template v-slot:label>
+        <div class="flex items-center justify-center wrap q-pa-xs">
+          <div class="row items-center justify-center">
+            <token-avatar :token="selectedChain" :avatarSize="23" />
+            <h2>
+              {{ selectedChain }}
+            </h2>
+          </div>
+        </div>
+      </template>
+      <q-list class="bg-secondary">
+        <q-item
+          clickable
+          v-close-popup
+          v-for="chain in chainOptions"
+          :key="chain"
+          @click="selectedChain = chain"
+          flat
+          size="lg"
+          no-caps
+          padding="xs"
+        >
+          <div class="flex items-center justify-center wrap q-pa-xs">
+            <div class="row items-center justify-center">
+              <token-avatar :token="chain" avatarSize="23" />
+              <h2>
+                {{ chain }}
+              </h2>
+            </div>
+          </div>
+        </q-item>
+      </q-list>
+    </q-btn-dropdown>
   </div>
 </template>
 
@@ -51,10 +49,9 @@
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
 
-
 export default {
   // name: 'ComponentName',
-  components: {  tokenAvatar},
+  components: { tokenAvatar },
 
   data() {
     return {
@@ -65,8 +62,7 @@ export default {
 
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
-    ...mapGetters("blockchains", ["currentChain"]),
-
+    ...mapGetters("blockchains", ["currentChain"])
   },
 
   methods: {

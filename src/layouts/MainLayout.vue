@@ -97,14 +97,6 @@
             </div>
             <login-button mobileView />
             <chain-selector />
-            <!-- <q-btn
-                  round
-                  icon="fas fa-times"
-                  outline
-                  color="secondary"
-                  class="lt-md menu-btn hover-accent"
-                  @click="showMenu = false"
-                /> -->
           </div>
         </q-dialog>
       </q-toolbar>
