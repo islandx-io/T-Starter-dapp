@@ -12,7 +12,7 @@
       <h6>Note:</h6>
       <p>
         Your tokens will be sent as soon as the pool is closed. In the event
-        that the number of participating accounts becomed too big for the Telos
+        that the number of participating accounts become too big for the Telos
         blockchain to send all tokens in a single transaction, you will be able
         to claim your allocation from this tab.
       </p>
