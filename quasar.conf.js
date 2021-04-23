@@ -8,6 +8,9 @@
 /* eslint-env node */
 
 require("dotenv").config();
+const fs = require("fs");
+const packageJson = fs.readFileSync("./package.json");
+const siteVersion = JSON.parse(packageJson).version || 0;
 
 module.exports = function(/* ctx */) {
   return {
@@ -55,6 +58,7 @@ module.exports = function(/* ctx */) {
         CONTRACT_TABLE: process.env.CONTRACT_TABLE,
         ADMIN_ADDRESS: process.env.ADMIN_ADDRESS,
         BUY_START_URL: process.env.BUY_START_URL,
+        SITE_VERSION: siteVersion
       },
 
       // transpile: false,

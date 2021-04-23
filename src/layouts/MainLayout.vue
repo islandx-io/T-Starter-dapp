@@ -156,7 +156,10 @@
             </div>
           </div>
         </div>
-        <p>Copyright 2021. T-STARTER. All Rights Reserved</p>
+        <p class="text-center">
+          Version: {{ siteVersion }}<br />
+          Copyright 2021. T-STARTER. All Rights Reserved
+        </p>
       </div>
     </section>
   </q-layout>
@@ -179,7 +182,8 @@ export default {
         {name: "twitter", icon: "fab fa-twitter", link: "https://twitter.com/T_StarterToken"},
         {name: "github", icon: "fab fa-github", link: "https://github.com/T-Starter"},
       ],
-      showMenu: false
+      showMenu: false,
+      siteVersion: process.env.SITE_VERSION
     };
   },
   components: { LoginButton, ChainSelector },

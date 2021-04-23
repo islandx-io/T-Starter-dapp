@@ -8,6 +8,15 @@
       <h6>Allocation:</h6>
       <h5>{{ this.$chainStrReformat(data.allocation) }}</h5>
     </div>
+    <div class="row justify-between" v-if="hasAllocations">
+      <h6>Note:</h6>
+      <p>
+        Your tokens will be sent as soon as the pool is closed. In the event
+        that the number of participating accounts become too big for the Telos
+        blockchain to send all tokens in a single transaction, you will be able
+        to claim your allocation from this tab.
+      </p>
+    </div>
     <q-btn
       outline
       color="accent"
@@ -32,14 +41,6 @@
     <q-inner-loading :showing="loadingData">
       <q-spinner-puff size="50px" color="primary" />
     </q-inner-loading>
-    <q-card v-if="hasAllocations">
-      <q-card-section>
-        Your tokens will be sent as soon as the pool is closed. In the event
-        that the number of participating accounts becomed too big for the Telos
-        blockchain to send all tokens in a single transaction, you will be able
-        to claim your allocation from this tab.
-      </q-card-section>
-    </q-card>
   </div>
 </template>
 
