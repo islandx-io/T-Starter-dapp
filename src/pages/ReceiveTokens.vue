@@ -110,7 +110,11 @@
               padding="xs"
               type="a"
               target="_blank"
-              :href="selectedToken.toUpperCase() === 'PETH' ? pTokenBridgeLink('PETH') : pTokenBridgeLink('TLOS')"
+              :href="
+                selectedToken.toUpperCase() === 'PETH'
+                  ? pTokenBridgeLink('PETH')
+                  : pTokenBridgeLink('TLOS')
+              "
             >
               <q-tooltip>pTokens dapp</q-tooltip>
             </q-btn>
@@ -635,21 +639,6 @@ h2 {
   line-height: 45px;
   margin: 0 10px;
   font-size: 35px;
-}
-.networks {
-  .q-btn {
-    background-color: silver;
-    color: $secondary;
-    width: 120px;
-    align-items: center;
-    margin: 5px 10px;
-    @media only screen and (max-width: 375px) {
-      width: 100px;
-    }
-  }
-  .q-btn.selected-network {
-    background-color: $space;
-  }
 }
 .q-item:hover {
   background-color: $dark;
