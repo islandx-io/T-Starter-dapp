@@ -85,17 +85,17 @@
               maxlength="255"
             />
           </div>
-          <div class="text-center">
+          <div class="text-center self-stretch q-pt-sm">
             <q-btn
               class="hover-accent"
-              size="xl"
+              size="lg"
+              color="primary"
               dense
-              flat
+              no-shadow
               @click="send"
-              :icon="roundSend"
-            >
-              <q-tooltip>Send</q-tooltip>
-            </q-btn>
+              label="Send"
+              style="width: 50%"
+            />
           </div>
           <q-dialog v-model="showTransaction" confirm>
             <q-card>
@@ -131,7 +131,6 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
-import { roundSend } from "@quasar/extras/material-icons-round";
 
 export default {
   components: { tokenAvatar },
@@ -201,9 +200,6 @@ export default {
         this.transaction = transaction.transactionId;
       }
     }
-  },
-  created() {
-    this.roundSend = roundSend;
   },
   mounted() {
     if (this.$route.query.token_sym !== undefined)
