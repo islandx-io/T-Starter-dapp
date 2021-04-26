@@ -22,6 +22,11 @@ yarn global add @vue/cli
 yarn global add @quasar/cli
 ```
 
+Add the following to `~/.bashrc`:  
+```bash
+export PATH="$(yarn global bin):$PATH"
+```
+
 **Clone this repo to your local machine**
 
 **Copy the example .env file to .env**
