@@ -19,7 +19,7 @@
             style="font-size: 50px"
           />
         </q-btn>
-        <div class="column">
+        <div class="column items-center">
           <div class="row items-center justify-center q-pa-sm">
             <h2>Send</h2>
             <div class="row items-center justify-center">
@@ -29,7 +29,33 @@
               </h2>
             </div>
           </div>
-          <div v-if="isAuthenticated" class="q-gutter-y-sm">
+          <div
+            class="networks row justify-center q-py-sm"
+            v-if="selectedToken.toUpperCase() === 'START'"
+          >
+            <div class="text-subtitle1 q-pb-sm col-12 text-center">
+              To network
+            </div>
+            <q-btn
+              label="Telos"
+              @click="selectedNetwork = 'telos'"
+              :class="selectedNetwork === 'telos' ? 'selected-network' : ''"
+              flat
+              size="lg"
+              no-caps
+              padding="xs"
+            />
+            <q-btn
+              label="EOS"
+              @click="selectedNetwork = 'eos'"
+              :class="selectedNetwork === 'eos' ? 'selected-network' : ''"
+              flat
+              size="lg"
+              no-caps
+              padding="xs"
+            />
+          </div>
+          <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
             <q-input
               outlined
               autocapitalize="off"
@@ -117,7 +143,8 @@ export default {
       showTransaction: null,
       transaction: null,
       // explorerUrl: process.env.NETWORK_EXPLORER,
-      selectedToken: "TLOS"
+      selectedToken: "TLOS",
+      selectedNetwork: "telos"
     };
   },
   computed: {
@@ -125,7 +152,7 @@ export default {
     ...mapGetters("blockchains", ["currentChain"]),
 
     explorerUrl() {
-      return this.currentChain.NETWORK_EXPLORER
+      return this.currentChain.NETWORK_EXPLORER;
     },
 
     //TODO get this info from chain?
@@ -161,9 +188,9 @@ export default {
           data: {
             from: this.accountName.toLowerCase(),
             to: this.to,
-            quantity: `${parseFloat(this.amount).toFixed(this.token_decimals)} ${
-              this.selectedToken
-            }`,
+            quantity: `${parseFloat(this.amount).toFixed(
+              this.token_decimals
+            )} ${this.selectedToken}`,
             memo: this.memo
           }
         }
