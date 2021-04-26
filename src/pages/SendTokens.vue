@@ -116,12 +116,17 @@ export default {
       memo: null,
       showTransaction: null,
       transaction: null,
-      explorerUrl: process.env.NETWORK_EXPLORER,
+      // explorerUrl: process.env.NETWORK_EXPLORER,
       selectedToken: "TLOS"
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
+    ...mapGetters("blockchains", ["currentChain"]),
+
+    explorerUrl() {
+      return this.currentChain.NETWORK_EXPLORER
+    },
 
     //TODO get this info from chain?
     token_contract() {

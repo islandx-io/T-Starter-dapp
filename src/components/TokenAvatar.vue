@@ -58,6 +58,8 @@ export default {
         else if (token === "PBTC") result = "/tokens/pbtc.png";
         else if (token === "START") result = "/tokens/start.png";
         else if (token === "TLOS") result = "/tokens/tlos.png";
+        else if (token === "TELOS") result = "/tokens/tlos.png";
+        else if (token === "EOS") result = "/tokens/eos.png";
       }
       return result;
     }

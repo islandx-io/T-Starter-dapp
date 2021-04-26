@@ -210,6 +210,8 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID"]),
+    ...mapGetters("blockchains", ["currentChain"]),
+
     progressToPercentage() {
       return (this.pool.progress * 100).toFixed(0) + "%";
     },
@@ -232,7 +234,7 @@ export default {
       if (contractName === "Loading" || contractName === "") return "#";
       else {
         try {
-          return `${process.env.NETWORK_EXPLORER}/account/${contractName}`;
+          return `${this.currentChain.NETWORK_EXPLORER}/account/${contractName}`;
         } catch (error) {
           return "Error";
         }
