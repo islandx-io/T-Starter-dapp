@@ -23,16 +23,13 @@
           <div class="row items-center justify-center q-pa-sm">
             <h2>Send</h2>
             <div class="row items-center justify-center">
-              <token-avatar :token="selectedToken" :avatarSize="55" />
+              <token-avatar :token="selectedTokenSym" :avatarSize="55" />
               <h2>
-                {{ selectedToken }}
+                {{ selectedTokenSym }}
               </h2>
             </div>
           </div>
-          <div
-            class="networks row justify-center q-py-sm"
-            v-if="selectedToken.toUpperCase() === 'START'"
-          >
+          <div class="networks row justify-center q-py-sm">
             <div class="text-subtitle1 q-pb-sm col-12 text-center">
               To network
             </div>
@@ -47,8 +44,41 @@
             />
             <q-btn
               label="EOS"
+              v-if="
+                selectedTokenInList(['START', 'TLOS', 'EOS', 'PETH', 'PBTC'])
+              "
               @click="selectedNetwork = 'eos'"
               :class="selectedNetwork === 'eos' ? 'selected-network' : ''"
+              flat
+              size="lg"
+              no-caps
+              padding="xs"
+            />
+            <q-btn
+              label="Bitcoin"
+              v-if="selectedTokenInList(['PBTC'])"
+              @click="selectedNetwork = 'bitcoin'"
+              :class="selectedNetwork === 'bitcoin' ? 'selected-network' : ''"
+              flat
+              size="lg"
+              no-caps
+              padding="xs"
+            />
+            <q-btn
+              label="Ethereum"
+              v-if="selectedTokenInList(['TLOS', 'EOS', 'PETH', 'PBTC'])"
+              @click="selectedNetwork = 'ethereum'"
+              :class="selectedNetwork === 'ethereum' ? 'selected-network' : ''"
+              flat
+              size="lg"
+              no-caps
+              padding="xs"
+            />
+            <q-btn
+              label="BSC"
+              v-if="selectedTokenInList(['TLOS', 'EOS', 'PETH', 'PBTC'])"
+              @click="selectedNetwork = 'bsc'"
+              :class="selectedNetwork === 'bsc' ? 'selected-network' : ''"
               flat
               size="lg"
               no-caps
@@ -65,17 +95,28 @@
               counter
               maxlength="12"
             />
-            <q-input
-              outlined
-              bottom-slots
-              :suffix="selectedToken"
-              v-model="amount"
-              label="Amount"
-              counter
-              type="number"
-              maxlength="12"
-            >
-            </q-input>
+            <div class="row items-start">
+              <q-input
+                outlined
+                bottom-slots
+                :suffix="selectedTokenSym"
+                v-model="amount"
+                label="Amount"
+                type="number"
+                maxlength="12"
+                class="col"
+                :hint="`Available: ${balance} ${selectedTokenSym}`"
+                :rules="[validateInputAmount]"
+              >
+              </q-input>
+              <q-btn
+                class="col-shrink q-ma-sm"
+                label="Max"
+                color="positive"
+                outline
+                @click="amount = balance"
+              />
+            </div>
             <q-input
               outlined
               bottom-slots
@@ -142,7 +183,7 @@ export default {
       showTransaction: null,
       transaction: null,
       // explorerUrl: process.env.NETWORK_EXPLORER,
-      selectedToken: "TLOS",
+      selectedTokenSym: "TLOS",
       selectedNetwork: "telos"
     };
   },
@@ -155,22 +196,43 @@ export default {
     },
 
     //TODO get this info from chain?
+    selectedToken() {
+      return this.wallet.find(a => a.token_sym === this.selectedTokenSym);
+    },
+
     token_contract() {
-      return this.wallet.find(a => a.token_sym === this.selectedToken)
-        .token_contract;
+      return this.selectedToken.token_contract;
     },
 
     token_decimals() {
-      return this.wallet.find(a => a.token_sym === this.selectedToken).decimals;
+      return this.selectedToken.decimals;
     },
 
     avatar() {
-      return this.wallet.find(a => a.token_sym === this.selectedToken).avatar;
+      return this.selectedToken.avatar;
+    },
+
+    balance() {
+      return this.selectedToken.balance;
     }
   },
   methods: {
     ...mapActions("account", ["accountExists"]),
-
+    selectedTokenInList(lst) {
+      return lst.includes(this.selectedTokenSym.toUpperCase());
+    },
+    restrictDecimal() {
+      this.amount = this.$toFixedDown(
+        this.amount,
+        this.$getDecimalFromAsset(this.selectedTokenSym)
+      );
+    },
+    validateInputAmount(val) {
+      return (
+        val <= this.balance ||
+        `Amount cannot be greater than your available balance.`
+      );
+    },
     async send() {
       if (!(await this.accountExists(this.to))) {
         this.$q.notify({
@@ -189,7 +251,7 @@ export default {
             to: this.to,
             quantity: `${parseFloat(this.amount).toFixed(
               this.token_decimals
-            )} ${this.selectedToken}`,
+            )} ${this.selectedTokenSym}`,
             memo: this.memo
           }
         }
@@ -203,7 +265,7 @@ export default {
   },
   mounted() {
     if (this.$route.query.token_sym !== undefined)
-      this.selectedToken = this.$route.query.token_sym;
+      this.selectedTokenSym = this.$route.query.token_sym;
   }
 };
 </script>
