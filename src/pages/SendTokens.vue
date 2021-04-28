@@ -109,7 +109,7 @@
               v-model="memo"
               label="Memo"
               counter
-              maxlength="255"
+              maxlength="200"
             />
           </div>
           <div class="text-center self-stretch q-pt-sm">
