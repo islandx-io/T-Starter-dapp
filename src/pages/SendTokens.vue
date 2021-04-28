@@ -125,7 +125,7 @@
               color="primary"
               dense
               no-shadow
-              @click="send"
+              @click="trySend"
               label="Send"
               style="width: 50%"
             />
@@ -177,7 +177,7 @@ export default {
       showTransaction: null,
       transaction: null,
       // explorerUrl: process.env.NETWORK_EXPLORER,
-      selectedTokenSym: "TLOS",
+      selectedTokenSym: "START",
       selectedNetwork: "telos"
     };
   },
@@ -241,31 +241,80 @@ export default {
         return;
       }
 
-      const actions = [
-        {
-          account: this.token_contract,
-          name: "transfer",
-          data: {
-            from: this.accountName.toLowerCase(),
-            to: this.to,
-            quantity: `${parseFloat(this.amount).toFixed(
-              this.token_decimals
-            )} ${this.selectedTokenSym}`,
-            memo: this.memo
+      // if same network, do normal transaction
+      if (
+        this.selectedNetwork.toUpperCase() === this.currentChain.NETWORK_NAME
+      ) {
+        const actions = [
+          {
+            account: this.token_contract,
+            name: "transfer",
+            data: {
+              from: this.accountName.toLowerCase(),
+              to: this.to,
+              quantity: `${parseFloat(this.amount).toFixed(
+                this.token_decimals
+              )} ${this.selectedTokenSym}`,
+              memo: this.memo
+            }
           }
+        ];
+        const transaction = await this.$store.$api.signTransaction(actions);
+        if (transaction) {
+          this.showTransaction = true;
+          this.transaction = transaction.transactionId;
         }
-      ];
-      const transaction = await this.$store.$api.signTransaction(actions);
-      if (transaction) {
-        this.showTransaction = true;
-        this.transaction = transaction.transactionId;
+      }
+
+      // If different network, send to bridge
+      if (
+        this.selectedNetwork.toUpperCase() !== this.currentChain.NETWORK_NAME
+      ) {
+        const actions = [
+          {
+            account: this.token_contract,
+            name: "transfer",
+            data: {
+              from: this.accountName.toLowerCase(),
+              to: "bridge.start",
+              quantity: `${parseFloat(this.amount).toFixed(
+                this.token_decimals
+              )} ${this.selectedTokenSym}`,
+              memo: `${this.to}@${this.selectedNetwork}|${this.memo}`
+            }
+          }
+        ];
+        const transaction = await this.$store.$api.signTransaction(actions);
+        if (transaction) {
+          this.showTransaction = true;
+          this.transaction = transaction.transactionId;
+        }
+      }
+    },
+
+    async trySend() {
+      try {
+        await this.send();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Sent"
+        });
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
       }
     }
   },
   mounted() {
     if (this.$route.query.token_sym !== undefined)
       this.selectedTokenSym = this.$route.query.token_sym;
-    if (!this.isCrossChainToken) this.selectedNetwork = "current";
+    if (!this.isCrossChainToken) this.selectedNetwork = this.currentChain.NETWORK_NAME;
   }
 };
 </script>

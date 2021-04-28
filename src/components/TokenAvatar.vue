@@ -52,7 +52,7 @@ export default {
   methods: {
     src(avatar) {
       let result = avatar;
-      if (result === "") {
+      if (result === "" || result === undefined) {
         let token = this.token.toUpperCase();
         if (token === "PETH") result = "/tokens/peth.png";
         else if (token === "PBTC") result = "/tokens/pbtc.png";

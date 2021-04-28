@@ -46,7 +46,7 @@ export default function() {
         NETWORK_HOST: "jungle3.cryptolions.io",
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
-        NETWORK_EXPLORER: "https://jungle3.bloks.io/",
+        NETWORK_EXPLORER: "https://jungle3.bloks.io",
         HYPERION_ENDPOINT: "https://jungle3.cryptolions.io:443"
       },
       {
@@ -58,7 +58,7 @@ export default function() {
         NETWORK_HOST: "eos.greymass.com",
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
-        NETWORK_EXPLORER: "https://bloks.io/",
+        NETWORK_EXPLORER: "https://bloks.io",
         HYPERION_ENDPOINT: "https://eos.greymass.com:443"
       }
     ]
