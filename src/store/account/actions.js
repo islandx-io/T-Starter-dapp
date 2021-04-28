@@ -187,7 +187,7 @@ export const setWalletPoolTokens = async function(
           if (balance > 0) {
             commit("setWalletToken", {
               token_sym: sym,
-              token_contract: account
+              token_contract: contract
             });
             commit("setWalletTokenDecimals", {
               token_sym: sym,
