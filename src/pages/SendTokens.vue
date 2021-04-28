@@ -23,7 +23,11 @@
           <div class="row items-center justify-center q-pa-sm">
             <h2>Send</h2>
             <div class="row items-center justify-center">
-              <token-avatar :token="selectedTokenSym" :avatarSize="55" />
+              <token-avatar
+                :token="selectedTokenSym"
+                :avatar="avatar"
+                :avatarSize="55"
+              />
               <h2>
                 {{ selectedTokenSym }}
               </h2>
@@ -138,9 +142,11 @@
               style="width: 50%"
             />
           </div>
+
+          <!-- Transaction sent dialog -->
           <q-dialog v-model="showTransaction" confirm>
             <q-card>
-              <q-card-section class="row">
+              <q-card-section class="row items-center">
                 <q-avatar
                   icon="arrow_forward"
                   color="primary"
