@@ -41,14 +41,20 @@
               To network
             </div>
             <div class="q-gutter-sm row justify-center">
-              <q-radio v-model="selectedNetwork" val="telos" label="Telos" />
+              <!-- TODO Add WAX once ready -->
+              <q-radio
+                v-model="selectedNetwork"
+                val="telos"
+                label="Telos"
+                v-if="!selectedTokenInList(['EOS'])"
+              />
               <q-radio
                 v-model="selectedNetwork"
                 val="eos"
                 label="EOS"
                 v-if="selectedTokenInList(['EOS', 'START', 'PETH', 'PBTC'])"
               />
-              <q-radio
+              <!-- <q-radio
                 v-model="selectedNetwork"
                 val="bitcoin"
                 label="Bitcoin"
@@ -65,11 +71,11 @@
                 val="bsc"
                 label="Binance Smart Chain"
                 v-if="selectedTokenInList(['TLOS', 'EOS', 'PBTC'])"
-              />
+              /> -->
             </div>
           </div>
           <div v-else class="text-subtitle1 text-center q-pb-sm">
-            To network: {{ currentChain.NETWORK_DISPLAY_NAME }}
+            On the {{ currentChain.NETWORK_DISPLAY_NAME }} network
           </div>
           <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
             <q-input
@@ -205,7 +211,8 @@ export default {
     },
 
     isCrossChainToken() {
-      return this.selectedTokenInList(["TLOS", "EOS", "START", "PETH", "PBTC"]);
+      // return this.selectedTokenInList(["TLOS", "EOS", "START", "PETH", "PBTC"]);
+      return this.selectedTokenInList(["START", "PETH", "PBTC"]);
     }
   },
   methods: {
