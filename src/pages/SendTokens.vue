@@ -20,7 +20,7 @@
           />
         </q-btn>
         <div class="column items-center">
-          <div class="row items-center justify-center q-pa-sm">
+          <div class="row items-center justify-center q-pa-sm q-pb-md">
             <h2>Send</h2>
             <div class="row items-center justify-center">
               <token-avatar
@@ -33,61 +33,43 @@
               </h2>
             </div>
           </div>
-          <div class="networks row justify-center q-py-sm">
+          <div
+            class="networks row justify-center q-pb-sm"
+            v-if="isCrossChainToken"
+          >
             <div class="text-subtitle1 q-pb-sm col-12 text-center">
               To network
             </div>
-            <q-btn
-              label="Telos"
-              @click="selectedNetwork = 'telos'"
-              :class="selectedNetwork === 'telos' ? 'selected-network' : ''"
-              flat
-              size="lg"
-              no-caps
-              padding="xs"
-            />
-            <q-btn
-              label="EOS"
-              v-if="
-                selectedTokenInList(['START', 'TLOS', 'EOS', 'PETH', 'PBTC'])
-              "
-              @click="selectedNetwork = 'eos'"
-              :class="selectedNetwork === 'eos' ? 'selected-network' : ''"
-              flat
-              size="lg"
-              no-caps
-              padding="xs"
-            />
-            <q-btn
-              label="Bitcoin"
-              v-if="selectedTokenInList(['PBTC'])"
-              @click="selectedNetwork = 'bitcoin'"
-              :class="selectedNetwork === 'bitcoin' ? 'selected-network' : ''"
-              flat
-              size="lg"
-              no-caps
-              padding="xs"
-            />
-            <q-btn
-              label="Ethereum"
-              v-if="selectedTokenInList(['TLOS', 'EOS', 'PETH', 'PBTC'])"
-              @click="selectedNetwork = 'ethereum'"
-              :class="selectedNetwork === 'ethereum' ? 'selected-network' : ''"
-              flat
-              size="lg"
-              no-caps
-              padding="xs"
-            />
-            <q-btn
-              label="BSC"
-              v-if="selectedTokenInList(['TLOS', 'EOS', 'PETH', 'PBTC'])"
-              @click="selectedNetwork = 'bsc'"
-              :class="selectedNetwork === 'bsc' ? 'selected-network' : ''"
-              flat
-              size="lg"
-              no-caps
-              padding="xs"
-            />
+            <div class="q-gutter-sm row justify-center">
+              <q-radio v-model="selectedNetwork" val="telos" label="Telos" />
+              <q-radio
+                v-model="selectedNetwork"
+                val="eos"
+                label="EOS"
+                v-if="selectedTokenInList(['EOS', 'START', 'PETH', 'PBTC'])"
+              />
+              <q-radio
+                v-model="selectedNetwork"
+                val="bitcoin"
+                label="Bitcoin"
+                v-if="selectedTokenInList(['PBTC'])"
+              />
+              <q-radio
+                v-model="selectedNetwork"
+                val="ethereum"
+                label="Ethereum"
+                v-if="selectedTokenInList(['TLOS', 'EOS', 'PETH', 'PBTC'])"
+              />
+              <q-radio
+                v-model="selectedNetwork"
+                val="bsc"
+                label="Binance Smart Chain"
+                v-if="selectedTokenInList(['TLOS', 'EOS', 'PBTC'])"
+              />
+            </div>
+          </div>
+          <div v-else class="text-subtitle1 text-center q-pb-sm">
+            To network: {{ currentChain.NETWORK_DISPLAY_NAME }}
           </div>
           <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
             <q-input
@@ -220,6 +202,10 @@ export default {
 
     balance() {
       return this.selectedToken.balance;
+    },
+
+    isCrossChainToken() {
+      return this.selectedTokenInList(["TLOS", "EOS", "START", "PETH", "PBTC"]);
     }
   },
   methods: {
@@ -272,6 +258,7 @@ export default {
   mounted() {
     if (this.$route.query.token_sym !== undefined)
       this.selectedTokenSym = this.$route.query.token_sym;
+    if (!this.isCrossChainToken) this.selectedNetwork = "current";
   }
 };
 </script>
