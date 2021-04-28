@@ -23,7 +23,7 @@
           <div class="row items-center justify-center q-pa-sm">
             <h2>Send</h2>
             <div class="row items-center justify-center">
-              <token-avatar :token="selectedToken" :avatarSize="55" />
+              <token-avatar :token="selectedToken" :avatar="avatar" :avatarSize="55" />
               <h2>
                 {{ selectedToken }}
               </h2>
@@ -71,9 +71,11 @@
               <q-tooltip>Send</q-tooltip>
             </q-btn>
           </div>
+
+          <!-- Transaction sent dialog -->
           <q-dialog v-model="showTransaction" confirm>
             <q-card>
-              <q-card-section class="row">
+              <q-card-section class="row items-center">
                 <q-avatar
                   icon="arrow_forward"
                   color="primary"
