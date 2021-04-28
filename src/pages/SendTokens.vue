@@ -46,13 +46,13 @@
                 v-model="selectedNetwork"
                 val="telos"
                 label="Telos"
-                v-if="!selectedTokenInList(['EOS'])"
+                v-if="selectedTokenInList(['TLOS', 'START'])"
               />
               <q-radio
                 v-model="selectedNetwork"
                 val="eos"
                 label="EOS"
-                v-if="selectedTokenInList(['EOS', 'START', 'PETH', 'PBTC'])"
+                v-if="selectedTokenInList(['EOS', 'START'])"
               />
               <!-- <q-radio
                 v-model="selectedNetwork"
@@ -212,7 +212,7 @@ export default {
 
     isCrossChainToken() {
       // return this.selectedTokenInList(["TLOS", "EOS", "START", "PETH", "PBTC"]);
-      return this.selectedTokenInList(["START", "PETH", "PBTC"]);
+      return this.selectedTokenInList(["START"]);
     }
   },
   methods: {
