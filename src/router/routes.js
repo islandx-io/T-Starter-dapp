@@ -1,14 +1,16 @@
 const routes = [
   {
     path: "/",
-    redirect: "/telos",
+    redirect: {name: "home", params: {chain: 'telos'}},
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "/:chain", component: () => import("pages/Index.vue") }]
+    children: [{ path: "/:chain", name: "home", component: () => import("pages/Index.vue") }]
   },
   {
     path: "/:chain",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "/", component: () => import("pages/Index.vue") }]
+    children: [
+      { path: "",  component: () => import("pages/Index.vue") }
+    ]
   },
   {
     path: "/:chain/wallet/:accountName",
@@ -20,7 +22,9 @@ const routes = [
   {
     path: "/:chain/pools",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", name:'allpools', component: () => import("pages/Pools.vue") }]
+    children: [
+      { path: "", name: "allpools", component: () => import("pages/Pools.vue") }
+    ]
   },
   {
     path: "/:chain/pools/:id",
@@ -41,7 +45,13 @@ const routes = [
   {
     path: "/:chain/createpool",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", name:'createpool', component: () => import("pages/CreatePool.vue") }]
+    children: [
+      {
+        path: "",
+        name: "createpool",
+        component: () => import("pages/CreatePool.vue")
+      }
+    ]
   },
   {
     path: "/:chain/updatepool/:id",
@@ -57,12 +67,24 @@ const routes = [
   {
     path: "/:chain/receive",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", name:"receive", component: () => import("pages/ReceiveTokens.vue") }]
+    children: [
+      {
+        path: "",
+        name: "receive",
+        component: () => import("pages/ReceiveTokens.vue")
+      }
+    ]
   },
   {
     path: "/:chain/send",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", name: "send", component: () => import("pages/SendTokens.vue") }]
+    children: [
+      {
+        path: "",
+        name: "send",
+        component: () => import("pages/SendTokens.vue")
+      }
+    ]
   },
   // {
   //   path: "/account/:accountName",

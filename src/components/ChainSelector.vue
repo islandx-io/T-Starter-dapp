@@ -82,9 +82,10 @@ export default {
     selectedChain() {
       if (this.selectedChain != localStorage.getItem("selectedChain")) {
         this.switchChain();
-        // this.$router.push({params: {chain: this.selectedChain.toLowerCase()}});
-        this.$router.push({path: `/${this.selectedChain.toLowerCase()}`});
         // this.logout();
+        this.$router.push({name: 'home',params: {chain: this.selectedChain.toLowerCase()}});
+        this.$router.push({params: {chain: this.selectedChain.toLowerCase()}});
+        // this.$router.push({name:'home'})
         this.$router.go();
       }
     }
