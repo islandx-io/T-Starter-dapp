@@ -4,7 +4,7 @@
       <q-toolbar class="toolbar items-center">
         <q-toolbar-title>
           <div class="row items-center">
-            <router-link to="/" class="router-link">
+            <router-link :to="{path:`/${currentChain.NETWORK_NAME.toLowerCase()}`}" class="router-link">
               <img
                 class="header-logo"
                 src="~assets/logo/logo-light.svg"
@@ -181,6 +181,7 @@ export default {
   components: { LoginButton, ChainSelector },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("blockchains", ["currentChain"]),
     admin_address() {
       return process.env.ADMIN_ADDRESS;
     }
