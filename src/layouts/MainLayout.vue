@@ -28,14 +28,14 @@
             class="hover-accent"
             color="secondary"
             flat
-            to="/createpool"
+            :to="{name: 'createpool'}"
             label="Create pool"
           />
           <q-btn
             class="hover-accent"
             color="secondary"
             flat
-            to="/pools"
+            :to="{name: 'allpools'}"
             label="Pools"
           />
           <q-btn
@@ -75,7 +75,7 @@
                 v-if="accountName === admin_address"
                 color="secondary"
                 text-color="black"
-                to="/createpool"
+                :to="{name: 'createpool'}"
                 outline
               />
               <q-btn
@@ -83,7 +83,7 @@
                 color="secondary"
                 text-color="black"
                 outline
-                to="/pools"
+                :to="{name: 'allpools'}"
               />
               <q-btn
                 label="Wallet"

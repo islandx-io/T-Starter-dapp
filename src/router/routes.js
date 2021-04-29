@@ -1,38 +1,29 @@
 const routes = [
   {
     path: "/",
+    redirect: "/telos",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Index.vue") }]
+    children: [{ path: "/:chain", component: () => import("pages/Index.vue") }]
   },
-  // {
-  //   path: "/account/:accountName",
-  //   component: () => import("layouts/MainLayout.vue"),
-  //   children: [{ path: "", component: () => import("pages/Account.vue") }]
-  // },
   {
-    path: "/wallet/:accountName",
+    path: "/:chain",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ path: "/", component: () => import("pages/Index.vue") }]
+  },
+  {
+    path: "/:chain/wallet/:accountName",
     component: () => import("layouts/MainLayout.vue"),
     children: [
       { path: "", name: "wallet", component: () => import("pages/Wallet.vue") }
     ]
   },
-  // {
-  //   path: "/transfer",
-  //   component: () => import("layouts/MainLayout.vue"),
-  //   children: [{ path: "", component: () => import("pages/Transfer.vue") }]
-  // },
-  // {
-  //   path: "/streaming",
-  //   component: () => import("layouts/MainLayout.vue"),
-  //   children: [{ path: "", component: () => import("pages/Streaming.vue") }]
-  // },
   {
-    path: "/pools",
+    path: "/:chain/pools",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Pools.vue") }]
+    children: [{ path: "", name:'allpools', component: () => import("pages/Pools.vue") }]
   },
   {
-    path: "/pools/:id",
+    path: "/:chain/pools/:id",
     component: () => import("layouts/MainLayout.vue"),
     children: [
       {
@@ -48,12 +39,12 @@ const routes = [
     ]
   },
   {
-    path: "/createpool",
+    path: "/:chain/createpool",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/CreatePool.vue") }]
+    children: [{ path: "", name:'createpool', component: () => import("pages/CreatePool.vue") }]
   },
   {
-    path: "/updatepool/:id",
+    path: "/:chain/updatepool/:id",
     component: () => import("layouts/MainLayout.vue"),
     children: [
       {
@@ -64,15 +55,30 @@ const routes = [
     ]
   },
   {
-    path: "/receive",
+    path: "/:chain/receive",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/ReceiveTokens.vue") }]
+    children: [{ path: "", name:"receive", component: () => import("pages/ReceiveTokens.vue") }]
   },
   {
-    path: "/send",
+    path: "/:chain/send",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/SendTokens.vue") }]
+    children: [{ path: "", name: "send", component: () => import("pages/SendTokens.vue") }]
   },
+  // {
+  //   path: "/account/:accountName",
+  //   component: () => import("layouts/MainLayout.vue"),
+  //   children: [{ path: "", component: () => import("pages/Account.vue") }]
+  // },
+  // {
+  //   path: "/transfer",
+  //   component: () => import("layouts/MainLayout.vue"),
+  //   children: [{ path: "", component: () => import("pages/Transfer.vue") }]
+  // },
+  // {
+  //   path: "/streaming",
+  //   component: () => import("layouts/MainLayout.vue"),
+  //   children: [{ path: "", component: () => import("pages/Streaming.vue") }]
+  // },
 
   // Always leave this as last one,
   // but you can also remove it

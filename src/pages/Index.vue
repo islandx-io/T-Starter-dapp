@@ -27,7 +27,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
               class="hover-accent"
               color="secondary"
               outline
-              to="/pools"
+              :to="{name: 'allpools'}"
               label="VIEW ALL POOLS"
             />
             <q-btn
@@ -114,7 +114,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             class="hover-accent"
             color="accent"
             outline
-            to="/pools"
+            :to="{name: 'allpools'}"
             label="VIEW ALL POOLS"
           />
         </div>

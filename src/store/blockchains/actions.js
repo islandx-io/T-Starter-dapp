@@ -18,5 +18,5 @@ export const setNewChain = async function({ commit, getters, dispatch }, selecte
         newChain: newChain,
       });
 
-    localStorage.setItem("selectedChain", selectedChain);
+    localStorage.setItem("selectedChain", newChain.NETWORK_NAME);
 };
