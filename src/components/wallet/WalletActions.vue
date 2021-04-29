@@ -34,7 +34,7 @@
         :padding="actionButtonPadding"
         icon="fas fa-sign-in-alt"
         :to="{
-          path: '/receive',
+          name: 'receive',
           query: { token_sym: props.row.token_sym }
         }"
         v-if="baseTokenSymbols.includes(props.row.token_sym)"
@@ -103,7 +103,7 @@
         :padding="actionButtonPadding"
         :icon="roundSend"
         :to="{
-          path: '/send',
+          name: 'send',
           query: { token_sym: props.row.token_sym }
         }"
         v-if="props.row.balance > 0"

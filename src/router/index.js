@@ -27,16 +27,10 @@ export default function ({store}/* { store, ssrContext } */) {
   })
 
   Router.beforeResolve(async (to, from, next) => {
-    console.log(to.params.chain.toUpperCase())
-    console.log('current chain')
-    console.log(store.getters['blockchains/currentChain'])
     if (to.params.chain.toUpperCase() === store.getters['blockchains/currentChain'].NETWORK_NAME) {
-      console.log('same chain')
       next()
     } else {
       await store.dispatch("blockchains/setNewChain", to.params.chain.toUpperCase())
-      console.log('new chain')
-      console.log(store.getters['blockchains/currentChain'])
       await store.dispatch("account/logout")
       // this.$router.go();
       // console.log(next())

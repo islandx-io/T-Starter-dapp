@@ -12,7 +12,7 @@
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
       <q-card class="authenticated">
-        <q-btn :to="`/wallet/${accountName}`" flat round class="self-start">
+        <q-btn :to="{ name: 'wallet', params: { accountName: accountName } }" flat round class="self-start">
           <q-icon
             class="hover-accent"
             name="fas fa-chevron-circle-left"
