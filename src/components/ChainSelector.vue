@@ -82,8 +82,8 @@ export default {
     selectedChain() {
       if (this.selectedChain != localStorage.getItem("selectedChain")) {
         this.switchChain();
-        this.logout();
-        // this.$router.push({ path: "/" });
+        this.$router.push({params: {chain: this.selectedChain.toLowerCase()}});
+        // this.logout();
         this.$router.go();
       }
     }
@@ -93,7 +93,8 @@ export default {
     // if already saved in local storage
     if (
       localStorage.getItem("selectedChain") != null &&
-      localStorage.getItem("selectedChain") != this.selectedChain
+      localStorage.getItem("selectedChain") != this.selectedChain &&
+      this.chainOptions.includes(localStorage.getItem("selectedChain"))
     ) {
       this.selectedChain = localStorage.getItem("selectedChain");
     }
