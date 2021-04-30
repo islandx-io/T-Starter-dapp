@@ -11,50 +11,56 @@
       </q-card>
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
-      <q-card class="authenticated">
-        <q-btn :to="{ name: 'wallet', params: { accountName: accountName } }" flat round class="self-start">
-          <q-icon
-            class="hover-accent"
-            name="fas fa-chevron-circle-left"
-            style="font-size: 50px"
-          />
-        </q-btn>
-        <div class="column items-center">
-          <div class="row items-center justify-center q-pa-sm q-pb-md">
-            <h2>Send</h2>
-            <div class="row items-center justify-center">
-              <token-avatar
-                :token="selectedTokenSym"
-                :avatar="avatar"
-                :avatarSize="55"
-              />
-              <h2>
-                {{ selectedTokenSym }}
-              </h2>
-            </div>
-          </div>
-          <div
-            class="networks row justify-center q-pb-sm"
-            v-if="isCrossChainToken"
+      <q-form @submit="trySend">
+        <q-card class="authenticated">
+          <q-btn
+            :to="{ name: 'wallet', params: { accountName: accountName } }"
+            flat
+            round
+            class="self-start"
           >
-            <div class="text-subtitle1 q-pb-sm col-12 text-center">
-              To network
+            <q-icon
+              class="hover-accent"
+              name="fas fa-chevron-circle-left"
+              style="font-size: 50px"
+            />
+          </q-btn>
+          <div class="column items-center">
+            <div class="row items-center justify-center q-pa-sm q-pb-md">
+              <h2>Send</h2>
+              <div class="row items-center justify-center">
+                <token-avatar
+                  :token="selectedTokenSym"
+                  :avatar="avatar"
+                  :avatarSize="55"
+                />
+                <h2>
+                  {{ selectedTokenSym }}
+                </h2>
+              </div>
             </div>
-            <div class="q-gutter-sm row justify-center">
-              <!-- TODO Add WAX once ready -->
-              <q-radio
-                v-model="selectedNetwork"
-                val="telos"
-                label="Telos"
-                v-if="selectedTokenInList(['TLOS', 'START'])"
-              />
-              <q-radio
-                v-model="selectedNetwork"
-                val="eos"
-                label="EOS"
-                v-if="selectedTokenInList(['EOS', 'START'])"
-              />
-              <!-- <q-radio
+            <div
+              class="networks row justify-center q-pb-sm"
+              v-if="isCrossChainToken"
+            >
+              <div class="text-subtitle1 q-pb-sm col-12 text-center">
+                To network
+              </div>
+              <div class="q-gutter-sm row justify-center">
+                <!-- TODO Add WAX once ready -->
+                <q-radio
+                  v-model="selectedNetwork"
+                  val="telos"
+                  label="Telos"
+                  v-if="selectedTokenInList(['TLOS', 'START'])"
+                />
+                <q-radio
+                  v-model="selectedNetwork"
+                  val="eos"
+                  label="EOS"
+                  v-if="selectedTokenInList(['EOS', 'START'])"
+                />
+                <!-- <q-radio
                 v-model="selectedNetwork"
                 val="bitcoin"
                 label="Bitcoin"
@@ -72,93 +78,101 @@
                 label="Binance Smart Chain"
                 v-if="selectedTokenInList(['TLOS', 'EOS', 'PBTC'])"
               /> -->
+              </div>
             </div>
-          </div>
-          <div v-else class="text-subtitle1 text-center q-pb-sm">
-            On the {{ currentChain.NETWORK_DISPLAY_NAME }} network
-          </div>
-          <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
-            <q-input
-              outlined
-              autocapitalize="off"
-              bottom-slots
-              v-model="to"
-              label="To"
-              counter
-              maxlength="12"
-            />
-            <div class="row items-start">
+            <div v-else class="text-subtitle1 text-center q-pb-sm">
+              On the {{ currentChain.NETWORK_DISPLAY_NAME }} network
+            </div>
+            <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
+              <!-- TO -->
+              <q-input
+                outlined
+                autocapitalize="off"
+                bottom-slots
+                v-model="to"
+                label="To"
+                counter
+                maxlength="12"
+                :rules="[accountExistsOnChain]"
+                lazy-rules="true"
+                debounce="1000"
+              />
+              <!-- Amount -->
+              <div class="row items-start">
+                <q-input
+                  outlined
+                  bottom-slots
+                  :suffix="selectedTokenSym"
+                  v-model="amount"
+                  label="Amount"
+                  type="number"
+                  maxlength="12"
+                  class="col"
+                  :hint="`Available: ${balance} ${selectedTokenSym}`"
+                  :rules="[validateInputAmount]"
+                >
+                </q-input>
+                <q-btn
+                  class="col-shrink q-ma-sm"
+                  label="Max"
+                  color="positive"
+                  outline
+                  @click="amount = balance"
+                />
+              </div>
+              <!-- Memo -->
               <q-input
                 outlined
                 bottom-slots
-                :suffix="selectedTokenSym"
-                v-model="amount"
-                label="Amount"
-                type="number"
-                maxlength="12"
-                class="col"
-                :hint="`Available: ${balance} ${selectedTokenSym}`"
-                :rules="[validateInputAmount]"
-              >
-              </q-input>
-              <q-btn
-                class="col-shrink q-ma-sm"
-                label="Max"
-                color="positive"
-                outline
-                @click="amount = balance"
+                v-model="memo"
+                label="Memo"
+                counter
+                maxlength="200"
               />
             </div>
-            <q-input
-              outlined
-              bottom-slots
-              v-model="memo"
-              label="Memo"
-              counter
-              maxlength="200"
-            />
-          </div>
-          <div class="text-center self-stretch q-pt-sm">
-            <q-btn
-              class="hover-accent"
-              size="lg"
-              color="primary"
-              dense
-              no-shadow
-              @click="trySend"
-              label="Send"
-              style="width: 50%"
-            />
-          </div>
+            <!-- Send -->
+            <div class="text-center self-stretch q-pt-sm">
+              <q-btn
+                class="hover-accent"
+                size="lg"
+                color="primary"
+                dense
+                no-shadow
+                label="Send"
+                style="width: 50%"
+                type="submit"
+              />
+            </div>
 
-          <!-- Transaction sent dialog -->
-          <q-dialog v-model="showTransaction" confirm>
-            <q-card>
-              <q-card-section class="row items-center">
-                <q-avatar
-                  icon="arrow_forward"
-                  color="primary"
-                  text-color="white"
-                />
-                <span class="q-ml-sm">
-                  Transaction sent, click to view in block explorer.
-                </span>
-                <q-item
-                  clickable
-                  tag="a"
-                  target="_blank"
-                  :href="`${explorerUrl}/transaction/${transaction}`"
-                  class="q-ml-sm"
-                  >{{ transaction }}</q-item
-                >
-              </q-card-section>
-              <q-card-actions align="right">
-                <q-btn flat label="Ok" color="primary" v-close-popup></q-btn>
-              </q-card-actions>
-            </q-card>
-          </q-dialog>
-        </div>
-      </q-card>
+            <!-- Transaction sent dialog -->
+            <q-dialog v-model="showTransaction" confirm>
+              <q-card>
+                <q-card-section class="row items-center">
+                  <q-avatar
+                    icon="arrow_forward"
+                    color="primary"
+                    text-color="white"
+                  />
+                  <span class="q-ml-sm">
+                    Transaction sent, click to view in block explorer.
+                  </span>
+                  <q-item
+                    clickable
+                    tag="a"
+                    target="_blank"
+                    :href="`${explorerUrl}/transaction/${transaction}`"
+                    class="q-ml-sm"
+                    >{{ transaction }}</q-item
+                  >
+                </q-card-section>
+                <q-card-actions align="right">
+                  <q-btn flat label="Ok" color="primary" v-close-popup></q-btn>
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
+          </div>
+        </q-card>
+      </q-form>
     </section>
   </q-page>
 </template>
@@ -166,6 +180,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
+import { Api, JsonRpc } from "eosjs";
 
 export default {
   components: { tokenAvatar },
@@ -183,7 +198,7 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    ...mapGetters("blockchains", ["currentChain"]),
+    ...mapGetters("blockchains", ["currentChain", "getNetworkByName"]),
 
     explorerUrl() {
       return this.currentChain.NETWORK_EXPLORER;
@@ -228,10 +243,34 @@ export default {
     },
     validateInputAmount(val) {
       return (
-        val <= this.balance ||
-        `Amount cannot be greater than your available balance.`
+        val <= this.balance & val > 0 ||
+        `Amount must be between zero and amount available.`
       );
     },
+    async accountExistsOnChain(account) {
+      // get current selected chain
+      let blockchains = this.getNetworkByName(
+        this.selectedNetwork.toUpperCase()
+      );
+      let newChain = {};
+
+      // check if testnet or not
+      if (process.env.TESTNET == "true") {
+        newChain = blockchains.find(el => el.TEST_NETWORK === true);
+      } else {
+        newChain = blockchains.find(el => el.TEST_NETWORK === false);
+      }
+      // console.log(newChain)
+
+      //set rpc
+      const rpc = new JsonRpc(
+        `${newChain.NETWORK_PROTOCOL}://${newChain.NETWORK_HOST}:${newChain.NETWORK_PORT}`
+      );
+      //check if account exists on chain
+      let exists = await rpc.get_account(account);
+      return exists || "Account does not exist";
+    },
+
     async send() {
       if (!(await this.accountExists(this.to))) {
         this.$q.notify({
@@ -314,7 +353,8 @@ export default {
   mounted() {
     if (this.$route.query.token_sym !== undefined)
       this.selectedTokenSym = this.$route.query.token_sym;
-    if (!this.isCrossChainToken) this.selectedNetwork = this.currentChain.NETWORK_NAME;
+    if (!this.isCrossChainToken)
+      this.selectedNetwork = this.currentChain.NETWORK_NAME;
   }
 };
 </script>
