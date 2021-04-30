@@ -105,7 +105,6 @@
                   :suffix="selectedTokenSym"
                   v-model="amount"
                   label="Amount"
-                  type="number"
                   maxlength="12"
                   class="col"
                   :hint="`Available: ${balance} ${selectedTokenSym}`"
