@@ -238,7 +238,7 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.go();
+        this.$router.push('/');
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -263,7 +263,7 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.go();
+        this.$router.push('/');
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -283,7 +283,7 @@ export default {
           icon: "cloud_done",
           message: "Staked Tokens Updated"
         });
-        this.$router.go();
+        this.$router.push('/');
       } catch (error) {
         this.$q.notify({
           color: "red-5",
