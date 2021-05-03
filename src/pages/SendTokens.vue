@@ -60,6 +60,12 @@
                   label="EOS"
                   v-if="selectedTokenInList(['EOS', 'START'])"
                 />
+                <q-radio
+                  v-model="selectedNetwork"
+                  val="wax"
+                  label="WAX"
+                  v-if="selectedTokenInList(['WAX', 'START'])"
+                />
                 <!-- <q-radio
                 v-model="selectedNetwork"
                 val="bitcoin"
