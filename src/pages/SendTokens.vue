@@ -47,7 +47,6 @@
                 To network
               </div>
               <div class="q-gutter-sm row justify-center">
-                <!-- TODO Add WAX once ready -->
                 <q-radio
                   v-model="selectedNetwork"
                   val="telos"
