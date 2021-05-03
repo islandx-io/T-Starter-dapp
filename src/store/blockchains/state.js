@@ -70,7 +70,7 @@ export default function() {
         NETWORK_HOST: "testnet.waxsweden.org",
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
-        NETWORK_EXPLORER: "https://wax-test.bloks.io/",
+        NETWORK_EXPLORER: "https://wax-test.bloks.io",
         HYPERION_ENDPOINT: "https://testnet.waxsweden.org:443"
       },
       {
@@ -82,7 +82,7 @@ export default function() {
         NETWORK_HOST: "chain.wax.io",
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
-        NETWORK_EXPLORER: "https://wax.bloks.io/",
+        NETWORK_EXPLORER: "https://wax.bloks.io",
         HYPERION_ENDPOINT: "https://chain.wax.io:443"
       }
     ]
