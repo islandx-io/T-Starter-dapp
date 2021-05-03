@@ -60,6 +60,7 @@ export default {
         else if (token === "TLOS") result = "/tokens/tlos.png";
         else if (token === "TELOS") result = "/tokens/tlos.png";
         else if (token === "EOS") result = "/tokens/eos.png";
+        else if (token === "WAX") result = "/tokens/wax.png";
       }
       return result;
     }
