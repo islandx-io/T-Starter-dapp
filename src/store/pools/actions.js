@@ -95,9 +95,10 @@ export const ifPoolFunded = async function(
       // console.log(pool);
 
       // console.log(tableResults.rows);
-      let amount_inwallet = this.$chainToQty(tableResults.rows.find(
-        el => el.contract === pool.swap_ratio.contract
-      ).balance);
+      let amount_inwallet = this.$chainToQty(
+        tableResults.rows.find(el => el.contract === pool.swap_ratio.contract)
+          .balance
+      );
       // console.log(amount_inwallet);
 
       let amount_required =
@@ -211,7 +212,10 @@ export const getTokenPrecision = async function(
   }
 };
 
-export const updatePoolSettings = async function({ commit, getters }, poolID) {
+export const updatePoolSettings = async function(
+  { commit, getters, dispatch },
+  poolID
+) {
   const pool = getters.getPoolByID(poolID);
 
   // TODO Call within the getAllChainPools action
@@ -259,6 +263,8 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
     access_type: access_type,
     progress: progress
   });
+
+  await dispatch("updateSentimentByPoolID", poolID);
 };
 
 // Get pools created from chain
@@ -587,6 +593,23 @@ export const getBaseTokens = async function(
 
       return base_token_info_list;
     }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+export const updateSentimentByPoolID = async function({ commit }, poolID) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS,
+      scope: poolID,
+      table: "sentiment",
+      limit: 10000,
+      reverse: false,
+      show_payer: false
+    });
+    const sentiment_table = tableResults.rows[tableResults.rows.length - 1];
+    commit("setPoolSentimentTable", { id: poolID, sentiment_table });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
