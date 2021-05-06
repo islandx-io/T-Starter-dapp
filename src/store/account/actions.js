@@ -326,6 +326,22 @@ export const getChainSTART = async function(
       commit("setWalletStakeMaturities", {
         arr: stakeBalanceTbl.rows[0].stake_maturities
       });
+
+      //set balance
+      let payload = {
+        address: 'token.start',
+        sym: 'START',
+        accountName: account
+      };
+
+      let token_str = await dispatch("pools/getBalanceFromChain", payload, {
+        root: true
+      });
+      let balance = this.$chainToQty(token_str);
+      commit("setWalletTokenBalance", {
+        token_sym: 'START',
+        amount: balance
+      });
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });

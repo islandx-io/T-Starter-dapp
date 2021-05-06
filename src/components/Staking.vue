@@ -4,7 +4,8 @@
       <div class="row">
         <div class="col">
           <!-- START balance  -->
-          START Balance {{}}
+          START Balance
+          {{ balanceSTARTstr }}
 
           <!-- Stake input -->
           <q-input outlined v-model="amountStake">
@@ -24,7 +25,8 @@
 
         <div class="col">
           <!-- Staked amount -->
-          Staked START Balance {{}}
+          Staked START Balance
+          {{ stakedSTARTstr }}
 
           <!-- Unstake input -->
           <q-input outlined v-model="amountUnstake">
@@ -53,6 +55,8 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   props: {
     // ...your custom props
@@ -60,13 +64,43 @@ export default {
   data() {
     return {
       amountStake: 0,
-      amountUnstake: 0
+      amountUnstake: 0,
+      // balanceSTARTstr: "0.0000 START",
+      // stakedSTARTstr: "0.0000 START"
     };
   },
 
-  computed: {},
+  computed: {
+    ...mapGetters("account", [
+      "isAuthenticated",
+      "accountName",
+      "loading",
+      "isAutoLoading", "wallet"
+    ]),
+
+    balanceSTARTstr() {
+      let START_info = this.wallet.find(el => el.sym = 'START')
+      if (START_info.balance != 0) {
+        return this.$toChainString(START_info.balance, START_info.decimals, START_info.sym)
+      } else {
+        return "0.0000 START"
+      }
+    },
+
+    stakedSTARTstr() {
+      let START_info = this.wallet.find(el => el.sym = 'START')
+      if (START_info.staked != 0) {
+        return this.$toChainString(START_info.staked, START_info.decimals, START_info.sym)
+      } else {
+        return "0.0000 START"
+      }
+    }
+
+  },
 
   methods: {
+    ...mapActions("account", ["login", "logout", "autoLogin", "getChainSTART"]),
+    ...mapActions("pools", ["getBalanceFromChain",]),
     // following method is REQUIRED
     // (don't change its name --> "show")
     show() {
@@ -102,24 +136,24 @@ export default {
     },
 
     setStakeMax() {
-      console.log("Stake max")
+      console.log("Stake max");
     },
 
     setUnstakeMax() {
-      console.log("UnStake max")
+      console.log("UnStake max");
     },
 
     tryStake() {
-      console.log("Try stake")
+      console.log("Try stake");
     },
 
     tryUnstake() {
-      console.log("Try unstake")
-    },
-
-
+      console.log("Try unstake");
+    }
   },
 
-  mounted() {}
+  async mounted() {
+    await this.getChainSTART(this.accountName);
+  }
 };
 </script>
