@@ -24,11 +24,13 @@ const defaultPoolInfo = {
   public_end: loading,
   whitelist: [],
   web_links: loading,
+  sentiment: [],
   // Not in contract
   slug: loading,
   pool_status: loading,
   access_type: loading,
-  progress: 0
+  progress: 0,
+  sentiment_table: []
 };
 
 export default ({ Vue }) => {
