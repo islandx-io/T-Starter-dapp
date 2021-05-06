@@ -30,10 +30,32 @@
               </div>
             </q-item-section>
           </q-item>
-          <q-item>
+          <q-item class="row justify-between">
             <p>
               {{ pool.tag_line }}
             </p>
+            <div class="row items-center q-gutter-x-sm">
+              <q-btn
+                outline
+                flat
+                padding="6px 8px"
+                icon="fas fa-thumbs-up"
+                class="hover-accent"
+              >
+                <q-tooltip>Like</q-tooltip>
+              </q-btn>
+              <div>{{ sentimentValue("upvote") }}</div>
+              <q-btn
+                outline
+                flat
+                padding="6px 8px"
+                icon="fas fa-thumbs-down"
+                class="hover-accent"
+              >
+                <q-tooltip>Dislike</q-tooltip>
+              </q-btn>
+              <div>{{ sentimentValue("downvote") }}</div>
+            </div>
           </q-item>
           <q-item v-if="['open', 'upcoming'].includes(pool.pool_status)">
             <div
@@ -282,6 +304,11 @@ export default {
     },
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
+    },
+    sentimentValue(key) {
+      if (this.pool.sentiment.length > 0)
+        return this.pool.sentiment.find(el => el.key === key).value;
+      else return 0;
     }
   },
   async mounted() {
