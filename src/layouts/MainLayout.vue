@@ -4,7 +4,10 @@
       <q-toolbar class="toolbar items-center">
         <q-toolbar-title>
           <div class="row items-center">
-            <router-link :to="{path:`/${currentChain.NETWORK_NAME.toLowerCase()}`}" class="router-link">
+            <router-link
+              :to="{ path: `/${currentChain.NETWORK_NAME.toLowerCase()}` }"
+              class="router-link"
+            >
               <img
                 class="header-logo"
                 src="~assets/logo/logo-light.svg"
@@ -28,15 +31,23 @@
             class="hover-accent"
             color="secondary"
             flat
-            :to="{name: 'createpool'}"
+            :to="{ name: 'createpool' }"
             label="Create pool"
           />
           <q-btn
             class="hover-accent"
             color="secondary"
             flat
-            :to="{name: 'allpools'}"
+            :to="{ name: 'allpools' }"
             label="Pools"
+          />
+          <q-btn
+            v-if="isAuthenticated"
+            class="hover-accent"
+            color="secondary"
+            flat
+            @click="openStaking()"
+            label="Staking"
           />
           <q-btn
             v-if="isAuthenticated"
@@ -75,7 +86,7 @@
                 v-if="accountName === admin_address"
                 color="secondary"
                 text-color="black"
-                :to="{name: 'createpool'}"
+                :to="{ name: 'createpool' }"
                 outline
               />
               <q-btn
@@ -83,7 +94,7 @@
                 color="secondary"
                 text-color="black"
                 outline
-                :to="{name: 'allpools'}"
+                :to="{ name: 'allpools' }"
               />
               <q-btn
                 label="Wallet"
@@ -104,6 +115,8 @@
 
     <q-page-container>
       <router-view />
+      <!-- Staking dialog -->
+      <!-- <staking /> -->
     </q-page-container>
 
     <section class="foot-bg row items-stretch">
@@ -160,10 +173,13 @@
 <script>
 import LoginButton from "components/LoginButton.vue";
 import ChainSelector from "components/ChainSelector.vue";
+import Staking from "components/Staking.vue";
 import { mapGetters, mapActions } from "vuex";
+import { Dialog } from "quasar";
 
 export default {
   name: "MainLayout",
+  components: { LoginButton, ChainSelector },
   data() {
     return {
       // prettier-ignore
@@ -178,12 +194,30 @@ export default {
       siteVersion: process.env.SITE_VERSION
     };
   },
-  components: { LoginButton, ChainSelector },
+
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("blockchains", ["currentChain"]),
     admin_address() {
       return process.env.ADMIN_ADDRESS;
+    }
+  },
+  methods: {
+    async openStaking() {
+      this.$q
+        .dialog({
+          component: Staking,
+          parent: this,
+        })
+        .onOk(() => {
+          console.log("OK");
+        })
+        .onCancel(() => {
+          console.log("Cancel");
+        })
+        .onDismiss(() => {
+          console.log("Called on OK or Cancel");
+        });
     }
   }
 };
