@@ -4,9 +4,9 @@
       <div class="row">
         <div class="col">
           <!-- START balance  -->
-          START Balance
-          {{ balanceSTARTstr }}
-
+          <div>START Balance</div>
+          <div>{{ balanceSTARTstr }}</div>    
+          
           <!-- Stake input -->
           <q-input outlined v-model="amountStake">
             <template v-slot:append>
@@ -24,9 +24,10 @@
         </div>
 
         <div class="col">
-          <!-- Staked amount -->
-          Staked START Balance
-          {{ stakedSTARTstr }}
+          <!-- Staked amount -->          
+          <div>Staked START Balance</div>
+          <div>{{ stakedSTARTstr }}</div>
+          
 
           <!-- Unstake input -->
           <q-input outlined v-model="amountUnstake">
@@ -173,7 +174,26 @@ export default {
     },
 
     async stake(amount_str) {
-      const actions = [
+      let actions = [];
+      if (this.amountStake >= this.START_info.liquid) {
+        let amountNeeded = this.amountStake - this.START_info.liquid
+
+       // if not enough in liquid, take from balance
+       actions.push(
+          {
+            account: this.START_info.token_contract,
+            name: "transfer",
+            data: {
+              from: this.accountName,
+              to: process.env.CONTRACT_ADDRESS,
+              quantity: this.$toChainString(amountNeeded, this.START_info.decimals, this.START_info.sym),
+              memo: `Send ${this.START_info.sym} to liquid`
+            }
+          }
+        )
+      }
+      // stake amount
+      actions.push(
         {
           account: process.env.CONTRACT_ADDRESS,
           name: "stake",
@@ -182,7 +202,7 @@ export default {
             quantity: amount_str
           }
         }
-      ];
+      );
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
@@ -212,8 +232,9 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Tokens claimed"
+          message: "Staked"
         });
+        this.hide();
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -225,7 +246,28 @@ export default {
     },
 
     async tryUnstake() {
-      console.log("Try unstake");
+      try {
+        let amount_str = this.$toChainString(
+          this.amountUnstake,
+          this.START_info.decimals,
+          this.START_info.sym
+        );
+        await this.unstake(amount_str);
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Unstaking"
+        });
+        this.hide()
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+      }
     }
   },
 

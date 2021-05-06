@@ -488,7 +488,7 @@ export default {
               from: this.accountName,
               to: process.env.CONTRACT_ADDRESS,
               quantity: this.premium_access_fee,
-              memo: "Staking"
+              memo: "Premium Pool Staking"
             }
           }
         );
