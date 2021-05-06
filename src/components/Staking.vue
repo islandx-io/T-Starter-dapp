@@ -65,8 +65,6 @@ export default {
     return {
       amountStake: 0,
       amountUnstake: 0,
-      // balanceSTARTstr: "0.0000 START",
-      // stakedSTARTstr: "0.0000 START"
     };
   },
 
@@ -78,19 +76,21 @@ export default {
       "isAutoLoading", "wallet"
     ]),
 
+    START_info() {
+      return this.wallet.find(el => el.sym = 'START')
+    },
+
     balanceSTARTstr() {
-      let START_info = this.wallet.find(el => el.sym = 'START')
-      if (START_info.balance != 0) {
-        return this.$toChainString(START_info.balance, START_info.decimals, START_info.sym)
+      if (this.START_info.balance != 0) {
+        return this.$toChainString(this.START_info.balance, this.START_info.decimals, this.START_info.sym)
       } else {
         return "0.0000 START"
       }
     },
 
     stakedSTARTstr() {
-      let START_info = this.wallet.find(el => el.sym = 'START')
-      if (START_info.staked != 0) {
-        return this.$toChainString(START_info.staked, START_info.decimals, START_info.sym)
+      if (this.START_info.staked != 0) {
+        return this.$toChainString(this.START_info.staked, this.START_info.decimals, this.START_info.sym)
       } else {
         return "0.0000 START"
       }
@@ -137,17 +137,94 @@ export default {
 
     setStakeMax() {
       console.log("Stake max");
+      this.amountStake = this.START_info.balance
     },
 
     setUnstakeMax() {
       console.log("UnStake max");
+      this.amountUnstake = this.START_info.staked
     },
 
-    tryStake() {
-      console.log("Try stake");
+    async reclaimStake(amount_str) {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "reclaimstake",
+          data: {
+            account: this.accountName,
+            quantity: amount_str
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
     },
 
-    tryUnstake() {
+    async updateStake() {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "updatestake",
+          data: {
+            account: this.accountName
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
+    async stake(amount_str) {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "stake",
+          data: {
+            account: this.accountName,
+            quantity: amount_str
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
+    async unstake(amount_str) {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "unstake",
+          data: {
+            account: this.accountName,
+            quantity: amount_str
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
+    async tryStake() {
+      try {
+        let amount_str = this.$toChainString(
+          this.amountStake,
+          this.START_info.decimals,
+          this.START_info.sym
+        );
+        await this.stake(amount_str);
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Tokens claimed"
+        });
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+      }
+    },
+
+    async tryUnstake() {
       console.log("Try unstake");
     }
   },

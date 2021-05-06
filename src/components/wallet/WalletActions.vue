@@ -197,7 +197,7 @@ export default {
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
-    async reclaimTokens(amount_str) {
+    async reclaimStake(amount_str) {
       const actions = [
         {
           account: process.env.CONTRACT_ADDRESS,
@@ -256,7 +256,7 @@ export default {
           props.row.decimals,
           props.row.token_sym
         );
-        await this.reclaimTokens(amount_str);
+        await this.reclaimStake(amount_str);
         this.$q.notify({
           color: "green-4",
           textColor: "white",
