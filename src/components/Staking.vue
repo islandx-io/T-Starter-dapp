@@ -4,8 +4,8 @@
       <div class="row">
         <div class="col">
           <!-- START balance  -->
-          <div>START Balance</div>
-          <div>{{ balanceSTARTstr }}</div>    
+          <div class="text-center">START Balance</div>
+          <div class="text-center">{{ balanceSTARTstr }}</div>    
           
           <!-- Stake input -->
           <q-input outlined v-model="amountStake">
@@ -20,13 +20,13 @@
             </template>
           </q-input>
 
-          <q-btn color="primary" label="Stake" @click="tryStake()" />
+          <q-btn class="" color="primary" label="Stake" @click="tryStake()" />
         </div>
 
         <div class="col">
           <!-- Staked amount -->          
-          <div>Staked START Balance</div>
-          <div>{{ stakedSTARTstr }}</div>
+          <div class="text-center">Staked START Balance</div>
+          <div class="text-center">{{ stakedSTARTstr }}</div>
           
 
           <!-- Unstake input -->
