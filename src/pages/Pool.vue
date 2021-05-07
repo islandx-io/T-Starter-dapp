@@ -41,8 +41,10 @@
                 padding="6px 8px"
                 icon="fas fa-thumbs-up"
                 class="hover-accent"
+                @click="likePool('upvote')"
+                :disable="!isAuthenticated"
               >
-                <q-tooltip>Like</q-tooltip>
+                <q-tooltip>Upvote</q-tooltip>
               </q-btn>
               <div>{{ sentimentValue("upvote") }}</div>
               <q-btn
@@ -51,8 +53,10 @@
                 padding="6px 8px"
                 icon="fas fa-thumbs-down"
                 class="hover-accent"
+                @click="likePool('downvote')"
+                :disable="!isAuthenticated"
               >
-                <q-tooltip>Dislike</q-tooltip>
+                <q-tooltip>Downvote</q-tooltip>
               </q-btn>
               <div>{{ sentimentValue("downvote") }}</div>
             </div>
@@ -226,7 +230,8 @@ export default {
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
       polling: null,
-      claimable: false
+      claimable: false,
+      platform_token: { sym: "4,START", contract: "token.start" }
     };
   },
   computed: {
@@ -284,7 +289,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions("pools", ["getChainPoolByID", "getAllocationByPool"]),
+    ...mapActions("pools", [
+      "getChainPoolByID",
+      "getAllocationByPool",
+      "getPlatformToken",
+      "getBalanceFromChain"
+    ]),
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
@@ -309,6 +319,34 @@ export default {
       if (this.pool.sentiment.length > 0)
         return this.pool.sentiment.find(el => el.key === key).value;
       else return 0;
+    },
+    async likePool(side) {
+      if (this.isAuthenticated) {
+        let payload = {
+          address: this.platform_token.contract,
+          sym: "START",
+          accountName: this.accountName
+        };
+        let start_balance = this.$chainToQty(
+          await this.getBalanceFromChain(payload)
+        );
+        if (start_balance > 1) {
+          let vote = 0; // abstain
+          if (side === "upvote") vote = 1;
+          else if (side === "downvote") vote = -1;
+          const actions = [];
+          actions.push({
+            account: process.env.CONTRACT_ADDRESS,
+            name: "sentiment",
+            data: {
+              account: this.accountName,
+              pool_id: this.poolID,
+              vote: vote
+            }
+          });
+          const transaction = await this.$store.$api.signTransaction(actions);
+        } else console.log("Insufficient START");
+      }
     }
   },
   async mounted() {
@@ -326,6 +364,7 @@ export default {
     } else {
       this.tab = "details";
     }
+    this.platform_token = await this.getPlatformToken();
   },
   beforeDestroy() {
     clearInterval(this.polling);
