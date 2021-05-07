@@ -470,9 +470,6 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID"]),
 
-    admin_address() {
-      return process.env.ADMIN_ADDRESS;
-    },
     selected_base_token() {
       return this.base_token_options.find(
         el => el.sym === this.base_token_symbol

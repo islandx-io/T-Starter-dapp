@@ -39,13 +39,13 @@ export const getAllChainBallots = async function({ commit, dispatch }) {
       show_payer: false // Optional: Show ram payer
     });
 
-    // sort according to nearest pool open
+    // sort according to nearest ballot close date
     tableResults.rows.sort(function(a, b) {
       return new Date(a.ballot_close) - new Date(b.ballot_close);
     });
 
     for (const pool of tableResults.rows) {
-      console.log(pool);
+    //   console.log(pool);
       let id = pool.id;
 
       //check dates are unix
