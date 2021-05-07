@@ -58,6 +58,7 @@
                 :rules="[accountExistsOnChain]"
                 lazy-rules="true"
                 debounce="1000"
+                no-error-icon
               >
                 <template v-slot:append>
                   <q-btn-dropdown
@@ -121,6 +122,7 @@
                 maxlength="12"
                 class="col"
                 :rules="[validateInputAmount]"
+                no-error-icon
               >
                 <template v-slot:append>
                   <q-btn
