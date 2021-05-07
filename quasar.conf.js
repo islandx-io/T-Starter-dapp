@@ -58,7 +58,8 @@ module.exports = function(/* ctx */) {
         CONTRACT_TABLE: process.env.CONTRACT_TABLE,
         ADMIN_ADDRESS: process.env.ADMIN_ADDRESS,
         BUY_START_URL: process.env.BUY_START_URL,
-        SITE_VERSION: siteVersion
+        SITE_VERSION: siteVersion,
+        BALLOT_ADDRESS: process.env.BALLOT_ADDRESS
       },
 
       // transpile: false,

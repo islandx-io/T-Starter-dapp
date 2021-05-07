@@ -19,11 +19,18 @@ const defaultPoolInfo = {
   remaining_ask: loading,
   total_raise: loading,
   participants: loading,
+  ballot_close: loading, // only in ballot
   pool_open: loading,
   private_end: loading,
   public_end: loading,
+  discount: loading,
+  token_lockup: loading,
+  lockup_percent: loading,
+  lockup_period: loading,
   whitelist: [],
   web_links: loading,
+  tags: loading,
+  votes: loading, // balllot only
   // Not in contract
   slug: loading,
   pool_status: loading,

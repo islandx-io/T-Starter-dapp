@@ -1,6 +1,5 @@
 <template>
   <!-- NOTE lifecycle hooks of the component will not be called -->
-  <!-- TODO Page not found -->
   <q-page>
     <section class="header-bg" />
     <div class="body-container">
