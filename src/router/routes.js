@@ -114,6 +114,33 @@ const routes = [
       },
     ]
   },
+  {
+    path: "/:chain/createballot",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "",
+        name: "createballot",
+        component: () => import("pages/CreateBallot.vue")
+      },
+      {
+        path: ":id",
+        name: "updateballot",
+        component: () => import("pages/CreateBallot.vue")
+      },
+    ]
+  },
+  // {
+  //   path: "/:chain/updateballot/:id",
+  //   component: () => import("layouts/MainLayout.vue"),
+  //   children: [
+  //     {
+  //       path: "",
+  //       name: "updateballot",
+  //       component: () => import("pages/CreateBallot.vue")
+  //     },
+  //   ]
+  // },
   // {
   //   path: "/account/:accountName",
   //   component: () => import("layouts/MainLayout.vue"),

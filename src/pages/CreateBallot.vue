@@ -1,12 +1,10 @@
 <template>
   <q-page>
     <section class="header-bg row content-center justify-center">
-      <h2 class="text-white q-pt-xl">Ballot</h2>
+      <h2 class="text-white">Create ballot</h2>
     </section>
 
-    <section class="body-container">     
-
-    </section>
+    {{this.$route.params.id}}
   </q-page>
 </template>
 
