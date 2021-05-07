@@ -44,7 +44,6 @@
                 @click="likePool('upvote')"
                 :disable="!isAuthenticated"
               >
-                <q-tooltip>Upvote</q-tooltip>
               </q-btn>
               <div>{{ sentimentValue("upvote") }}</div>
               <q-btn
@@ -56,7 +55,6 @@
                 @click="likePool('downvote')"
                 :disable="!isAuthenticated"
               >
-                <q-tooltip>Downvote</q-tooltip>
               </q-btn>
               <div>{{ sentimentValue("downvote") }}</div>
             </div>
