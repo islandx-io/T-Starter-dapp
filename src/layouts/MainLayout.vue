@@ -42,6 +42,13 @@
             label="Pools"
           />
           <q-btn
+            class="hover-accent"
+            color="secondary"
+            flat
+            :to="{ name: 'voting' }"
+            label="Voting"
+          />
+          <q-btn
             v-if="isAuthenticated"
             class="hover-accent"
             color="secondary"
@@ -95,6 +102,21 @@
                 text-color="black"
                 outline
                 :to="{ name: 'allpools' }"
+              />
+               <q-btn
+                label="Voting"
+                color="secondary"
+                text-color="black"
+                outline
+                :to="{ name: 'voting' }"
+              />
+              <q-btn
+                v-if="isAuthenticated"
+                color="secondary"
+                text-color="black"
+                outline
+                @click="openStaking()"
+                label="Staking"
               />
               <q-btn
                 label="Wallet"
@@ -207,7 +229,7 @@ export default {
       this.$q
         .dialog({
           component: Staking,
-          parent: this,
+          parent: this
         })
         .onOk(() => {
           console.log("OK");

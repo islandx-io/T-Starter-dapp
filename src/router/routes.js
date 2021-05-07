@@ -6,6 +6,12 @@ const routes = [
     children: [{ path: "/:chain", name: "home", component: () => import("pages/Index.vue") }]
   },
   {
+    path: "/pools",
+    redirect: {name: "home", params: {chain: 'telos'}},
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ path: "/:chain", name: "home", component: () => import("pages/Index.vue") }]
+  },
+  {
     path: "/:chain",
     component: () => import("layouts/MainLayout.vue"),
     children: [
@@ -84,6 +90,28 @@ const routes = [
         name: "send",
         component: () => import("pages/SendTokens.vue")
       }
+    ]
+  },
+  {
+    path: "/:chain/voting",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "",
+        name: "voting",
+        component: () => import("pages/Voting.vue")
+      }
+    ]
+  },
+  {
+    path: "/:chain/voting/:id",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "",
+        name: "ballotdetails",
+        component: () => import("pages/Ballot.vue")
+      },
     ]
   },
   // {

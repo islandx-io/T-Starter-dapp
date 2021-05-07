@@ -290,8 +290,9 @@ export default {
     this.getPoolInfo();
     await this.getClaimStatus();
     // Start polling
-    this.polling = setInterval(() => {
+    this.polling = setInterval(async () => {
       this.getPoolInfo();
+      await this.loadChainData();
     }, 60000);
     // if rerouting with tab
     if (this.$route.query.tab == "allocations") {
