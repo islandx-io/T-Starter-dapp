@@ -56,6 +56,7 @@
                 counter
                 maxlength="12"
                 :rules="[accountExistsOnChain]"
+                error-message="Account does not exist"
                 lazy-rules
                 debounce="1000"
                 no-error-icon
@@ -241,20 +242,24 @@ export default {
     networkOptions() {
       if (this.selectedTokenSym.toUpperCase() === "START")
         return ["TELOS", "EOS", "WAX"];
-      else return ["TELOS"];
+      else return [this.selectedNetwork];
     }
   },
   methods: {
     ...mapActions("account", ["accountExists"]),
+    ...mapActions("pools", ["getBalanceFromChain"]),
+
     restrictDecimal() {
       this.amount = this.$toFixedDown(
         this.amount,
         this.$getDecimalFromAsset(this.selectedTokenSym)
       );
     },
+
     validateInputAmount(val) {
       return (val <= this.balance) & (val > 0) || "Incorrect amount";
     },
+
     async accountExistsOnChain(account) {
       // get current selected chain
       let blockchains = this.getNetworkByName(
@@ -276,11 +281,11 @@ export default {
       );
       //check if account exists on chain
       let exists = await rpc.get_account(account);
-      return exists || "Account does not exist";
+      return exists;
     },
 
     async send() {
-      if (!(await this.accountExists(this.to))) {
+      if (!(await this.accountExistsOnChain(this.to))) {
         this.$q.notify({
           type: "negative",
           message: `Account ${this.to} does not exist`
@@ -327,7 +332,7 @@ export default {
               quantity: `${parseFloat(this.amount).toFixed(
                 this.token_decimals
               )} ${this.selectedTokenSym}`,
-              memo: `${this.to}@${this.selectedNetwork}|${this.memo}`
+              memo: `${this.to}@${this.selectedNetwork.toLowerCase()}|${this.memo}`
             }
           }
         ];
