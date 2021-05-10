@@ -12,9 +12,16 @@
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
       <q-card class="authenticated">
-        <q-btn :to="{ name: 'wallet', params: { accountName: accountName } }" flat round class="self-start">
+        <!-- Back button -->
+        <q-btn
+          :to="{ name: 'wallet', params: { accountName: accountName } }"
+          flat
+          round
+          class="self-start"
+        >
           <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
         </q-btn>
+        <!-- Select token dropdown -->
         <div class="column items-center">
           <q-btn-dropdown
             no-caps
@@ -75,11 +82,12 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
+          <!-- Network selection -->
           <div class="text-subtitle1 q-pb-sm">From network</div>
           <div class="networks row justify-center">
             <q-btn
               label="Telos"
-              @click="selectedNetwork = 'telos'"
+              @click="selectedNetwork = 'telos' && setAddresses()"
               :class="selectedNetwork === 'telos' ? 'selected-network' : ''"
               flat
               size="lg"
@@ -110,50 +118,57 @@
               padding="xs"
               type="a"
               target="_blank"
-              :href="
+            >
+              <!-- :href="
                 selectedToken.toUpperCase() === 'PETH'
                   ? pTokenBridgeLink('PETH')
                   : pTokenBridgeLink('TLOS')
-              "
-            >
+              " -->
               <q-tooltip>pTokens dapp</q-tooltip>
             </q-btn>
           </div>
-          <div
-            class="text-subtitle1 q-py-md text-center"
-            v-if="selectedNetwork === 'telos'"
-          >
-            Deposit {{ depositTokenStr }} to the following address
-          </div>
-          <!-- leave this div, it needs to be there for some reason -->
-          <div></div>
-          <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
-          <!-- <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" /> -->
-          <!-- Address info -->
-          <div
-            class="col text-subtitle1 row q-gutter-x-sm q-mx-md"
-            v-show="selectedNetwork === 'telos'"
-          >
+          <!-- """""""""""""""""""""" -->
+          <!-- TELOS network selected -->
+          <!-- """""""""""""""""""""" -->
+          <div class=" column items-center" v-show="selectedNetwork === 'telos'">
             <div
-              id="address"
-              :class="`col ${selectedNetwork}-net`"
-              style="word-wrap: break-word;"
+              class="text-subtitle1 q-py-md text-center"
+              v-show="selectedNetwork === 'telos'"
             >
-              {{ selectedAddress }}
+              Deposit {{ depositTokenStr }} to the following address
             </div>
-            <!-- Copy address button -->
-            <div class="row content-center q-pl-sm">
-              <q-btn
-                flat
-                v-if="selectedAddress !== ''"
-                @click="copyAddress(selectedAddress)"
-                icon="far fa-clone"
-                padding="0"
-                color="positive"
-                size="sm"
-              />
+            <!-- telos qr code-->
+            <div></div>
+            <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
+
+            <!-- <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" /> -->
+            <!-- Address info -->
+            <div
+              class="col text-subtitle1 row q-gutter-x-sm q-mx-md"
+              v-show="selectedNetwork === 'telos'"
+            >
+              <div
+                id="address"
+                :class="`col ${selectedNetwork}-net`"
+                style="word-wrap: break-word;"
+              >
+                {{ selectedAddress }}
+              </div>
+              <!-- Copy address button -->
+              <div class="row content-center q-pl-sm">
+                <q-btn
+                  flat
+                  v-if="selectedAddress !== ''"
+                  @click="copyAddress(selectedAddress)"
+                  icon="far fa-clone"
+                  padding="0"
+                  color="positive"
+                  size="sm"
+                />
+              </div>
             </div>
           </div>
+
           <!-- Generate address button -->
           <!-- <q-btn
             class="q-mt-md"
@@ -255,17 +270,33 @@
               />
             </div>
           </q-linear-progress> -->
-          <q-banner
-            rounded
-            inline-actions
-            class="text-white bg-negative"
-            style="margin-top: 15px"
-            v-if="devMode"
-          >
-            Do not make real payments! This is under development.
-          </q-banner>
         </div>
       </q-card>
+
+      <!-- pNetwork app -->
+      <div class="test-center" v-if="selectedNetwork.toUpperCase() != currentchain.NETWORK_NAME">
+        <div style="border-radius: 10px; overflow: hidden;">
+          <iframe
+            height="720"
+            width="100%"
+            :src="pTokenBridgeLink(selectedToken)"
+            allowfullscreen
+            frameBorder="0"
+          >
+          </iframe>
+        </div>
+      </div>
+
+     <!-- Testnet warning -->
+      <q-banner
+        rounded
+        inline-actions
+        class="text-white bg-negative"
+        style="margin-top: 15px"
+        v-if="onTestnet"
+      >
+        Do not make real payments! This is a testnet.
+      </q-banner>
     </section>
   </q-page>
 </template>
@@ -352,6 +383,11 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
+    ...mapGetters("blockchains", ["currentChain"]),
+    onTestnet() {
+      return process.env.TESTNET;
+    },
+
     depositTokenStr() {
       if (this.selectedToken.toUpperCase() === "PETH") {
         if (this.selectedNetwork === "telos") return "pETH";
@@ -659,4 +695,14 @@ h2 {
 .q-input {
   max-width: 200px;
 }
+.resp-iframe {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+// .resp-container {
+// }
 </style>
