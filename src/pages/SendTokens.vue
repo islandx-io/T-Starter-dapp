@@ -56,7 +56,7 @@
                 counter
                 maxlength="12"
                 :rules="[accountExistsOnChain]"
-                lazy-rules="true"
+                lazy-rules
                 debounce="1000"
                 no-error-icon
               >
