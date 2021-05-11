@@ -173,6 +173,7 @@
             class="allocation-tab"
             :alert="claimable ? 'accent' : claimable"
           />
+          <q-tab name="comments" label="COMMENTS" />
         </q-tabs>
 
         <q-separator />
@@ -189,9 +190,11 @@
           <q-tab-panel name="overview" @mousedown.stop>
             <tab-overview :pool="pool" />
           </q-tab-panel>
-
           <q-tab-panel name="allocations" @mousedown.stop>
             <tab-allocations :pool="pool" />
+          </q-tab-panel>
+          <q-tab-panel name="comments" @mousedown.stop>
+            <tab-comments :pool="pool" />
           </q-tab-panel>
         </q-tab-panels>
 
@@ -209,6 +212,7 @@ import statusBadge from "src/components/poolinfo/status-badge";
 import tabOverview from "src/components/poolinfo/tab-overview.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
+import tabComments from "src/components/poolinfo/tab-comments.vue";
 import statusProgress from "src/components/poolinfo/status-progress";
 import tokenAvatar from "src/components/TokenAvatar";
 import { mapGetters, mapActions } from "vuex";
@@ -219,6 +223,7 @@ export default {
     tabOverview,
     tabAllocations,
     tabDetails,
+    tabComments,
     statusCountdown,
     statusBadge,
     statusProgress,
