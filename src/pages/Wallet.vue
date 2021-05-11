@@ -191,6 +191,7 @@ export default {
     },
 
     async reloadWalletInfo() {
+      // FIXME liquid doesn't update after withdraw
       await this.setWalletBaseTokens();
       await this.getChainWalletTable(this.accountName);
       await this.getChainSTART(this.accountName);

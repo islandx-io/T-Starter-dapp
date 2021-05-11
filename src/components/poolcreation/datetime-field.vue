@@ -5,6 +5,8 @@
     :label="label"
     :disable="pool.status !== 'draft'"
     :readonly="pool.status !== 'draft'"
+    mask="####-##-## ##:##"
+    fill-mask="#"
   >
     <template v-slot:prepend>
       <q-icon name="event" class="cursor-pointer">
@@ -35,7 +37,7 @@
 export default {
   data() {
     return {
-      dateTimeMask: "YYYY-MM-DD HH:mmZ"
+      dateTimeMask: "YYYY-MM-DD HH:mm"
     };
   },
   props: {
