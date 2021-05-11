@@ -51,7 +51,7 @@
                 :key="token"
                 @click="
                   selectedToken = token;
-                  selectedNetwork = 'telos';
+                  selectedNetwork = currentChain.NETWORK_NAME.toLowerCase();
                 "
                 flat
                 size="lg"
@@ -86,9 +86,13 @@
           <div class="text-subtitle1 q-pb-sm">From network</div>
           <div class="networks row justify-center">
             <q-btn
-              label="Telos"
-              @click="selectedNetwork = 'telos' && setAddresses()"
-              :class="selectedNetwork === 'telos' ? 'selected-network' : ''"
+              :label="currentChain.NETWORK_DISPLAY_NAME"
+              @click="selectedNetwork = currentChain.NETWORK_NAME.toLowerCase()"
+              :class="
+                selectedNetwork === currentChain.NETWORK_NAME.toLowerCase()
+                  ? 'selected-network'
+                  : ''
+              "
               flat
               size="lg"
               no-caps
@@ -103,10 +107,10 @@
               size="lg"
               no-caps
               padding="xs"
-              type="a"
-              target="_blank"
-              :href="pTokenBridgeLink('PBTC')"
             />
+            <!-- type="a"
+              target="_blank"
+              :href="pTokenBridgeLink('PBTC')" -->
             <q-btn
               label="Ethereum"
               v-if="['PETH', 'TLOS'].includes(selectedToken.toUpperCase())"
@@ -116,10 +120,11 @@
               size="lg"
               no-caps
               padding="xs"
+            >
+              <!-- 
               type="a"
               target="_blank"
-            >
-              <!-- :href="
+                :href="
                 selectedToken.toUpperCase() === 'PETH'
                   ? pTokenBridgeLink('PETH')
                   : pTokenBridgeLink('TLOS')
@@ -127,26 +132,24 @@
               <q-tooltip>pTokens dapp</q-tooltip>
             </q-btn>
           </div>
-          <!-- """""""""""""""""""""" -->
-          <!-- TELOS network selected -->
-          <!-- """""""""""""""""""""" -->
-          <div class=" column items-center" v-show="selectedNetwork === 'telos'">
-            <div
-              class="text-subtitle1 q-py-md text-center"
-              v-show="selectedNetwork === 'telos'"
-            >
+
+          <!-- """""""""""""""""""""""""""""" -->
+          <!-- Current chain network selected -->
+          <!-- """""""""""""""""""""""""""""" -->
+          <div
+            class=" column items-center"
+            v-show="selectedNetwork === currentChain.NETWORK_NAME.toLowerCase()"
+          >
+            <div class="text-subtitle1 q-py-md text-center">
               Deposit {{ depositTokenStr }} to the following address
             </div>
             <!-- telos qr code-->
             <div></div>
-            <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
+            <div id="tlos-qr-canvas" />
 
             <!-- <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" /> -->
             <!-- Address info -->
-            <div
-              class="col text-subtitle1 row q-gutter-x-sm q-mx-md"
-              v-show="selectedNetwork === 'telos'"
-            >
+            <div class="col text-subtitle1 row q-gutter-x-sm q-mx-md">
               <div
                 id="address"
                 :class="`col ${selectedNetwork}-net`"
@@ -274,7 +277,10 @@
       </q-card>
 
       <!-- pNetwork app -->
-      <div class="test-center" v-if="selectedNetwork.toUpperCase() != currentchain.NETWORK_NAME">
+      <div
+        class="test-center"
+        v-if="selectedNetwork.toUpperCase() != currentChain.NETWORK_NAME"
+      >
         <div style="border-radius: 10px; overflow: hidden;">
           <iframe
             height="720"
@@ -287,7 +293,7 @@
         </div>
       </div>
 
-     <!-- Testnet warning -->
+      <!-- Testnet warning -->
       <q-banner
         rounded
         inline-actions
@@ -373,7 +379,7 @@ export default {
       },
       btcAddress: "",
       selectedNetwork: "telos",
-      tokens: ["pBTC", "pETH", "TLOS"],
+      // tokens: ["pBTC", "pETH", "TLOS"],
       selectedToken: "pBTC",
       ethAccounts: [],
       amount: 0,
@@ -386,6 +392,16 @@ export default {
     ...mapGetters("blockchains", ["currentChain"]),
     onTestnet() {
       return process.env.TESTNET;
+    },
+
+    tokens() {
+      if (this.currentChain.NETWORK_NAME === "TELOS") {
+        return ["pBTC", "pETH", "TLOS"];
+      } else if (this.currentChain.NETWORK_NAME === "EOS") {
+        return ["pBTC", "pETH"];
+      } else {
+        return ["pBTC", "pETH", "TLOS"]
+      }
     },
 
     depositTokenStr() {
@@ -401,7 +417,8 @@ export default {
       }
     },
     selectedAddress() {
-      if (this.selectedNetwork === "telos") return this.accountName;
+      if (this.selectedNetwork === this.currentChain.NETWORK_NAME.toLowerCase())
+        return this.accountName;
       else return this.btcAddress;
     },
 
@@ -428,12 +445,21 @@ export default {
   methods: {
     pTokenBridgeLink(sym) {
       sym = sym.toUpperCase();
-      if (sym === "TLOS") {
-        return "https://dapp.ptokens.io/swap?asset=tlos&from=eth&to=telos";
-      } else if (sym === "PBTC") {
-        return "https://dapp.ptokens.io/swap?asset=btc&from=btc&to=telos";
-      } else if (sym === "PETH") {
-        return "https://dapp.ptokens.io/swap?asset=eth&from=eth&to=telos";
+      // if telos chain
+      if (this.currentChain.NETWORK_NAME === "TELOS") {
+        if (sym === "TLOS") {
+          return "https://dapp.ptokens.io/swap?asset=tlos&from=eth&to=telos";
+        } else if (sym === "PBTC") {
+          return "https://dapp.ptokens.io/swap?asset=btc&from=btc&to=telos";
+        } else if (sym === "PETH") {
+          return "https://dapp.ptokens.io/swap?asset=eth&from=eth&to=telos";
+        }
+      } else if (this.currentChain.NETWORK_NAME === "EOS") {
+        if (sym === "PBTC") {
+          return "https://dapp.ptokens.io/swap?asset=btc&from=btc&to=eos";
+        } else if (sym === "PETH") {
+          return "https://dapp.ptokens.io/swap?asset=eth&from=eth&to=eos";
+        }
       }
     },
 
@@ -468,7 +494,9 @@ export default {
 
     async setAddresses() {
       const pbridge_api = await axios.get(
-        `https://pbtcontelos-node-1a.ngrok.io/pbtc-on-telos/get-native-deposit-address/${this.accountName}`
+        `https://pbtcon${this.currentChain.NETWORK_NAME.toLowerCase()}-node-1a.ngrok.io/pbtc-on-${this.currentChain.NETWORK_NAME.toLowerCase()}/get-native-deposit-address/${
+          this.accountName
+        }`
       );
       this.btcAddress = pbridge_api.data.nativeDepositAddress || [];
       this.qrCodes.btc.update({ data: this.btcAddress });
@@ -637,7 +665,8 @@ export default {
   },
 
   mounted() {
-    this.setAddresses();
+    this.selectedNetwork = this.currentChain.NETWORK_NAME.toLowerCase(); // sets network to current chain
+    this.setAddresses(); // makes qr codes
     if (this.$route.query.token_sym !== undefined)
       this.selectedToken = this.$route.query.token_sym;
   }
