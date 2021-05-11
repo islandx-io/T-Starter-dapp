@@ -279,7 +279,8 @@
       <!-- pNetwork app -->
       <!-- TODO This causes a DOM error, but hey it works. -->
       <div
-        class="test-center"
+        class="q-mt-md q-card bg-white"
+        style="padding: 0 0 20px 0"
         v-if="selectedNetwork.toUpperCase() != currentChain.NETWORK_NAME"
       >
         <div style="border-radius: 10px; overflow: hidden;">
