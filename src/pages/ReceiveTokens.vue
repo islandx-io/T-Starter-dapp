@@ -113,7 +113,7 @@
               :href="pTokenBridgeLink('PBTC')" -->
             <q-btn
               label="Ethereum"
-              v-if="['PETH', 'TLOS', 'PUSDC', 'PUSDT'].includes(selectedToken.toUpperCase())"
+              v-if="['PETH', 'TLOS', 'PUSDC', 'PUSDT', 'EOS'].includes(selectedToken.toUpperCase())"
               @click="selectedNetwork = 'ethereum'"
               :class="selectedNetwork === 'ethereum' ? 'selected-network' : ''"
               flat
@@ -399,7 +399,7 @@ export default {
       if (this.currentChain.NETWORK_NAME === "TELOS") {
         return ["PBTC", "PETH", "TLOS", "PUSDC", 'PUSDT'];
       } else if (this.currentChain.NETWORK_NAME === "EOS") {
-        return ["PBTC", "PETH"];
+        return ["PBTC", "PETH", 'EOS'];
       } else {
         return ["PBTC", "PETH", "TLOS"]
       }
@@ -464,7 +464,11 @@ export default {
           return "https://dapp.ptokens.io/swap?asset=btc&from=btc&to=eos";
         } else if (sym === "PETH") {
           return "https://dapp.ptokens.io/swap?asset=eth&from=eth&to=eos";
+        } else if (sym === "EOS") {
+          return "https://dapp.ptokens.io/swap?asset=eos&from=eth&to=eos";
         }
+      } else if (this.currentChain.NETWORK_NAME === "WAX") {
+        
       }
     },
 
@@ -498,16 +502,19 @@ export default {
     },
 
     async setAddresses() {
-      const pbridge_api = await axios.get(
-        `https://pbtcon${this.currentChain.NETWORK_NAME.toLowerCase()}-node-1a.ngrok.io/pbtc-on-${this.currentChain.NETWORK_NAME.toLowerCase()}/get-native-deposit-address/${
-          this.accountName
-        }`
-      );
-      this.btcAddress = pbridge_api.data.nativeDepositAddress || [];
-      this.qrCodes.btc.update({ data: this.btcAddress });
+      // current chain QR code
       this.qrCodes.tlos.update({ data: this.accountName });
       this.qrCodes.tlos.append(document.getElementById("tlos-qr-canvas"));
-      this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
+
+      // bitcoin qr code
+      // const pbridge_api = await axios.get(
+      //   `https://pbtcon${this.currentChain.NETWORK_NAME.toLowerCase()}-node-1a.ngrok.io/pbtc-on-${this.currentChain.NETWORK_NAME.toLowerCase()}/get-native-deposit-address/${
+      //     this.accountName
+      //   }`
+      // );
+      // this.btcAddress = pbridge_api.data.nativeDepositAddress || [];
+      // this.qrCodes.btc.update({ data: this.btcAddress });      
+      // this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     },
 
     metamaskOnboarding() {

@@ -135,7 +135,7 @@ export default {
   data() {
     return {
       buyStartUrl: process.env.BUY_START_URL,
-      baseTokenSymbols: ["TLOS", "PBTC", "PETH", 'PUSDC','PUSDT'], // TODO make dynamic
+      baseTokenSymbols: ["TLOS", "PBTC", "PETH", 'PUSDC','PUSDT', 'EOS'], // TODO make dynamic
       truncateActions: true,
       actionButtonPadding: "5px 8px"
     };
