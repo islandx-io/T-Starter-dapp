@@ -277,6 +277,7 @@
       </q-card>
 
       <!-- pNetwork app -->
+      <!-- TODO This causes a DOM error, but hey it works. -->
       <div
         class="test-center"
         v-if="selectedNetwork.toUpperCase() != currentChain.NETWORK_NAME"
@@ -379,7 +380,6 @@ export default {
       },
       btcAddress: "",
       selectedNetwork: "telos",
-      // tokens: ["pBTC", "pETH", "TLOS"],
       selectedToken: "pBTC",
       ethAccounts: [],
       amount: 0,

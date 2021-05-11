@@ -145,7 +145,7 @@ export default {
         { name: "token", label: "Token", field: "token_sym", align: "left" },
         { name: "balance", label: "Balance", field: "balance", align: "center", },
         { name: "liquid", label: "Liquid", field: "liquid", align: "center" },
-        { name: "unstaking", label: "Staked", field: "unstaking", align: "center", format(val) {
+        { name: "unstaking", label: "Unstaking", field: "unstaking", align: "center", format(val) {
           if (val > 0) {
             return val
           } else {
@@ -156,8 +156,8 @@ export default {
       ],
       // prettier-ignore
       stakeColumns: [
-        { name: "staked", label: "Staked", field: "second", align: "center" },
-        { name: "releaseDate", label: "Release date (UTC)", field: "first", align: "center", format: val => date.formatDate(val, 'YYYY-MM-DD') },
+        { name: "staked", label: "Unstaking", field: "second", align: "center" },
+        { name: "releaseDate", label: "Release date", field: "first", align: "center", format: val => date.formatDate(val, 'YYYY-MM-DD') },
       ],
       // prettier-ignore
       stakeData: []
