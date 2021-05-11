@@ -265,6 +265,7 @@ export const updatePoolSettings = async function(
   });
 
   await dispatch("updateSentimentByPoolID", poolID);
+  await dispatch("updateCommentsByPoolID", poolID);
 };
 
 // Get pools created from chain
@@ -610,6 +611,27 @@ export const updateSentimentByPoolID = async function({ commit }, poolID) {
     });
     const sentiment_table = tableResults.rows;
     commit("setPoolSentimentTable", { id: poolID, sentiment_table });
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+export const updateCommentsByPoolID = async function({ commit }, poolID) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS,
+      scope: poolID,
+      table: "comments",
+      limit: 10000,
+      reverse: false,
+      show_payer: false
+    });
+    const comments_table = tableResults.rows.map(el => {
+      el.timestamp = new Date(el.timestamp + "Z").valueOf();
+      console.log(el);
+      return el;
+    });
+    commit("setPoolCommentsTable", { id: poolID, comments_table });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

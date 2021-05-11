@@ -28,3 +28,8 @@ export const setPoolSentimentTable = (state, { id, sentiment_table }) => {
   let pool = state.pools.find(el => el.id === id);
   pool.sentiment_table = sentiment_table;
 };
+
+export const setPoolCommentsTable = (state, { id, comments_table }) => {
+  let pool = state.pools.find(el => el.id === id);
+  pool.comments_table = comments_table;
+};

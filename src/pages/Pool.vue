@@ -194,7 +194,7 @@
             <tab-allocations :pool="pool" />
           </q-tab-panel>
           <q-tab-panel name="comments" @mousedown.stop>
-            <tab-comments :pool="pool" />
+            <tab-comments :pool="pool" :platform_token="platform_token" />
           </q-tab-panel>
         </q-tab-panels>
 
@@ -373,6 +373,7 @@ export default {
       else return 0;
     },
     async updateUserSentiment(side) {
+      // TODO Check logic
       if (this.isAuthenticated) {
         let payload = {
           address: this.platform_token.contract,
@@ -417,7 +418,7 @@ export default {
     if (this.$route.query.tab == "allocations") {
       this.tab = "allocations";
     } else {
-      this.tab = "details";
+      this.tab = "comments";
     }
     this.platform_token = await this.getPlatformToken();
   },
