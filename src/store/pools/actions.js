@@ -608,7 +608,7 @@ export const updateSentimentByPoolID = async function({ commit }, poolID) {
       reverse: false,
       show_payer: false
     });
-    const sentiment_table = tableResults.rows[tableResults.rows.length - 1];
+    const sentiment_table = tableResults.rows;
     commit("setPoolSentimentTable", { id: poolID, sentiment_table });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });

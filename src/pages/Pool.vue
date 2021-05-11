@@ -41,7 +41,8 @@
                 padding="6px 8px"
                 icon="fas fa-thumbs-up"
                 class="hover-accent"
-                @click="likePool('upvote')"
+                :color="userSentiment === 'upvote' ? 'accent' : 'black'"
+                @click="updateUserSentiment('upvote')"
                 :disable="!isAuthenticated"
               >
               </q-btn>
@@ -52,7 +53,8 @@
                 padding="6px 8px"
                 icon="fas fa-thumbs-down"
                 class="hover-accent"
-                @click="likePool('downvote')"
+                :color="userSentiment === 'downvote' ? 'accent' : 'black'"
+                @click="updateUserSentiment('downvote')"
                 :disable="!isAuthenticated"
               >
               </q-btn>
@@ -284,6 +286,19 @@ export default {
         let hardCap = this.$chainToQty(this.pool.hard_cap, 0);
         return `${totalRaise} / ${hardCap}`;
       }
+    },
+    userSentiment() {
+      let result = "none";
+      if (this.pool.sentiment_table) {
+        let sentiment = this.pool.sentiment_table.find(
+          el => el.account === this.accountName
+        );
+        if (sentiment) {
+          if (sentiment.vote > 0) result = "upvote";
+          if (sentiment.vote < 0) result = "downvote";
+        }
+      }
+      return result;
     }
   },
   methods: {
@@ -318,7 +333,7 @@ export default {
         return this.pool.sentiment.find(el => el.key === key).value;
       else return 0;
     },
-    async likePool(side) {
+    async updateUserSentiment(side) {
       if (this.isAuthenticated) {
         let payload = {
           address: this.platform_token.contract,
@@ -330,8 +345,9 @@ export default {
         );
         if (start_balance > 1) {
           let vote = 0; // abstain
-          if (side === "upvote") vote = 1;
-          else if (side === "downvote") vote = -1;
+          if (side === "upvote" && this.userSentiment !== "upvote") vote = 1;
+          else if (side === "downvote" && this.userSentiment !== "downvote")
+            vote = -1;
           const actions = [];
           actions.push({
             account: process.env.CONTRACT_ADDRESS,
@@ -343,6 +359,8 @@ export default {
             }
           });
           const transaction = await this.$store.$api.signTransaction(actions);
+          await this.loadChainData();
+          this.getPoolInfo();
         } else console.log("Insufficient START");
       }
     }
