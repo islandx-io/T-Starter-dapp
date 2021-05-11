@@ -65,16 +65,14 @@
                   <q-btn-dropdown
                     no-caps
                     flat
-                    class="dropdown-without-icon q-ml-md bg-secondary"
-                    padding="xs"
+                    class="bg-secondary"
+                    padding="sm"
                     style="margin: 0px"
                     color="black"
                     outline
                   >
                     <template v-slot:label>
-                      <div
-                        class="flex items-center justify-center wrap q-pa-xs"
-                      >
+                      <div class="flex items-center justify-center wrap">
                         <div class="row items-center justify-center">
                           <token-avatar
                             :token="selectedNetwork"
@@ -332,7 +330,9 @@ export default {
               quantity: `${parseFloat(this.amount).toFixed(
                 this.token_decimals
               )} ${this.selectedTokenSym}`,
-              memo: `${this.to}@${this.selectedNetwork.toLowerCase()}|${this.memo}`
+              memo: `${this.to}@${this.selectedNetwork.toLowerCase()}|${
+                this.memo
+              }`
             }
           }
         ];
