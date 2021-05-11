@@ -170,8 +170,8 @@ export const getBalanceFromChain = async function({ commit }, payload) {
         payload.sym
       )
     )[0];
-    console.log("balance:")
-    console.log(balance)
+    // console.log("balance:")
+    // console.log(balance)
     if (balance !== undefined) {
       return balance;
     } else {
