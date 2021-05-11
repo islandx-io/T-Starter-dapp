@@ -200,6 +200,38 @@
         </q-inner-loading>
       </q-card>
     </div>
+
+    <q-dialog v-model="insufficient_start_show">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Insufficient START</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          You don't have enough START to complete this action.
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            class="hover-accent"
+            flat
+            label="Cancel"
+            color="primary"
+            v-close-popup
+          />
+          <q-btn
+            flat
+            class="hover-accent"
+            label="Buy START"
+            color="primary"
+            v-close-popup
+            type="a"
+            target="_blank"
+            :href="buyStartUrl"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -231,7 +263,9 @@ export default {
       pool: this.$defaultPoolInfo,
       polling: null,
       claimable: false,
-      platform_token: { sym: "4,START", contract: "token.start" }
+      platform_token: { sym: "4,START", contract: "token.start" },
+      insufficient_start_show: false,
+      buyStartUrl: process.env.BUY_START_URL
     };
   },
   computed: {
@@ -361,7 +395,7 @@ export default {
           const transaction = await this.$store.$api.signTransaction(actions);
           await this.loadChainData();
           this.getPoolInfo();
-        } else console.log("Insufficient START");
+        } else this.insufficient_start_show = true;
       }
     }
   },
