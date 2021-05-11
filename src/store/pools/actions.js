@@ -170,14 +170,16 @@ export const getBalanceFromChain = async function({ commit }, payload) {
         payload.sym
       )
     )[0];
-    // console.log('balance')
-    if (balance === undefined) {
-      return `0 ${payload.sym}`;
-    } else {
+    console.log("balance:")
+    console.log(balance)
+    if (balance !== undefined) {
       return balance;
+    } else {
+      return `0 ${payload.sym}` ;
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
+    return `0 ${payload.sym}` ;
   }
 };
 

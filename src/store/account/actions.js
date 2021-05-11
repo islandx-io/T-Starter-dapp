@@ -224,11 +224,14 @@ export const setWalletBalances = async function(
         sym: token_info.token_sym,
         accountName: account
       };
+      console.log(payload)
 
       let token_str = await dispatch("pools/getBalanceFromChain", payload, {
         root: true
       });
+      console.log(token_str)
       let balance = this.$chainToQty(token_str);
+      console.log(balance)
       commit("setWalletTokenBalance", {
         token_sym: token_info.token_sym,
         amount: balance
