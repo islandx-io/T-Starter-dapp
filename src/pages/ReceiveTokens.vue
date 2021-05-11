@@ -113,7 +113,7 @@
               :href="pTokenBridgeLink('PBTC')" -->
             <q-btn
               label="Ethereum"
-              v-if="['PETH', 'TLOS'].includes(selectedToken.toUpperCase())"
+              v-if="['PETH', 'TLOS', 'PUSDC', 'PUSDT'].includes(selectedToken.toUpperCase())"
               @click="selectedNetwork = 'ethereum'"
               :class="selectedNetwork === 'ethereum' ? 'selected-network' : ''"
               flat
@@ -315,7 +315,7 @@ import QRCodeStyling from "qr-code-styling";
 import QRCode from "qrcode";
 import { copyToClipboard } from "quasar";
 import tokenAvatar from "src/components/TokenAvatar";
-import { pBTC } from "ptokens-pbtc";
+import { PBTC } from "ptokens-pbtc";
 import { pERC20 } from "ptokens-perc20";
 import { pEosioToken } from "ptokens-peosio-token";
 import { HttpProvider } from "ptokens-providers";
@@ -380,7 +380,7 @@ export default {
       },
       btcAddress: "",
       selectedNetwork: "telos",
-      selectedToken: "pBTC",
+      selectedToken: "PBTC",
       ethAccounts: [],
       amount: 0,
       txnPending: false,
@@ -396,23 +396,23 @@ export default {
 
     tokens() {
       if (this.currentChain.NETWORK_NAME === "TELOS") {
-        return ["pBTC", "pETH", "TLOS"];
+        return ["PBTC", "PETH", "TLOS", "PUSDC", 'PUSDT'];
       } else if (this.currentChain.NETWORK_NAME === "EOS") {
-        return ["pBTC", "pETH"];
+        return ["PBTC", "PETH"];
       } else {
-        return ["pBTC", "pETH", "TLOS"]
+        return ["PBTC", "PETH", "TLOS"]
       }
     },
 
     depositTokenStr() {
       if (this.selectedToken.toUpperCase() === "PETH") {
-        if (this.selectedNetwork === "telos") return "pETH";
+        if (this.selectedNetwork === "telos") return "PETH";
         else return "ETH";
       } else if (this.selectedToken.toUpperCase() === "TLOS") {
         if (this.selectedNetwork === "telos") return "TLOS";
         else return "TLOS (ERC20)";
       } else {
-        if (this.selectedNetwork === "telos") return "pBTC";
+        if (this.selectedNetwork === "telos") return "PBTC";
         else return "BTC";
       }
     },
@@ -453,6 +453,10 @@ export default {
           return "https://dapp.ptokens.io/swap?asset=btc&from=btc&to=telos";
         } else if (sym === "PETH") {
           return "https://dapp.ptokens.io/swap?asset=eth&from=eth&to=telos";
+        } else if (sym === "PUSDC") {
+          return "https://dapp.ptokens.io/swap?asset=usdc&from=eth&to=telos";
+        } else if (sym === "PUSDT") {
+          return "https://dapp.ptokens.io/swap?asset=usdt&from=eth&to=telos";
         }
       } else if (this.currentChain.NETWORK_NAME === "EOS") {
         if (sym === "PBTC") {
@@ -703,7 +707,7 @@ export default {
 h2 {
   line-height: 45px;
   margin: 0 10px;
-  font-size: 35px;
+  font-size: 34px;
 }
 .q-item:hover {
   background-color: $dark;

@@ -61,6 +61,8 @@ export default {
         else if (token === "TELOS") result = "/tokens/tlos.png";
         else if (token === "EOS") result = "/tokens/eos.png";
         else if (token === "WAX") result = "/tokens/wax.png";
+        else if (token === "PUSDC") result = "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/pUSDC.png";
+        else if (token === "PUSDT") result = "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/pUSDT.png";
       }
       return result;
     }
