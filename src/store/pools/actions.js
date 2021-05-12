@@ -628,7 +628,6 @@ export const updateCommentsByPoolID = async function({ commit }, poolID) {
     });
     const comments_table = tableResults.rows.map(el => {
       el.timestamp = new Date(el.timestamp + "Z").valueOf();
-      console.log(el);
       return el;
     });
     commit("setPoolCommentsTable", { id: poolID, comments_table });

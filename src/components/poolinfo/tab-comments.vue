@@ -10,7 +10,28 @@
         </q-item-label>
       </q-item-section>
       <q-item-section side top>
-        {{ toDate(row.timestamp) }}
+        <q-item-label>
+          {{ toDate(row.timestamp) }}
+        </q-item-label>
+        <div class="row q-gutter-x-xs">
+          <q-btn
+            v-if="row.account === accountName"
+            icon="fas fa-edit"
+            class="hover-accent"
+            size="sm"
+            padding="sm"
+            flat
+          />
+          <q-btn
+            v-if="row.account === accountName"
+            icon="fas fa-trash-alt"
+            class="hover-accent"
+            size="sm"
+            padding="sm"
+            flat
+            @click="removeUserComment(row)"
+          />
+        </div>
       </q-item-section>
     </q-item>
     <q-item>
@@ -97,7 +118,7 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"])
   },
   methods: {
-    ...mapActions("pools", ["getBalanceFromChain"]),
+    ...mapActions("pools", ["getBalanceFromChain", "getChainPoolByID"]),
     toDate(timeStamp) {
       if (timeStamp === "Loading") return timeStamp;
       else return date.formatDate(timeStamp, "DD MMMM YYYY @ HH:mm");
@@ -124,9 +145,26 @@ export default {
             }
           });
           const transaction = await this.$store.$api.signTransaction(actions);
-          await this.loadChainData();
+          await this.getChainPoolByID(this.pool.id);
           this.getPoolInfo();
         } else this.insufficient_start_show = true;
+      }
+    },
+    async removeUserComment(comment) {
+      if (this.isAuthenticated && comment.account === this.accountName) {
+        const actions = [
+          {
+            account: process.env.CONTRACT_ADDRESS,
+            name: "rmcomment",
+            data: {
+              pool_id: this.pool.id,
+              comment_id: comment.id
+            }
+          }
+        ];
+        const transaction = await this.$store.$api.signTransaction(actions);
+        await this.getChainPoolByID(this.pool.id);
+        this.getPoolInfo();
       }
     }
   }
