@@ -155,6 +155,16 @@
                 type="submit"
               />
             </div>
+            <div
+              class="text-center text-caption q-pt-md text-grey-7"
+              v-if="
+                selectedNetwork.toUpperCase() !==
+                  currentChain.NETWORK_NAME.toUpperCase()
+              "
+            >
+              <q-icon name="fas fa-info-circle" /> Sending tokens across chains
+              can take up to several minutes.
+            </div>
 
             <!-- Transaction sent dialog -->
             <q-dialog v-model="showTransaction" confirm>
