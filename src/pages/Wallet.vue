@@ -15,7 +15,17 @@
       >
         <template v-slot:header="props">
           <q-tr :props="props">
-            <q-th auto-width key="expand"></q-th>
+            <q-th auto-width key="expand">
+              <!-- Refresh table button -->
+              <q-btn
+                padding="xs"
+                color="primary"
+                icon="fas fa-sync-alt"
+                @click="
+                  resetLiquid();
+                  reloadWalletInfo();
+                "
+            /></q-th>
             <q-th
               v-for="col in props.cols"
               :key="col.name"
@@ -76,6 +86,7 @@
                 :props="props"
                 :accountName="accountName"
                 :stakeData="stakeData"
+                @reloadWalletInfo="reloadWalletInfo"
               />
             </q-td>
           </q-tr>
@@ -175,7 +186,9 @@ export default {
       "getChainWalletTable",
       "setWalletBalances",
       "getChainSTART",
-      "setWalletPoolTokens"
+      "setWalletPoolTokens",
+      "resetWallet",
+      "resetLiquid"
     ]),
 
     formatTable(col, props) {
@@ -191,7 +204,7 @@ export default {
     },
 
     async reloadWalletInfo() {
-      // FIXME liquid doesn't update after withdraw
+      // await this.resetLiquid();
       await this.setWalletBaseTokens();
       await this.getChainWalletTable(this.accountName);
       await this.getChainSTART(this.accountName);

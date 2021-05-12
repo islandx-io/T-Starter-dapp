@@ -296,7 +296,7 @@
       </div>
 
       <!-- Testnet warning -->
-      <q-banner
+      <!-- <q-banner
         rounded
         inline-actions
         class="text-white bg-negative"
@@ -304,7 +304,7 @@
         v-if="onTestnet"
       >
         Do not make real payments! This is a testnet.
-      </q-banner>
+      </q-banner> -->
     </section>
   </q-page>
 </template>
