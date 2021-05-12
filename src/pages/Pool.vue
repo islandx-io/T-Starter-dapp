@@ -35,8 +35,12 @@
               {{ pool.tag_line }}
             </p>
           </q-item>
-          <q-item v-if="['open', 'upcoming'].includes(pool.pool_status)">
-            <q-item-section>
+          <div
+            v-if="['open', 'upcoming'].includes(pool.pool_status)"
+            class="row content-start justify-start q-gutter-sm"
+            style="padding: 8px 16px"
+          >
+            <div class="col" style="min-width: 260px">
               <div
                 class="col row justify-between items-center"
                 v-if="pool.pool_status === 'upcoming'"
@@ -59,50 +63,46 @@
                   @countdown-finished="getPoolInfo"
                 />
               </div>
-            </q-item-section>
-            <q-item-section class="row justify-between">
-              <div class="row items-center justify-end q-gutter-x-sm text-h6">
-                <q-btn
-                  outline
-                  flat
-                  padding="6px 8px"
-                  icon="fas fa-thumbs-up"
-                  class="hover-accent"
-                  size="1.05rem"
-                  :color="userSentiment === 'upvote' ? 'positive' : 'black'"
-                  @click="updateUserSentiment('upvote')"
-                  :disable="!isAuthenticated"
-                />
-                <div
-                  :class="
-                    userSentiment === 'upvote' ? 'text-positive' : 'text-black'
-                  "
-                >
-                  {{ sentimentValue("upvote") }}
-                </div>
-                <q-btn
-                  outline
-                  flat
-                  padding="6px 8px"
-                  size="1.05rem"
-                  icon="fas fa-thumbs-down"
-                  class="hover-accent"
-                  :color="userSentiment === 'downvote' ? 'accent' : 'black'"
-                  @click="updateUserSentiment('downvote')"
-                  :disable="!isAuthenticated"
-                />
-                <div
-                  :class="
-                    userSentiment === 'downvote'
-                      ? 'text-negative'
-                      : 'text-black'
-                  "
-                >
-                  {{ sentimentValue("downvote") }}
-                </div>
+            </div>
+            <div class="row q-gutter-x-sm text-h6">
+              <q-btn
+                outline
+                flat
+                padding="6px 8px"
+                icon="fas fa-thumbs-up"
+                class="hover-accent"
+                size="1.05rem"
+                :color="userSentiment === 'upvote' ? 'positive' : 'black'"
+                @click="updateUserSentiment('upvote')"
+                :disable="!isAuthenticated"
+              />
+              <div
+                :class="
+                  userSentiment === 'upvote' ? 'text-positive' : 'text-black'
+                "
+              >
+                {{ sentimentValue("upvote") }}
               </div>
-            </q-item-section>
-          </q-item>
+              <q-btn
+                outline
+                flat
+                padding="6px 8px"
+                size="1.05rem"
+                icon="fas fa-thumbs-down"
+                class="hover-accent"
+                :color="userSentiment === 'downvote' ? 'accent' : 'black'"
+                @click="updateUserSentiment('downvote')"
+                :disable="!isAuthenticated"
+              />
+              <div
+                :class="
+                  userSentiment === 'downvote' ? 'text-negative' : 'text-black'
+                "
+              >
+                {{ sentimentValue("downvote") }}
+              </div>
+            </div>
+          </div>
           <q-item
             v-if="
               !['completed', 'filled', 'cancelled'].includes(
@@ -281,15 +281,18 @@ export default {
       pool: this.$defaultPoolInfo,
       polling: null,
       claimable: false,
-      platform_token: { sym: "4,START", contract: "token.start" },
       insufficient_start_show: false,
       buyStartUrl: process.env.BUY_START_URL
     };
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("pools", ["getPoolByID"]),
     ...mapGetters("blockchains", ["currentChain"]),
+
+    START_info() {
+      return this.wallet.find(el => (el.sym = "START"));
+    },
 
     progressToPercentage() {
       return (this.pool.progress * 100).toFixed(0) + "%";
@@ -360,6 +363,7 @@ export default {
       "getPlatformToken",
       "getBalanceFromChain"
     ]),
+    ...mapActions("account", ["getChainSTART"]),
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
@@ -387,20 +391,31 @@ export default {
     },
     async updateUserSentiment(side) {
       if (this.isAuthenticated) {
-        let payload = {
-          address: this.platform_token.contract,
-          sym: "START",
-          accountName: this.accountName
-        };
-        let start_balance = this.$chainToQty(
-          await this.getBalanceFromChain(payload)
-        );
-        if (start_balance >= 1) {
+        await this.getChainSTART(this.accountName);
+        const actions = [];
+        if (this.START_info.liquid < 1 && this.START_info.balance < 1) {
+          this.insufficient_start_show = true;
+        } else {
+          if (this.START_info.liquid < 1) {
+            actions.push({
+              account: this.START_info.token_contract,
+              name: "transfer",
+              data: {
+                from: this.accountName,
+                to: process.env.CONTRACT_ADDRESS,
+                quantity: this.$toChainString(
+                  1,
+                  this.START_info.decimals,
+                  this.START_info.sym
+                ),
+                memo: `Send ${this.START_info.sym} to liquid`
+              }
+            });
+          }
           let vote = 0; // abstain
           if (side === "upvote" && this.userSentiment !== "upvote") vote = 1;
           else if (side === "downvote" && this.userSentiment !== "downvote")
             vote = -1;
-          const actions = [];
           actions.push({
             account: process.env.CONTRACT_ADDRESS,
             name: "sentiment",
@@ -413,7 +428,7 @@ export default {
           const transaction = await this.$store.$api.signTransaction(actions);
           await this.loadChainData();
           this.getPoolInfo();
-        } else this.insufficient_start_show = true;
+        }
       }
     }
   },
@@ -432,7 +447,6 @@ export default {
     } else {
       this.tab = "details";
     }
-    this.platform_token = await this.getPlatformToken();
   },
   beforeDestroy() {
     clearInterval(this.polling);
