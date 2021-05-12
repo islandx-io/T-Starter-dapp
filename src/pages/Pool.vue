@@ -111,7 +111,7 @@
             "
           >
             <q-btn
-              class="col"
+              class="col hover-accent"
               :to="{ name: 'joinpool', params: {} }"
               :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
               :label="isAuthenticated ? 'Join pool' : 'Login to join'"
