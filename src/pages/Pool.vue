@@ -30,60 +30,78 @@
               </div>
             </q-item-section>
           </q-item>
-          <q-item class="row justify-between">
+          <q-item>
             <p>
               {{ pool.tag_line }}
             </p>
-            <div class="row items-center q-gutter-x-sm">
-              <q-btn
-                outline
-                flat
-                padding="6px 8px"
-                icon="fas fa-thumbs-up"
-                class="hover-accent"
-                :color="userSentiment === 'upvote' ? 'accent' : 'black'"
-                @click="updateUserSentiment('upvote')"
-                :disable="!isAuthenticated"
-              >
-              </q-btn>
-              <div>{{ sentimentValue("upvote") }}</div>
-              <q-btn
-                outline
-                flat
-                padding="6px 8px"
-                icon="fas fa-thumbs-down"
-                class="hover-accent"
-                :color="userSentiment === 'downvote' ? 'accent' : 'black'"
-                @click="updateUserSentiment('downvote')"
-                :disable="!isAuthenticated"
-              >
-              </q-btn>
-              <div>{{ sentimentValue("downvote") }}</div>
-            </div>
           </q-item>
           <q-item v-if="['open', 'upcoming'].includes(pool.pool_status)">
-            <div
-              class="col row justify-between items-center"
-              v-if="pool.pool_status === 'upcoming'"
-            >
-              <div>Opens in:</div>
-              <status-countdown
-                :deadline="pool.pool_open"
-                :poolID="poolID"
-                @countdown-finished="getPoolInfo"
-              />
-            </div>
-            <div
-              class="col row justify-between items-center"
-              v-else-if="pool.pool_status === 'open'"
-            >
-              <div>Closes in:</div>
-              <status-countdown
-                :deadline="pool.public_end"
-                :poolID="poolID"
-                @countdown-finished="getPoolInfo"
-              />
-            </div>
+            <q-item-section>
+              <div
+                class="col row justify-between items-center"
+                v-if="pool.pool_status === 'upcoming'"
+              >
+                <div>Opens in:</div>
+                <status-countdown
+                  :deadline="pool.pool_open"
+                  :poolID="poolID"
+                  @countdown-finished="getPoolInfo"
+                />
+              </div>
+              <div
+                class="col row items-center"
+                v-else-if="pool.pool_status === 'open'"
+              >
+                <div class="q-mr-md">Closes in:</div>
+                <status-countdown
+                  :deadline="pool.public_end"
+                  :poolID="poolID"
+                  @countdown-finished="getPoolInfo"
+                />
+              </div>
+            </q-item-section>
+            <q-item-section class="row justify-between">
+              <div class="row items-center justify-end q-gutter-x-sm text-h6">
+                <q-btn
+                  outline
+                  flat
+                  padding="6px 8px"
+                  icon="fas fa-thumbs-up"
+                  class="hover-accent"
+                  size="1.05rem"
+                  :color="userSentiment === 'upvote' ? 'positive' : 'black'"
+                  @click="updateUserSentiment('upvote')"
+                  :disable="!isAuthenticated"
+                />
+                <div
+                  :class="
+                    userSentiment === 'upvote' ? 'text-positive' : 'text-black'
+                  "
+                >
+                  {{ sentimentValue("upvote") }}
+                </div>
+                <q-btn
+                  outline
+                  flat
+                  padding="6px 8px"
+                  size="1.05rem"
+                  icon="fas fa-thumbs-down"
+                  class="hover-accent"
+                  :color="userSentiment === 'downvote' ? 'accent' : 'black'"
+                  @click="updateUserSentiment('downvote')"
+                  :disable="!isAuthenticated"
+                />
+                <div
+                  :class="
+                    userSentiment === 'downvote'
+                      ? 'text-negative'
+                      : 'text-black'
+                  "
+                >
+                  {{ sentimentValue("downvote") }}
+                </div>
+              </div>
+            </q-item-section>
           </q-item>
           <q-item
             v-if="
@@ -377,7 +395,7 @@ export default {
         let start_balance = this.$chainToQty(
           await this.getBalanceFromChain(payload)
         );
-        if (start_balance > 1) {
+        if (start_balance >= 1) {
           let vote = 0; // abstain
           if (side === "upvote" && this.userSentiment !== "upvote") vote = 1;
           else if (side === "downvote" && this.userSentiment !== "downvote")
