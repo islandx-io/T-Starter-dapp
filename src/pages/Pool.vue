@@ -263,6 +263,7 @@ export default {
   },
   methods: {
     ...mapActions("pools", ["getChainPoolByID", "getAllocationByPool"]),
+    ...mapActions("account", ["getChainSTART"]),
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
@@ -302,6 +303,13 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.polling);
+  },
+
+  watch: {
+    async accountName() {
+      await this.getChainSTART();
+      await this.getClaimStatus();
+    }
   }
 };
 </script>
