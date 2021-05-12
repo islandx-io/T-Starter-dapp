@@ -12,9 +12,16 @@
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
       <q-card class="authenticated">
-        <q-btn :to="{ name: 'wallet', params: { accountName: accountName } }" flat round class="self-start">
+        <!-- Back button -->
+        <q-btn
+          :to="{ name: 'wallet', params: { accountName: accountName } }"
+          flat
+          round
+          class="self-start"
+        >
           <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
         </q-btn>
+        <!-- Select token dropdown -->
         <div class="column items-center">
           <q-btn-dropdown
             no-caps
@@ -44,7 +51,7 @@
                 :key="token"
                 @click="
                   selectedToken = token;
-                  selectedNetwork = 'telos';
+                  selectedNetwork = currentChain.NETWORK_NAME.toLowerCase();
                 "
                 flat
                 size="lg"
@@ -75,12 +82,17 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
+          <!-- Network selection -->
           <div class="text-subtitle1 q-pb-sm">From network</div>
           <div class="networks row justify-center">
             <q-btn
-              label="Telos"
-              @click="selectedNetwork = 'telos'"
-              :class="selectedNetwork === 'telos' ? 'selected-network' : ''"
+              :label="currentChain.NETWORK_DISPLAY_NAME"
+              @click="selectedNetwork = currentChain.NETWORK_NAME.toLowerCase()"
+              :class="
+                selectedNetwork === currentChain.NETWORK_NAME.toLowerCase()
+                  ? 'selected-network'
+                  : ''
+              "
               flat
               size="lg"
               no-caps
@@ -95,65 +107,71 @@
               size="lg"
               no-caps
               padding="xs"
-              type="a"
-              target="_blank"
-              :href="pTokenBridgeLink('PBTC')"
             />
+            <!-- type="a"
+              target="_blank"
+              :href="pTokenBridgeLink('PBTC')" -->
             <q-btn
               label="Ethereum"
-              v-if="['PETH', 'TLOS'].includes(selectedToken.toUpperCase())"
+              v-if="['PETH', 'TLOS', 'PUSDC', 'PUSDT', 'EOS'].includes(selectedToken.toUpperCase())"
               @click="selectedNetwork = 'ethereum'"
               :class="selectedNetwork === 'ethereum' ? 'selected-network' : ''"
               flat
               size="lg"
               no-caps
               padding="xs"
+            >
+              <!-- 
               type="a"
               target="_blank"
-              :href="
+                :href="
                 selectedToken.toUpperCase() === 'PETH'
                   ? pTokenBridgeLink('PETH')
                   : pTokenBridgeLink('TLOS')
-              "
-            >
+              " -->
               <q-tooltip>pTokens dapp</q-tooltip>
             </q-btn>
           </div>
+
+          <!-- """""""""""""""""""""""""""""" -->
+          <!-- Current chain network selected -->
+          <!-- """""""""""""""""""""""""""""" -->
           <div
-            class="text-subtitle1 q-py-md text-center"
-            v-if="selectedNetwork === 'telos'"
+            class=" column items-center"
+            v-show="selectedNetwork === currentChain.NETWORK_NAME.toLowerCase()"
           >
-            Deposit {{ depositTokenStr }} to the following address
-          </div>
-          <!-- leave this div, it needs to be there for some reason -->
-          <div></div>
-          <div id="tlos-qr-canvas" v-show="selectedNetwork === 'telos'" />
-          <!-- <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" /> -->
-          <!-- Address info -->
-          <div
-            class="col text-subtitle1 row q-gutter-x-sm q-mx-md"
-            v-show="selectedNetwork === 'telos'"
-          >
-            <div
-              id="address"
-              :class="`col ${selectedNetwork}-net`"
-              style="word-wrap: break-word;"
-            >
-              {{ selectedAddress }}
+            <div class="text-subtitle1 q-py-md text-center">
+              Deposit {{ depositTokenStr }} to the following address
             </div>
-            <!-- Copy address button -->
-            <div class="row content-center q-pl-sm">
-              <q-btn
-                flat
-                v-if="selectedAddress !== ''"
-                @click="copyAddress(selectedAddress)"
-                icon="far fa-clone"
-                padding="0"
-                color="positive"
-                size="sm"
-              />
+            <!-- telos qr code-->
+            <div></div>
+            <div id="tlos-qr-canvas" />
+
+            <!-- <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" /> -->
+            <!-- Address info -->
+            <div class="col text-subtitle1 row q-gutter-x-sm q-mx-md">
+              <div
+                id="address"
+                :class="`col ${selectedNetwork}-net`"
+                style="word-wrap: break-word;"
+              >
+                {{ selectedAddress }}
+              </div>
+              <!-- Copy address button -->
+              <div class="row content-center q-pl-sm">
+                <q-btn
+                  flat
+                  v-if="selectedAddress !== ''"
+                  @click="copyAddress(selectedAddress)"
+                  icon="far fa-clone"
+                  padding="0"
+                  color="positive"
+                  size="sm"
+                />
+              </div>
             </div>
           </div>
+
           <!-- Generate address button -->
           <!-- <q-btn
             class="q-mt-md"
@@ -255,17 +273,38 @@
               />
             </div>
           </q-linear-progress> -->
-          <q-banner
-            rounded
-            inline-actions
-            class="text-white bg-negative"
-            style="margin-top: 15px"
-            v-if="devMode"
-          >
-            Do not make real payments! This is under development.
-          </q-banner>
         </div>
       </q-card>
+
+      <!-- pNetwork app -->
+      <!-- TODO This causes a DOM error, but hey it works. -->
+      <div
+        class="q-mt-md q-card bg-white"
+        style="padding: 0 0 20px 0"
+        v-if="selectedNetwork.toUpperCase() != currentChain.NETWORK_NAME"
+      >
+        <div style="border-radius: 10px; overflow: hidden;">
+          <iframe
+            height="720"
+            width="100%"
+            :src="pTokenBridgeLink(selectedToken)"
+            allowfullscreen
+            frameBorder="0"
+          >
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Testnet warning -->
+      <q-banner
+        rounded
+        inline-actions
+        class="text-white bg-negative"
+        style="margin-top: 15px"
+        v-if="onTestnet"
+      >
+        Do not make real payments! This is a testnet.
+      </q-banner>
     </section>
   </q-page>
 </template>
@@ -277,7 +316,7 @@ import QRCodeStyling from "qr-code-styling";
 import QRCode from "qrcode";
 import { copyToClipboard } from "quasar";
 import tokenAvatar from "src/components/TokenAvatar";
-import { pBTC } from "ptokens-pbtc";
+import { PBTC } from "ptokens-pbtc";
 import { pERC20 } from "ptokens-perc20";
 import { pEosioToken } from "ptokens-peosio-token";
 import { HttpProvider } from "ptokens-providers";
@@ -342,8 +381,7 @@ export default {
       },
       btcAddress: "",
       selectedNetwork: "telos",
-      tokens: ["pBTC", "pETH", "TLOS"],
-      selectedToken: "pBTC",
+      selectedToken: "PBTC",
       ethAccounts: [],
       amount: 0,
       txnPending: false,
@@ -352,20 +390,36 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
+    ...mapGetters("blockchains", ["currentChain"]),
+    onTestnet() {
+      return process.env.TESTNET;
+    },
+
+    tokens() {
+      if (this.currentChain.NETWORK_NAME === "TELOS") {
+        return ["PBTC", "PETH", "TLOS", "PUSDC", 'PUSDT'];
+      } else if (this.currentChain.NETWORK_NAME === "EOS") {
+        return ["PBTC", "PETH", 'EOS'];
+      } else {
+        return ["PBTC", "PETH", "TLOS"]
+      }
+    },
+
     depositTokenStr() {
       if (this.selectedToken.toUpperCase() === "PETH") {
-        if (this.selectedNetwork === "telos") return "pETH";
+        if (this.selectedNetwork === "telos") return "PETH";
         else return "ETH";
       } else if (this.selectedToken.toUpperCase() === "TLOS") {
         if (this.selectedNetwork === "telos") return "TLOS";
         else return "TLOS (ERC20)";
       } else {
-        if (this.selectedNetwork === "telos") return "pBTC";
+        if (this.selectedNetwork === "telos") return "PBTC";
         else return "BTC";
       }
     },
     selectedAddress() {
-      if (this.selectedNetwork === "telos") return this.accountName;
+      if (this.selectedNetwork === this.currentChain.NETWORK_NAME.toLowerCase())
+        return this.accountName;
       else return this.btcAddress;
     },
 
@@ -392,12 +446,29 @@ export default {
   methods: {
     pTokenBridgeLink(sym) {
       sym = sym.toUpperCase();
-      if (sym === "TLOS") {
-        return "https://dapp.ptokens.io/swap?asset=tlos&from=eth&to=telos";
-      } else if (sym === "PBTC") {
-        return "https://dapp.ptokens.io/swap?asset=btc&from=btc&to=telos";
-      } else if (sym === "PETH") {
-        return "https://dapp.ptokens.io/swap?asset=eth&from=eth&to=telos";
+      // if telos chain
+      if (this.currentChain.NETWORK_NAME === "TELOS") {
+        if (sym === "TLOS") {
+          return "https://dapp.ptokens.io/swap?asset=tlos&from=eth&to=telos";
+        } else if (sym === "PBTC") {
+          return "https://dapp.ptokens.io/swap?asset=btc&from=btc&to=telos";
+        } else if (sym === "PETH") {
+          return "https://dapp.ptokens.io/swap?asset=eth&from=eth&to=telos";
+        } else if (sym === "PUSDC") {
+          return "https://dapp.ptokens.io/swap?asset=usdc&from=eth&to=telos";
+        } else if (sym === "PUSDT") {
+          return "https://dapp.ptokens.io/swap?asset=usdt&from=eth&to=telos";
+        }
+      } else if (this.currentChain.NETWORK_NAME === "EOS") {
+        if (sym === "PBTC") {
+          return "https://dapp.ptokens.io/swap?asset=btc&from=btc&to=eos";
+        } else if (sym === "PETH") {
+          return "https://dapp.ptokens.io/swap?asset=eth&from=eth&to=eos";
+        } else if (sym === "EOS") {
+          return "https://dapp.ptokens.io/swap?asset=eos&from=eth&to=eos";
+        }
+      } else if (this.currentChain.NETWORK_NAME === "WAX") {
+        
       }
     },
 
@@ -431,14 +502,19 @@ export default {
     },
 
     async setAddresses() {
-      const pbridge_api = await axios.get(
-        `https://pbtcontelos-node-1a.ngrok.io/pbtc-on-telos/get-native-deposit-address/${this.accountName}`
-      );
-      this.btcAddress = pbridge_api.data.nativeDepositAddress || [];
-      this.qrCodes.btc.update({ data: this.btcAddress });
+      // current chain QR code
       this.qrCodes.tlos.update({ data: this.accountName });
       this.qrCodes.tlos.append(document.getElementById("tlos-qr-canvas"));
-      this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
+
+      // bitcoin qr code
+      // const pbridge_api = await axios.get(
+      //   `https://pbtcon${this.currentChain.NETWORK_NAME.toLowerCase()}-node-1a.ngrok.io/pbtc-on-${this.currentChain.NETWORK_NAME.toLowerCase()}/get-native-deposit-address/${
+      //     this.accountName
+      //   }`
+      // );
+      // this.btcAddress = pbridge_api.data.nativeDepositAddress || [];
+      // this.qrCodes.btc.update({ data: this.btcAddress });      
+      // this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     },
 
     metamaskOnboarding() {
@@ -601,7 +677,8 @@ export default {
   },
 
   mounted() {
-    this.setAddresses();
+    this.selectedNetwork = this.currentChain.NETWORK_NAME.toLowerCase(); // sets network to current chain
+    this.setAddresses(); // makes qr codes
     if (this.$route.query.token_sym !== undefined)
       this.selectedToken = this.$route.query.token_sym;
   }
@@ -638,7 +715,7 @@ export default {
 h2 {
   line-height: 45px;
   margin: 0 10px;
-  font-size: 35px;
+  font-size: 34px;
 }
 .q-item:hover {
   background-color: $dark;
@@ -659,4 +736,14 @@ h2 {
 .q-input {
   max-width: 200px;
 }
+.resp-iframe {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+// .resp-container {
+// }
 </style>
