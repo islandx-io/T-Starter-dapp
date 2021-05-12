@@ -239,7 +239,8 @@ export default {
 
     networkOptions() {
       if (this.selectedTokenSym.toUpperCase() === "START")
-        return ["TELOS", "EOS", "WAX"];
+        // return ["TELOS", "EOS", "WAX"];
+        return ["TELOS", "EOS"];
       else return [this.selectedNetwork];
     }
   },
