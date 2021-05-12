@@ -34,7 +34,7 @@
         :padding="actionButtonPadding"
         icon="fas fa-sign-in-alt"
         :to="{
-          path: '/receive',
+          name: 'receive',
           query: { token_sym: props.row.token_sym }
         }"
         v-if="baseTokenSymbols.includes(props.row.token_sym)"
@@ -103,7 +103,7 @@
         :padding="actionButtonPadding"
         :icon="roundSend"
         :to="{
-          path: '/send',
+          name: 'send',
           query: { token_sym: props.row.token_sym }
         }"
         v-if="props.row.balance > 0"
@@ -135,7 +135,7 @@ export default {
   data() {
     return {
       buyStartUrl: process.env.BUY_START_URL,
-      baseTokenSymbols: ["TLOS", "PBTC", "PETH"], // TODO make dynamic
+      baseTokenSymbols: ["TLOS", "PBTC", "PETH", 'PUSDC','PUSDT', 'EOS'], // TODO make dynamic
       truncateActions: true,
       actionButtonPadding: "5px 8px"
     };
@@ -238,7 +238,7 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.go();
+        this.$router.push('/');
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -263,7 +263,7 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.go();
+        this.$router.push('/');
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -283,7 +283,7 @@ export default {
           icon: "cloud_done",
           message: "Staked Tokens Updated"
         });
-        this.$router.go();
+        this.$router.push('/');
       } catch (error) {
         this.$q.notify({
           color: "red-5",

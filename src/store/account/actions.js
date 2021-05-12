@@ -187,7 +187,7 @@ export const setWalletPoolTokens = async function(
           if (balance > 0) {
             commit("setWalletToken", {
               token_sym: sym,
-              token_contract: account
+              token_contract: contract
             });
             commit("setWalletTokenDecimals", {
               token_sym: sym,
@@ -224,11 +224,14 @@ export const setWalletBalances = async function(
         sym: token_info.token_sym,
         accountName: account
       };
+      // console.log(payload)
 
       let token_str = await dispatch("pools/getBalanceFromChain", payload, {
         root: true
       });
+      // console.log(token_str)
       let balance = this.$chainToQty(token_str);
+      // console.log(balance)
       commit("setWalletTokenBalance", {
         token_sym: token_info.token_sym,
         amount: balance
@@ -325,6 +328,22 @@ export const getChainSTART = async function(
       });
       commit("setWalletStakeMaturities", {
         arr: stakeBalanceTbl.rows[0].stake_maturities
+      });
+
+      //set balance
+      let payload = {
+        address: 'token.start',
+        sym: 'START',
+        accountName: account
+      };
+
+      let token_str = await dispatch("pools/getBalanceFromChain", payload, {
+        root: true
+      });
+      let balance = this.$chainToQty(token_str);
+      commit("setWalletTokenBalance", {
+        token_sym: 'START',
+        amount: balance
       });
     }
   } catch (error) {

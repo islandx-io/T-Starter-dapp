@@ -1,4 +1,4 @@
-name: Deploy - Pre-release
+name: Deploy Pre-Release
 
 on:
   push:

@@ -19,7 +19,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
           <h2>
             The place to discover and
             <span>back projects</span>
-            building on Telos
+            building on {{currentChain.NETWORK_DISPLAY_NAME}}
           </h2>
 
           <div class="q-gutter-x-sm">
@@ -27,7 +27,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
               class="hover-accent"
               color="secondary"
               outline
-              to="/pools"
+              :to="{name: 'allpools'}"
               label="VIEW ALL POOLS"
             />
             <q-btn
@@ -114,7 +114,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             class="hover-accent"
             color="accent"
             outline
-            to="/pools"
+            :to="{name: 'allpools'}"
             label="VIEW ALL POOLS"
           />
         </div>
@@ -145,6 +145,7 @@ export default {
       "getPoolByID",
       "getPublishedPoolIDs"
     ]),
+    ...mapGetters("blockchains", ["currentChain"]),
     openIDs() {
       let open_pools = this.getPoolIDsByStatus("open");
       let published_pools = this.getPublishedPoolIDs;

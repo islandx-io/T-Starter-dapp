@@ -4,6 +4,7 @@ import Vuex from "vuex";
 import account from "./account";
 import general from "./general";
 import pools from "./pools";
+import blockchains from "./blockchains";
 
 Vue.use(Vuex);
 
@@ -12,7 +13,8 @@ export default function() {
     modules: {
       general,
       account,
-      pools
+      pools,
+      blockchains
     },
 
     strict: process.env.DEV

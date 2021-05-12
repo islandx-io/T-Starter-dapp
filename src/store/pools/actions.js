@@ -74,32 +74,57 @@ export const getChainAccountInfo = async function({ commit }, accountName) {
 };
 
 // if pool is funded with the token
-export const ifPoolFunded = async function({ commit }, payload) {
+export const ifPoolFunded = async function(
+  { commit, rootGetters, getters },
+  payload
+) {
+  try {
+    if (payload.account !== null) {
+      // get wallet table info
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: payload.account, // Account that owns the data
+        table: "wallets", // Table name
+        limit: 10000,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
 
-  // Get response with tokens sent to pools.start with memo fund pool
-  let response = await axios(
-    `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}` +
-      `/v2/history/get_actions?account=${payload.account}` +
-      `&limit=1000&sort=desc&transfer.to=${process.env.CONTRACT_ADDRESS}` +
-      `&transfer.memo=fund pool`
-  );
-  // console.log(response.data.actions)
+      // get pool info
+      const pool = getters.getPoolByID(payload.id);
+      // console.log(pool);
 
-  if (
-    response.data.actions.filter(
-      a => a.act.data.memo === `fund pool:${payload.id}`
-    ).length > 0
-  ) {
-    return true;
-  } else {
-    return false;
+      // console.log(tableResults.rows);
+      let amount_inwallet = this.$chainToQty(
+        tableResults.rows.find(el => el.contract === pool.swap_ratio.contract)
+          .balance
+      );
+      // console.log(amount_inwallet);
+
+      let amount_required =
+        this.$chainToQty(pool.swap_ratio.quantity) *
+        this.$chainToQty(pool.hard_cap);
+      // console.log(amount_required);
+
+      // if ammount of tokens in wallets tabel enough
+      if (amount_inwallet >= amount_required) {
+        // console.log("Pool is funded");
+        return true;
+      } else {
+        // console.log("Pool not funded");
+        return false;
+      }
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
 
-// DEPRECATED. Get received pool tokens
-export const getReceivedPoolTokenTxns = async function({}, account) {
+// Get received pool tokens
+export const getReceivedPoolTokenTxns = async function({ getters }, account) {
+  let currentChain = getters["blockchains/currentChain"];
   let response = await axios(
-    `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}` +
+    `${currentChain.NETWORK_PROTOCOL}://${currentChain.NETWORK_HOST}` +
       `/v2/history/get_actions?account=${account}` +
       `&limit=1000&sort=desc&transfer.to=${account}` +
       `&transfer.memo=allocation%20of%20pool%20tokens`
@@ -114,7 +139,7 @@ export const getPoolTokens = async function({ commit, dispatch }) {
     const tableResults = await this.$api.getTableRows({
       code: process.env.CONTRACT_ADDRESS, // Contract that we target
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-      table: 'pooltokens', // Table name
+      table: "pooltokens", // Table name
       limit: 10000, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
@@ -122,8 +147,7 @@ export const getPoolTokens = async function({ commit, dispatch }) {
 
     // const poolTable = tableResults.rows[tableResults.rows.length - 1];
     // console.log(tableResults.rows)
-    return tableResults.rows
-
+    return tableResults.rows;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -147,14 +171,16 @@ export const getBalanceFromChain = async function({ commit }, payload) {
         payload.sym
       )
     )[0];
-    // console.log('balance')
-    if (balance === undefined) {
-      return `0 ${payload.sym}`;
-    } else {
+    // console.log("balance:")
+    // console.log(balance)
+    if (balance !== undefined) {
       return balance;
+    } else {
+      return `0 ${payload.sym}` ;
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
+    return `0 ${payload.sym}` ;
   }
 };
 
@@ -188,7 +214,10 @@ export const getTokenPrecision = async function(
   }
 };
 
-export const updatePoolSettings = async function({ commit, getters }, poolID) {
+export const updatePoolSettings = async function(
+  { commit, getters, dispatch },
+  poolID
+) {
   const pool = getters.getPoolByID(poolID);
 
   // TODO Call within the getAllChainPools action
@@ -236,6 +265,8 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
     access_type: access_type,
     progress: progress
   });
+
+  await dispatch("updateSentimentByPoolID", poolID);
 };
 
 // Get pools created from chain
@@ -564,6 +595,23 @@ export const getBaseTokens = async function(
 
       return base_token_info_list;
     }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+export const updateSentimentByPoolID = async function({ commit }, poolID) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS,
+      scope: poolID,
+      table: "sentiment",
+      limit: 10000,
+      reverse: false,
+      show_payer: false
+    });
+    const sentiment_table = tableResults.rows;
+    commit("setPoolSentimentTable", { id: poolID, sentiment_table });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

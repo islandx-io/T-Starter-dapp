@@ -52,12 +52,17 @@ export default {
   methods: {
     src(avatar) {
       let result = avatar;
-      if (result === "") {
+      if (result === "" || result === undefined) {
         let token = this.token.toUpperCase();
         if (token === "PETH") result = "/tokens/peth.png";
         else if (token === "PBTC") result = "/tokens/pbtc.png";
         else if (token === "START") result = "/tokens/start.png";
         else if (token === "TLOS") result = "/tokens/tlos.png";
+        else if (token === "TELOS") result = "/tokens/tlos.png";
+        else if (token === "EOS") result = "/tokens/eos.png";
+        else if (token === "WAX") result = "/tokens/wax.png";
+        else if (token === "PUSDC") result = "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/pUSDC.png";
+        else if (token === "PUSDT") result = "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/pUSDT.png";
       }
       return result;
     }

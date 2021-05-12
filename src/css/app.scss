@@ -103,3 +103,19 @@ h6 {
     border: 2px solid currentColor;
   }
 }
+
+.networks {
+  .q-btn {
+    background-color: silver;
+    color: $secondary;
+    width: 120px;
+    align-items: center;
+    margin: 5px 10px;
+    @media only screen and (max-width: 375px) {
+      width: 100px;
+    }
+  }
+  .q-btn.selected-network {
+    background-color: $space;
+  }
+}

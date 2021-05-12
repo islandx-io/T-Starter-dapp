@@ -48,9 +48,18 @@ const getAccount = async function (accountName) {
   return await rpc.get_account(accountName);
 }
 
-export default ({ store }) => {
+export default async ({ store }) => {
+  // set and get blockchain
+  if (localStorage.getItem("selectedChain") != null) {
+    await store.dispatch("blockchains/setNewChain", localStorage.getItem("selectedChain"))
+  } else {
+    await store.dispatch("blockchains/setNewChain", "TELOS")
+  }
+  let currentChain = store.getters['blockchains/currentChain'];
+  // console.log(currentChain)
+
   const rpc = new JsonRpc(
-    `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`
+    `${currentChain.NETWORK_PROTOCOL}://${currentChain.NETWORK_HOST}:${currentChain.NETWORK_PORT}`
   );
   store["$defaultApi"] = new Api({
     rpc,

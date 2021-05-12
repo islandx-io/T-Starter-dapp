@@ -4,7 +4,7 @@
       <q-toolbar class="toolbar items-center">
         <q-toolbar-title>
           <div class="row items-center">
-            <router-link to="/" class="router-link">
+            <router-link :to="{path:`/${currentChain.NETWORK_NAME.toLowerCase()}`}" class="router-link">
               <img
                 class="header-logo"
                 src="~assets/logo/logo-light.svg"
@@ -22,20 +22,20 @@
             </q-chip>
           </div>
         </q-toolbar-title>
-        <div class="gt-sm row">
+        <div class="gt-sm row items-center">
           <q-btn
             v-if="accountName === admin_address"
             class="hover-accent"
             color="secondary"
             flat
-            to="/createpool"
+            :to="{name: 'createpool'}"
             label="Create pool"
           />
           <q-btn
             class="hover-accent"
             color="secondary"
             flat
-            to="/pools"
+            :to="{name: 'allpools'}"
             label="Pools"
           />
           <q-btn
@@ -47,7 +47,9 @@
             label="Wallet"
           />
           <login-button class="q-pl-md" />
+          <chain-selector class="q-pl-md" />
         </div>
+        <!-- Mobile menu -->
         <q-btn
           round
           icon="menu"
@@ -73,7 +75,7 @@
                 v-if="accountName === admin_address"
                 color="secondary"
                 text-color="black"
-                to="/createpool"
+                :to="{name: 'createpool'}"
                 outline
               />
               <q-btn
@@ -81,7 +83,7 @@
                 color="secondary"
                 text-color="black"
                 outline
-                to="/pools"
+                :to="{name: 'allpools'}"
               />
               <q-btn
                 label="Wallet"
@@ -94,14 +96,7 @@
               />
             </div>
             <login-button mobileView />
-            <!-- <q-btn
-                  round
-                  icon="fas fa-times"
-                  outline
-                  color="secondary"
-                  class="lt-md menu-btn hover-accent"
-                  @click="showMenu = false"
-                /> -->
+            <chain-selector />
           </div>
         </q-dialog>
       </q-toolbar>
@@ -164,6 +159,7 @@
 
 <script>
 import LoginButton from "components/LoginButton.vue";
+import ChainSelector from "components/ChainSelector.vue";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
@@ -182,9 +178,10 @@ export default {
       siteVersion: process.env.SITE_VERSION
     };
   },
-  components: { LoginButton },
+  components: { LoginButton, ChainSelector },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("blockchains", ["currentChain"]),
     admin_address() {
       return process.env.ADMIN_ADDRESS;
     }

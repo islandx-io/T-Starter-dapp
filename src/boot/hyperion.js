@@ -1,10 +1,22 @@
 import axios from "axios";
 
-const hyperion = axios.create({
-  baseURL: process.env.HYPERION_ENDPOINT
-});
+let hyperion = null;
 
-export default ({ Vue }) => {
+export default async ({ Vue, store }) => {
+  // set and get blockchain
+  if (localStorage.getItem("selectedChain") != null) {
+    await store.dispatch("blockchains/setNewChain", localStorage.getItem("selectedChain"))
+  } else {
+    await store.dispatch("blockchains/setNewChain", "TELOS")
+  }
+  let currentChain = store.getters['blockchains/currentChain'];
+  console.log(currentChain)
+
+  hyperion = axios.create({
+    baseURL: currentChain.HYPERION_ENDPOINT
+  });
+
+
   Vue.prototype.$hyperion = hyperion;
 };
 

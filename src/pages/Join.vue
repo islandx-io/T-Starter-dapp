@@ -130,7 +130,7 @@
                       pool.pool_status !== `open` ||
                       not_enough_start ||
                       joining ||
-                      !isWhitelisted
+                      !isWhitelisted || allocationReached
                   "
                 />
                 <div
@@ -153,6 +153,9 @@
               </q-tooltip>
               <q-tooltip v-if="!isWhitelisted">
                 Not whitelisted for this pool
+              </q-tooltip>
+              <q-tooltip v-if="allocationReached">
+                Maximum allocation reached
               </q-tooltip>
             </q-item>
           </div>
@@ -332,7 +335,7 @@ export default {
       base_token_symbol: "",
       showTransaction: false,
       transaction: null,
-      explorerUrl: process.env.NETWORK_EXPLORER,
+      // explorerUrl: this.currentChain.NETWORK_EXPLORER,
       buyStartUrl: process.env.BUY_START_URL
     };
   },
@@ -340,6 +343,11 @@ export default {
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("blockchains", ["currentChain"]),
+
+    explorerUrl() {
+      return this.currentChain.NETWORK_EXPLORER
+    },
 
     isWhitelisted() {
       if (
@@ -374,6 +382,16 @@ export default {
         result = this.$toFixedDown(result, decimals);
       }
       return result;
+    },
+    
+    allocationReached() {
+      // console.log(this.$chainToQty(this.allocation.bid))
+      // console.log(this.$chainToQty(this.pool.maximum_swap))
+      if (this.$chainToQty(this.allocation.bid) >= this.$chainToQty(this.pool.maximum_swap)) {
+        return true
+      } else {
+        return false
+      }
     }
   },
 
@@ -413,8 +431,8 @@ export default {
     async getAllocations() {
       let payload = { account: this.accountName, poolID: this.pool.id };
       this.allocation = await this.getAllocationByPool(payload);
-      console.log("Allocation:");
-      console.log(this.$chainToQty(this.allocation.bid));
+      // console.log("Allocation:");
+      // console.log(this.$chainToQty(this.allocation.bid));
       // show disclaimer if user hasn't participated yet
       if (this.$chainToQty(this.allocation.bid) > 0) {
         this.disclaimer_show = false;

@@ -110,7 +110,7 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.go();
+        this.$router.push('/');
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -135,7 +135,7 @@ export default {
           params: { id: this.pool.id },
           query: { tab: "allocations" }
         });
-        this.$router.go();
+        this.$router.push('/');
       } catch (error) {
         this.$q.notify({
           color: "red-5",
