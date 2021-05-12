@@ -56,7 +56,8 @@ export default {
   data() {
     return {
       selectedChain: "TELOS",
-      chainOptions: ["TELOS", "EOS", 'WAX']
+      chainOptions: ["TELOS", "EOS"]
+      // chainOptions: ["TELOS", "EOS", "WAX"]
     };
   },
 
