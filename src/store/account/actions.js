@@ -350,3 +350,17 @@ export const getChainSTART = async function(
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
+
+// reset wallet
+export const resetWallet = async function(
+  { commit, getters, dispatch },
+) {
+  commit("resetWalletState");
+}
+
+// reset liquid
+export const resetLiquid = async function(
+  { commit, getters, dispatch },
+) {
+  commit("clearLiquid");
+}
