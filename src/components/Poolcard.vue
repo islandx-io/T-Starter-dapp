@@ -173,15 +173,17 @@ export default {
 }
 .q-card .bottom-section {
   padding-bottom: 8px;
+  padding-top: 0;
 }
 
 .q-card .title-section {
-  min-height: 48px;
-}
-.q-card .title {
-  margin: 0;
-  padding: 0;
-  line-height: 22px;
+  min-height: 75px;
+  padding-bottom: 0;
+  & .title {
+    margin: 0;
+    padding: 0;
+    line-height: 26px;
+  }
 }
 .q-card .info-value {
   line-height: 30px;
