@@ -23,10 +23,12 @@ export const setWalletToken = (state, { token_sym, token_contract }) => {
     token_contract: token_contract,
     balance: 0,
     liquid: 0,
+    unstaking: 0,
     staked: 0,
     unstaking: 0,
     decimals: 0,
-    avatar: ""
+    avatar: "",
+    stake_maturities: []
   };
   // if token in store update, else push
   if (!state.wallet.map(a => a.token_sym).includes(token_sym)) {
@@ -71,4 +73,26 @@ export const setWalletTokenDecimals = (state, { token_sym, amount }) => {
 export const setWalletStakeMaturities = (state, { arr }) => {
   let token = state.wallet.find(a => a.token_sym === "START");
   token.stake_maturities = arr;
+};
+
+export const resetWalletState = (state) => {
+  state.wallet = [
+    {
+      token_sym: "START",
+      token_contract: "token.start",
+      balance: 0,
+      liquid: 0,
+      staked: 0,
+      unstaking: 0,
+      decimals: 4,
+      avatar: "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
+      stake_maturities: [],
+    },
+  ]
+};
+
+export const clearLiquid = (state) => {
+  state.wallet.forEach(element => {
+    element.liquid = 0
+  });
 };

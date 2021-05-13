@@ -442,6 +442,7 @@ export default {
     // get data from chain, write to store, get from store
     await this.loadChainData();
     this.getPoolInfo();
+    await this.getChainSTART();
     await this.getClaimStatus();
     // Start polling
     this.polling = setInterval(() => {
