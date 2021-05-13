@@ -8,6 +8,7 @@
         <q-item-label class="text-subtitle1" lines="2">
           {{ row.comment }}
         </q-item-label>
+        <!-- TODO Make expandable -->
       </q-item-section>
       <q-item-section side top>
         <q-item-label>
@@ -100,7 +101,7 @@ import { date } from "quasar";
 export default {
   name: "tab-comments",
   props: {
-    platform_token: {
+    START_info: {
       required: true
     },
     pool: {
@@ -111,30 +112,40 @@ export default {
     return {
       userComment: "",
       insufficient_start_show: false,
-      buyStartUrl: process.env.BUY_START_URL
+      buyStartUrl: process.env.BUY_START_URL,
+      editID: -1 // for none
     };
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"])
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("pools", ["getPoolByID"])
   },
   methods: {
     ...mapActions("pools", ["getBalanceFromChain", "getChainPoolByID"]),
+    ...mapActions("account", ["getChainSTART"]),
     toDate(timeStamp) {
       if (timeStamp === "Loading") return timeStamp;
       else return date.formatDate(timeStamp, "DD MMMM YYYY @ HH:mm");
     },
+    errorNotification(error) {
+      this.$q.notify({
+        color: "red-5",
+        textColor: "white",
+        icon: "warning",
+        message: `${error}`
+      });
+    },
     async postUserComment() {
+      // TODO Add try-catch
       if (this.isAuthenticated && this.userComment !== "") {
-        let payload = {
-          address: this.platform_token.contract,
-          sym: "START",
-          accountName: this.accountName
-        };
-        let start_balance = this.$chainToQty(
-          await this.getBalanceFromChain(payload)
-        );
-        if (start_balance > 1) {
+        await this.getChainSTART(this.accountName);
+        if (this.START_info.liquid < 1 && this.START_info.balance < 1) {
+          this.insufficient_start_show = true;
+        } else {
           const actions = [];
+          if (this.START_info.liquid < 1) {
+            actions.push(this.$startBalanceToLiquidAction(this.START_info));
+          }
           actions.push({
             account: process.env.CONTRACT_ADDRESS,
             name: "comment",
@@ -144,10 +155,14 @@ export default {
               memo: this.userComment
             }
           });
-          const transaction = await this.$store.$api.signTransaction(actions);
-          await this.getChainPoolByID(this.pool.id);
-          this.getPoolInfo();
-        } else this.insufficient_start_show = true;
+          try {
+            const transaction = await this.$store.$api.signTransaction(actions);
+            this.userComment = "";
+          } catch (error) {
+            this.errorNotification(error); // FIXME Unexpected error messages
+          }
+          this.$emit("transaction-complete");
+        }
       }
     },
     async removeUserComment(comment) {
@@ -162,9 +177,12 @@ export default {
             }
           }
         ];
-        const transaction = await this.$store.$api.signTransaction(actions);
-        await this.getChainPoolByID(this.pool.id);
-        this.getPoolInfo();
+        try {
+          const transaction = await this.$store.$api.signTransaction(actions);
+        } catch (error) {
+          this.errorNotification(error);
+        }
+        this.$emit("transaction-complete");
       }
     }
   }
