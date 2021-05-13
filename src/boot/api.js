@@ -31,9 +31,9 @@ const signTransaction = async function(actions) {
   return transaction;
 };
 
-const getRpc = function () {
+const getRpc = function() {
   return this.$type === "ual" ? this.$ualUser.rpc : this.$defaultApi.rpc;
-}
+};
 
 const getTableRows = async function(options) {
   const rpc = this.$api.getRpc();
@@ -43,19 +43,22 @@ const getTableRows = async function(options) {
   });
 };
 
-const getAccount = async function (accountName) {
+const getAccount = async function(accountName) {
   const rpc = this.$api.getRpc();
   return await rpc.get_account(accountName);
-}
+};
 
 export default async ({ store }) => {
   // set and get blockchain
   if (localStorage.getItem("selectedChain") != null) {
-    await store.dispatch("blockchains/setNewChain", localStorage.getItem("selectedChain"))
+    await store.dispatch(
+      "blockchains/setNewChain",
+      localStorage.getItem("selectedChain")
+    );
   } else {
-    await store.dispatch("blockchains/setNewChain", "TELOS")
+    await store.dispatch("blockchains/setNewChain", "TELOS");
   }
-  let currentChain = store.getters['blockchains/currentChain'];
+  let currentChain = store.getters["blockchains/currentChain"];
   // console.log(currentChain)
 
   const rpc = new JsonRpc(

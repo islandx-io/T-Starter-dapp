@@ -49,7 +49,7 @@ const toChainString = function(number, decimals, symbol) {
   return String(parseFloat(number).toFixed(decimals)) + String(" " + symbol);
 };
 
-// Formats utc date to local time 
+// Formats utc date to local time
 const toDate = function(timeStamp) {
   if (timeStamp === "Loading") return timeStamp;
   else return date.formatDate(timeStamp, "DD MMMM YYYY @ HH:mm (UTC Z)");
@@ -76,6 +76,23 @@ const toFixedDown = function(num, decimals) {
   // Or just Math.floor(num * 10**decimals) / 10**decimals
 };
 
+const startBalanceToLiquidAction = function(START_info) {
+  return {
+    account: this.START_info.token_contract,
+    name: "transfer",
+    data: {
+      from: this.accountName,
+      to: process.env.CONTRACT_ADDRESS,
+      quantity: this.$toChainString(
+        1,
+        this.START_info.decimals,
+        this.START_info.sym
+      ),
+      memo: `Send ${this.START_info.sym} to liquid`
+    }
+  };
+};
+
 export default ({ Vue, store }) => {
   Vue.prototype.$chainToQty = chainToQty;
   Vue.prototype.$toChainString = toChainString;
@@ -86,6 +103,7 @@ export default ({ Vue, store }) => {
   Vue.prototype.$getSymFromAsset = getSymFromAsset;
   Vue.prototype.$chainToDecimals = chainToDecimals;
   Vue.prototype.$toFixedDown = toFixedDown;
+  Vue.prototype.$startBalanceToLiquidAction = startBalanceToLiquidAction;
   store["$chainToQty"] = chainToQty;
   store["$chainToSym"] = chainToSym;
   store["$toChainString"] = toChainString;

@@ -212,7 +212,11 @@
             <tab-allocations :pool="pool" />
           </q-tab-panel>
           <q-tab-panel name="comments" @mousedown.stop>
-            <tab-comments :pool="pool" :platform_token="platform_token" />
+            <tab-comments
+              :pool="pool"
+              :START_info="START_info"
+              @transaction-complete="txnCompleteRefresh"
+            />
           </q-tab-panel>
         </q-tab-panels>
 
@@ -403,20 +407,7 @@ export default {
           this.insufficient_start_show = true;
         } else {
           if (this.START_info.liquid < 1) {
-            actions.push({
-              account: this.START_info.token_contract,
-              name: "transfer",
-              data: {
-                from: this.accountName,
-                to: process.env.CONTRACT_ADDRESS,
-                quantity: this.$toChainString(
-                  1,
-                  this.START_info.decimals,
-                  this.START_info.sym
-                ),
-                memo: `Send ${this.START_info.sym} to liquid`
-              }
-            });
+            actions.push(this.$startBalanceToLiquidAction(this.START_info));
           }
           let vote = 0; // abstain
           if (side === "upvote" && this.userSentiment !== "upvote") vote = 1;
@@ -432,10 +423,12 @@ export default {
             }
           });
           const transaction = await this.$store.$api.signTransaction(actions);
-          await this.loadChainData();
-          this.getPoolInfo();
         }
       }
+    },
+    async txnCompleteRefresh() {
+      await this.loadChainData();
+      this.getPoolInfo();
     }
   },
   async mounted() {
