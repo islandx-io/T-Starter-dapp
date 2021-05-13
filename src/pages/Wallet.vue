@@ -18,9 +18,12 @@
             <q-th auto-width key="expand">
               <!-- Refresh table button -->
               <q-btn
-                padding="xs"
-                color="primary"
+                padding="sm"
+                class="hover-accent"
+                color="black"
                 icon="fas fa-sync-alt"
+                flat
+                size="sm"
                 @click="
                   resetLiquid();
                   reloadWalletInfo();
