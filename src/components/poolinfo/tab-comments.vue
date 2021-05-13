@@ -1,27 +1,56 @@
 <template>
   <q-list class="comments-tab">
-    <q-item v-for="row in pool.comments_table" :key="row.id">
+    <q-item
+      v-for="row in pool.comments_table"
+      :key="row.id"
+      style="min-height: 60px"
+    >
       <q-item-section>
-        <q-item-label class="text-subtitle1 text-weight-bold" lines="1">{{
-          row.account
-        }}</q-item-label>
-        <q-item-label class="text-subtitle1" lines="2">
+        <q-item-label class="text-subtitle1 text-weight-bold" lines="1">
+          {{ row.account }}
+        </q-item-label>
+        <q-item-label v-if="row.id !== editID" class="text-subtitle1" lines="2">
           {{ row.comment }}
         </q-item-label>
+        <q-form
+          @submit="updateUserComment(row)"
+          v-if="row.id === editID"
+          class="row items-center q-gutter-x-xs q-pt-sm"
+        >
+          <q-input
+            class="col"
+            color="primary"
+            v-model="row.comment"
+            lazy-rules
+            :disable="!isAuthenticated"
+            maxlength="255"
+            outlined
+          />
+          <q-btn
+            class="hover-accent"
+            color="primary"
+            padding="sm md"
+            :disable="!isAuthenticated"
+            type="submit"
+            label="Update"
+          />
+        </q-form>
         <!-- TODO Make expandable -->
+        <!-- FIXME Vuex state mutation error -->
       </q-item-section>
       <q-item-section side top>
         <q-item-label>
           {{ toDate(row.timestamp) }}
         </q-item-label>
-        <div class="row q-gutter-x-xs">
+        <div class="row q-gutter-x-xs q-pt-xs">
           <q-btn
             v-if="row.account === accountName"
-            icon="fas fa-edit"
+            :icon="row.id === editID ? 'fas fa-times-circle' : 'fas fa-edit'"
             class="hover-accent"
             size="sm"
             padding="sm"
             flat
+            @click="cencelEdit(row.id)"
           />
           <q-btn
             v-if="row.account === accountName"
@@ -56,7 +85,6 @@
           padding="sm md"
           :label="isAuthenticated ? 'Post' : 'Login to post'"
           :disable="!isAuthenticated"
-          @click="postUserComment"
           type="submit"
         />
       </q-form>
@@ -114,18 +142,25 @@ export default {
       insufficient_start_show: false,
       buyStartUrl: process.env.BUY_START_URL,
       editID: -1 // for none
+      // comments: []
     };
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"]),
-    ...mapGetters("pools", ["getPoolByID"])
+    ...mapGetters("account", ["isAuthenticated", "accountName"])
   },
+  // mounted() {
+  //   this.comments = this.pool.comments_table;
+  // },
   methods: {
     ...mapActions("pools", ["getBalanceFromChain", "getChainPoolByID"]),
     ...mapActions("account", ["getChainSTART"]),
     toDate(timeStamp) {
       if (timeStamp === "Loading") return timeStamp;
       else return date.formatDate(timeStamp, "DD MMMM YYYY @ HH:mm");
+    },
+    cencelEdit(id) {
+      if (id === this.editID) this.editID = -1;
+      else this.editID = id;
     },
     errorNotification(error) {
       this.$q.notify({
@@ -183,6 +218,28 @@ export default {
           this.errorNotification(error);
         }
         this.$emit("transaction-complete");
+      }
+    },
+    async updateUserComment(comment) {
+      if (this.isAuthenticated && comment.account === this.accountName) {
+        const actions = [
+          {
+            account: process.env.CONTRACT_ADDRESS,
+            name: "editcomment",
+            data: {
+              pool_id: this.pool.id,
+              comment_id: comment.id,
+              memo: comment.comment
+            }
+          }
+        ];
+        try {
+          const transaction = await this.$store.$api.signTransaction(actions);
+        } catch (error) {
+          this.errorNotification(error);
+        }
+        this.$emit("transaction-complete");
+        this.editID = -1;
       }
     }
   }

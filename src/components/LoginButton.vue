@@ -69,7 +69,7 @@
                 :style="{
                   background: wallet.getStyle().background,
                   color: wallet.getStyle().textColor
-                }" 
+                }"
               >
                 <q-item-section
                   class="cursor-pointer"
@@ -182,7 +182,7 @@ export default {
       return Platform.is.mobile;
     },
     PlatformInfo() {
-      return Platform
+      return Platform;
     }
   },
   methods: {
@@ -237,8 +237,8 @@ export default {
     // await this.autoLogin(this.$route.query.returnUrl); // FIXME this causes telos sign to pop up, not good on prod
     await this.getBalance();
     // Start polling every 30 seconds for any updates
-    this.polling = setInterval( async () => {
-      await this.getBalance();;
+    this.polling = setInterval(async () => {
+      await this.getBalance();
     }, 30000);
   }
 };
