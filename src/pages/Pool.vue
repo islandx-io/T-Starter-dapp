@@ -217,7 +217,7 @@
           </q-tab-panel>
           <q-tab-panel name="comments" @mousedown.stop>
             <tab-comments
-              :pool="pool"
+              :poolID="poolID"
               :START_info="START_info"
               @transaction-complete="txnCompleteRefresh"
             />

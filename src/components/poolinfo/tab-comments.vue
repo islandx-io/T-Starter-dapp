@@ -8,7 +8,7 @@
         <q-input
           class="col-sm col-xs-12"
           color="primary"
-          v-model="userComment"
+          v-model="newComment"
           label="Comment"
           lazy-rules
           :disable="!isAuthenticated"
@@ -58,8 +58,7 @@
             <q-input
               class="col-sm col-xs-12"
               color="primary"
-              :value="row.comment"
-              @input="editComment"
+              v-model="updatedComment"
               lazy-rules
               :disable="!isAuthenticated"
               maxlength="255"
@@ -89,7 +88,7 @@
               size="sm"
               padding="sm"
               flat
-              @click="cencelEdit(row.id)"
+              @click="toggleEdit(row.id)"
             />
             <q-btn
               v-if="row.account === accountName"
@@ -148,32 +147,60 @@ export default {
     START_info: {
       required: true
     },
-    pool: {
+    poolID: {
       required: true
     }
   },
   data() {
     return {
-      userComment: "",
+      newComment: "",
       insufficient_start_show: false,
       buyStartUrl: process.env.BUY_START_URL,
-      editID: -1, // for none
-      updatedComment: ""
+      editID: -1,
+      pool: this.$defaultPoolInfo
     };
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"])
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("pools", ["getPoolByID"]),
+    updatedComment: {
+      get() {
+        let result = this.pool.comments_table.find(el => el.id === this.editID)
+          .comment;
+        return result;
+      },
+      set(value) {
+        this.$store.commit("pools/updateSingleComment", {
+          pool_id: this.poolID,
+          comment_id: this.editID,
+          value: value
+        });
+      }
+    }
+  },
+  mounted() {
+    this.getPoolInfo();
   },
   methods: {
-    ...mapActions("pools", ["getBalanceFromChain", "getChainPoolByID"]),
+    ...mapActions("pools", [
+      "getBalanceFromChain",
+      "getChainPoolByID",
+      "updateCommentsByPoolID"
+    ]),
     ...mapActions("account", ["getChainSTART"]),
+    getPoolInfo() {
+      this.pool = this.getPoolByID(this.poolID);
+    },
     toDate(timeStamp) {
       if (timeStamp === "Loading") return timeStamp;
       else return date.formatDate(timeStamp, "DD MMMM YYYY @ HH:mm");
     },
-    cencelEdit(id) {
-      if (id === this.editID) this.editID = -1;
-      else this.editID = id;
+    toggleEdit(id) {
+      if (id === this.editID) {
+        // Cancel
+        this.editID = -1;
+        this.updateCommentsByPoolID(this.poolID);
+      } else this.editID = id; // Edit
     },
     errorNotification(error) {
       this.$q.notify({
@@ -189,12 +216,9 @@ export default {
         this.pool.comments_table[this.pool.comments_table.length - 1].id
       );
     },
-    editComment(value) {
-      this.updatedComment = value;
-    },
     async postUserComment() {
       // TODO Add try-catch
-      if (this.isAuthenticated && this.userComment !== "") {
+      if (this.isAuthenticated && this.newComment !== "") {
         await this.getChainSTART(this.accountName);
         if (this.START_info.liquid < 1 && this.START_info.balance < 1) {
           this.insufficient_start_show = true;
@@ -208,13 +232,13 @@ export default {
             name: "comment",
             data: {
               account: this.accountName,
-              pool_id: this.pool.id,
-              memo: this.userComment
+              pool_id: this.poolID,
+              memo: this.newComment
             }
           });
           try {
             const transaction = await this.$store.$api.signTransaction(actions);
-            this.userComment = "";
+            this.newComment = "";
           } catch (error) {
             this.errorNotification(error); // FIXME Unexpected error messages
           }
@@ -229,7 +253,7 @@ export default {
             account: process.env.CONTRACT_ADDRESS,
             name: "rmcomment",
             data: {
-              pool_id: this.pool.id,
+              pool_id: this.poolID,
               comment_id: comment.id
             }
           }
@@ -249,7 +273,7 @@ export default {
             account: process.env.CONTRACT_ADDRESS,
             name: "editcomment",
             data: {
-              pool_id: this.pool.id,
+              pool_id: this.poolID,
               comment_id: comment.id,
               memo: this.updatedComment
             }

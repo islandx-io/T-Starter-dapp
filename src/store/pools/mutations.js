@@ -33,3 +33,8 @@ export const setPoolCommentsTable = (state, { id, comments_table }) => {
   let pool = state.pools.find(el => el.id === id);
   pool.comments_table = comments_table;
 };
+
+export const updateSingleComment = (state, { pool_id, comment_id, value }) => {
+  let pool = state.pools.find(el => el.id === pool_id);
+  pool.comments_table.find(el => el.id === comment_id).comment = value;
+};
