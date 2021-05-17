@@ -135,7 +135,8 @@ export default {
       featuredIDs: [],
       upcomingIDs: [],
       noUpcomingPools: false,
-      noFeaturedPools: false
+      noFeaturedPools: false,
+      polling: null,
     };
   },
   computed: {
@@ -218,6 +219,10 @@ export default {
     await this.getAllChainPools(); // TODO replace with get open pools
     this.upcomingIDs = await this.getUpcomingChainPools();
     if (this.upcomingIDs.length === 0) this.noUpcomingPools = true;
+    // Start polling every 1min for any updates
+    this.polling = setInterval(async () => {
+      await this.getAllChainPools();
+    }, 30000);
   }
 };
 </script>
