@@ -1,12 +1,12 @@
 <template>
   <q-list class="comments-tab">
-    <q-item>
+    <div>
       <q-form
         @submit="postUserComment"
-        class="col row items-center q-gutter-x-sm q-pb-sm"
+        class="col row items-center q-gutter-x-sm q-pb-md"
       >
         <q-input
-          class="col"
+          class="col-sm col-xs-12"
           color="primary"
           v-model="userComment"
           label="Comment"
@@ -16,82 +16,95 @@
           outlined
           autogrow
         />
-        <q-btn
-          class="hover-accent"
-          color="primary"
-          padding="sm md"
-          :label="isAuthenticated ? 'Post' : 'Login to post'"
-          :disable="!isAuthenticated"
-          type="submit"
-        />
-      </q-form>
-    </q-item>
-    <q-item
-      v-for="row in pool.comments_table"
-      :key="row.id"
-      style="min-height: 60px"
-    >
-      <q-item-section>
-        <q-item-label class="text-subtitle1 text-weight-bold" lines="1">
-          {{ row.account }}
-        </q-item-label>
-        <q-item-label v-if="row.id !== editID" class="text-subtitle1" lines="2">
-          {{ row.comment }}
-        </q-item-label>
-        <q-form
-          @submit="updateUserComment(row)"
-          v-if="row.id === editID"
-          class="row items-center q-gutter-x-xs q-pt-sm"
-        >
-          <q-input
-            class="col"
-            color="primary"
-            :value="row.comment"
-            @input="editComment"
-            lazy-rules
-            :disable="!isAuthenticated"
-            maxlength="255"
-            outlined
-            autogrow
-          />
+        <div class="col-sm-shrink col-xs-12 row justify-center q-py-sm">
           <q-btn
-            class="hover-accent"
+            class="col-sm col-xs-7 hover-accent"
             color="primary"
             padding="sm md"
+            :label="isAuthenticated ? 'Post' : 'Login to post'"
             :disable="!isAuthenticated"
             type="submit"
-            label="Update"
-          />
-        </q-form>
-        <!-- TODO Make expandable -->
-        <!-- FIXME Vuex state mutation error -->
-      </q-item-section>
-      <q-item-section side top>
-        <q-item-label>
-          {{ toDate(row.timestamp) }}
-        </q-item-label>
-        <div class="row q-gutter-x-xs q-pt-xs">
-          <q-btn
-            v-if="row.account === accountName"
-            :icon="row.id === editID ? 'fas fa-times-circle' : 'fas fa-edit'"
-            class="hover-accent"
-            size="sm"
-            padding="sm"
-            flat
-            @click="cencelEdit(row.id)"
-          />
-          <q-btn
-            v-if="row.account === accountName"
-            icon="fas fa-trash-alt"
-            class="hover-accent"
-            size="sm"
-            padding="sm"
-            flat
-            @click="removeUserComment(row)"
           />
         </div>
-      </q-item-section>
-    </q-item>
+      </q-form>
+    </div>
+    <div
+      class="comments-container q-px-sm scroll overflow-y"
+      style="min-height: 60px; max-height: 800px"
+    >
+      <div class="row" v-for="row in pool.comments_table" :key="row.id">
+        <div class="col-12 row justify-between items-center">
+          <div class="text-subtitle1 text-weight-bold" lines="1">
+            {{ row.account }}
+          </div>
+          <div class="text-grey-7">
+            {{ toDate(row.timestamp) }}
+          </div>
+          <!-- TODO Make expandable -->
+        </div>
+        <div class="col-12 row justify-between q-gutter-x-sm">
+          <div
+            v-if="row.id !== editID"
+            class="col text-subtitle1"
+            style="line-height: 20px; overflow-wrap: break-word"
+          >
+            {{ row.comment }}
+          </div>
+          <q-form
+            @submit="updateUserComment(row)"
+            v-if="row.id === editID"
+            class="col row items-center q-gutter-x-sm q-pt-xs"
+          >
+            <q-input
+              class="col-sm col-xs-12"
+              color="primary"
+              :value="row.comment"
+              @input="editComment"
+              lazy-rules
+              :disable="!isAuthenticated"
+              maxlength="255"
+              outlined
+              autogrow
+              label="Edit Comment"
+            />
+            <div class="col-sm-shrink col-xs-12 row justify-center q-py-sm">
+              <q-btn
+                class="hover-accent"
+                color="primary"
+                padding="sm md"
+                :disable="!isAuthenticated"
+                type="submit"
+                label="Update"
+              />
+            </div>
+          </q-form>
+          <div
+            v-if="row.account === accountName"
+            class="col- row items-start q-gutter-x-xs"
+          >
+            <q-btn
+              v-if="row.account === accountName"
+              :icon="row.id === editID ? 'fas fa-times-circle' : 'fas fa-edit'"
+              class="hover-accent"
+              size="sm"
+              padding="sm"
+              flat
+              @click="cencelEdit(row.id)"
+            />
+            <q-btn
+              v-if="row.account === accountName"
+              icon="fas fa-trash-alt"
+              class="hover-accent"
+              size="sm"
+              padding="sm"
+              flat
+              @click="removeUserComment(row)"
+            />
+          </div>
+        </div>
+        <q-separator v-if="!isLastComment(row)" class="q-my-sm" />
+      </div>
+    </div>
     <q-dialog v-model="insufficient_start_show">
       <q-card>
         <q-card-section>
@@ -169,6 +182,12 @@ export default {
         icon: "warning",
         message: `${error}`
       });
+    },
+    isLastComment(comment) {
+      return (
+        comment.id ===
+        this.pool.comments_table[this.pool.comments_table.length - 1].id
+      );
     },
     editComment(value) {
       this.updatedComment = value;
@@ -249,4 +268,23 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.comments-container {
+  /* custom scrollbar */
+  &::-webkit-scrollbar {
+    width: 20px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #d6dee1;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: $secondary;
+  }
+}
+</style>
