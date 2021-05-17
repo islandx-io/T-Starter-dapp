@@ -143,10 +143,10 @@ export default {
   async mounted() {
     this.getPoolInfo();
     await this.getClaimStatus();
-    // Start polling every 2min for any updates
+    // Start polling every 1min for any updates
     this.polling = setInterval(() => {
       this.getPoolInfo();
-    }, 120000);
+    }, 30000);
   },
   beforeDestroy() {
     clearInterval(this.polling);

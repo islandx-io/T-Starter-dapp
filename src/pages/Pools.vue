@@ -104,7 +104,8 @@ export default {
       joinedIDs: [],
       featuredIDs: [],
       claimableIDs: [],
-      claimable: false
+      claimable: false,
+      polling: null,
     };
   },
   computed: {
@@ -195,6 +196,10 @@ export default {
     this.joinedIDs = await this.getJoinedChainPools(this.accountName);
     this.featuredIDs = await this.getFeaturedChainPools();
     await this.findClaimable();
+    // Start polling every 1min for any updates
+    this.polling = setInterval(async () => {
+      await this.getAllChainPools();
+    }, 30000);
   },
 
   watch: {
