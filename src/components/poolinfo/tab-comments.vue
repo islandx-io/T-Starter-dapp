@@ -20,11 +20,13 @@
           <q-input
             class="col"
             color="primary"
-            v-model="row.comment"
+            :value="row.comment"
+            @input="editComment"
             lazy-rules
             :disable="!isAuthenticated"
             maxlength="255"
             outlined
+            autogrow
           />
           <q-btn
             class="hover-accent"
@@ -78,6 +80,7 @@
           :disable="!isAuthenticated"
           maxlength="255"
           outlined
+          autogrow
         />
         <q-btn
           class="hover-accent"
@@ -141,16 +144,13 @@ export default {
       userComment: "",
       insufficient_start_show: false,
       buyStartUrl: process.env.BUY_START_URL,
-      editID: -1 // for none
-      // comments: []
+      editID: -1, // for none
+      updatedComment: ""
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"])
   },
-  // mounted() {
-  //   this.comments = this.pool.comments_table;
-  // },
   methods: {
     ...mapActions("pools", ["getBalanceFromChain", "getChainPoolByID"]),
     ...mapActions("account", ["getChainSTART"]),
@@ -169,6 +169,9 @@ export default {
         icon: "warning",
         message: `${error}`
       });
+    },
+    editComment(value) {
+      this.updatedComment = value;
     },
     async postUserComment() {
       // TODO Add try-catch
@@ -229,7 +232,7 @@ export default {
             data: {
               pool_id: this.pool.id,
               comment_id: comment.id,
-              memo: comment.comment
+              memo: this.updatedComment
             }
           }
         ];
