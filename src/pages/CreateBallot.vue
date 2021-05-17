@@ -12,6 +12,12 @@
         >
           You are not the owner of this pool
         </div>
+        <div
+          v-else-if="this.$route.params.id === undefined && !isAuthenticated"
+          class="text-center"
+        >
+          Please login to continue
+        </div>
         <q-form v-else @submit="onSubmit" @reset="onReset" ref="updateForm">
           {{ this.$route.params.id }}
           <!-- tokens and adresses -->
@@ -24,8 +30,8 @@
                     v-model="pool.title"
                     label="Title *"
                     lazy-rules
-                    :disable="pool.status !== 'draft'"
-                    :readonly="pool.status !== 'draft'"
+                    :disable="pool.status !== 'draft' && this.$route.params.id != undefined"
+                    :readonly="pool.status !== 'draft' && this.$route.params.id != undefined"
                     :rules="[
                       val => (val && val.length > 1) || 'Must specify the title'
                     ]"
@@ -152,6 +158,14 @@
               <!-- Dates -->
               <!-- TODO Add "today" button -->
               <q-item>
+                <q-item-section>
+                  <datetime-field
+                    :value.sync="ballot_close"
+                    :pool="pool"
+                    label="Ballot close time (UTC) *"
+                    class="q-pb-md"
+                  />
+                </q-item-section>
                 <q-item-section>
                   <datetime-field
                     :value.sync="pool_open"
@@ -651,8 +665,8 @@ export default {
     async updateChainPool() {
       const actions = [
         {
-          account: process.env.CONTRACT_ADDRESS,
-          name: "updatepool",
+          account: process.env.BALLOT_ADDRESS,
+          name: "updateballot",
           data: {
             id: this.poolID,
             title: this.pool.title,
@@ -681,6 +695,7 @@ export default {
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
+            ballot_close: this.pool.ballot_close,
             pool_open: this.pool.pool_open,
             private_end: this.pool.private_end,
             public_end: this.pool.public_end,
@@ -695,7 +710,7 @@ export default {
     async publishPool() {
       const actions = [
         {
-          account: process.env.CONTRACT_ADDRESS,
+          account: process.env.BALLOT_ADDRESS,
           name: "publishpool",
           data: {
             pool_id: this.poolID
@@ -712,7 +727,7 @@ export default {
           name: "transfer",
           data: {
             from: this.accountName,
-            to: process.env.CONTRACT_ADDRESS,
+            to: process.env.BALLOT_ADDRESS,
             quantity: this.$toChainString(
               this.pool.swap_ratio.quantity * this.pool.hard_cap,
               this.token_decimals,
@@ -728,7 +743,7 @@ export default {
     async closePool(send_tokens) {
       const actions = [
         {
-          account: process.env.CONTRACT_ADDRESS,
+          account: process.env.BALLOT_ADDRESS,
           name: "closepool",
           data: {
             pool_id: this.poolID,
@@ -740,6 +755,7 @@ export default {
     },
 
     async onSubmit() {
+      this.pool.ballot_close = this.ballot_close.date;
       this.pool.pool_open = this.pool_open.date;
       this.pool.private_end = this.private_end.date;
       this.pool.public_end = this.public_end.date;
@@ -755,6 +771,9 @@ export default {
         this.checkLinks();
         this.formatWhitelist();
         try {
+          // create ballot
+
+          //update ballot
           await this.updateChainPool();
           this.$q.notify({
             color: "green-4",
@@ -762,7 +781,7 @@ export default {
             icon: "cloud_done",
             message: "Updated"
           });
-          this.redirectPoolPage();
+          this.redirectBallotPage();
         } catch (error) {
           this.$q.notify({
             color: "red-5",
@@ -792,7 +811,7 @@ export default {
               icon: "cloud_done",
               message: "Published"
             });
-            this.redirectPoolPage();
+            this.redirectBallotPage();
           }
         } catch (error) {
           this.$q.notify({
@@ -823,7 +842,7 @@ export default {
               icon: "cloud_done",
               message: "Funded"
             });
-            this.redirectPoolPage();
+            this.redirectBallotPage();
           }
         } catch (error) {
           this.$q.notify({
@@ -845,7 +864,7 @@ export default {
           icon: "cloud_done",
           message: "Pool completed"
         });
-        this.redirectPoolPage();
+        this.redirectBallotPage();
       } catch (error) {
         this.$q.notify({
           color: "red-5",
