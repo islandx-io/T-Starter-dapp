@@ -37,7 +37,7 @@
           class="poolcard-container"
           @mousedown.stop
         >
-          <Poolcard v-for="id in publishedPoolIDs" :key="id" :poolID="id" />
+          <Poolcard v-for="id in pagedPublishedPoolIDs" :key="id" :poolID="id" />
         </q-tab-panel>
 
         <q-tab-panel
@@ -69,6 +69,17 @@
           />
         </q-tab-panel>
       </q-tab-panels>
+
+      <!-- Page controller -->
+      <q-pagination
+        v-if="tab === 'all-pools'"
+        class="q-pa-lg flex flex-center"
+        v-model="page"
+        :min="currentPage"
+        :max="totalPages"
+        direction-links
+      />
+
       <q-card
         outline
         flat
@@ -106,6 +117,8 @@ export default {
       claimableIDs: [],
       claimable: false,
       polling: null,
+      currentPage: 1,
+      page: 1
     };
   },
   computed: {
@@ -117,6 +130,7 @@ export default {
       "getPoolByID"
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+
     poolIDs() {
       return this.getAllPoolIDs;
     },
@@ -139,6 +153,16 @@ export default {
         }
       }
       return this.sortPools(new_featured_ids);
+    },
+    totalPages() {
+      // amount of pools / 9 ceil
+      return Math.ceil(this.publishedPoolIDs.length / 9);
+    },
+    pagedPublishedPoolIDs() {
+      return this.publishedPoolIDs.slice(
+        (this.page - 1) * this.totalPages,
+        (this.page - 1) * this.totalPages + 9
+      );
     }
   },
   methods: {

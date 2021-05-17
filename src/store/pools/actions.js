@@ -36,17 +36,17 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: process.env.CONTRACT_TABLE, // Table name
       limit: 10000, // Maximum number of rows that we want to get
-      reverse: false, // Optional: Get reversed data
+      reverse: true, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
 
     // sort according to nearest pool open
     tableResults.rows.sort(function(a, b) {
-      return new Date(a.pool_open) - new Date(b.pool_open);
+      return new Date(b.pool_open) - new Date(a.pool_open);
     });
+    // console.log(tableResults.rows.map(a => a.id))
 
     for (const pool of tableResults.rows) {
-      // console.log(pool);
       let id = pool.id;
 
       //check dates are unix
