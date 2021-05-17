@@ -102,8 +102,8 @@ export const ifPoolFunded = async function(
       // console.log(amount_inwallet);
 
       let amount_required =
-        this.$chainToQty(pool.swap_ratio.quantity) *
-        this.$chainToQty(pool.hard_cap);
+        parseFloat(this.$chainToQty(pool.swap_ratio.quantity) *
+        this.$chainToQty(pool.hard_cap)).toPrecision(15);
       // console.log(amount_required);
 
       // if ammount of tokens in wallets tabel enough
@@ -176,11 +176,11 @@ export const getBalanceFromChain = async function({ commit }, payload) {
     if (balance !== undefined) {
       return balance;
     } else {
-      return `0 ${payload.sym}` ;
+      return `0 ${payload.sym}`;
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
-    return `0 ${payload.sym}` ;
+    return `0 ${payload.sym}`;
   }
 };
 
