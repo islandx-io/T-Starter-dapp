@@ -16,6 +16,6 @@ export const getCreatedPoolIDs = ({ pools }) => owner =>
   }).map(a => a.id);
   
 export const getPublishedPoolIDs = ({ pools }) =>
-pools.filter(a => a.status === 'published').sort((a, b) => {
+pools.filter(a => a.status === 'published' || "success").sort((a, b) => {
   return new Date(a.pool_open) - new Date(b.pool_open);
-}).map(a => a.id);;
+}).map(a => a.id);
