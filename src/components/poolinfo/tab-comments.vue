@@ -3,7 +3,7 @@
     <q-item>
       <q-form
         @submit="postUserComment"
-        class="col row items-center q-gutter-x-sm"
+        class="col row items-center q-gutter-x-sm q-pb-sm"
       >
         <q-input
           class="col"

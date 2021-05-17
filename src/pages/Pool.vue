@@ -191,7 +191,11 @@
             class="allocation-tab"
             :alert="claimable ? 'accent' : claimable"
           />
-          <q-tab name="comments" label="COMMENTS" />
+          <q-tab
+            v-if="['open', 'upcoming'].includes(pool.pool_status)"
+            name="comments"
+            label="COMMENTS"
+          />
         </q-tabs>
 
         <q-separator />
