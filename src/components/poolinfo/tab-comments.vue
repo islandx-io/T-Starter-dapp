@@ -1,5 +1,31 @@
 <template>
   <q-list class="comments-tab">
+    <q-item>
+      <q-form
+        @submit="postUserComment"
+        class="col row items-center q-gutter-x-sm"
+      >
+        <q-input
+          class="col"
+          color="primary"
+          v-model="userComment"
+          label="Comment"
+          lazy-rules
+          :disable="!isAuthenticated"
+          maxlength="255"
+          outlined
+          autogrow
+        />
+        <q-btn
+          class="hover-accent"
+          color="primary"
+          padding="sm md"
+          :label="isAuthenticated ? 'Post' : 'Login to post'"
+          :disable="!isAuthenticated"
+          type="submit"
+        />
+      </q-form>
+    </q-item>
     <q-item
       v-for="row in pool.comments_table"
       :key="row.id"
@@ -65,32 +91,6 @@
           />
         </div>
       </q-item-section>
-    </q-item>
-    <q-item>
-      <q-form
-        @submit="postUserComment"
-        class="col row items-center q-gutter-x-sm"
-      >
-        <q-input
-          class="col"
-          color="primary"
-          v-model="userComment"
-          label="Comment"
-          lazy-rules
-          :disable="!isAuthenticated"
-          maxlength="255"
-          outlined
-          autogrow
-        />
-        <q-btn
-          class="hover-accent"
-          color="primary"
-          padding="sm md"
-          :label="isAuthenticated ? 'Post' : 'Login to post'"
-          :disable="!isAuthenticated"
-          type="submit"
-        />
-      </q-form>
     </q-item>
     <q-dialog v-model="insufficient_start_show">
       <q-card>

@@ -176,11 +176,11 @@ export const getBalanceFromChain = async function({ commit }, payload) {
     if (balance !== undefined) {
       return balance;
     } else {
-      return `0 ${payload.sym}` ;
+      return `0 ${payload.sym}`;
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
-    return `0 ${payload.sym}` ;
+    return `0 ${payload.sym}`;
   }
 };
 
@@ -631,6 +631,11 @@ export const updateCommentsByPoolID = async function({ commit }, poolID) {
     const comments_table = tableResults.rows.map(el => {
       el.timestamp = new Date(el.timestamp + "Z").valueOf();
       return el;
+    });
+    comments_table.sort((a, b) => {
+      if (a.timestamp > b.timestamp) return -1;
+      if (a.timestamp < b.timestamp) return 1;
+      return 0;
     });
     commit("setPoolCommentsTable", { id: poolID, comments_table });
   } catch (error) {
