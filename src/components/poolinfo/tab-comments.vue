@@ -42,7 +42,7 @@
           </div>
           <!-- TODO Make expandable -->
         </div>
-        <div class="col-12 row justify-between q-gutter-x-sm">
+        <div class="col-12 row justify-between reverse-wrap q-gutter-x-sm">
           <div
             v-if="row.id !== editID"
             class="col text-subtitle1"
@@ -80,7 +80,7 @@
           </q-form>
           <div
             v-if="row.account === accountName"
-            class="col- row items-start q-gutter-x-xs"
+            class="col-xs-12 col-sm-shrink row items-start q-gutter-x-xs"
           >
             <q-btn
               v-if="row.account === accountName"
