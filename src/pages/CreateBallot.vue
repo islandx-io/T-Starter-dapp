@@ -29,14 +29,6 @@
                     v-model="pool.title"
                     label="Title *"
                     lazy-rules
-                    :disable="
-                      pool.status !== 'draft' &&
-                        this.$route.params.id != undefined
-                    "
-                    :readonly="
-                      pool.status !== 'draft' &&
-                        this.$route.params.id != undefined
-                    "
                     :rules="[
                       val => (val && val.length > 1) || 'Must specify the title'
                     ]"

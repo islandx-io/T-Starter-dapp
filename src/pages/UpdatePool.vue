@@ -22,8 +22,6 @@
                     v-model="pool.title"
                     label="Title *"
                     lazy-rules
-                    :disable="pool.status !== 'draft'"
-                    :readonly="pool.status !== 'draft'"
                     :rules="[
                       val => (val && val.length > 1) || 'Must specify the title'
                     ]"
@@ -932,8 +930,8 @@ export default {
 
 <style lang="scss" scoped>
 .header-bg {
-  height: 200px;
-  margin-bottom: -50px;
+  height: 230px;
+  margin-bottom: -40px;
 }
 .weblink-container {
   display: grid;
