@@ -224,11 +224,14 @@ export const setWalletBalances = async function(
         sym: token_info.token_sym,
         accountName: account
       };
+      // console.log(payload)
 
       let token_str = await dispatch("pools/getBalanceFromChain", payload, {
         root: true
       });
+      // console.log(token_str)
       let balance = this.$chainToQty(token_str);
+      // console.log(balance)
       commit("setWalletTokenBalance", {
         token_sym: token_info.token_sym,
         amount: balance
@@ -347,3 +350,17 @@ export const getChainSTART = async function(
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
+
+// reset wallet
+export const resetWallet = async function(
+  { commit, getters, dispatch },
+) {
+  commit("resetWalletState");
+}
+
+// reset liquid
+export const resetLiquid = async function(
+  { commit, getters, dispatch },
+) {
+  commit("clearLiquid");
+}

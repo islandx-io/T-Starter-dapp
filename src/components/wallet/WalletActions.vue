@@ -130,12 +130,13 @@
 
 <script>
 import { roundSend } from "@quasar/extras/material-icons-round";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
     return {
       buyStartUrl: process.env.BUY_START_URL,
-      baseTokenSymbols: ["TLOS", "PBTC", "PETH"], // TODO make dynamic
+      baseTokenSymbols: ["TLOS", "PBTC", "PETH", "PUSDC", "PUSDT", "EOS"], // TODO make dynamic
       truncateActions: true,
       actionButtonPadding: "5px 8px"
     };
@@ -169,6 +170,7 @@ export default {
   },
 
   methods: {
+    ...mapActions("account", ["resetWallet", "resetLiquid"]),
     pTokenBridgeLink(sym) {
       if (sym === "TLOS") {
         return "https://dapp.ptokens.io/tlos-on-eth/issue-redeem";
@@ -232,13 +234,14 @@ export default {
           props.row.token_sym
         );
         await this.withdrawTokens(amount_str);
+        await this.resetLiquid();      
+        await this.$listeners.reloadWalletInfo();
         this.$q.notify({
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
           message: "Tokens claimed"
-        });
-        this.$router.push('/');
+        });  
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -256,14 +259,15 @@ export default {
           props.row.decimals,
           props.row.token_sym
         );
-        await this.reclaimStake(amount_str);
+        await this.reclaimTokens(amount_str);
+        await this.resetLiquid();      
+        await this.$listeners.reloadWalletInfo();
         this.$q.notify({
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.push('/');
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -277,13 +281,14 @@ export default {
     async tryUpdateStake() {
       try {
         await this.updateStake();
+        await this.resetLiquid();      
+        await this.$listeners.reloadWalletInfo();
         this.$q.notify({
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
           message: "Staked Tokens Updated"
-        });
-        this.$router.push('/');
+        });        
       } catch (error) {
         this.$q.notify({
           color: "red-5",

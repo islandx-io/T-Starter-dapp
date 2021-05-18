@@ -31,11 +31,13 @@ const defaultPoolInfo = {
   web_links: loading,
   tags: loading,
   votes: loading, // balllot only
+  sentiment: [],
   // Not in contract
   slug: loading,
   pool_status: loading,
   access_type: loading,
-  progress: 0
+  progress: 0,
+  sentiment_table: []
 };
 
 export default ({ Vue }) => {

@@ -34,30 +34,74 @@
               {{ pool.tag_line }}
             </p>
           </q-item>
-          <q-item v-if="['open', 'upcoming'].includes(pool.pool_status)">
-            <div
-              class="col row justify-between items-center"
-              v-if="pool.pool_status === 'upcoming'"
-            >
-              <div>Opens in:</div>
-              <status-countdown
-                :deadline="pool.pool_open"
-                :poolID="poolID"
-                @countdown-finished="getPoolInfo"
-              />
+          <div
+            v-if="['open', 'upcoming'].includes(pool.pool_status)"
+            class="row content-start justify-start q-gutter-sm"
+            style="padding: 8px 16px"
+          >
+            <div class="col" style="min-width: 260px">
+              <div
+                class="col row justify-between items-center"
+                v-if="pool.pool_status === 'upcoming'"
+              >
+                <div>Opens in:</div>
+                <status-countdown
+                  :deadline="pool.pool_open"
+                  :poolID="poolID"
+                  @countdown-finished="getPoolInfo"
+                />
+              </div>
+              <div
+                class="col row items-center"
+                v-else-if="pool.pool_status === 'open'"
+              >
+                <div class="q-mr-md">Closes in:</div>
+                <status-countdown
+                  :deadline="pool.public_end"
+                  :poolID="poolID"
+                  @countdown-finished="getPoolInfo"
+                />
+              </div>
             </div>
-            <div
-              class="col row justify-between items-center"
-              v-else-if="pool.pool_status === 'open'"
-            >
-              <div>Closes in:</div>
-              <status-countdown
-                :deadline="pool.public_end"
-                :poolID="poolID"
-                @countdown-finished="getPoolInfo"
+            <div class="row q-gutter-x-sm text-h6">
+              <q-btn
+                outline
+                flat
+                padding="6px 8px"
+                icon="fas fa-thumbs-up"
+                class="hover-accent"
+                size="1.05rem"
+                :color="userSentiment === 'upvote' ? 'positive' : 'black'"
+                @click="updateUserSentiment('upvote')"
+                :disable="!isAuthenticated"
               />
+              <div
+                :class="
+                  userSentiment === 'upvote' ? 'text-positive' : 'text-black'
+                "
+              >
+                {{ sentimentValue("upvote") }}
+              </div>
+              <q-btn
+                outline
+                flat
+                padding="6px 8px"
+                size="1.05rem"
+                icon="fas fa-thumbs-down"
+                class="hover-accent"
+                :color="userSentiment === 'downvote' ? 'accent' : 'black'"
+                @click="updateUserSentiment('downvote')"
+                :disable="!isAuthenticated"
+              />
+              <div
+                :class="
+                  userSentiment === 'downvote' ? 'text-negative' : 'text-black'
+                "
+              >
+                {{ sentimentValue("downvote") }}
+              </div>
             </div>
-          </q-item>
+          </div>
           <q-item
             v-if="
               !['completed', 'filled', 'cancelled'].includes(
@@ -66,7 +110,7 @@
             "
           >
             <q-btn
-              class="col"
+              class="col hover-accent"
               :to="{ name: 'joinpool', params: {} }"
               :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
               :label="isAuthenticated ? 'Join pool' : 'Login to join'"
@@ -173,6 +217,38 @@
         </q-inner-loading>
       </q-card>
     </div>
+
+    <q-dialog v-model="insufficient_start_show">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Insufficient START</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          You don't have enough START to complete this action.
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            class="hover-accent"
+            flat
+            label="Cancel"
+            color="primary"
+            v-close-popup
+          />
+          <q-btn
+            flat
+            class="hover-accent"
+            label="Buy START"
+            color="primary"
+            v-close-popup
+            type="a"
+            target="_blank"
+            :href="buyStartUrl"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -203,13 +279,19 @@ export default {
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
       polling: null,
-      claimable: false
+      claimable: false,
+      insufficient_start_show: false,
+      buyStartUrl: process.env.BUY_START_URL
     };
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("pools", ["getPoolByID"]),
     ...mapGetters("blockchains", ["currentChain"]),
+
+    START_info() {
+      return this.wallet.find(el => (el.sym = "START"));
+    },
 
     progressToPercentage() {
       return (this.pool.progress * 100).toFixed(0) + "%";
@@ -258,10 +340,29 @@ export default {
         let hardCap = this.$chainToQty(this.pool.hard_cap, 0);
         return `${totalRaise} / ${hardCap}`;
       }
+    },
+    userSentiment() {
+      let result = "none";
+      if (this.pool.sentiment_table) {
+        let sentiment = this.pool.sentiment_table.find(
+          el => el.account === this.accountName
+        );
+        if (sentiment) {
+          if (sentiment.vote > 0) result = "upvote";
+          if (sentiment.vote < 0) result = "downvote";
+        }
+      }
+      return result;
     }
   },
   methods: {
-    ...mapActions("pools", ["getChainPoolByID", "getAllocationByPool"]),
+    ...mapActions("pools", [
+      "getChainPoolByID",
+      "getAllocationByPool",
+      "getPlatformToken",
+      "getBalanceFromChain"
+    ]),
+    ...mapActions("account", ["getChainSTART"]),
     getPoolInfo() {
       this.pool = this.getPoolByID(this.poolID);
     },
@@ -281,18 +382,66 @@ export default {
     },
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
+    },
+    sentimentValue(key) {
+      if (this.pool.sentiment.length > 0)
+        return this.pool.sentiment.find(el => el.key === key).value;
+      else return 0;
+    },
+    async updateUserSentiment(side) {
+      if (this.isAuthenticated) {
+        await this.getChainSTART(this.accountName);
+        const actions = [];
+        if (this.START_info.liquid < 1 && this.START_info.balance < 1) {
+          this.insufficient_start_show = true;
+        } else {
+          if (this.START_info.liquid < 1) {
+            actions.push({
+              account: this.START_info.token_contract,
+              name: "transfer",
+              data: {
+                from: this.accountName,
+                to: process.env.CONTRACT_ADDRESS,
+                quantity: this.$toChainString(
+                  1,
+                  this.START_info.decimals,
+                  this.START_info.sym
+                ),
+                memo: `Send ${this.START_info.sym} to liquid`
+              }
+            });
+          }
+          let vote = 0; // abstain
+          if (side === "upvote" && this.userSentiment !== "upvote") vote = 1;
+          else if (side === "downvote" && this.userSentiment !== "downvote")
+            vote = -1;
+          actions.push({
+            account: process.env.CONTRACT_ADDRESS,
+            name: "sentiment",
+            data: {
+              account: this.accountName,
+              pool_id: this.poolID,
+              vote: vote
+            }
+          });
+          const transaction = await this.$store.$api.signTransaction(actions);
+          await this.loadChainData();
+          this.getPoolInfo();
+        }
+      }
     }
   },
   async mounted() {
     // get data from chain, write to store, get from store
     await this.loadChainData();
     this.getPoolInfo();
+    await this.getChainSTART();
     await this.getClaimStatus();
     // Start polling
-    this.polling = setInterval(async () => {
-      this.getPoolInfo();
+    this.polling = setInterval( async () => {
       await this.loadChainData();
-    }, 60000);
+      this.getPoolInfo();
+    }, 20000);
     // if rerouting with tab
     if (this.$route.query.tab == "allocations") {
       this.tab = "allocations";
@@ -302,6 +451,13 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.polling);
+  },
+
+  watch: {
+    async accountName() {
+      await this.getChainSTART();
+      await this.getClaimStatus();
+    }
   }
 };
 </script>
