@@ -209,13 +209,12 @@
                 </q-item-section>
               </q-item>
               <!-- Dates -->
-              <!-- TODO Add "today" button -->
               <q-item>
                 <q-item-section>
                   <datetime-field
                     :value.sync="ballot_close"
                     :pool="pool"
-                    label="Ballot close time (UTC) *"
+                    label="Voting close time (UTC) *"
                     class="q-pb-md"
                   />
                 </q-item-section>
@@ -383,13 +382,8 @@
 
             <q-item class="justify-start">
               <q-item-section class="col-auto">
-                <q-btn
-                  :label="
-                    this.$route.params.id === undefined ? 'Create' : 'Update'
-                  "
-                  type="submit"
-                  color="primary"
-                />
+                <q-btn v-if="this.$route.params.id === undefined" :label="'Create'" @click="confirm_fee=true" color="primary" />
+                <q-btn v-else :label="'Update'" type="submit" color="primary" />
               </q-item-section>
               <q-item-section class="col-auto">
                 <q-btn
@@ -458,6 +452,42 @@
           </q-inner-loading>
         </div> -->
       </q-card>
+
+      <!-- Confirm stake dialog -->
+      <q-dialog v-model="confirm_fee" persistent>
+        <q-card>
+          <q-card-section class="row items-center">
+            <q-avatar color="primary" text-color="secondary" class="q-mr-sm">
+              <q-icon name="fas fa-coins" size="28px" />
+            </q-avatar>
+            <span class="text-h6">Confirm application</span>
+          </q-card-section>
+          <q-card-section>
+            <span>
+              Confirm sending additional
+              {{ this.$chainStrReformat(this.settings.listing_fee) }} tokens for
+              application fee?
+            </span>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn
+              flat
+              label="Cancel"
+              color="primary"
+              v-close-popup
+              @click="joining = false"
+            />
+            <q-btn
+              flat
+              label="Confirm"
+              color="primary"
+              @click="onSubmit()"
+              v-close-popup
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </section>
   </q-page>
 </template>
@@ -472,15 +502,16 @@ export default {
   data() {
     return {
       TermsandConditionsURL: "",
+      confirm_fee: false,
       haveWhitelist: false,
       customDate: "",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultBallotInfo,
       settings: {},
-      ballot_close: { date: "" },
-      pool_open: { date: "" },
-      private_end: { date: "" },
-      public_end: { date: "" },
+      ballot_close: { date: this.toDateString(new Date().valueOf()) },
+      pool_open: { date: this.toDateString(new Date().valueOf()) },
+      private_end: { date: this.toDateString(new Date().valueOf()) },
+      public_end: { date: this.toDateString(new Date().valueOf()) },
 
       cleanedWebLinks: [],
       // prettier-ignore
@@ -845,8 +876,8 @@ export default {
         // if not owned pool create ballot
         if (this.accountName != this.pool.owner) {
           await this.createBallot();
+          this.poolID = await this.findCreatedBallotID(this.accountName);
         }
-        this.poolID = await this.findCreatedBallotID(this.accountName);
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -862,7 +893,6 @@ export default {
       this.pool.pool_open = this.pool_open.date;
       this.pool.private_end = this.private_end.date;
       this.pool.public_end = this.public_end.date;
-      console.log({ "Submitted start date": this.pool.pool_open });
       if (this.accept !== true || !this.isAuthenticated) {
         this.$q.notify({
           color: "red-5",
@@ -990,7 +1020,7 @@ export default {
         name: "ballotdetails",
         params: { id: this.poolID }
       });
-    }
+    },
   },
 
   async mounted() {

@@ -13,7 +13,7 @@
     <template v-slot:prepend>
       <q-icon name="event" class="cursor-pointer">
         <q-popup-proxy transition-show="scale" transition-hide="scale">
-          <q-date v-model="value.date" :mask="dateTimeMask">
+          <q-date v-model="value.date" :mask="dateTimeMask" today-btn>
             <div class="row items-center justify-end">
               <q-btn v-close-popup label="Close" color="primary" flat />
             </div>

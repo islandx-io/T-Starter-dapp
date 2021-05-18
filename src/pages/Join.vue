@@ -243,6 +243,7 @@
             </q-card-section>
             <q-card-section>
               <span>
+                <!-- TODO make dynamic -->
                 Confirm staking additional 500 START tokens for premium access?
               </span>
             </q-card-section>
