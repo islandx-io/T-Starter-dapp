@@ -36,17 +36,17 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: process.env.CONTRACT_TABLE, // Table name
       limit: 10000, // Maximum number of rows that we want to get
-      reverse: false, // Optional: Get reversed data
+      reverse: true, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
 
     // sort according to nearest pool open
     tableResults.rows.sort(function(a, b) {
-      return new Date(a.pool_open) - new Date(b.pool_open);
+      return new Date(b.pool_open) - new Date(a.pool_open);
     });
+    // console.log(tableResults.rows.map(a => a.id))
 
     for (const pool of tableResults.rows) {
-      // console.log(pool);
       let id = pool.id;
 
       //check dates are unix
@@ -102,8 +102,8 @@ export const ifPoolFunded = async function(
       // console.log(amount_inwallet);
 
       let amount_required =
-        this.$chainToQty(pool.swap_ratio.quantity) *
-        this.$chainToQty(pool.hard_cap);
+        parseFloat((this.$chainToQty(pool.swap_ratio.quantity) *
+        this.$chainToQty(pool.hard_cap)).toPrecision(15));
       // console.log(amount_required);
 
       // if ammount of tokens in wallets tabel enough
@@ -114,6 +114,48 @@ export const ifPoolFunded = async function(
         // console.log("Pool not funded");
         return false;
       }
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// calculate needed remaining funding
+export const neededFunds = async function(
+  { commit, rootGetters, getters },
+  payload
+) {
+  try {
+    if (payload.account !== null) {
+      // get wallet table info
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: payload.account, // Account that owns the data
+        table: "wallets", // Table name
+        limit: 10000,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+
+      // get pool info
+      const pool = getters.getPoolByID(payload.id);
+      // console.log(pool);
+
+      // console.log(tableResults.rows);
+      let amount_inwallet = this.$chainToQty(
+        tableResults.rows.find(el => el.contract === pool.swap_ratio.contract)
+          .balance
+      );
+      // console.log(amount_inwallet);
+
+      let amount_required =
+        parseFloat((this.$chainToQty(pool.swap_ratio.quantity) *
+        this.$chainToQty(pool.hard_cap)).toPrecision(15));
+      // console.log(amount_required);
+
+      // return needed amount
+      // console.log(amount_required-amount_inwallet)
+      return amount_required - amount_inwallet
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });

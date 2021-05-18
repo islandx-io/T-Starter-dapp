@@ -439,12 +439,13 @@ export default {
     // get data from chain, write to store, get from store
     await this.loadChainData();
     this.getPoolInfo();
-    await this.getChainSTART();
+    await this.getChainSTART(this.accountName);
     await this.getClaimStatus();
     // Start polling
-    this.polling = setInterval(() => {
+    this.polling = setInterval( async () => {
+      await this.loadChainData();
       this.getPoolInfo();
-    }, 60000);
+    }, 20000);
     // if rerouting with tab
     if (this.$route.query.tab == "allocations") {
       this.tab = "allocations";
@@ -458,7 +459,7 @@ export default {
 
   watch: {
     async accountName() {
-      await this.getChainSTART();
+      await this.getChainSTART(this.accountName);
       await this.getClaimStatus();
     }
   }

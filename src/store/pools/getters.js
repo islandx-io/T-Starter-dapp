@@ -26,7 +26,7 @@ export const getCreatedPoolIDs = ({ pools }) => owner =>
 
 export const getPublishedPoolIDs = ({ pools }) =>
   pools
-    .filter(a => a.status === "published")
+    .filter(a => a.status === "published" || a.status === "success")
     .sort((a, b) => {
       return new Date(a.pool_open) - new Date(b.pool_open);
     })
