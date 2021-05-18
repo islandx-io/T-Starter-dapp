@@ -791,7 +791,7 @@ export default {
             from: this.accountName,
             to: process.env.BALLOT_ADDRESS,
             quantity: this.settings.listing_fee,
-            memo: `Ballot listing fee`
+            memo: `ballot fee`
           }
         },
         {
@@ -818,7 +818,7 @@ export default {
               this.token_decimals,
               this.token_symbol
             ),
-            memo: `fund pool:${this.poolID}`
+            memo: `fund ballot:${this.poolID}`
           }
         }
       ];
