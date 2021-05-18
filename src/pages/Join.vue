@@ -243,8 +243,7 @@
             </q-card-section>
             <q-card-section>
               <span>
-                <!-- TODO make dynamic -->
-                Confirm staking additional 500 START tokens for premium access?
+                Confirm staking additional {{ this.$chainStrReformat(this.premium_access_fee) }} tokens for premium access?
               </span>
             </q-card-section>
 
@@ -337,7 +336,7 @@ export default {
       showTransaction: false,
       transaction: null,
       // explorerUrl: this.currentChain.NETWORK_EXPLORER,
-      buyStartUrl: process.env.BUY_START_URL
+      buyStartUrl: process.env.BUY_START_URL,
     };
   },
   components: { tokenAvatar },
@@ -404,7 +403,8 @@ export default {
       "getPremiumStake",
       "checkStakedChain",
       "getAllocationByPool",
-      "getPlatformToken"
+      "getPlatformToken",
+      "getPoolsSettings"
     ]),
     restrictDecimal() {
       this.amount = this.$toFixedDown(
