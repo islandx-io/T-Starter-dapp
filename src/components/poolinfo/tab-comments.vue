@@ -15,6 +15,7 @@
           maxlength="255"
           outlined
           autogrow
+          :loading="processingNew"
         />
         <div class="col-sm-shrink col-xs-12 row justify-center q-py-sm">
           <q-btn
@@ -68,6 +69,7 @@
               outlined
               autogrow
               label="Edit Comment"
+              :loading="processingUpdate"
             />
             <div class="col-sm-shrink col-xs-12 row justify-center q-py-sm">
               <q-btn
@@ -158,7 +160,9 @@ export default {
       buyStartUrl: process.env.BUY_START_URL,
       editID: -1,
       pool: this.$defaultPoolInfo,
-      comments: []
+      comments: [],
+      processingUpdate: false,
+      processingNew: false
     };
   },
   computed: {
@@ -209,6 +213,7 @@ export default {
     },
     async submitNewComment() {
       // TODO Add try-catch
+      this.processingNew = true;
       if (this.isAuthenticated && this.newComment !== "") {
         await this.getChainSTART(this.accountName);
         if (this.START_info.liquid < 1 && this.START_info.balance < 1) {
@@ -236,6 +241,7 @@ export default {
           this.getChainInfo();
         }
       }
+      this.processingNew = false;
     },
     async submitRemoveComment(comment) {
       if (this.isAuthenticated && comment.account === this.accountName) {
@@ -258,6 +264,7 @@ export default {
       }
     },
     async submitCommentUpdate(comment) {
+      this.processingUpdate = true;
       if (this.isAuthenticated && comment.account === this.accountName) {
         const actions = [
           {
@@ -279,6 +286,7 @@ export default {
         this.editID = -1;
         this.getChainInfo();
       }
+      this.processingUpdate = false;
     }
   }
 };
