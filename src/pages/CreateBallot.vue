@@ -556,7 +556,8 @@ export default {
     ...mapActions("ballots", [
       "getAllChainBallots",
       "getChainBallotByID",
-      "findCreatedBallotID"
+      "findCreatedBallotID",
+      "ifBallotFunded"
     ]),
     ...mapActions("pools", [
       "getChainAccountInfo",
@@ -773,9 +774,9 @@ export default {
       const actions = [
         {
           account: process.env.BALLOT_ADDRESS,
-          name: "publishpool",
+          name: "openballot",
           data: {
-            pool_id: this.poolID
+            id: this.poolID
           }
         }
       ];
@@ -983,6 +984,7 @@ export default {
 
     onReset() {},
 
+    // TODO do better redirects
     redirectBallotPage() {
       this.$router.push({
         name: "ballotdetails",
@@ -1001,7 +1003,7 @@ export default {
     await this.setBaseTokenOptions();
 
     // check if already funded
-    this.funded = await this.ifPoolFunded({
+    this.funded = await this.ifBallotFunded({
       account: this.accountName,
       id: this.poolID
     });
@@ -1015,7 +1017,7 @@ export default {
       }
 
       // check if already funded
-      this.funded = await this.ifPoolFunded({
+      this.funded = await this.ifBallotFunded({
         account: this.accountName,
         id: this.poolID
       });

@@ -93,3 +93,50 @@ export const findCreatedBallotID = async function({ commit, dispatch }, owner) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
+
+// if pool is funded with the token
+export const ifBallotFunded = async function(
+  { commit, rootGetters, getters },
+  payload
+) {
+  try {
+    if (payload.account !== null) {
+      // get wallet table info
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.BALLOT_ADDRESS, // Contract that we target
+        scope: payload.account, // Account that owns the data
+        table: "wallets", // Table name
+        limit: 10000,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+
+      // get pool info
+      const pool = getters.getBallotByID(payload.id);
+      console.log(pool);
+
+      console.log(tableResults.rows);
+      let amount_inwallet = this.$chainToQty(
+        tableResults.rows.find(el => el.contract === pool.swap_ratio.contract)
+          .balance
+      );
+      console.log(amount_inwallet);
+
+      let amount_required =
+        parseFloat((this.$chainToQty(pool.swap_ratio.quantity) *
+        this.$chainToQty(pool.hard_cap)).toPrecision(15));
+      console.log(amount_required);
+
+      // if ammount of tokens in wallets tabel enough
+      if (amount_inwallet >= amount_required) {
+        console.log("Pool is funded");
+        return true;
+      } else {
+        console.log("Pool not funded");
+        return false;
+      }
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
