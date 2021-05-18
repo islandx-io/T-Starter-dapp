@@ -19,7 +19,6 @@
           Please login to continue
         </div>
         <q-form v-else @submit="onSubmit" @reset="onReset" ref="updateForm">
-          {{ this.$route.params.id }}
           <!-- tokens and adresses -->
           <div class="row">
             <q-list dense class="col-xs-12 col-sm-12 col-md-6 q-mb-md">
@@ -384,7 +383,13 @@
 
             <q-item class="justify-start">
               <q-item-section class="col-auto">
-                <q-btn label="Update" type="submit" color="primary" />
+                <q-btn
+                  :label="
+                    this.$route.params.id === undefined ? 'Create' : 'Update'
+                  "
+                  type="submit"
+                  color="primary"
+                />
               </q-item-section>
               <q-item-section class="col-auto">
                 <q-btn
@@ -543,7 +548,7 @@ export default {
       if (status === "published") return "Pool in progress";
       else if (status === "fail") return "Pool cancelled";
       else if (status === "success") return "Pool succeeded";
-      else return "";
+      else return "Draft";
     }
   },
 
@@ -987,9 +992,9 @@ export default {
   },
 
   async mounted() {
-    this.settings = await this.getPoolsSettings()
+    this.settings = await this.getPoolsSettings();
 
-    if (this.poolID !== undefined) {
+    if (this.poolID) {
       await this.getChainBallotByID(this.poolID);
       this.getPoolInfo();
     }
@@ -1004,11 +1009,10 @@ export default {
 
   watch: {
     async accountName() {
-      if (this.poolID !== undefined) {
+      if (this.poolID) {
         await this.getChainBallotByID(this.poolID);
         this.getPoolInfo();
       }
-      await this.setBaseTokenOptions();
 
       // check if already funded
       this.funded = await this.ifPoolFunded({

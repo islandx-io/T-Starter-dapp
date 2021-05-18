@@ -22,6 +22,7 @@ export const getChainBallotByID = async function({ commit, dispatch }, id) {
     ballotTable.private_end = new Date(ballotTable.private_end + "Z").valueOf();
     ballotTable.public_end = new Date(ballotTable.public_end + "Z").valueOf();
 
+    
     commit("updateBallotOnState", { ballotTable, id });
     //   await dispatch("updatePoolSettings", id);
   } catch (error) {

@@ -14,6 +14,11 @@ export const updateBallotOnState = (state, { ballotTable, id }) => {
     return;
   }
 
+  if (!id) {
+    console.log("[ERROR] No pool id");
+    return;
+  }
+
   // if ballot in store update, else push onto store
   if (state.ballots.map(a => a.id).includes(id)) {
     state.ballots[state.ballots.findIndex(el => el.id === id)] = ballotTable;
