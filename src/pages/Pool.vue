@@ -42,10 +42,10 @@
           >
             <div class="col" style="min-width: 260px">
               <div
-                class="col row justify-between items-center"
+                class="col row items-center"
                 v-if="pool.pool_status === 'upcoming'"
               >
-                <div>Opens in:</div>
+                <div class="q-mr-md">Opens in:</div>
                 <status-countdown
                   :deadline="pool.pool_open"
                   :poolID="poolID"
