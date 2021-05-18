@@ -3,7 +3,7 @@
     <div>
       <q-form
         @submit="submitNewComment"
-        class="col row items-center q-gutter-x-sm q-pb-md"
+        class="col row items-center q-gutter-x-sm q-py-sm"
       >
         <q-input
           class="col-sm col-xs-12"
@@ -32,7 +32,10 @@
       class="comments-container q-px-sm scroll overflow-y"
       style="min-height: 60px; max-height: 800px"
     >
-      <div class="row" v-for="row in comments" :key="row.id">
+      <div v-if="comments.length === 0" class="text-grey-6 text-center q-pt-md">
+        Be the first to post a comment!
+      </div>
+      <div v-else class="row" v-for="row in comments" :key="row.id">
         <div class="col-12 row justify-between items-center">
           <div class="text-subtitle1 text-weight-bold" lines="1">
             {{ row.account }}
