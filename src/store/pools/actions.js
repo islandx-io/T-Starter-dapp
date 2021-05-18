@@ -503,6 +503,26 @@ export const getPlatformToken = async function({ commit, getters, dispatch }) {
   }
 };
 
+// get settings table
+export const getPoolsSettings = async function({ commit, getters, dispatch }) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: "settings", // Table name
+      limit: 1000,
+      index_position: 1,
+      key_type: "i64",
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+
+    return tableResults.rows[0];
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
 // check if tokens already staked
 export const checkStakedChain = async function(
   { commit, getters, dispatch },

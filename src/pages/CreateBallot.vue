@@ -30,8 +30,14 @@
                     v-model="pool.title"
                     label="Title *"
                     lazy-rules
-                    :disable="pool.status !== 'draft' && this.$route.params.id != undefined"
-                    :readonly="pool.status !== 'draft' && this.$route.params.id != undefined"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
                     :rules="[
                       val => (val && val.length > 1) || 'Must specify the title'
                     ]"
@@ -46,8 +52,14 @@
                     v-model="pool.swap_ratio.contract"
                     label="Token contract address *"
                     lazy-rules
-                    :disable="pool.status !== 'draft'"
-                    :readonly="pool.status !== 'draft'"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
                     :rules="[val => !!val || 'Must specify the token contract']"
                     outlined
                   >
@@ -61,8 +73,14 @@
                     v-model="token_symbol"
                     label="Token Symbol *"
                     lazy-rules
-                    :disable="pool.status !== 'draft'"
-                    :readonly="pool.status !== 'draft'"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
                     :rules="[checkTokenContract]"
                     outlined
                     debounce="1000"
@@ -75,8 +93,14 @@
                   <q-select
                     v-model="base_token_symbol"
                     :options="base_token_options.map(a => a.sym)"
-                    :disable="pool.status !== 'draft'"
-                    :readonly="pool.status !== 'draft'"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
                     label="Base token *"
                     outlined
                   />
@@ -91,8 +115,14 @@
                   <q-input
                     color="primary"
                     v-model="pool.swap_ratio.quantity"
-                    :disable="pool.status !== 'draft'"
-                    :readonly="pool.status !== 'draft'"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
                     :label="`Swap ratio (${tokenSymbolReformat}) *`"
                     lazy-rules
                     :rules="[val => !!val || 'Must specify the swap ratio']"
@@ -110,8 +140,14 @@
                     v-model="pool.soft_cap"
                     :label="`Soft cap (${baseTokenSymbolReformat}) *`"
                     lazy-rules
-                    :disable="pool.status !== 'draft'"
-                    :readonly="pool.status !== 'draft'"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
                   />
@@ -122,8 +158,14 @@
                     v-model="pool.hard_cap"
                     :label="`Hard cap (${baseTokenSymbolReformat}) *`"
                     lazy-rules
-                    :disable="pool.status !== 'draft'"
-                    :readonly="pool.status !== 'draft'"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
                   />
@@ -136,8 +178,14 @@
                     v-model="pool.minimum_swap"
                     :label="`Minimum allocation (${baseTokenSymbolReformat}) *`"
                     lazy-rules
-                    :disable="pool.status !== 'draft'"
-                    :readonly="pool.status !== 'draft'"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
                     :rules="[val => !isNaN(val) || 'Must specify the amount']"
                     outlined
                   />
@@ -148,8 +196,14 @@
                     v-model="pool.maximum_swap"
                     :label="`Maximum allocation (${baseTokenSymbolReformat}) *`"
                     lazy-rules
-                    :disable="pool.status !== 'draft'"
-                    :readonly="pool.status !== 'draft'"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
                     :rules="[val => !!val || 'Must specify the amount']"
                     outlined
                   />
@@ -416,7 +470,8 @@ export default {
       haveWhitelist: false,
       customDate: "",
       poolID: Number(this.$route.params.id),
-      pool: this.$defaultPoolInfo,
+      pool: this.$defaultBallotInfo,
+      settings: {},
       ballot_close: { date: "" },
       pool_open: { date: "" },
       private_end: { date: "" },
@@ -493,14 +548,19 @@ export default {
   },
 
   methods: {
-    ...mapActions("ballots", ["getAllChainBallots", "getChainBallotByID"]),
+    ...mapActions("ballots", [
+      "getAllChainBallots",
+      "getChainBallotByID",
+      "findCreatedBallotID"
+    ]),
     ...mapActions("pools", [
       "getChainAccountInfo",
       "getTokenPrecision",
       "getChainPoolByID",
       "updatePoolStatus",
       "ifPoolFunded",
-      "getBaseTokens"
+      "getBaseTokens",
+      "getPoolsSettings"
     ]),
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
@@ -612,10 +672,6 @@ export default {
       this.webLinks.find( el => el.key === "whitelist" ).value = this.pool.web_links.filter(el => el.key === "whitelist").map(a => a.value);
     },
 
-    async loadChainData() {
-      await this.getChainPoolByID(this.poolID);
-    },
-
     async checkTokenContract(val) {
       // get decimal precisoin from token
       let payload = {
@@ -651,6 +707,7 @@ export default {
           this.populateWebLinks();
           this.BaseTokenSymFromChain();
 
+          this.ballot_close.date = this.toDateString(this.pool.ballot_close);
           this.pool_open.date = this.toDateString(this.pool.pool_open);
           this.private_end.date = this.toDateString(this.pool.private_end);
           this.public_end.date = this.toDateString(this.pool.public_end);
@@ -720,6 +777,29 @@ export default {
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
+    async createBallot() {
+      const actions = [
+        {
+          account: "token.start",
+          name: "transfer",
+          data: {
+            from: this.accountName,
+            to: process.env.BALLOT_ADDRESS,
+            quantity: this.settings.listing_fee,
+            memo: `Ballot listing fee`
+          }
+        },
+        {
+          account: process.env.BALLOT_ADDRESS,
+          name: "newballot",
+          data: {
+            owner: this.accountName
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
     async fundPool() {
       const actions = [
         {
@@ -754,6 +834,23 @@ export default {
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
+    async tryCreatePool() {
+      try {
+        // if not owned pool create ballot
+        if (this.accountName != this.pool.owner) {
+          await this.createBallot();
+        }
+        this.poolID = await this.findCreatedBallotID(this.accountName);
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+      }
+    },
+
     async onSubmit() {
       this.pool.ballot_close = this.ballot_close.date;
       this.pool.pool_open = this.pool_open.date;
@@ -771,8 +868,8 @@ export default {
         this.checkLinks();
         this.formatWhitelist();
         try {
-          // create ballot
-
+          // try create pool
+          await this.tryCreatePool();
           //update ballot
           await this.updateChainPool();
           this.$q.notify({
@@ -890,6 +987,8 @@ export default {
   },
 
   async mounted() {
+    this.settings = await this.getPoolsSettings()
+
     if (this.poolID !== undefined) {
       await this.getChainBallotByID(this.poolID);
       this.getPoolInfo();
@@ -901,6 +1000,22 @@ export default {
       account: this.accountName,
       id: this.poolID
     });
+  },
+
+  watch: {
+    async accountName() {
+      if (this.poolID !== undefined) {
+        await this.getChainBallotByID(this.poolID);
+        this.getPoolInfo();
+      }
+      await this.setBaseTokenOptions();
+
+      // check if already funded
+      this.funded = await this.ifPoolFunded({
+        account: this.accountName,
+        id: this.poolID
+      });
+    }
   }
 };
 </script>

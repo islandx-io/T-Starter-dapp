@@ -3,8 +3,10 @@
     outlined
     v-model="value.date"
     :label="label"
-    :disable="pool.status !== 'draft'"
-    :readonly="pool.status !== 'draft'"
+    :disable="pool.status !== 'draft' &&
+                        this.$route.params.id != undefined"
+    :readonly="pool.status !== 'draft' &&
+                        this.$route.params.id != undefined"
     mask="####-##-## ##:##"
     fill-mask="#"
   >
