@@ -216,11 +216,7 @@
             <tab-allocations :pool="pool" />
           </q-tab-panel>
           <q-tab-panel name="comments" @mousedown.stop>
-            <tab-comments
-              :poolID="poolID"
-              :START_info="START_info"
-              @transaction-complete="txnCompleteRefresh"
-            />
+            <tab-comments :poolID="poolID" />
           </q-tab-panel>
         </q-tab-panels>
 
@@ -429,10 +425,6 @@ export default {
           const transaction = await this.$store.$api.signTransaction(actions);
         }
       }
-    },
-    async txnCompleteRefresh() {
-      await this.loadChainData();
-      this.getPoolInfo();
     }
   },
   async mounted() {
@@ -442,7 +434,7 @@ export default {
     await this.getChainSTART(this.accountName);
     await this.getClaimStatus();
     // Start polling
-    this.polling = setInterval( async () => {
+    this.polling = setInterval(async () => {
       await this.loadChainData();
       this.getPoolInfo();
     }, 20000);
@@ -450,7 +442,7 @@ export default {
     if (this.$route.query.tab == "allocations") {
       this.tab = "allocations";
     } else {
-      this.tab = "comments";
+      this.tab = "details";
     }
   },
   beforeDestroy() {

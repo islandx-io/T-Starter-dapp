@@ -2,7 +2,7 @@
   <q-list class="comments-tab">
     <div>
       <q-form
-        @submit="postUserComment"
+        @submit="submitNewComment"
         class="col row items-center q-gutter-x-sm q-pb-md"
       >
         <q-input
@@ -32,7 +32,7 @@
       class="comments-container q-px-sm scroll overflow-y"
       style="min-height: 60px; max-height: 800px"
     >
-      <div class="row" v-for="row in pool.comments_table" :key="row.id">
+      <div class="row" v-for="row in comments" :key="row.id">
         <div class="col-12 row justify-between items-center">
           <div class="text-subtitle1 text-weight-bold" lines="1">
             {{ row.account }}
@@ -51,14 +51,14 @@
             {{ row.comment }}
           </div>
           <q-form
-            @submit="updateUserComment(row)"
+            @submit="submitCommentUpdate(row)"
             v-if="row.id === editID"
             class="col row items-center q-gutter-x-sm q-pt-xs"
           >
             <q-input
               class="col-sm col-xs-12"
               color="primary"
-              v-model="updatedComment"
+              v-model="row.comment"
               lazy-rules
               :disable="!isAuthenticated"
               maxlength="255"
@@ -97,7 +97,7 @@
               size="sm"
               padding="sm"
               flat
-              @click="removeUserComment(row)"
+              @click="submitRemoveComment(row)"
             />
           </div>
         </div>
@@ -144,9 +144,6 @@ import { date } from "quasar";
 export default {
   name: "tab-comments",
   props: {
-    START_info: {
-      required: true
-    },
     poolID: {
       required: true
     }
@@ -157,39 +154,33 @@ export default {
       insufficient_start_show: false,
       buyStartUrl: process.env.BUY_START_URL,
       editID: -1,
-      pool: this.$defaultPoolInfo
+      pool: this.$defaultPoolInfo,
+      comments: []
     };
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("pools", ["getPoolByID"]),
-    updatedComment: {
-      get() {
-        let result = this.pool.comments_table.find(el => el.id === this.editID)
-          .comment;
-        return result;
-      },
-      set(value) {
-        this.$store.commit("pools/updateSingleComment", {
-          pool_id: this.poolID,
-          comment_id: this.editID,
-          value: value
-        });
-      }
+    START_info() {
+      return this.wallet.find(el => (el.sym = "START"));
+    }
+  },
+  watch: {
+    async accountName() {
+      await this.getChainSTART(this.accountName);
     }
   },
   mounted() {
-    this.getPoolInfo();
+    this.getChainInfo();
   },
   methods: {
-    ...mapActions("pools", [
-      "getBalanceFromChain",
-      "getChainPoolByID",
-      "updateCommentsByPoolID"
-    ]),
+    ...mapActions("pools", ["updateCommentsByPoolID", "getChainSTART"]),
     ...mapActions("account", ["getChainSTART"]),
-    getPoolInfo() {
-      this.pool = this.getPoolByID(this.poolID);
+    async getChainInfo() {
+      await this.updateCommentsByPoolID(this.poolID);
+      this.pool = await this.getPoolByID(this.poolID);
+      this.comments = JSON.parse(JSON.stringify(this.pool.comments_table));
+      this.getChainSTART(this.accountName);
     },
     toDate(timeStamp) {
       if (timeStamp === "Loading") return timeStamp;
@@ -199,7 +190,7 @@ export default {
       if (id === this.editID) {
         // Cancel
         this.editID = -1;
-        this.updateCommentsByPoolID(this.poolID);
+        this.getChainInfo();
       } else this.editID = id; // Edit
     },
     errorNotification(error) {
@@ -211,12 +202,9 @@ export default {
       });
     },
     isLastComment(comment) {
-      return (
-        comment.id ===
-        this.pool.comments_table[this.pool.comments_table.length - 1].id
-      );
+      return comment.id === this.comments[this.comments.length - 1].id;
     },
-    async postUserComment() {
+    async submitNewComment() {
       // TODO Add try-catch
       if (this.isAuthenticated && this.newComment !== "") {
         await this.getChainSTART(this.accountName);
@@ -240,13 +228,13 @@ export default {
             const transaction = await this.$store.$api.signTransaction(actions);
             this.newComment = "";
           } catch (error) {
-            this.errorNotification(error); // FIXME Unexpected error messages
+            this.errorNotification(error);
           }
-          this.$emit("transaction-complete");
+          this.getChainInfo();
         }
       }
     },
-    async removeUserComment(comment) {
+    async submitRemoveComment(comment) {
       if (this.isAuthenticated && comment.account === this.accountName) {
         const actions = [
           {
@@ -263,10 +251,10 @@ export default {
         } catch (error) {
           this.errorNotification(error);
         }
-        this.$emit("transaction-complete");
+        this.getChainInfo();
       }
     },
-    async updateUserComment(comment) {
+    async submitCommentUpdate(comment) {
       if (this.isAuthenticated && comment.account === this.accountName) {
         const actions = [
           {
@@ -275,7 +263,7 @@ export default {
             data: {
               pool_id: this.poolID,
               comment_id: comment.id,
-              memo: this.updatedComment
+              memo: comment.comment
             }
           }
         ];
@@ -283,9 +271,10 @@ export default {
           const transaction = await this.$store.$api.signTransaction(actions);
         } catch (error) {
           this.errorNotification(error);
+          this.getChainInfo();
         }
-        this.$emit("transaction-complete");
         this.editID = -1;
+        this.getChainInfo();
       }
     }
   }
