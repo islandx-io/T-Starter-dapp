@@ -119,7 +119,7 @@
               />
             </router-link>
             <p class="text-body1">
-              The place to discover and back projects building on Telos
+              The place to discover and back projects building on {{currentChain.NETWORK_DISPLAY_NAME}}
             </p>
           </div>
           <div class="col-sm-3 column items-start content-end">
