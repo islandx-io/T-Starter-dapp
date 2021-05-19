@@ -76,7 +76,7 @@ const toFixedDown = function(num, decimals) {
   // Or just Math.floor(num * 10**decimals) / 10**decimals
 };
 
-const startBalanceToLiquidAction = function(START_info) {
+const startBalanceToLiquidAction = function(START_info, amount) {
   return {
     account: this.START_info.token_contract,
     name: "transfer",
@@ -84,7 +84,7 @@ const startBalanceToLiquidAction = function(START_info) {
       from: this.accountName,
       to: process.env.CONTRACT_ADDRESS,
       quantity: this.$toChainString(
-        1,
+        amount,
         this.START_info.decimals,
         this.START_info.sym
       ),

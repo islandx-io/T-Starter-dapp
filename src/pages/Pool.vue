@@ -291,7 +291,8 @@ export default {
       polling: null,
       claimable: false,
       insufficient_start_show: false,
-      buyStartUrl: process.env.BUY_START_URL
+      buyStartUrl: process.env.BUY_START_URL,
+      settings: {}
     };
   },
   computed: {
@@ -370,7 +371,8 @@ export default {
       "getChainPoolByID",
       "getAllocationByPool",
       "getPlatformToken",
-      "getBalanceFromChain"
+      "getBalanceFromChain",
+      "getPoolsSettings"
     ]),
     ...mapActions("account", ["getChainSTART"]),
     getPoolInfo() {
@@ -407,7 +409,7 @@ export default {
           this.insufficient_start_show = true;
         } else {
           if (this.START_info.liquid < 1) {
-            actions.push(this.$startBalanceToLiquidAction(this.START_info));
+            actions.push(this.$startBalanceToLiquidAction(this.START_info, this.settings.social_fee));
           }
           let vote = 0; // abstain
           if (side === "upvote" && this.userSentiment !== "upvote") vote = 1;
@@ -428,6 +430,7 @@ export default {
     }
   },
   async mounted() {
+    this.settings = await this.getPoolsSettings();
     // get data from chain, write to store, get from store
     await this.loadChainData();
     this.getPoolInfo();
@@ -451,6 +454,7 @@ export default {
 
   watch: {
     async accountName() {
+      this.settings = await this.getPoolsSettings();
       await this.getChainSTART(this.accountName);
       await this.getClaimStatus();
     }
