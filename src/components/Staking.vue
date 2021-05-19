@@ -26,7 +26,7 @@
       <div class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm">
         <!-- Staked amount -->
         <div class="text-center">
-          StakedSTART Balance <br />{{ stakedSTARTstr }}
+          Staked START Balance <br />{{ stakedSTARTstr }}
         </div>
         <!-- Unstake input -->
         <q-input outlined v-model="amountUnstake">
