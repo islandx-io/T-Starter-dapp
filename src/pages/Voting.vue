@@ -10,7 +10,7 @@
         label="Create Ballot"
         :to="{ name: 'createballot' }"
       />
-      <!-- {{getPublishedBallots}} -->
+      {{ getPublishedBallots }}
 
       <!-- Search bar -->
 
@@ -63,6 +63,48 @@
                 :props="props"
                 :key="props.cols[props.cols.length - 1].name"
               >
+                <div class="row q-gutter-x-sm">
+                  <q-btn
+                    outline
+                    flat
+                    padding="6px 8px"
+                    icon="fas fa-thumbs-up"
+                    class="hover-accent"
+                    size="1.05rem"
+                    :color="userVote === 'upvote' ? 'positive' : 'black'"
+                    @click="tryVote(1)"
+                    :disable="!isAuthenticated"
+                  />
+                  <div
+                    :class="
+                      userVote === 'upvote'
+                        ? 'text-positive'
+                        : 'text-black'
+                    "
+                  >
+                    {{ props.row.votes.find(a => a.key === "upvote").value }}
+                  </div>
+                  <q-btn
+                    outline
+                    flat
+                    padding="6px 8px"
+                    size="1.05rem"
+                    icon="fas fa-thumbs-down"
+                    class="hover-accent"
+                    :color="userVote === 'downvote' ? 'accent' : 'black'"
+                    @click="tryVote(-1)"
+                    :disable="!isAuthenticated"
+                  />
+                  <div
+                    :class="
+                      userVote === 'downvote'
+                        ? 'text-negative'
+                        : 'text-black'
+                    "
+                  >
+                    {{ props.row.votes.find(a => a.key === "downvote").value }}
+                  </div>
+                </div>
               </q-td>
             </q-tr>
           </template>
@@ -88,23 +130,25 @@ export default {
           align: "left",
           field: "title",
           format: val => `${val}`,
-          sortable: true,
+          sortable: true
         },
         {
           name: "price",
           align: "left",
           label: "Price",
           field: row =>
-            `1 ${this.$getSymFromAsset(row.base_token)}  = ${this.$chainToQty(
+            `1 ${this.$getSymFromAsset(row.base_token)} = ${this.$chainToQty(
               row.swap_ratio.quantity
             )} ${this.$chainToSym(row.swap_ratio.quantity)}`
         },
         { name: "softcap", label: "Softcap", field: "soft_cap" },
         { name: "hardcap", label: "Hardcap", field: "hard_cap" },
         { name: "closesin", label: "Closes in", field: "ballot_close" },
-        { name: "voting", label: "Voting", field: "sodium" }
-      ]
+        { name: "voting", label: "Voting", field: "votes", align: 'center' }
+      ],
+      userVote: 'none'
     };
+
   },
   computed: {
     ...mapGetters("ballots", [
@@ -113,10 +157,29 @@ export default {
       "getAllBallots",
       "getPublishedBallots"
     ]),
-    ...mapGetters("account", ["isAuthenticated", "accountName"])
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
   },
   methods: {
-    ...mapActions("ballots", ["getAllChainBallots", "getChainBallotByID"])
+    ...mapActions("ballots", ["getAllChainBallots", "getChainBallotByID"]),
+
+    // FIXME get what the users voted on a pool?
+    userSentiment() {
+      let result = "none";
+      if (this.pool.sentiment_table) {
+        let sentiment = this.pool.sentiment_table.find(
+          el => el.account === this.accountName
+        );
+        if (sentiment) {
+          if (sentiment.vote > 0) result = "upvote";
+          if (sentiment.vote < 0) result = "downvote";
+        }
+      }
+      return result;
+    },
+
+    vote() {},
+
+    tryVote() {}
   },
   async mounted() {
     await this.getAllChainBallots();
