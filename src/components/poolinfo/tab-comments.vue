@@ -162,7 +162,8 @@ export default {
       pool: this.$defaultPoolInfo,
       comments: [],
       processingUpdate: false,
-      processingNew: false
+      processingNew: false,
+      settings: {}
     };
   },
   computed: {
@@ -174,14 +175,20 @@ export default {
   },
   watch: {
     async accountName() {
+      this.settings = await this.getPoolsSettings();
       await this.getChainSTART(this.accountName);
     }
   },
-  mounted() {
+  async mounted() {
     this.getChainInfo();
+    this.settings = await this.getPoolsSettings();
   },
   methods: {
-    ...mapActions("pools", ["updateCommentsByPoolID", "getChainSTART"]),
+    ...mapActions("pools", [
+      "updateCommentsByPoolID",
+      "getChainSTART",
+      "getPoolsSettings"
+    ]),
     ...mapActions("account", ["getChainSTART"]),
     async getChainInfo() {
       await this.updateCommentsByPoolID(this.poolID);
@@ -221,7 +228,12 @@ export default {
         } else {
           const actions = [];
           if (this.START_info.liquid < 1) {
-            actions.push(this.$startBalanceToLiquidAction(this.START_info));
+            actions.push(
+              this.$startBalanceToLiquidAction(
+                this.START_info,
+                this.$chainToQty(this.settings.social_fee)
+              )
+            );
           }
           actions.push({
             account: process.env.CONTRACT_ADDRESS,

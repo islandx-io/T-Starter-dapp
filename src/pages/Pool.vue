@@ -409,7 +409,12 @@ export default {
           this.insufficient_start_show = true;
         } else {
           if (this.START_info.liquid < 1) {
-            actions.push(this.$startBalanceToLiquidAction(this.START_info, this.settings.social_fee));
+            actions.push(
+              this.$startBalanceToLiquidAction(
+                this.$chainToQty(this.START_info),
+                this.settings.social_fee
+              )
+            );
           }
           let vote = 0; // abstain
           if (side === "upvote" && this.userSentiment !== "upvote") vote = 1;
