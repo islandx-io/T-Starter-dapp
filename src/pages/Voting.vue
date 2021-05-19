@@ -52,7 +52,6 @@
                 :props="props"
                 :key="props.cols[props.cols.length - 2].name"
               >
-              {{props.row.ballot_close}}
                 <time-until
                   :deadline="props.row.ballot_close"
                   :poolID="props.row.id"
@@ -65,7 +64,7 @@
                 :props="props"
                 :key="props.cols[props.cols.length - 1].name"
               >
-              <!-- {{props.row.votes}} -->
+                <!-- {{props.row.votes}} -->
                 <div class="row q-gutter-x-sm">
                   <q-btn
                     outline
@@ -80,9 +79,7 @@
                   />
                   <div
                     :class="
-                      userVote === 'upvote'
-                        ? 'text-positive'
-                        : 'text-black'
+                      userVote === 'upvote' ? 'text-positive' : 'text-black'
                     "
                   >
                     {{ props.row.votes.find(a => a.key === "upvote") }}
@@ -100,9 +97,7 @@
                   />
                   <div
                     :class="
-                      userVote === 'downvote'
-                        ? 'text-negative'
-                        : 'text-black'
+                      userVote === 'downvote' ? 'text-negative' : 'text-black'
                     "
                   >
                     {{ props.row.votes.find(a => a.key === "downvote") }}
@@ -147,11 +142,15 @@ export default {
         { name: "softcap", label: "Softcap", field: "soft_cap" },
         { name: "hardcap", label: "Hardcap", field: "hard_cap" },
         { name: "closesin", label: "Closes in", field: "ballot_close" },
-        { name: "voting", label: "Voting", field: row => row.votes, align: 'center' }
+        {
+          name: "voting",
+          label: "Voting",
+          field: row => row.votes,
+          align: "center"
+        }
       ],
-      userVote: 'none'
+      userVote: "none"
     };
-
   },
   computed: {
     ...mapGetters("ballots", [
@@ -160,7 +159,7 @@ export default {
       "getAllBallots",
       "getPublishedBallots"
     ]),
-    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("account", ["isAuthenticated", "accountName"])
   },
   methods: {
     ...mapActions("ballots", ["getAllChainBallots", "getChainBallotByID"]),
@@ -217,8 +216,6 @@ export default {
   },
   async mounted() {
     await this.getAllChainBallots();
-
-
   }
 };
 </script>

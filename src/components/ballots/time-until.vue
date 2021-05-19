@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <div v-if="days > 1">{{ days }} days</div>
+    <div v-if="days > 1">{{ days }} days</div>
     <div v-else-if="days === 1">{{ days }} day</div>
 
     <div v-if="hours > 1 && days < 1">{{ hours }} hours</div>
@@ -12,8 +12,7 @@
 
     <div v-if="days <= 0 && hours <= 0 && minutes <= 0 && seconds <= 0">
       Closed
-    </div> -->
-    {{days}} {{hours}} {{minutes}} {{seconds}}
+    </div>
   </div>
 </template>
 
