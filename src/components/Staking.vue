@@ -1,56 +1,57 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide">
-    <q-card class="q-dialog-plugin">
-      <div class="row">
-        <div class="col">
-          <!-- START balance  -->
-          <div class="text-center">START Balance</div>
-          <div class="text-center">{{ balanceSTARTstr }}</div>    
-          
-          <!-- Stake input -->
-          <q-input outlined v-model="amountStake">
-            <template v-slot:append>
-              <q-btn
-                class="col-shrink"
-                label="Max"
-                @click="setStakeMax"
-                color="positive"
-                outline
-              />
-            </template>
-          </q-input>
-
-          <q-btn class="" color="primary" label="Stake" @click="tryStake()" />
-        </div>
-
-        <div class="col">
-          <!-- Staked amount -->          
-          <div class="text-center">Staked START Balance</div>
-          <div class="text-center">{{ stakedSTARTstr }}</div>
-          
-
-          <!-- Unstake input -->
-          <q-input outlined v-model="amountUnstake">
-            <template v-slot:append>
-              <q-btn
-                class="col-shrink"
-                label="Max"
-                @click="setUnstakeMax"
-                color="positive"
-                outline
-              />
-            </template>
-          </q-input>
-
-          <q-btn color="primary" label="Unstake" @click="tryUnstake()" />
-        </div>
+    <q-card class="col-shrink row">
+      <div class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm">
+        <!-- START balance  -->
+        <div class="text-center">START Balance <br />{{ balanceSTARTstr }}</div>
+        <!-- Stake input -->
+        <q-input outlined v-model="amountStake">
+          <template v-slot:append>
+            <q-btn
+              class="col-shrink"
+              label="Max"
+              @click="setStakeMax"
+              color="positive"
+              outline
+            />
+          </template>
+        </q-input>
+        <q-btn
+          class="hover-accent"
+          color="primary"
+          label="Stake"
+          @click="tryStake()"
+        />
       </div>
-
+      <div class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm">
+        <!-- Staked amount -->
+        <div class="text-center">
+          StakedSTART Balance <br />{{ stakedSTARTstr }}
+        </div>
+        <!-- Unstake input -->
+        <q-input outlined v-model="amountUnstake">
+          <template v-slot:append>
+            <q-btn
+              class="col-shrink"
+              label="Max"
+              @click="setUnstakeMax"
+              color="positive"
+              outline
+            />
+          </template>
+        </q-input>
+        <q-btn
+          class="hover-accent"
+          color="primary"
+          label="Unstake"
+          @click="tryUnstake()"
+        />
+      </div>
       <!-- buttons example -->
       <!-- <q-card-actions align="right">
-        <q-btn color="primary" label="OK" @click="onOKClick" />
-        <q-btn color="primary" label="Cancel" @click="onCancelClick" />
-      </q-card-actions> -->
+            <q-btn color="primary" label="OK" @click="onOKClick" />
+            <q-btn color="primary" label="Cancel" @click="onCancelClick" />
+          </q-card-actions> -->
     </q-card>
   </q-dialog>
 </template>
@@ -65,7 +66,7 @@ export default {
   data() {
     return {
       amountStake: 0,
-      amountUnstake: 0,
+      amountUnstake: 0
     };
   },
 
@@ -74,34 +75,42 @@ export default {
       "isAuthenticated",
       "accountName",
       "loading",
-      "isAutoLoading", "wallet"
+      "isAutoLoading",
+      "wallet"
     ]),
 
     START_info() {
-      return this.wallet.find(el => el.sym = 'START')
+      return this.wallet.find(el => (el.sym = "START"));
     },
 
     balanceSTARTstr() {
       if (this.START_info.balance != 0) {
-        return this.$toChainString(this.START_info.balance, this.START_info.decimals, this.START_info.sym)
+        return this.$toChainString(
+          this.START_info.balance,
+          this.START_info.decimals,
+          this.START_info.sym
+        );
       } else {
-        return "0.0000 START"
+        return "0.0000 START";
       }
     },
 
     stakedSTARTstr() {
       if (this.START_info.staked != 0) {
-        return this.$toChainString(this.START_info.staked, this.START_info.decimals, this.START_info.sym)
+        return this.$toChainString(
+          this.START_info.staked,
+          this.START_info.decimals,
+          this.START_info.sym
+        );
       } else {
-        return "0.0000 START"
+        return "0.0000 START";
       }
     }
-
   },
 
   methods: {
     ...mapActions("account", ["login", "logout", "autoLogin", "getChainSTART"]),
-    ...mapActions("pools", ["getBalanceFromChain",]),
+    ...mapActions("pools", ["getBalanceFromChain"]),
     // following method is REQUIRED
     // (don't change its name --> "show")
     show() {
@@ -138,12 +147,12 @@ export default {
 
     setStakeMax() {
       console.log("Stake max");
-      this.amountStake = this.START_info.balance
+      this.amountStake = this.START_info.balance;
     },
 
     setUnstakeMax() {
       console.log("UnStake max");
-      this.amountUnstake = this.START_info.staked
+      this.amountUnstake = this.START_info.staked;
     },
 
     async reclaimStake(amount_str) {
@@ -176,33 +185,33 @@ export default {
     async stake(amount_str) {
       let actions = [];
       if (this.amountStake >= this.START_info.liquid) {
-        let amountNeeded = this.amountStake - this.START_info.liquid
+        let amountNeeded = this.amountStake - this.START_info.liquid;
 
-       // if not enough in liquid, take from balance
-       actions.push(
-          {
-            account: this.START_info.token_contract,
-            name: "transfer",
-            data: {
-              from: this.accountName,
-              to: process.env.CONTRACT_ADDRESS,
-              quantity: this.$toChainString(amountNeeded, this.START_info.decimals, this.START_info.sym),
-              memo: `Send ${this.START_info.sym} to liquid`
-            }
+        // if not enough in liquid, take from balance
+        actions.push({
+          account: this.START_info.token_contract,
+          name: "transfer",
+          data: {
+            from: this.accountName,
+            to: process.env.CONTRACT_ADDRESS,
+            quantity: this.$toChainString(
+              amountNeeded,
+              this.START_info.decimals,
+              this.START_info.sym
+            ),
+            memo: `Send ${this.START_info.sym} to liquid`
           }
-        )
+        });
       }
       // stake amount
-      actions.push(
-        {
-          account: process.env.CONTRACT_ADDRESS,
-          name: "stake",
-          data: {
-            account: this.accountName,
-            quantity: amount_str
-          }
+      actions.push({
+        account: process.env.CONTRACT_ADDRESS,
+        name: "stake",
+        data: {
+          account: this.accountName,
+          quantity: amount_str
         }
-      );
+      });
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
@@ -259,7 +268,7 @@ export default {
           icon: "cloud_done",
           message: "Unstaking"
         });
-        this.hide()
+        this.hide();
       } catch (error) {
         this.$q.notify({
           color: "red-5",
