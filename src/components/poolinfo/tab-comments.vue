@@ -16,6 +16,7 @@
           outlined
           autogrow
           :loading="processingNew"
+          counter
         />
         <div class="col-sm-shrink col-xs-12 row justify-center q-py-sm">
           <q-btn
@@ -107,6 +108,7 @@
               autogrow
               label="Edit Comment"
               :loading="processingUpdate"
+              counter
             />
             <div
               class="col-sm-shrink col-xs-12 row justify-center q-py-sm q-gutter-x-sm"
