@@ -134,6 +134,7 @@
       <!-- swap tokens -->
       <q-item class="justify-center q-pt-md">
         <q-btn
+          v-if="currentChain.NETWORK_NAME === 'TELOS'"
           label="MANAGE TOKENS ON TELOS WEB WALLET"
           type="a"
           href="https://wallet.telos.net/"
@@ -179,7 +180,8 @@ export default {
   },
   components: { tokenAvatar, walletActions },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"])
+    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
+    ...mapGetters("blockchains", ["currentChain"])
   },
 
   methods: {
