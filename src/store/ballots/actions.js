@@ -24,7 +24,7 @@ export const getChainBallotByID = async function({ commit, dispatch }, id) {
 
     
     commit("updateBallotOnState", { ballotTable, id });
-    //   await dispatch("updatePoolSettings", id);
+    // await dispatch("updateBallotSettings", id);
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -57,14 +57,31 @@ export const getAllChainBallots = async function({ commit, dispatch }) {
       pool.private_end = new Date(pool.private_end + "Z").valueOf();
       pool.public_end = new Date(pool.public_end + "Z").valueOf();
 
-      const ballotTable = pool;
+      let ballotTable = pool;
 
       commit("updateBallotOnState", { ballotTable, id });
-      // await dispatch("updatePoolSettings", id);
+      // await dispatch("updateBallotSettings", id);
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
+};
+
+export const updateBallotSettings = async function(
+  { commit, getters, dispatch },
+  poolID
+) {
+  console.log("in action")
+  const pool = getters.getBallotByID(poolID);
+
+  commit({
+    type: "setBallotSettings",
+    id: poolID,
+    pool_status: "ai",
+    access_type: "jai",
+    progress: "progress"
+  });
+
 };
 
 // find the created ballot id

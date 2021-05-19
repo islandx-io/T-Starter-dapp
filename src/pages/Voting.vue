@@ -24,6 +24,7 @@
         >
           <template v-slot:body="props">
             <q-tr :props="props" :key="props.row.id">
+              <!-- {{props}} -->
               <!-- Avatar -->
               <!-- <q-td :props="props" :key="props.cols[0].name">
                 <div class="row justify-start items-center">
@@ -51,6 +52,7 @@
                 :props="props"
                 :key="props.cols[props.cols.length - 2].name"
               >
+              {{props.row.ballot_close}}
                 <time-until
                   :deadline="props.row.ballot_close"
                   :poolID="props.row.id"
@@ -63,6 +65,7 @@
                 :props="props"
                 :key="props.cols[props.cols.length - 1].name"
               >
+              <!-- {{props.row.votes}} -->
                 <div class="row q-gutter-x-sm">
                   <q-btn
                     outline
@@ -82,7 +85,7 @@
                         : 'text-black'
                     "
                   >
-                    {{ props.row.votes.find(a => a.key === "upvote").value }}
+                    {{ props.row.votes.find(a => a.key === "upvote") }}
                   </div>
                   <q-btn
                     outline
@@ -102,7 +105,7 @@
                         : 'text-black'
                     "
                   >
-                    {{ props.row.votes.find(a => a.key === "downvote").value }}
+                    {{ props.row.votes.find(a => a.key === "downvote") }}
                   </div>
                 </div>
               </q-td>
@@ -144,7 +147,7 @@ export default {
         { name: "softcap", label: "Softcap", field: "soft_cap" },
         { name: "hardcap", label: "Hardcap", field: "hard_cap" },
         { name: "closesin", label: "Closes in", field: "ballot_close" },
-        { name: "voting", label: "Voting", field: "votes", align: 'center' }
+        { name: "voting", label: "Voting", field: row => row.votes, align: 'center' }
       ],
       userVote: 'none'
     };
@@ -201,6 +204,7 @@ export default {
           icon: "cloud_done",
           message: "Voted"
         });
+        await this.getAllChainBallots();
       } catch (error) {
         this.$q.notify({
           color: "red-5",
@@ -213,6 +217,8 @@ export default {
   },
   async mounted() {
     await this.getAllChainBallots();
+
+
   }
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="days > 1">{{ days }} days</div>
+    <!-- <div v-if="days > 1">{{ days }} days</div>
     <div v-else-if="days === 1">{{ days }} day</div>
 
     <div v-if="hours > 1 && days < 1">{{ hours }} hours</div>
@@ -12,7 +12,8 @@
 
     <div v-if="days <= 0 && hours <= 0 && minutes <= 0 && seconds <= 0">
       Closed
-    </div>
+    </div> -->
+    {{days}} {{hours}} {{minutes}} {{seconds}}
   </div>
 </template>
 
@@ -72,9 +73,9 @@ export default {
       if (this.diff <= 0 || this.reset) {
         this.diff = 0;
         clearInterval(interval); // Stop countdown
-        await this.getChainBallotByID(this.poolID); // update status
+        // await this.getChainBallotByID(this.poolID); // update status //FIXME reenable me when working
         this.$emit("countdown-finished");
-        console.log("Time finished");
+        // console.log("Time finished");
       }
     }
   },
