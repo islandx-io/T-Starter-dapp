@@ -10,7 +10,7 @@
         label="Create Ballot"
         :to="{ name: 'createballot' }"
       />
-      {{ getPublishedBallots }}
+      <!-- {{ getPublishedBallots }} -->
 
       <!-- Search bar -->
 
@@ -72,7 +72,7 @@
                     class="hover-accent"
                     size="1.05rem"
                     :color="userVote === 'upvote' ? 'positive' : 'black'"
-                    @click="tryVote(1)"
+                    @click="tryVote(1, props.row.id)"
                     :disable="!isAuthenticated"
                   />
                   <div
@@ -92,7 +92,7 @@
                     icon="fas fa-thumbs-down"
                     class="hover-accent"
                     :color="userVote === 'downvote' ? 'accent' : 'black'"
-                    @click="tryVote(-1)"
+                    @click="tryVote(-1, props.row.id)"
                     :disable="!isAuthenticated"
                   />
                   <div
@@ -177,9 +177,39 @@ export default {
       return result;
     },
 
-    vote() {},
+    async vote(vote, id) {
+      const actions = [
+        {
+          account: process.env.BALLOT_ADDRESS,
+          name: "vote",
+          data: {
+            account: this.accountName,
+            ballot_id: id,
+            vote: vote
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
 
-    tryVote() {}
+    async tryVote(vote, id) {
+      try {
+        await this.vote(vote, id);
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Voted"
+        });
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+      }
+    }
   },
   async mounted() {
     await this.getAllChainBallots();
