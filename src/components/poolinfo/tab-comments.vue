@@ -37,23 +37,60 @@
         Be the first to post a comment!
       </div>
       <div v-else class="row" v-for="row in comments" :key="row.id">
-        <div class="col-12 row justify-between items-center">
-          <div class="text-subtitle1 text-weight-bold" lines="1">
-            {{ row.account }}
+        <div class="col-12 row no-wrap justify-between items-center">
+          <div class="col-shrink row items-center q-gutter-x-md">
+            <div class="text-subtitle1 text-weight-bold" lines="1">
+              {{ row.account }}
+            </div>
+            <div class="text-grey-7">{{ toDate(row.timestamp) }}</div>
+            <!-- TODO Make expandable -->
           </div>
-          <div class="text-grey-7">
-            {{ toDate(row.timestamp) }}
-          </div>
-          <!-- TODO Make expandable -->
+          <q-btn-dropdown
+            flat
+            padding="2px 8px 2px 2px"
+            dropdown-icon="fas fa-ellipsis-h"
+            no-icon-animation
+            v-if="row.account === accountName"
+            class="self-start hover-accent text-grey-6 row"
+            menu-anchor="bottom right"
+            :menu-offset="[2, 5]"
+          >
+            <q-btn-group class="bg-secondary text-grey-6">
+              <q-btn
+                v-close-popup
+                v-if="row.account === accountName"
+                :icon="
+                  row.id === editID ? 'fas fa-times-circle' : 'fas fa-edit'
+                "
+                class="hover-accent q-px-xs"
+                size="sm"
+                padding="sm"
+                flat
+                @click="toggleEdit(row.id)"
+              />
+              <q-separator vertical />
+              <q-btn
+                v-close-popup
+                v-if="row.account === accountName"
+                icon="fas fa-trash-alt"
+                class="hover-accent q-px-xs"
+                size="sm"
+                padding="sm"
+                flat
+                @click="submitRemoveComment(row)"
+              />
+            </q-btn-group>
+          </q-btn-dropdown>
         </div>
-        <div class="col-12 row justify-between reverse-wrap q-gutter-x-sm">
+        <div
+          class="col-12 row justify-between reverse-wrap q-gutter-x-sm q-pt-xs"
+        >
+          <!-- prettier-ignore -->
           <div
             v-if="row.id !== editID"
             class="col text-subtitle1"
-            style="line-height: 20px; overflow-wrap: break-word"
-          >
-            {{ row.comment }}
-          </div>
+            style="line-height: 20px; overflow-wrap: break-word; white-space: pre-line"
+          >{{ row.comment }}</div>
           <q-form
             @submit="submitCommentUpdate(row)"
             v-if="row.id === editID"
@@ -71,40 +108,24 @@
               label="Edit Comment"
               :loading="processingUpdate"
             />
-            <div class="col-sm-shrink col-xs-12 row justify-center q-py-sm">
+            <div
+              class="col-sm-shrink col-xs-12 row justify-center q-py-sm q-gutter-x-sm"
+            >
               <q-btn
                 class="hover-accent"
                 color="primary"
-                padding="sm md"
                 :disable="!isAuthenticated"
                 type="submit"
                 label="Update"
               />
+              <q-btn
+                class="hover-accent"
+                color="primary"
+                label="Cancel"
+                @click="editID = -1"
+              />
             </div>
           </q-form>
-          <div
-            v-if="row.account === accountName"
-            class="col-xs-12 col-sm-shrink row items-start q-gutter-x-xs"
-          >
-            <q-btn
-              v-if="row.account === accountName"
-              :icon="row.id === editID ? 'fas fa-times-circle' : 'fas fa-edit'"
-              class="hover-accent"
-              size="sm"
-              padding="sm"
-              flat
-              @click="toggleEdit(row.id)"
-            />
-            <q-btn
-              v-if="row.account === accountName"
-              icon="fas fa-trash-alt"
-              class="hover-accent"
-              size="sm"
-              padding="sm"
-              flat
-              @click="submitRemoveComment(row)"
-            />
-          </div>
         </div>
         <q-separator v-if="!isLastComment(row)" class="q-my-sm" />
       </div>
