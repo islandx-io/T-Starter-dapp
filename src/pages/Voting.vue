@@ -10,17 +10,62 @@
         label="Create Ballot"
         :to="{ name: 'createballot' }"
       />
+      <!-- {{getPublishedBallots}} -->
 
       <!-- Search bar -->
 
       <!-- Table with pools -->
       <div class="q-pa-md">
         <q-table
-          :data="data"
+          :data="getPublishedBallots"
           :columns="columns"
           row-key="name"
           :pagination="{ rowsPerPage: 20 }"
         >
+          <template v-slot:body="props">
+            <q-tr :props="props" :key="props.row.id">
+              <!-- Avatar -->
+              <!-- <q-td :props="props" :key="props.cols[0].name">
+                <div class="row justify-start items-center">
+                  <token-avatar
+                    :token="props.row.token_sym"
+                    :avatar="props.row.avatar"
+                    :avatarSize="35"
+                    class="q-mr-sm"
+                  />
+                  <div>{{ props.cols[0].value }}</div>
+                </div>
+              </q-td> -->
+
+              <!-- Info -->
+              <q-td
+                :props="props"
+                v-for="col in props.cols.slice(0, 4)"
+                :key="col.name"
+              >
+                {{ col.value }}
+              </q-td>
+
+              <!-- Opens in -->
+              <q-td
+                :props="props"
+                :key="props.cols[props.cols.length - 2].name"
+              >
+                <time-until
+                  :deadline="props.row.ballot_close"
+                  :poolID="props.row.id"
+                  @countdown-finished="getBallotByID(props.row.id)"
+                />
+              </q-td>
+
+              <!-- Voting -->
+              <q-td
+                :props="props"
+                :key="props.cols[props.cols.length - 1].name"
+              >
+              </q-td>
+            </q-tr>
+          </template>
         </q-table>
       </div>
     </section>
@@ -28,9 +73,11 @@
 </template>
 
 <script>
+import TimeUntil from "src/components/ballots/time-until.vue";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
+  components: { TimeUntil },
   data() {
     return {
       columns: [
@@ -39,53 +86,23 @@ export default {
           required: true,
           label: "Name",
           align: "left",
-          field: row => row.name,
+          field: "title",
           format: val => `${val}`,
           sortable: true,
-          headerStyle: "font-size: 20px; color: gray"
         },
         {
           name: "price",
           align: "left",
           label: "Price",
-          field: "calories"
+          field: row =>
+            `1 ${this.$getSymFromAsset(row.base_token)}  = ${this.$chainToQty(
+              row.swap_ratio.quantity
+            )} ${this.$chainToSym(row.swap_ratio.quantity)}`
         },
-        { name: "softcap", label: "Softcap", field: "fat" },
-        { name: "hardcap", label: "Hardcap", field: "carbs" },
-        { name: "opensin", label: "Opens in", field: "protein" },
+        { name: "softcap", label: "Softcap", field: "soft_cap" },
+        { name: "hardcap", label: "Hardcap", field: "hard_cap" },
+        { name: "closesin", label: "Closes in", field: "ballot_close" },
         { name: "voting", label: "Voting", field: "sodium" }
-      ],
-      data: [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          sodium: 87,
-          calcium: "14%",
-          iron: "1%"
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          sodium: 129,
-          calcium: "8%",
-          iron: "1%"
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          sodium: 337,
-          calcium: "6%",
-          iron: "7%"
-        }
       ]
     };
   },
@@ -93,7 +110,8 @@ export default {
     ...mapGetters("ballots", [
       "getAllBallotIDs",
       "getBallotByID",
-      "getAllBallots"
+      "getAllBallots",
+      "getPublishedBallots"
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"])
   },
