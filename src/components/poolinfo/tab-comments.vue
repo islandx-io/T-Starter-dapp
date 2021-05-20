@@ -12,7 +12,7 @@
           label="Comment"
           lazy-rules
           :disable="!isAuthenticated"
-          maxlength="255"
+          maxlength="512"
           outlined
           autogrow
           :loading="processingNew"
@@ -103,7 +103,7 @@
               v-model="row.comment"
               lazy-rules
               :disable="!isAuthenticated"
-              maxlength="255"
+              maxlength="512"
               outlined
               autogrow
               label="Edit Comment"
