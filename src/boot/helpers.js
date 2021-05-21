@@ -93,6 +93,15 @@ const startBalanceToLiquidAction = function(START_info, amount) {
   };
 };
 
+const errorNotification = function(error) {
+  this.$q.notify({
+    color: "red-5",
+    textColor: "white",
+    icon: "warning",
+    message: `${error}`
+  });
+};
+
 export default ({ Vue, store }) => {
   Vue.prototype.$chainToQty = chainToQty;
   Vue.prototype.$toChainString = toChainString;
@@ -104,10 +113,12 @@ export default ({ Vue, store }) => {
   Vue.prototype.$chainToDecimals = chainToDecimals;
   Vue.prototype.$toFixedDown = toFixedDown;
   Vue.prototype.$startBalanceToLiquidAction = startBalanceToLiquidAction;
+  Vue.prototype.$errorNotification = errorNotification;
   store["$chainToQty"] = chainToQty;
   store["$chainToSym"] = chainToSym;
   store["$toChainString"] = toChainString;
   store["$getDecimalFromAsset"] = getDecimalFromAsset;
   store["$getSymFromAsset"] = getSymFromAsset;
   store["$chainToDecimals"] = chainToDecimals;
+  store["$errorNotification"] = errorNotification;
 };

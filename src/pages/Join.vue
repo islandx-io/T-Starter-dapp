@@ -553,12 +553,7 @@ export default {
         });
         this.joining = false;
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
         this.joining = false;
       }
     },

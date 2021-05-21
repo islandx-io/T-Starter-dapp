@@ -619,12 +619,7 @@ export default {
         });
         this.txnPending = false;
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
         this.txnPending = false;
       }
     },

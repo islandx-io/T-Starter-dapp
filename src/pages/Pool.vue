@@ -429,7 +429,11 @@ export default {
               vote: vote
             }
           });
-          const transaction = await this.$store.$api.signTransaction(actions);
+          try {
+            const transaction = await this.$store.$api.signTransaction(actions);
+          } catch (error) {
+            this.$errorNotification(error);
+          }
         }
       }
     }

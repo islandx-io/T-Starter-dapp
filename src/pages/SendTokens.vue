@@ -365,12 +365,7 @@ export default {
           message: "Sent"
         });
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
       }
     }
   },

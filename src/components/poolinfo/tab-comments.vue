@@ -230,19 +230,10 @@ export default {
         this.getChainInfo();
       } else this.editID = id; // Edit
     },
-    errorNotification(error) {
-      this.$q.notify({
-        color: "red-5",
-        textColor: "white",
-        icon: "warning",
-        message: `${error}`
-      });
-    },
     isLastComment(comment) {
       return comment.id === this.comments[this.comments.length - 1].id;
     },
     async submitNewComment() {
-      // TODO Add try-catch
       this.processingNew = true;
       if (this.isAuthenticated && this.newComment !== "") {
         await this.getChainSTART(this.accountName);
@@ -271,7 +262,7 @@ export default {
             const transaction = await this.$store.$api.signTransaction(actions);
             this.newComment = "";
           } catch (error) {
-            this.errorNotification(error);
+            this.$errorNotification(error);
           }
           this.getChainInfo();
         }
@@ -293,7 +284,7 @@ export default {
         try {
           const transaction = await this.$store.$api.signTransaction(actions);
         } catch (error) {
-          this.errorNotification(error);
+          this.$errorNotification(error);
         }
         this.getChainInfo();
       }
@@ -315,7 +306,7 @@ export default {
         try {
           const transaction = await this.$store.$api.signTransaction(actions);
         } catch (error) {
-          this.errorNotification(error);
+          this.$errorNotification(error);
           this.getChainInfo();
         }
         this.editID = -1;
