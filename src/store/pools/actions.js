@@ -101,9 +101,12 @@ export const ifPoolFunded = async function(
       );
       // console.log(amount_inwallet);
 
-      let amount_required =
-        parseFloat((this.$chainToQty(pool.swap_ratio.quantity) *
-        this.$chainToQty(pool.hard_cap)).toPrecision(15));
+      let amount_required = parseFloat(
+        (
+          this.$chainToQty(pool.swap_ratio.quantity) *
+          this.$chainToQty(pool.hard_cap)
+        ).toPrecision(15)
+      );
       // console.log(amount_required);
 
       // if ammount of tokens in wallets tabel enough
@@ -136,26 +139,32 @@ export const neededFunds = async function(
         reverse: false, // Optional: Get reversed data
         show_payer: false // Optional: Show ram payer
       });
+      // console.log(tableResults.rows.length);
 
       // get pool info
       const pool = getters.getPoolByID(payload.id);
       // console.log(pool);
+      let amount_inwallet = 0;
 
-      // console.log(tableResults.rows);
-      let amount_inwallet = this.$chainToQty(
-        tableResults.rows.find(el => el.contract === pool.swap_ratio.contract)
-          .balance
-      );
+      if (tableResults.rows.length !== 0) {
+        amount_inwallet = this.$chainToQty(
+          tableResults.rows.find(el => el.contract === pool.swap_ratio.contract)
+            .balance
+        );
+      }
       // console.log(amount_inwallet);
 
-      let amount_required =
-        parseFloat((this.$chainToQty(pool.swap_ratio.quantity) *
-        this.$chainToQty(pool.hard_cap)).toPrecision(15));
+      let amount_required = parseFloat(
+        (
+          this.$chainToQty(pool.swap_ratio.quantity) *
+          this.$chainToQty(pool.hard_cap)
+        ).toPrecision(15)
+      );
       // console.log(amount_required);
 
       // return needed amount
-      // console.log(amount_required-amount_inwallet)
-      return amount_required - amount_inwallet
+      // console.log(amount_required - amount_inwallet);
+      return amount_required - amount_inwallet;
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
