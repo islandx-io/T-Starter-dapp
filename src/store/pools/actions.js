@@ -36,17 +36,17 @@ export const getAllChainPools = async function({ commit, dispatch }) {
       scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
       table: process.env.CONTRACT_TABLE, // Table name
       limit: 10000, // Maximum number of rows that we want to get
-      reverse: false, // Optional: Get reversed data
+      reverse: true, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
 
     // sort according to nearest pool open
     tableResults.rows.sort(function(a, b) {
-      return new Date(a.pool_open) - new Date(b.pool_open);
+      return new Date(b.pool_open) - new Date(a.pool_open);
     });
+    // console.log(tableResults.rows.map(a => a.id))
 
     for (const pool of tableResults.rows) {
-      // console.log(pool);
       let id = pool.id;
 
       //check dates are unix
@@ -95,14 +95,15 @@ export const ifPoolFunded = async function(
       // console.log(pool);
 
       // console.log(tableResults.rows);
-      let amount_inwallet = this.$chainToQty(tableResults.rows.find(
-        el => el.contract === pool.swap_ratio.contract
-      ).balance);
+      let amount_inwallet = this.$chainToQty(
+        tableResults.rows.find(el => el.contract === pool.swap_ratio.contract)
+          .balance
+      );
       // console.log(amount_inwallet);
 
       let amount_required =
-        this.$chainToQty(pool.swap_ratio.quantity) *
-        this.$chainToQty(pool.hard_cap);
+        parseFloat((this.$chainToQty(pool.swap_ratio.quantity) *
+        this.$chainToQty(pool.hard_cap)).toPrecision(15));
       // console.log(amount_required);
 
       // if ammount of tokens in wallets tabel enough
@@ -113,6 +114,48 @@ export const ifPoolFunded = async function(
         // console.log("Pool not funded");
         return false;
       }
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// calculate needed remaining funding
+export const neededFunds = async function(
+  { commit, rootGetters, getters },
+  payload
+) {
+  try {
+    if (payload.account !== null) {
+      // get wallet table info
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: payload.account, // Account that owns the data
+        table: "wallets", // Table name
+        limit: 10000,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+
+      // get pool info
+      const pool = getters.getPoolByID(payload.id);
+      // console.log(pool);
+
+      // console.log(tableResults.rows);
+      let amount_inwallet = this.$chainToQty(
+        tableResults.rows.find(el => el.contract === pool.swap_ratio.contract)
+          .balance
+      );
+      // console.log(amount_inwallet);
+
+      let amount_required =
+        parseFloat((this.$chainToQty(pool.swap_ratio.quantity) *
+        this.$chainToQty(pool.hard_cap)).toPrecision(15));
+      // console.log(amount_required);
+
+      // return needed amount
+      // console.log(amount_required-amount_inwallet)
+      return amount_required - amount_inwallet
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -170,14 +213,16 @@ export const getBalanceFromChain = async function({ commit }, payload) {
         payload.sym
       )
     )[0];
-    // console.log('balance')
-    if (balance === undefined) {
-      return `0 ${payload.sym}`;
-    } else {
+    // console.log("balance:")
+    // console.log(balance)
+    if (balance !== undefined) {
       return balance;
+    } else {
+      return `0 ${payload.sym}`;
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
+    return `0 ${payload.sym}`;
   }
 };
 
@@ -211,7 +256,10 @@ export const getTokenPrecision = async function(
   }
 };
 
-export const updatePoolSettings = async function({ commit, getters }, poolID) {
+export const updatePoolSettings = async function(
+  { commit, getters, dispatch },
+  poolID
+) {
   const pool = getters.getPoolByID(poolID);
 
   // TODO Call within the getAllChainPools action
@@ -259,6 +307,9 @@ export const updatePoolSettings = async function({ commit, getters }, poolID) {
     access_type: access_type,
     progress: progress
   });
+
+  await dispatch("updateSentimentByPoolID", poolID);
+  await dispatch("updateCommentsByPoolID", poolID);
 };
 
 // Get pools created from chain
@@ -503,6 +554,26 @@ export const getPlatformToken = async function({ commit, getters, dispatch }) {
   }
 };
 
+// get settings table
+export const getPoolsSettings = async function({ commit, getters, dispatch }) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: "settings", // Table name
+      limit: 1000,
+      index_position: 1,
+      key_type: "i64",
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+
+    return tableResults.rows[0];
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
 // check if tokens already staked
 export const checkStakedChain = async function(
   { commit, getters, dispatch },
@@ -587,6 +658,48 @@ export const getBaseTokens = async function(
 
       return base_token_info_list;
     }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+export const updateSentimentByPoolID = async function({ commit }, poolID) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS,
+      scope: poolID,
+      table: "sentiment",
+      limit: 10000,
+      reverse: false,
+      show_payer: false
+    });
+    const sentiment_table = tableResults.rows;
+    commit("setPoolSentimentTable", { id: poolID, sentiment_table });
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+export const updateCommentsByPoolID = async function({ commit }, poolID) {
+  try {
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS,
+      scope: poolID,
+      table: "comments",
+      limit: 10000,
+      reverse: false,
+      show_payer: false
+    });
+    const comments_table = tableResults.rows.map(el => {
+      el.timestamp = new Date(el.timestamp + "Z").valueOf();
+      return el;
+    });
+    comments_table.sort((a, b) => {
+      if (a.timestamp > b.timestamp) return -1;
+      if (a.timestamp < b.timestamp) return 1;
+      return 0;
+    });
+    commit("setPoolCommentsTable", { id: poolID, comments_table });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

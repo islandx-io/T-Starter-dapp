@@ -37,7 +37,9 @@
       v-if="hasAllocations && pool.status === ('success' || 'fail')"
       @click="tryClaimTokens"
     />
-    <p class="q-pt-md" v-if="!hasAllocations">No allocation to show.</p>
+    <p class="q-pt-md text-grey-6" v-if="!hasAllocations">
+      No allocation to show.
+    </p>
     <q-inner-loading :showing="loadingData">
       <q-spinner-puff size="50px" color="primary" />
     </q-inner-loading>
@@ -110,14 +112,9 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.push('/');
+        this.$router.push("/");
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
       }
     },
 
@@ -135,14 +132,9 @@ export default {
           params: { id: this.pool.id },
           query: { tab: "allocations" }
         });
-        this.$router.push('/');
+        this.$router.push("/");
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
       }
     }
   },

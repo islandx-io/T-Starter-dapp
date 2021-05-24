@@ -39,54 +39,11 @@
                 </h2>
               </div>
             </div>
-            <div
-              class="networks row justify-center q-pb-sm"
-              v-if="isCrossChainToken"
-            >
-              <div class="text-subtitle1 q-pb-sm col-12 text-center">
-                To network
+            <div class="networks row justify-center q-pb-sm">
+              <div class="text-weight-light text-subtitle2  col-12 text-center">
+                Balance
               </div>
-              <div class="q-gutter-sm row justify-center">
-                <q-radio
-                  v-model="selectedNetwork"
-                  val="telos"
-                  label="Telos"
-                  v-if="selectedTokenInList(['TLOS', 'START'])"
-                />
-                <q-radio
-                  v-model="selectedNetwork"
-                  val="eos"
-                  label="EOS"
-                  v-if="selectedTokenInList(['EOS', 'START'])"
-                />
-                <q-radio
-                  v-model="selectedNetwork"
-                  val="wax"
-                  label="WAX"
-                  v-if="selectedTokenInList(['WAX', 'START'])"
-                />
-                <!-- <q-radio
-                v-model="selectedNetwork"
-                val="bitcoin"
-                label="Bitcoin"
-                v-if="selectedTokenInList(['PBTC'])"
-              />
-              <q-radio
-                v-model="selectedNetwork"
-                val="ethereum"
-                label="Ethereum"
-                v-if="selectedTokenInList(['TLOS', 'EOS', 'PETH', 'PBTC'])"
-              />
-              <q-radio
-                v-model="selectedNetwork"
-                val="bsc"
-                label="Binance Smart Chain"
-                v-if="selectedTokenInList(['TLOS', 'EOS', 'PBTC'])"
-              /> -->
-              </div>
-            </div>
-            <div v-else class="text-subtitle1 text-center q-pb-sm">
-              On the {{ currentChain.NETWORK_DISPLAY_NAME }} network
+              <div>{{ balance }} {{ selectedTokenSym }}</div>
             </div>
             <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
               <!-- TO -->
@@ -99,31 +56,82 @@
                 counter
                 maxlength="12"
                 :rules="[accountExistsOnChain]"
-                lazy-rules="true"
+                error-message="Account does not exist"
+                lazy-rules
                 debounce="1000"
-              />
+                no-error-icon
+              >
+                <template v-slot:append>
+                  <q-btn-dropdown
+                    no-caps
+                    flat
+                    class="bg-secondary"
+                    padding="sm"
+                    style="margin: 0px"
+                    color="black"
+                    outline
+                  >
+                    <template v-slot:label>
+                      <div class="flex items-center justify-center wrap">
+                        <div class="row items-center justify-center">
+                          <token-avatar
+                            :token="selectedNetwork"
+                            :avatarSize="23"
+                          />
+                          <div class="text-subtitle1 q-pl-xs">
+                            {{ selectedNetwork }}
+                          </div>
+                        </div>
+                        <q-tooltip anchor="top middle" self="bottom middle">
+                          To Network
+                        </q-tooltip>
+                      </div>
+                    </template>
+                    <q-list class="bg-secondary">
+                      <q-item
+                        clickable
+                        v-close-popup
+                        v-for="network in networkOptions"
+                        :key="network"
+                        @click="selectedNetwork = network"
+                        flat
+                        size="lg"
+                        no-caps
+                      >
+                        <div class="flex items-center justify-center wrap">
+                          <div class="row items-center justify-center">
+                            <token-avatar :token="network" :avatarSize="23" />
+                            <div class="text-subtitle1 q-pl-xs">
+                              {{ network }}
+                            </div>
+                          </div>
+                        </div>
+                      </q-item>
+                    </q-list>
+                  </q-btn-dropdown>
+                </template>
+              </q-input>
               <!-- Amount -->
-              <div class="row items-start">
-                <q-input
-                  outlined
-                  bottom-slots
-                  :suffix="selectedTokenSym"
-                  v-model="amount"
-                  label="Amount"
-                  maxlength="12"
-                  class="col"
-                  :hint="`Available: ${balance} ${selectedTokenSym}`"
-                  :rules="[validateInputAmount]"
-                >
-                </q-input>
-                <q-btn
-                  class="col-shrink q-ma-sm"
-                  label="Max"
-                  color="positive"
-                  outline
-                  @click="amount = balance"
-                />
-              </div>
+              <q-input
+                outlined
+                bottom-slots
+                :suffix="selectedTokenSym"
+                v-model="amount"
+                label="Amount"
+                maxlength="12"
+                class="col"
+                :rules="[validateInputAmount]"
+                no-error-icon
+              >
+                <template v-slot:append>
+                  <q-btn
+                    label="Max"
+                    color="positive"
+                    outline
+                    @click="amount = balance"
+                  />
+                </template>
+              </q-input>
               <!-- Memo -->
               <q-input
                 outlined
@@ -146,6 +154,16 @@
                 style="width: 50%"
                 type="submit"
               />
+            </div>
+            <div
+              class="text-center text-caption q-pt-md text-grey-7"
+              v-if="
+                selectedNetwork.toUpperCase() !==
+                  currentChain.NETWORK_NAME.toUpperCase()
+              "
+            >
+              <q-icon name="fas fa-info-circle" /> Sending tokens across chains
+              can take up to several minutes.
             </div>
 
             <!-- Transaction sent dialog -->
@@ -197,7 +215,7 @@ export default {
       transaction: null,
       // explorerUrl: process.env.NETWORK_EXPLORER,
       selectedTokenSym: "START",
-      selectedNetwork: "telos"
+      selectedNetwork: "TELOS"
     };
   },
   computed: {
@@ -229,28 +247,28 @@ export default {
       return this.selectedToken.balance;
     },
 
-    isCrossChainToken() {
-      // return this.selectedTokenInList(["TLOS", "EOS", "START", "PETH", "PBTC"]);
-      return this.selectedTokenInList(["START"]);
+    networkOptions() {
+      if (this.selectedTokenSym.toUpperCase() === "START")
+        // return ["TELOS", "EOS", "WAX"];
+        return ["TELOS", "EOS"];
+      else return [this.selectedNetwork];
     }
   },
   methods: {
     ...mapActions("account", ["accountExists"]),
-    selectedTokenInList(lst) {
-      return lst.includes(this.selectedTokenSym.toUpperCase());
-    },
+    ...mapActions("pools", ["getBalanceFromChain"]),
+
     restrictDecimal() {
       this.amount = this.$toFixedDown(
         this.amount,
         this.$getDecimalFromAsset(this.selectedTokenSym)
       );
     },
+
     validateInputAmount(val) {
-      return (
-        val <= this.balance & val > 0 ||
-        `Amount must be between zero and amount available.`
-      );
+      return (val <= this.balance) & (val > 0) || "Incorrect amount";
     },
+
     async accountExistsOnChain(account) {
       // get current selected chain
       let blockchains = this.getNetworkByName(
@@ -272,11 +290,11 @@ export default {
       );
       //check if account exists on chain
       let exists = await rpc.get_account(account);
-      return exists || "Account does not exist";
+      return exists;
     },
 
     async send() {
-      if (!(await this.accountExists(this.to))) {
+      if (!(await this.accountExistsOnChain(this.to))) {
         this.$q.notify({
           type: "negative",
           message: `Account ${this.to} does not exist`
@@ -323,7 +341,9 @@ export default {
               quantity: `${parseFloat(this.amount).toFixed(
                 this.token_decimals
               )} ${this.selectedTokenSym}`,
-              memo: `${this.to}@${this.selectedNetwork}|${this.memo}`
+              memo: `${this.to}@${this.selectedNetwork.toLowerCase()}|${
+                this.memo
+              }`
             }
           }
         ];
@@ -345,12 +365,7 @@ export default {
           message: "Sent"
         });
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
       }
     }
   },

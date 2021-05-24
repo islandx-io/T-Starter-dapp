@@ -463,7 +463,8 @@ export default {
       accept: false,
       link_index: -1,
       funded: false,
-      dialog_send_tokens: false
+      dialog_send_tokens: false,
+      amount_needed: undefined
     };
   },
   computed: {
@@ -522,7 +523,8 @@ export default {
       "getChainPoolByID",
       "updatePoolStatus",
       "ifPoolFunded",
-      "getBaseTokens"
+      "getBaseTokens",
+      "neededFunds"
     ]),
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
@@ -744,7 +746,7 @@ export default {
             from: this.accountName,
             to: process.env.CONTRACT_ADDRESS,
             quantity: this.$toChainString(
-              this.pool.swap_ratio.quantity * this.pool.hard_cap,
+              this.amount_needed,
               this.token_decimals,
               this.token_symbol
             ),
@@ -794,12 +796,7 @@ export default {
           });
           this.redirectPoolPage();
         } catch (error) {
-          this.$q.notify({
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: `${error}`
-          });
+          this.$errorNotification(error);
         }
       }
     },
@@ -825,12 +822,7 @@ export default {
             this.redirectPoolPage();
           }
         } catch (error) {
-          this.$q.notify({
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: `${error}`
-          });
+          this.$errorNotification(error);
         }
       }
     },
@@ -846,6 +838,12 @@ export default {
       } else {
         try {
           if (await this.$refs.updateForm.validate()) {
+            // calculate needed funding
+            this.amount_needed = await this.neededFunds({
+              account: this.accountName,
+              id: this.poolID
+            });
+            // fund pool with needed amount
             await this.fundPool();
             this.$q.notify({
               color: "green-4",
@@ -856,12 +854,7 @@ export default {
             this.redirectPoolPage();
           }
         } catch (error) {
-          this.$q.notify({
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: `${error}`
-          });
+          this.$errorNotification(error);
         }
       }
     },
@@ -877,12 +870,7 @@ export default {
         });
         this.redirectPoolPage();
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
       }
     },
 

@@ -4,7 +4,7 @@
       <h6>Type:</h6>
       <h5>{{ pool.access_type }}</h5>
     </div>
-    <div >
+    <div>
       <h6>Whitelist:</h6>
       <h5>{{ hasWhitelist ? "Yes" : "No" }}</h5>
       <q-btn
@@ -15,7 +15,9 @@
         class="q-ml-sm"
         type="a"
         target="_blank"
-        :href="pool.web_links.filter(a => a.key === 'whitelist').map(a => a.value)"
+        :href="
+          pool.web_links.filter(a => a.key === 'whitelist').map(a => a.value)
+        "
       />
     </div>
     <div>
@@ -51,7 +53,7 @@ export default {
     }
   },
   created() {
-    console.log("tab created");
+    // console.log("tab created");
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
