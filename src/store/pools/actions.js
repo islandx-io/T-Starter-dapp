@@ -1,4 +1,23 @@
 import axios from "axios";
+import { Api, JsonRpc } from "eosjs";
+
+// possible rpcs
+export const possibleRPCs = async function({ commit, dispatch, rootGetters, getters }) {
+  let blockchains = rootGetters["blockchains/allBlockchains"];
+  let possibleChains = blockchains.filter(a => String(a.TEST_NETWORK) === process.env.TESTNET);
+
+  let rpcs = []
+
+  for (const chain of possibleChains) {
+    let rpc = new JsonRpc(
+      `${chain.NETWORK_PROTOCOL}://${chain.NETWORK_HOST}:${chain.NETWORK_PORT}`
+    );
+    rpcs.push(rpc)
+  }
+
+  // console.log(rpcs)
+  return {rpcs:rpcs,chains:possibleChains}
+};
 
 // Get pool info from chain by id, put into store
 export const getChainPoolByID = async function({ commit, dispatch }, id) {
@@ -12,8 +31,9 @@ export const getChainPoolByID = async function({ commit, dispatch }, id) {
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
+    // console.log(this.$api.currentChain);
 
-    const poolTable = tableResults.rows[tableResults.rows.length - 1];
+    let poolTable = tableResults.rows[tableResults.rows.length - 1];
     // console.log(poolTable);
 
     //check dates are unix
@@ -21,43 +41,59 @@ export const getChainPoolByID = async function({ commit, dispatch }, id) {
     poolTable.private_end = new Date(poolTable.private_end + "Z").valueOf();
     poolTable.public_end = new Date(poolTable.public_end + "Z").valueOf();
 
+    // set chain in pool
+    poolTable.chain = this.$api.currentChain.NETWORK_NAME;
+
     commit("updatePoolOnState", { poolTable, id });
-    await dispatch("updatePoolSettings", id);
+    await dispatch("updatePoolSettings", {id, chain: poolTable.chain});
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
 
+
+
 // get all pools from chain, populate store
 export const getAllChainPools = async function({ commit, dispatch }) {
   try {
-    const tableResults = await this.$api.getTableRows({
-      code: process.env.CONTRACT_ADDRESS, // Contract that we target
-      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-      table: process.env.CONTRACT_TABLE, // Table name
-      limit: 10000, // Maximum number of rows that we want to get
-      reverse: true, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
-    });
 
-    // sort according to nearest pool open
-    tableResults.rows.sort(function(a, b) {
-      return new Date(b.pool_open) - new Date(a.pool_open);
-    });
-    // console.log(tableResults.rows.map(a => a.id))
+    let rpcs = await dispatch("possibleRPCs", { root: true });
+    console.log(rpcs)    
 
-    for (const pool of tableResults.rows) {
-      let id = pool.id;
+    for (const [index, api] of rpcs.rpcs.entries()) {
+      const tableResults = await api.get_table_rows({
+        json: true,
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: process.env.CONTRACT_TABLE, // Table name
+        limit: 10000, // Maximum number of rows that we want to get
+        reverse: true, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+  
+      // sort according to nearest pool open
+      tableResults.rows.sort(function(a, b) {
+        return new Date(b.pool_open) - new Date(a.pool_open);
+      });
+      // console.log(tableResults.rows.map(a => a.id))
+  
+      for (const pool of tableResults.rows) {
+        let id = pool.id;
+  
+        //check dates are unix
+        pool.pool_open = new Date(pool.pool_open + "Z").valueOf();
+        pool.private_end = new Date(pool.private_end + "Z").valueOf();
+        pool.public_end = new Date(pool.public_end + "Z").valueOf();
+  
+        const poolTable = pool;
+  
+        // set chain in pool
+        poolTable.chain = rpcs.chains[index].NETWORK_NAME;
+  
+        commit("updatePoolOnState", {poolTable, id});
+        await dispatch("updatePoolSettings", {id, chain: poolTable.chain});      
+    }
 
-      //check dates are unix
-      pool.pool_open = new Date(pool.pool_open + "Z").valueOf();
-      pool.private_end = new Date(pool.private_end + "Z").valueOf();
-      pool.public_end = new Date(pool.public_end + "Z").valueOf();
-
-      const poolTable = pool;
-
-      commit("updatePoolOnState", { poolTable, id });
-      await dispatch("updatePoolSettings", id);
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -163,7 +199,7 @@ export const neededFunds = async function(
       // console.log(amount_required);
 
       // return needed amount
-      // console.log(amount_required - amount_inwallet);
+      // console.log(amount_required-amount_inwallet)
       return amount_required - amount_inwallet;
     }
   } catch (error) {
@@ -171,7 +207,7 @@ export const neededFunds = async function(
   }
 };
 
-// Get received pool tokens
+// Deprecated - Get received pool tokens
 export const getReceivedPoolTokenTxns = async function({ getters }, account) {
   let currentChain = getters["blockchains/currentChain"];
   let response = await axios(
@@ -267,11 +303,10 @@ export const getTokenPrecision = async function(
 
 export const updatePoolSettings = async function(
   { commit, getters, dispatch },
-  poolID
+  payload
 ) {
-  const pool = getters.getPoolByID(poolID);
-
-  // TODO Call within the getAllChainPools action
+  const pool = getters.getPoolByIDChain(payload.id, payload.chain);
+  // console.log(pool)
 
   // Update status
   var poolStatus = "loading";
@@ -309,16 +344,18 @@ export const updatePoolSettings = async function(
   var progress = 0;
   if (hard_cap !== 0) progress = total_raise / hard_cap;
 
+  // Update chain on state
   commit({
     type: "setPoolSettings",
-    id: poolID,
+    id: payload.id,
     pool_status: poolStatus,
     access_type: access_type,
-    progress: progress
+    progress: progress,
+    chain: pool.chain
   });
 
-  await dispatch("updateSentimentByPoolID", poolID);
-  await dispatch("updateCommentsByPoolID", poolID);
+  // await dispatch("updateSentimentByPoolID", poolID);
+  // await dispatch("updateCommentsByPoolID", poolID);
 };
 
 // Get pools created from chain
@@ -353,7 +390,7 @@ export const getCreatedChainPools = async function(
         const poolTable = pool;
 
         commit("updatePoolOnState", { poolTable, id });
-        await dispatch("updatePoolSettings", id);
+        await dispatch("updatePoolSettings", {id, chain: poolTable.chain});
       }
     }
   } catch (error) {

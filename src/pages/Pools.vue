@@ -37,7 +37,12 @@
           class="poolcard-container"
           @mousedown.stop
         >
-          <Poolcard v-for="id in pagedPublishedPoolIDs" :key="id" :poolID="id" />
+          <Poolcard
+            v-for="pool in publishedPoolsIdChains"
+            :key="`${pool.chain}+${pool.id}`"
+            :poolID="pool.id"
+            :chain="pool.chain"
+          />
         </q-tab-panel>
 
         <q-tab-panel
@@ -107,6 +112,8 @@
 <script>
 import Poolcard from "src/components/Poolcard.vue";
 import { mapGetters, mapActions } from "vuex";
+import { Api, JsonRpc } from "eosjs";
+
 export default {
   components: { Poolcard },
   data() {
@@ -127,7 +134,8 @@ export default {
       "getCreatedPoolIDs",
       "getPublishedPoolIDs",
       "getPoolIDsByStatus",
-      "getPoolByID"
+      "getPoolByID",
+      "getAllPools"
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
 
@@ -139,6 +147,10 @@ export default {
     },
     publishedPoolIDs() {
       return this.sortPools(this.getPublishedPoolIDs);
+    },
+    publishedPoolsIdChains() {
+      // console.log(this.getPublishedPoolIDs)
+      return this.getPublishedPoolIDs
     },
     joinedIDs_sorted() {
       return this.sortPools(this.joinedIDs);

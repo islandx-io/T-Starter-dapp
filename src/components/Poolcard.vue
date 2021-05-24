@@ -1,7 +1,7 @@
 <template>
   <router-link
     class="router-link"
-    :to="{ name: 'pooldetails', params: { id: poolID } }"
+    :to="{ name: 'pooldetails', params: { id: poolID, chain: chain.toLowerCase()  } }"
     :event="clickable ? '' : 'click'"
   >
     <q-card
@@ -83,6 +83,8 @@ export default {
       default: 0,
       required: true
     },
+    chain: {
+    },
     created: {
       default: false,
       required: false
@@ -97,7 +99,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
+    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs", "getPoolByIDChain"]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
 
     hardCap() {
@@ -119,9 +121,9 @@ export default {
     ...mapActions("pools", ["getAllocationByPool"]),
 
     getPoolInfo: function() {
-      const pool = this.getPoolByID(this.poolID);
+      const pool = this.getPoolByIDChain(this.poolID, this.chain);
       if (pool !== undefined) {
-        this.pool = this.getPoolByID(this.poolID);
+        this.pool = this.getPoolByIDChain(this.poolID, this.chain);
       }
     },
 

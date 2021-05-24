@@ -31,7 +31,7 @@ export default function ({store}/* { store, ssrContext } */) {
       next()
     } else {
       await store.dispatch("blockchains/setNewChain", to.params.chain.toUpperCase())
-      await store.dispatch("account/logout")
+      // await store.dispatch("account/logout")
       // this.$router.go();
       // console.log(next())
       next()

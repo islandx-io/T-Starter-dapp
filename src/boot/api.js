@@ -74,6 +74,7 @@ export default async ({ store }) => {
     signTransaction: signTransaction.bind(store),
     getTableRows: getTableRows.bind(store),
     getAccount: getAccount.bind(store),
-    getRpc: getRpc.bind(store)
+    getRpc: getRpc.bind(store),
+    currentChain: currentChain // to check the chain being called on
   };
 };
