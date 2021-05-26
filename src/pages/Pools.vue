@@ -166,20 +166,10 @@ export default {
       return this.sortPools(this.getPublishedPools);
     },
     joinedPools_sorted() {
-      console.log(this.joinedPools)
       return this.sortPools(this.joinedPools);
     },
     featuredPoolIdChains_sorted() {
-      //check if published
-      // let new_featured_ids = [];
-      // for (const id of this.featuredPoolIdChains) {
-      //   const temp_pool = this.getPoolByID(id);
-      //   if (temp_pool.status !== "draft") {
-      //     new_featured_ids.push(id);
-      //   }
-      // }
-      // return this.sortPools(this.featuredPoolIdChains);
-      return this.featuredPoolIdChains;
+      return this.sortPools(this.featuredPoolIdChains);
     },
     totalPages() {
       // amount of pools / 9 ceil
@@ -215,7 +205,7 @@ export default {
 
     // If any joined pools claimable, show alert
     async findClaimable() {
-      for (const id of this.joinedPools) {
+      for (const id of this.joinedPools.map(a => a.id)) {
         const joined_pool = this.getPoolByID(id);
         let payload = { account: this.accountName, poolID: id };
         let allocation = await this.getAllocationByPool(payload);

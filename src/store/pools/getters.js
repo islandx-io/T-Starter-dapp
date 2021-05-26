@@ -11,6 +11,13 @@ export const getPoolIDsByStatus = ({ pools }) => pool_status =>
     })
     .map(a => a.id);
 
+export const getPoolsByStatus = ({ pools }) => pool_status =>
+pools
+  .filter(a => a.pool_status === pool_status && (a.status === "published" || a.status === "success"))
+  .sort((a, b) => {
+    return new Date(a.pool_open) - new Date(b.pool_open);
+  });
+
 export const getPoolByID = ({ pools }) => id => pools.find(el => el.id === id);
 
 export const getPoolByIDChain = ({ pools }) => (id, chain) =>

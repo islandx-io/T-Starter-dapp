@@ -463,7 +463,7 @@ export const getJoinedChainPools = async function(
 
       console.log("Joined pools:");
       // console.log(tableResults.rows);
-      console.log(this.$api.currentChain.NETWORK_NAME);
+      // console.log(this.$api.currentChain.NETWORK_NAME);
       // sort according to nearest pool open
       tableResults.rows.sort(function(a, b) {
         return new Date(a.pool_open) - new Date(b.pool_open);
@@ -473,7 +473,7 @@ export const getJoinedChainPools = async function(
       let pool_id_list = [];
       pool_id_list = tableResults.rows.map(a => a.pool_id);
       pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
-      console.log(pool_id_list);
+      // console.log(pool_id_list);
 
       for (const pool_id of pool_id_list) {
         dispatch("getChainPoolByIDChain", {
@@ -535,7 +535,7 @@ export const getFeaturedChainPools = async function({
         });
       }
     }
-    console.log(id_chain_list);
+    // console.log(id_chain_list);
     return id_chain_list;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -545,39 +545,51 @@ export const getFeaturedChainPools = async function({
 // get upcoming pools from chain, populate store
 export const getUpcomingChainPools = async function({ commit, dispatch }) {
   try {
-    const tableResults = await this.$api.getTableRows({
-      code: process.env.CONTRACT_ADDRESS, // Contract that we target
-      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-      table: process.env.CONTRACT_TABLE, // Table name
-      limit: 1000, // Maximum number of rows that we want to get
-      index_position: 3,
-      key_type: "i64",
-      // lower_bound: 1, // show all published pools
-      lower_bound: Math.trunc(Date.now() / 1000), // get upcoming pools
-      // upper_bound: Math.trunc(Date.now()/1000), // to get closed and open pools
-      reverse: false, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
-    });
+    let rpcs = await dispatch("possibleRPCs", { root: true });
+    let pool_list = [];
 
-    console.log("Upcoming pools");
-    let pool_id_list = [];
+    for (const [index, api] of rpcs.apis.entries()) {
+      const tableResults = await api.get_table_rows({
+        json: true,
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: process.env.CONTRACT_TABLE, // Table name
+        limit: 1000, // Maximum number of rows that we want to get
+        index_position: 3,
+        key_type: "i64",
+        // lower_bound: 1, // show all published pools
+        lower_bound: Math.trunc(Date.now() / 1000), // get upcoming pools
+        // upper_bound: Math.trunc(Date.now()/1000), // to get closed and open pools
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
 
-    // sort according to nearest pool open
-    tableResults.rows.sort(function(a, b) {
-      return new Date(a.pool_open) - new Date(b.pool_open);
-    });
+      console.log("Upcoming pools");
+      
+      // sort according to nearest pool open
+      tableResults.rows.sort(function(a, b) {
+        return new Date(a.pool_open) - new Date(b.pool_open);
+      });
+      
+      // console.log(tableResults);
+      let pool_id_list = [];
+      pool_id_list = tableResults.rows.map(a => a.id);
+      pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
 
-    console.log(tableResults.rows);
-    pool_id_list = tableResults.rows.map(a => a.id);
-    pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
+      console.log(pool_id_list);
 
-    console.log(pool_id_list);
-
-    for (const pool_id of pool_id_list) {
-      dispatch("getChainPoolByID", pool_id); // TODO this is redundant, already have info from chain.
+      for (const pool_id of pool_id_list) {
+        dispatch("getChainPoolByIDChain", {
+          id: pool_id,
+          chain: rpcs.chains[index].NETWORK_NAME
+        });
+        pool_list.push({
+          id: pool_id,
+          chain: rpcs.chains[index].NETWORK_NAME
+        });
+      }
     }
-
-    return pool_id_list;
+    return pool_list;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
