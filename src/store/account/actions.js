@@ -288,14 +288,45 @@ export const getChainWalletTable = async function(
 };
 
 // get contract wallet table info for user
-export const getChainStakeWalletTable = async function(
+export const getChainStakeWallet = async function(
   { commit, dispatch },
   account
 ) {
   try {
+    // get base tokens
     let baseTokens = [];
     baseTokens = await dispatch("pools/getBaseTokens", true, { root: true });
-    const tableResults = await this.$api.getTableRows({
+
+    // get accounts table
+    const accountsResult = await this.$api.getTableRows({
+      code: process.env.STAKE_ADDRESS, // Contract that we target
+      scope: process.env.STAKE_ADDRESS, // Account that owns the data
+      table: "accounts", // Table name
+      limit: 1,
+      lower_bound: account,
+      upper_bound: account,
+      reverse: false,
+      show_payer: false
+    });
+    const stakeAccount = accountsResult.rows[0];
+    let account_stake_balance = this.$chainToQty(stakeAccount.stake_balance);
+
+    // console.log({ stakeAccount: stakeAccount });
+
+    // get rewards table (only claimable rewards)
+    const rewardsResult = await this.$api.getTableRows({
+      code: process.env.STAKE_ADDRESS, // Contract that we target
+      scope: process.env.STAKE_ADDRESS, // Account that owns the data
+      table: "rewards", // Table name
+      limit: 10000,
+      lower_bound: stakeAccount.last_claim_id + 1,
+      reverse: false,
+      show_payer: false
+    });
+    // console.log({ stakeRewards: stakeRewards });
+
+    // get wallets table
+    const walletsResult = await this.$api.getTableRows({
       code: process.env.STAKE_ADDRESS, // Contract that we target
       scope: account, // Account that owns the data
       table: "wallets", // Table name
@@ -303,21 +334,35 @@ export const getChainStakeWalletTable = async function(
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
+
+    // compile stake wallet
     let stakeWallet = [];
     for (const baseToken of baseTokens) {
-      for (const rewardToken of tableResults.rows) {
-        if (baseToken.token_info.contract === rewardToken.contract) {
-          let token = {
-            sym: this.$getSymFromAsset(baseToken.token_info),
-            decimals: this.$getDecimalFromAsset(baseToken.token_info),
-            contract: baseToken.token_info.contract,
-            avatar: baseToken.avatar,
-            balance: rewardToken.balance,
-            lifetime_total: rewardToken.lifetime_total
-          };
-          stakeWallet.push(token);
+      let token = {
+        sym: this.$getSymFromAsset(baseToken.token_info),
+        decimals: this.$getDecimalFromAsset(baseToken.token_info),
+        contract: baseToken.token_info.contract,
+        avatar: baseToken.avatar,
+        balance: 0,
+        lifetime_total: 0
+      };
+      for (const reward of rewardsResult.rows) {
+        if (
+          baseToken.token_info.contract === reward.total_distribution.contract
+        ) {
+          let stake_remaining = this.$chainToQty(reward.stake_remaining);
+          let share_remaining = this.$chainToQty(reward.share_remaining);
+          token.balance +=
+            share_remaining * (account_stake_balance / stake_remaining);
         }
       }
+      for (const walletToken of walletsResult.rows) {
+        if (baseToken.token_info.contract === walletToken.contract) {
+          token.balance += this.$chainToQty(walletToken.balance);
+          token.lifetime_total += this.$chainToQty(walletToken.lifetime_total);
+        }
+      }
+      if (token.balance > 0) stakeWallet.push(token);
     }
 
     // console.log({ stakeWallet: stakeWallet });

@@ -54,7 +54,7 @@
           />
         </div>
       </div>
-      <div class="text-bold">Claimable rewards:</div>
+      <!-- <div class="text-bold">Claimable rewards:</div>
       <div v-if="claimableRewards.length === 0">
         No rewards to claim yet.
       </div>
@@ -71,12 +71,8 @@
           {{ token.lifetime_total }}
         </div>
       </div>
-      <q-btn class="hover-accent" color="primary" label="Claim Rewards" />
-      <!-- buttons example -->
-      <!-- <q-card-actions align="right">
-            <q-btn color="primary" label="OK" @click="onOKClick" />
-            <q-btn color="primary" label="Cancel" @click="onCancelClick" />
-          </q-card-actions> -->
+      <q-btn class="hover-accent" color="primary" label="Claim Rewards" /> -->
+      <div>{{ stakeWallet }}</div>
     </q-card>
   </q-dialog>
 </template>
@@ -131,18 +127,18 @@ export default {
       } else {
         return "0.0000 START";
       }
-    },
-
-    claimableRewards() {
-      return this.stakeWallet.filter(
-        token => this.$chainToQty(token.balance) > 0
-      );
-    },
-    lifetimeTotal() {
-      return this.stakeWallet.filter(
-        token => this.$chainToQty(token.lifetime_total) > 0
-      );
     }
+
+    // claimableRewards() {
+    //   return this.stakeWallet.filter(
+    //     token => this.$chainToQty(token.balance) > 0
+    //   );
+    // },
+    // lifetimeTotal() {
+    //   return this.stakeWallet.filter(
+    //     token => this.$chainToQty(token.lifetime_total) > 0
+    //   );
+    // }
   },
 
   methods: {
@@ -151,7 +147,7 @@ export default {
       "logout",
       "autoLogin",
       "getChainSTART",
-      "getChainStakeWalletTable"
+      "getChainStakeWallet"
     ]),
     ...mapActions("pools", ["getBalanceFromChain"]),
     // following method is REQUIRED
@@ -329,7 +325,7 @@ export default {
 
   async mounted() {
     await this.getChainSTART(this.accountName);
-    await this.getChainStakeWalletTable(this.accountName);
+    await this.getChainStakeWallet(this.accountName);
   }
 };
 </script>
