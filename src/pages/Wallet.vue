@@ -80,7 +80,7 @@
               v-for="col in props.cols.slice(1, 4)"
               :key="col.name"
             >
-              {{ formatTable(col, props) }}
+              {{ $formatTableDecimals(col, props) }}
             </q-td>
 
             <!-- Action -->
@@ -196,18 +196,6 @@ export default {
       "resetLiquid"
     ]),
 
-    formatTable(col, props) {
-      if (col.value === "") {
-        return "";
-      } else {
-        if (col.value === undefined) {
-          return "";
-        } else {
-          return col.value.toFixed(props.row.decimals);
-        }
-      }
-    },
-
     async reloadWalletInfo() {
       // await this.resetLiquid();
       await this.setWalletBaseTokens();
@@ -238,11 +226,5 @@ export default {
 .header-bg {
   height: 200px;
   margin-bottom: -50px;
-}
-.q-table__container.wallet-inner-table {
-  background-color: $secondary;
-  border: 1px solid #dbdddf;
-  box-shadow: none;
-  border-radius: $card-corner-radius;
 }
 </style>

@@ -46,6 +46,12 @@ h6 {
   box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
   background-color: $secondary;
 }
+.q-table__container.wallet-inner-table {
+  background-color: $secondary;
+  border: 1px solid #dbdddf;
+  box-shadow: none;
+  border-radius: $card-corner-radius !important;
+}
 
 .q-dialog__inner .q-card {
   border-radius: $card-corner-radius;
