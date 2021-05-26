@@ -178,8 +178,7 @@ export default {
       //   featuredPools.push(temp_pool);
       // }
       //   console.log(this.featuredPools)
-      if (this.featuredPoolIdChains.length === 0) return [];
-      else return this.sortPools(this.featuredPoolIdChains);
+      return this.sortPools(this.featuredPoolIdChains);
     }
   },
   methods: {

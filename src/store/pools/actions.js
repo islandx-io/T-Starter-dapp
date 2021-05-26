@@ -89,7 +89,7 @@ export const getChainPoolByIDChain = async function(
     poolTable.public_end = new Date(poolTable.public_end + "Z").valueOf();
 
     // set chain in pool
-    poolTable.chain = api.currentChain.NETWORK_NAME;
+    poolTable.chain = api.chains[rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)].NETWORK_NAME;
 
     commit("updatePoolOnState", { poolTable });
     await dispatch("updatePoolSettings", { id, chain: poolTable.chain });
@@ -476,6 +476,7 @@ export const getJoinedChainPools = async function(
       // console.log(pool_id_list);
 
       for (const pool_id of pool_id_list) {
+        // console.log(this.$api.currentChain.NETWORK_NAME)
         dispatch("getChainPoolByIDChain", {
           id: pool_id,
           chain: this.$api.currentChain.NETWORK_NAME
@@ -502,6 +503,7 @@ export const getFeaturedChainPools = async function({
 }) {
   try {
     let rpcs = await dispatch("possibleRPCs", { root: true });
+    console.log(rpcs)
     let id_chain_list = [];
 
     for (const [index, api] of rpcs.apis.entries()) {
@@ -522,7 +524,7 @@ export const getFeaturedChainPools = async function({
       let pool_id_list = [];
       pool_id_list = tableResults.rows[0].featured_pools;
       pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
-      // console.log(pool_id_list);
+      console.log(pool_id_list);
 
       for (const pool_id of pool_id_list) {
         dispatch("getChainPoolByIDChain", {
