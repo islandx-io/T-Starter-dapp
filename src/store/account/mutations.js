@@ -75,7 +75,7 @@ export const setWalletStakeMaturities = (state, { arr }) => {
   token.stake_maturities = arr;
 };
 
-export const resetWalletState = (state) => {
+export const resetWalletState = state => {
   state.wallet = [
     {
       token_sym: "START",
@@ -85,14 +85,22 @@ export const resetWalletState = (state) => {
       staked: 0,
       unstaking: 0,
       decimals: 4,
-      avatar: "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
-      stake_maturities: [],
-    },
-  ]
+      avatar:
+        "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
+      stake_maturities: []
+    }
+  ];
 };
 
-export const clearLiquid = (state) => {
+export const clearLiquid = state => {
   state.wallet.forEach(element => {
-    element.liquid = 0
+    element.liquid = 0;
   });
+};
+
+export const setStakeWallet = (state, { stake_wallet }) => {
+  if (!stake_wallet) {
+    return;
+  }
+  state.stakeWallet = stake_wallet;
 };

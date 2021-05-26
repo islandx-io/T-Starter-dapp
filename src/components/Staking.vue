@@ -1,52 +1,77 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide">
-    <q-card class="col-shrink row">
-      <div class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm">
-        <!-- START balance  -->
-        <div class="text-center">START Balance <br />{{ balanceSTARTstr }}</div>
-        <!-- Stake input -->
-        <q-input outlined v-model="amountStake">
-          <template v-slot:append>
-            <q-btn
-              class="col-shrink"
-              label="Max"
-              @click="setStakeMax"
-              color="positive"
-              outline
-            />
-          </template>
-        </q-input>
-        <q-btn
-          class="hover-accent"
-          color="primary"
-          label="Stake"
-          @click="tryStake()"
-        />
-      </div>
-      <div class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm">
-        <!-- Staked amount -->
-        <div class="text-center">
-          Staked START Balance <br />{{ stakedSTARTstr }}
+    <q-card class="col-shrink column items-center">
+      <div class="text-h2 q-py-sm text-center">Staking Rewards</div>
+      <div class="col-shrink row">
+        <div class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm">
+          <!-- START balance  -->
+          <div class="text-center">
+            <span class="text-weight-light text-subtitle2">START Balance</span>
+            <br />{{ balanceSTARTstr }}
+          </div>
+          <!-- Stake input -->
+          <q-input outlined v-model="amountStake">
+            <template v-slot:append>
+              <q-btn
+                class="col-shrink"
+                label="Max"
+                @click="setStakeMax"
+                color="positive"
+                outline
+              />
+            </template>
+          </q-input>
+          <q-btn
+            class="hover-accent"
+            color="primary"
+            label="Stake"
+            @click="tryStake()"
+          />
         </div>
-        <!-- Unstake input -->
-        <q-input outlined v-model="amountUnstake">
-          <template v-slot:append>
-            <q-btn
-              class="col-shrink"
-              label="Max"
-              @click="setUnstakeMax"
-              color="positive"
-              outline
-            />
-          </template>
-        </q-input>
-        <q-btn
-          class="hover-accent"
-          color="primary"
-          label="Unstake"
-          @click="tryUnstake()"
-        />
+        <div class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm">
+          <!-- Staked amount -->
+          <div class="text-center">
+            <span class="text-weight-light text-subtitle2">START Staked</span>
+            <br />{{ stakedSTARTstr }}
+          </div>
+          <!-- Unstake input -->
+          <q-input outlined v-model="amountUnstake">
+            <template v-slot:append>
+              <q-btn
+                class="col-shrink"
+                label="Max"
+                @click="setUnstakeMax"
+                color="positive"
+                outline
+              />
+            </template>
+          </q-input>
+          <q-btn
+            class="hover-accent"
+            color="primary"
+            label="Unstake"
+            @click="tryUnstake()"
+          />
+        </div>
       </div>
+      <div class="text-bold">Claimable rewards:</div>
+      <div v-if="claimableRewards.length === 0">
+        No rewards to claim yet.
+      </div>
+      <div
+        v-else
+        v-for="token in claimableRewards"
+        :key="'balance-' + token.sym"
+      >
+        {{ token.balance }}
+      </div>
+      <div v-if="lifetimeTotal.length > 0">
+        <div class="text-bold">Lifetime Total:</div>
+        <div v-for="token in lifetimeTotal" :key="'lifetime-' + token.sym">
+          {{ token.lifetime_total }}
+        </div>
+      </div>
+      <q-btn class="hover-accent" color="primary" label="Claim Rewards" />
       <!-- buttons example -->
       <!-- <q-card-actions align="right">
             <q-btn color="primary" label="OK" @click="onOKClick" />
@@ -76,7 +101,8 @@ export default {
       "accountName",
       "loading",
       "isAutoLoading",
-      "wallet"
+      "wallet",
+      "stakeWallet"
     ]),
 
     START_info() {
@@ -105,11 +131,28 @@ export default {
       } else {
         return "0.0000 START";
       }
+    },
+
+    claimableRewards() {
+      return this.stakeWallet.filter(
+        token => this.$chainToQty(token.balance) > 0
+      );
+    },
+    lifetimeTotal() {
+      return this.stakeWallet.filter(
+        token => this.$chainToQty(token.lifetime_total) > 0
+      );
     }
   },
 
   methods: {
-    ...mapActions("account", ["login", "logout", "autoLogin", "getChainSTART"]),
+    ...mapActions("account", [
+      "login",
+      "logout",
+      "autoLogin",
+      "getChainSTART",
+      "getChainStakeWalletTable"
+    ]),
     ...mapActions("pools", ["getBalanceFromChain"]),
     // following method is REQUIRED
     // (don't change its name --> "show")
@@ -153,6 +196,10 @@ export default {
     setUnstakeMax() {
       console.log("UnStake max");
       this.amountUnstake = this.START_info.staked;
+    },
+
+    balanceAvailable(balance) {
+      return this.$chainToQty(balance) > 0;
     },
 
     async reclaimStake(amount_str) {
@@ -282,6 +329,13 @@ export default {
 
   async mounted() {
     await this.getChainSTART(this.accountName);
+    await this.getChainStakeWalletTable(this.accountName);
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.text-h2 {
+  line-height: 3rem;
+}
+</style>

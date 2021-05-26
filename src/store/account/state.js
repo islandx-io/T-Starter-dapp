@@ -14,9 +14,11 @@ export default function() {
         staked: 0,
         unstaking: 0,
         decimals: 4,
-        avatar: "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
-        stake_maturities: [],
-      },
-    ]
+        avatar:
+          "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
+        stake_maturities: []
+      }
+    ],
+    stakeWallet: []
   };
 }

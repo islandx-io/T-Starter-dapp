@@ -287,6 +287,46 @@ export const getChainWalletTable = async function(
   }
 };
 
+// get contract wallet table info for user
+export const getChainStakeWalletTable = async function(
+  { commit, dispatch },
+  account
+) {
+  try {
+    let baseTokens = [];
+    baseTokens = await dispatch("pools/getBaseTokens", true, { root: true });
+    const tableResults = await this.$api.getTableRows({
+      code: process.env.STAKE_ADDRESS, // Contract that we target
+      scope: account, // Account that owns the data
+      table: "wallets", // Table name
+      limit: 10000,
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+    let stakeWallet = [];
+    for (const baseToken of baseTokens) {
+      for (const rewardToken of tableResults.rows) {
+        if (baseToken.token_info.contract === rewardToken.contract) {
+          let token = {
+            sym: this.$getSymFromAsset(baseToken.token_info),
+            decimals: this.$getDecimalFromAsset(baseToken.token_info),
+            contract: baseToken.token_info.contract,
+            avatar: baseToken.avatar,
+            balance: rewardToken.balance,
+            lifetime_total: rewardToken.lifetime_total
+          };
+          stakeWallet.push(token);
+        }
+      }
+    }
+
+    // console.log({ stakeWallet: stakeWallet });
+    commit("setStakeWallet", { stake_wallet: stakeWallet });
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
 // check if tokens already staked
 export const getChainSTART = async function(
   { commit, getters, dispatch },
@@ -332,8 +372,8 @@ export const getChainSTART = async function(
 
       //set balance
       let payload = {
-        address: 'token.start',
-        sym: 'START',
+        address: "token.start",
+        sym: "START",
         accountName: account
       };
 
@@ -342,7 +382,7 @@ export const getChainSTART = async function(
       });
       let balance = this.$chainToQty(token_str);
       commit("setWalletTokenBalance", {
-        token_sym: 'START',
+        token_sym: "START",
         amount: balance
       });
     }
@@ -352,15 +392,11 @@ export const getChainSTART = async function(
 };
 
 // reset wallet
-export const resetWallet = async function(
-  { commit, getters, dispatch },
-) {
+export const resetWallet = async function({ commit, getters, dispatch }) {
   commit("resetWalletState");
-}
+};
 
 // reset liquid
-export const resetLiquid = async function(
-  { commit, getters, dispatch },
-) {
+export const resetLiquid = async function({ commit, getters, dispatch }) {
   commit("clearLiquid");
-}
+};
