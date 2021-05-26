@@ -1,7 +1,10 @@
 <template>
   <router-link
     class="router-link"
-    :to="{ name: 'pooldetails', params: { id: poolID, chain: chain.toLowerCase()  } }"
+    :to="{
+      name: 'pooldetails',
+      params: { id: poolID, chain: chain.toLowerCase() }
+    }"
     :event="clickable ? '' : 'click'"
   >
     <q-card
@@ -14,6 +17,8 @@
         <q-item-section top>
           <token-avatar :avatar="pool.avatar" :avatarSize="60" />
         </q-item-section>
+        <!-- chain avatar -->
+        <token-avatar :token="pool.chain" :avatarSize="20" />
         <q-item-section top side>
           <div class="text-accent column items-end justify-between">
             <status-badge :poolStatus="pool.pool_status" />
@@ -57,7 +62,10 @@
         <q-btn
           outline
           color="primary"
-          :to="{ name: 'updatepool', params: { id: poolID, chain: chain.toLowerCase()  } }"
+          :to="{
+            name: 'updatepool',
+            params: { id: poolID, chain: chain.toLowerCase() }
+          }"
           label="Update pool"
         />
       </q-card-section>
@@ -84,7 +92,7 @@ export default {
       required: true
     },
     chain: {
-      default: 'telos'
+      default: "telos"
     },
     created: {
       default: false,
@@ -100,7 +108,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs", "getPoolByIDChain"]),
+    ...mapGetters("pools", [
+      "getAllPools",
+      "getPoolByID",
+      "getAllPoolIDs",
+      "getPoolByIDChain"
+    ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
 
     hardCap() {

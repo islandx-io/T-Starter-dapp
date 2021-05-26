@@ -166,6 +166,7 @@ export default {
       return this.sortPools(this.getPublishedPools);
     },
     joinedPools_sorted() {
+      console.log(this.joinedPools)
       return this.sortPools(this.joinedPools);
     },
     featuredPoolIdChains_sorted() {
