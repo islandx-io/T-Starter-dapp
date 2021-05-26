@@ -19,11 +19,11 @@ export default function() {
         TEST_NETWORK: true,
         NETWORK_CHAIN_ID:
           "1eaa0824707c8c16bd25145493bf062aecddfeb56c736f6ba6397f3195f33c9f",
-        NETWORK_HOST: "testnet.telos.caleos.io",
+        NETWORK_HOST: "testnet.telos.africa",
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://telos-test.bloks.io",
-        HYPERION_ENDPOINT: "https://testnet.telos.caleos.io"
+        HYPERION_ENDPOINT: "https://testnet.telos.africa"
       },
       {
         NETWORK_NAME: "TELOS",
