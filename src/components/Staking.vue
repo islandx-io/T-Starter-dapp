@@ -1,93 +1,155 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide">
-    <q-card class="col-shrink column items-center">
-      <div class="text-h2 q-py-sm text-center">Staking Rewards</div>
-      <div class="col-shrink row">
-        <div class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm">
-          <!-- START balance  -->
-          <div class="text-center">
-            <span class="text-weight-light text-subtitle2">START Balance</span>
-            <br />{{ balanceSTARTstr }}
+    <q-card class="col-shrink">
+      <div class="column items-center">
+        <div class="text-h2 q-py-sm text-center">Staking Rewards</div>
+        <div class="col-shrink row">
+          <div
+            class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm"
+          >
+            <!-- START balance  -->
+            <div class="text-center">
+              <span class="text-weight-light text-subtitle2"
+                >START Balance</span
+              >
+              <br />{{ balanceSTARTstr }}
+            </div>
+            <!-- Stake input -->
+            <q-input outlined v-model="amountStake">
+              <template v-slot:append>
+                <q-btn
+                  class="col-shrink"
+                  label="Max"
+                  @click="setStakeMax"
+                  color="positive"
+                  outline
+                />
+              </template>
+            </q-input>
+            <q-btn
+              class="hover-accent"
+              color="primary"
+              label="Stake"
+              @click="tryStake()"
+            />
           </div>
-          <!-- Stake input -->
-          <q-input outlined v-model="amountStake">
-            <template v-slot:append>
-              <q-btn
-                class="col-shrink"
-                label="Max"
-                @click="setStakeMax"
-                color="positive"
-                outline
-              />
-            </template>
-          </q-input>
-          <q-btn
-            class="hover-accent"
-            color="primary"
-            label="Stake"
-            @click="tryStake()"
-          />
-        </div>
-        <div class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm">
-          <!-- Staked amount -->
-          <div class="text-center">
-            <span class="text-weight-light text-subtitle2">START Staked</span>
-            <br />{{ stakedSTARTstr }}
+          <div
+            class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm"
+          >
+            <!-- Staked amount -->
+            <div class="text-center">
+              <span class="text-weight-light text-subtitle2">START Staked</span>
+              <br />{{ stakedSTARTstr }}
+            </div>
+            <!-- Unstake input -->
+            <q-input outlined v-model="amountUnstake">
+              <template v-slot:append>
+                <q-btn
+                  class="col-shrink"
+                  label="Max"
+                  @click="setUnstakeMax"
+                  color="positive"
+                  outline
+                />
+              </template>
+            </q-input>
+            <q-btn
+              class="hover-accent"
+              color="primary"
+              label="Unstake"
+              @click="tryUnstake()"
+            />
           </div>
-          <!-- Unstake input -->
-          <q-input outlined v-model="amountUnstake">
-            <template v-slot:append>
-              <q-btn
-                class="col-shrink"
-                label="Max"
-                @click="setUnstakeMax"
-                color="positive"
-                outline
-              />
-            </template>
-          </q-input>
-          <q-btn
-            class="hover-accent"
-            color="primary"
-            label="Unstake"
-            @click="tryUnstake()"
-          />
         </div>
-      </div>
-      <!-- <div class="text-bold">Claimable rewards:</div>
-      <div v-if="claimableRewards.length === 0">
-        No rewards to claim yet.
-      </div>
-      <div
-        v-else
-        v-for="token in claimableRewards"
-        :key="'balance-' + token.sym"
-      >
-        {{ token.balance }}
-      </div>
-      <div v-if="lifetimeTotal.length > 0">
-        <div class="text-bold">Lifetime Total:</div>
-        <div v-for="token in lifetimeTotal" :key="'lifetime-' + token.sym">
-          {{ token.lifetime_total }}
+        <q-table
+          v-if="isAuthenticated && stakeWallet.length > 0"
+          class=" wallet-inner-table "
+          :data="stakeWallet"
+          :columns="columns"
+          row-key="sym"
+          hide-pagination
+          :pagination="{ rowsPerPage: 500 }"
+          dense
+        >
+          <template v-slot:header="props">
+            <q-tr :props="props">
+              <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+                style="font-size: 1.2rem; color: gray"
+              >
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props" :key="props.row.sym">
+              <!-- Avatar -->
+              <q-td :props="props" :key="props.cols[0].name">
+                <div class="row justify-start items-center">
+                  <token-avatar
+                    :token="props.row.sym"
+                    :avatar="props.row.avatar"
+                    :avatarSize="35"
+                    class="q-mr-sm"
+                  />
+                  <div>{{ props.cols[0].value }}</div>
+                </div>
+              </q-td>
+              <!-- Claimable, Claimed -->
+              <q-td
+                :props="props"
+                v-for="col in props.cols.slice(1, 3)"
+                :key="col.name"
+              >
+                {{ col.value === 0 ? 0 : $formatTableDecimals(col, props) }}
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+        <div class="text-subtitle1 text-center" v-if="stakeWallet.length === 0">
+          Stake START and earn rewards. <br />Then claim here to transfer the
+          funds to your account.
         </div>
+        <q-btn
+          class="hover-accent q-my-md"
+          color="primary"
+          label="Claim Rewards"
+          :disable="!hasClaimableRewards"
+          @click="claim"
+        />
+        <!-- <div>{{ stakeWallet }}</div> -->
       </div>
-      <q-btn class="hover-accent" color="primary" label="Claim Rewards" /> -->
-      <div>{{ stakeWallet }}</div>
     </q-card>
   </q-dialog>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import tokenAvatar from "src/components/TokenAvatar";
 
 export default {
   props: {
     // ...your custom props
   },
+  components: { tokenAvatar },
   data() {
     return {
       amountStake: 0,
-      amountUnstake: 0
+      amountUnstake: 0,
+      // prettier-ignore
+      columns: [
+        { name: "token", label: "Token", field: "sym", align: "center" },
+        { name: "balance", label: "Claimable", field: "balance", align: "center", format(val) {
+          if (val > 0) return val
+          else return 0
+        }},
+        { name: "lifetime_total", label: "Claimed", field: "lifetime_total", align: "center", format(val) {
+          if (val > 0) return val
+          else return 0
+        }},
+      ]
     };
   },
 
@@ -127,18 +189,11 @@ export default {
       } else {
         return "0.0000 START";
       }
-    }
+    },
 
-    // claimableRewards() {
-    //   return this.stakeWallet.filter(
-    //     token => this.$chainToQty(token.balance) > 0
-    //   );
-    // },
-    // lifetimeTotal() {
-    //   return this.stakeWallet.filter(
-    //     token => this.$chainToQty(token.lifetime_total) > 0
-    //   );
-    // }
+    hasClaimableRewards() {
+      return this.stakeWallet.filter(token => token.balance > 0).length > 0;
+    }
   },
 
   methods: {
@@ -320,6 +375,36 @@ export default {
           message: `${error}`
         });
       }
+    },
+
+    async claim() {
+      try {
+        const actions = [
+          {
+            account: process.env.STAKE_ADDRESS,
+            name: "refresh",
+            data: {
+              account: this.accountName
+            }
+          },
+          {
+            account: process.env.STAKE_ADDRESS,
+            name: "claimrewards",
+            data: {
+              account: this.accountName
+            }
+          }
+        ];
+        await this.$store.$api.signTransaction(actions);
+      } catch (error) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: `${error}`
+        });
+      }
+      await this.getChainStakeWallet(this.accountName);
     }
   },
 
@@ -334,4 +419,8 @@ export default {
 .text-h2 {
   line-height: 3rem;
 }
+// .q-table td,
+// .q-table td {
+//   padding: 0;
+// }
 </style>

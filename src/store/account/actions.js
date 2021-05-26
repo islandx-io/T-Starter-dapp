@@ -319,6 +319,7 @@ export const getChainStakeWallet = async function(
       scope: process.env.STAKE_ADDRESS, // Account that owns the data
       table: "rewards", // Table name
       limit: 10000,
+      // lower_bound: 1,
       lower_bound: stakeAccount.last_claim_id + 1,
       reverse: false,
       show_payer: false
@@ -359,10 +360,12 @@ export const getChainStakeWallet = async function(
       for (const walletToken of walletsResult.rows) {
         if (baseToken.token_info.contract === walletToken.contract) {
           token.balance += this.$chainToQty(walletToken.balance);
-          token.lifetime_total += this.$chainToQty(walletToken.lifetime_total);
+          token.lifetime_total +=
+            this.$chainToQty(walletToken.lifetime_total) - token.balance;
         }
       }
-      if (token.balance > 0) stakeWallet.push(token);
+      if (token.balance > 0 || token.lifetime_total > 0)
+        stakeWallet.push(token);
     }
 
     // console.log({ stakeWallet: stakeWallet });
