@@ -8,17 +8,15 @@ export const setPoolSettings = (
   pool.progress = progress;
 };
 
-export const updatePoolOnState = (state, { poolTable, id }) => {
+export const updatePoolOnState = (state, { poolTable }) => {
   if (!poolTable) {
     console.error("No pool table");
     return;
   }
 
   // if pool in store update, else push
-  if (state.pools.some(a => a.id === id && a.chain === poolTable.chain)) {
-    state.pools[
-      state.pools.findIndex(el => el.id === id && el.chain === poolTable.chain)
-    ] = poolTable;
+  if (state.pools.some(a => a.id === poolTable.id && a.chain === poolTable.chain)) {
+    state.pools[state.pools.findIndex(el => el.id === poolTable.id && el.chain === poolTable.chain)] = poolTable;
     // console.log(poolTable);
   } else {
     state.pools.push(poolTable);

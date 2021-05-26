@@ -57,7 +57,7 @@
         <q-btn
           outline
           color="primary"
-          :to="{ name: 'updatepool', params: { id: poolID } }"
+          :to="{ name: 'updatepool', params: { id: poolID, chain: chain.toLowerCase()  } }"
           label="Update pool"
         />
       </q-card-section>
@@ -84,6 +84,7 @@ export default {
       required: true
     },
     chain: {
+      default: 'telos'
     },
     created: {
       default: false,

@@ -11,9 +11,10 @@ export const getPoolIDsByStatus = ({ pools }) => pool_status =>
     })
     .map(a => a.id);
 
-export const getPoolByID = ({ pools }) => (id) => pools.find(el => el.id === id);
+export const getPoolByID = ({ pools }) => id => pools.find(el => el.id === id);
 
-export const getPoolByIDChain = ({ pools }) => (id,chain) => pools.find(el => el.id === id && el.chain === chain);
+export const getPoolByIDChain = ({ pools }) => (id, chain) =>
+  pools.find(el => el.id === id && el.chain === chain);
 
 export const getCommentsByPoolID = ({ pools }) => id =>
   pools.find(el => el.id === id);
@@ -26,10 +27,24 @@ export const getCreatedPoolIDs = ({ pools }) => owner =>
     })
     .map(a => a.id);
 
+export const getCreatedPools = ({ pools }) => (owner, chain)=>
+  pools
+    .filter(el => el.owner === owner && el.chain === chain)
+    .sort((a, b) => {
+      return new Date(b.public_end) - new Date(a.public_end);
+    });
+
 export const getPublishedPoolIDs = ({ pools }) =>
   pools
     .filter(a => a.status === "published" || a.status === "success")
     .sort((a, b) => {
       return new Date(a.pool_open) - new Date(b.pool_open);
     })
-    .map(a => ({id: a.id, chain: a.chain}));
+    .map(a => a.id);
+
+export const getPublishedPools = ({ pools }) =>
+  pools
+    .filter(a => a.status === "published" || a.status === "success")
+    .sort((a, b) => {
+      return new Date(a.pool_open) - new Date(b.pool_open);
+    });

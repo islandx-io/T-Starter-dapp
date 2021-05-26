@@ -297,7 +297,7 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    ...mapGetters("pools", ["getPoolByID"]),
+    ...mapGetters("pools", ["getPoolByID", "getPoolByIDChain"]),
     ...mapGetters("blockchains", ["currentChain"]),
 
     START_info() {
@@ -376,7 +376,7 @@ export default {
     ]),
     ...mapActions("account", ["getChainSTART"]),
     getPoolInfo() {
-      this.pool = this.getPoolByID(this.poolID);
+      this.pool = this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME);
     },
     hasAllocations(data) {
       return Object.keys(data).length > 0;

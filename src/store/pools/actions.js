@@ -2,21 +2,28 @@ import axios from "axios";
 import { Api, JsonRpc } from "eosjs";
 
 // possible rpcs
-export const possibleRPCs = async function({ commit, dispatch, rootGetters, getters }) {
+export const possibleRPCs = async function({
+  commit,
+  dispatch,
+  rootGetters,
+  getters
+}) {
   let blockchains = rootGetters["blockchains/allBlockchains"];
-  let possibleChains = blockchains.filter(a => String(a.TEST_NETWORK) === process.env.TESTNET);
+  let possibleChains = blockchains.filter(
+    a => String(a.TEST_NETWORK) === process.env.TESTNET
+  );
 
-  let rpcs = []
+  let apis = [];
 
   for (const chain of possibleChains) {
     let rpc = new JsonRpc(
       `${chain.NETWORK_PROTOCOL}://${chain.NETWORK_HOST}:${chain.NETWORK_PORT}`
     );
-    rpcs.push(rpc)
+    apis.push(rpc);
   }
 
-  // console.log(rpcs)
-  return {rpcs:rpcs,chains:possibleChains}
+  // console.log(apis)
+  return { apis: apis, chains: possibleChains };
 };
 
 // Get pool info from chain by id, put into store
@@ -44,23 +51,59 @@ export const getChainPoolByID = async function({ commit, dispatch }, id) {
     // set chain in pool
     poolTable.chain = this.$api.currentChain.NETWORK_NAME;
 
-    commit("updatePoolOnState", { poolTable, id });
-    await dispatch("updatePoolSettings", {id, chain: poolTable.chain});
+    commit("updatePoolOnState", { poolTable });
+    await dispatch("updatePoolSettings", { id, chain: poolTable.chain });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
 
+// Get pool info from chain by id, put into store
+export const getChainPoolByIDChain = async function(
+  { commit, dispatch },
+  payload
+) {
+  try {
+    let rpcs = await dispatch("possibleRPCs", { root: true });
+    let api = rpcs.apis[rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)]
 
+    const tableResults = await api.get_table_rows({
+      json: true,
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: process.env.CONTRACT_TABLE, // Table name
+      lower_bound: payload.id, // Table primary key value
+      limit: 1, // Maximum number of rows that we want to get
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+    // console.log(this.$api.currentChain);
+
+    let poolTable = tableResults.rows[tableResults.rows.length - 1];
+    // console.log(poolTable);
+
+    //check dates are unix
+    poolTable.pool_open = new Date(poolTable.pool_open + "Z").valueOf();
+    poolTable.private_end = new Date(poolTable.private_end + "Z").valueOf();
+    poolTable.public_end = new Date(poolTable.public_end + "Z").valueOf();
+
+    // set chain in pool
+    poolTable.chain = api.currentChain.NETWORK_NAME;
+
+    commit("updatePoolOnState", { poolTable });
+    await dispatch("updatePoolSettings", { id, chain: poolTable.chain });
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
 
 // get all pools from chain, populate store
 export const getAllChainPools = async function({ commit, dispatch }) {
   try {
-
     let rpcs = await dispatch("possibleRPCs", { root: true });
-    console.log(rpcs)    
+    // console.log(rpcs)
 
-    for (const [index, api] of rpcs.rpcs.entries()) {
+    for (const [index, api] of rpcs.apis.entries()) {
       const tableResults = await api.get_table_rows({
         json: true,
         code: process.env.CONTRACT_ADDRESS, // Contract that we target
@@ -70,30 +113,29 @@ export const getAllChainPools = async function({ commit, dispatch }) {
         reverse: true, // Optional: Get reversed data
         show_payer: false // Optional: Show ram payer
       });
-  
+
+      // console.log(tableResults.rows)
       // sort according to nearest pool open
       tableResults.rows.sort(function(a, b) {
         return new Date(b.pool_open) - new Date(a.pool_open);
       });
-      // console.log(tableResults.rows.map(a => a.id))
-  
+
       for (const pool of tableResults.rows) {
         let id = pool.id;
-  
+
         //check dates are unix
         pool.pool_open = new Date(pool.pool_open + "Z").valueOf();
         pool.private_end = new Date(pool.private_end + "Z").valueOf();
         pool.public_end = new Date(pool.public_end + "Z").valueOf();
-  
+
         const poolTable = pool;
-  
+
         // set chain in pool
         poolTable.chain = rpcs.chains[index].NETWORK_NAME;
-  
-        commit("updatePoolOnState", {poolTable, id});
-        await dispatch("updatePoolSettings", {id, chain: poolTable.chain});      
-    }
 
+        commit("updatePoolOnState", { poolTable });
+        await dispatch("updatePoolSettings", { id, chain: poolTable.chain });
+      }
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -387,10 +429,11 @@ export const getCreatedChainPools = async function(
         pool.private_end = new Date(pool.private_end + "Z").valueOf();
         pool.public_end = new Date(pool.public_end + "Z").valueOf();
 
-        const poolTable = pool;
+        // set chain in pool
+        poolTable.chain = this.$api.currentChain.NETWORK_NAME;
 
-        commit("updatePoolOnState", { poolTable, id });
-        await dispatch("updatePoolSettings", {id, chain: poolTable.chain});
+        commit("updatePoolOnState", { poolTable });
+        await dispatch("updatePoolSettings", { id, chain: poolTable.chain });
       }
     }
   } catch (error) {
@@ -433,7 +476,7 @@ export const getJoinedChainPools = async function(
         dispatch("getChainPoolByID", pool_id);
       }
 
-      return pool_id_list;
+      return tableResults.rows;
     } else {
       return [];
     }
@@ -448,28 +491,36 @@ export const getFeaturedChainPools = async function({
   dispatch
 }) {
   try {
-    const tableResults = await this.$api.getTableRows({
-      code: process.env.CONTRACT_ADDRESS, // Contract that we target
-      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-      table: "settings", // Table name
-      limit: 1000,
-      index_position: 1,
-      key_type: "i64",
-      reverse: false, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
-    });
-    console.log("Featured pools:");
-    let pool_id_list = [];
+    let rpcs = await dispatch("possibleRPCs", { root: true });
+    let id_chain_list = []
 
-    pool_id_list = tableResults.rows[0].featured_pools;
-    pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
-    console.log(pool_id_list);
+    for (const [index, api] of rpcs.apis.entries()) {
+      const tableResults = await api.get_table_rows({
+        json: true,
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: "settings", // Table name
+        limit: 1000,
+        index_position: 1,
+        key_type: "i64",
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+      console.log("Featured pools:");
+      // console.log(rpcs.chains[index].NETWORK_NAME);
+      
+      let pool_id_list = [];
+      pool_id_list = tableResults.rows[0].featured_pools;
+      pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
+      // console.log(pool_id_list);
 
-    for (const pool_id of pool_id_list) {
-      dispatch("getChainPoolByID", pool_id);
+      for (const pool_id of pool_id_list) {
+        dispatch("getChainPoolByIDChain", {id: pool_id, chain: rpcs.chains[index].NETWORK_NAME});
+        id_chain_list.push({id: pool_id, chain: rpcs.chains[index].NETWORK_NAME})
+      }
     }
-
-    return pool_id_list;
+    console.log(id_chain_list)
+    return id_chain_list;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

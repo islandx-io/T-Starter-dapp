@@ -38,7 +38,7 @@
           @mousedown.stop
         >
           <Poolcard
-            v-for="pool in publishedPoolsIdChains"
+            v-for="pool in pagedPublishedPools"
             :key="`${pool.chain}+${pool.id}`"
             :poolID="pool.id"
             :chain="pool.chain"
@@ -50,7 +50,12 @@
           class="poolcard-container"
           @mousedown.stop
         >
-          <Poolcard v-for="id in featuredIDs_sorted" :key="id" :poolID="id" />
+          <Poolcard
+            v-for="pool in featuredPoolIdChains_sorted"
+            :key="`${pool.chain}+${pool.id}`"
+            :poolID="pool.id"
+            :chain="pool.chain"
+          />
         </q-tab-panel>
 
         <q-tab-panel
@@ -58,7 +63,12 @@
           class="poolcard-container"
           @mousedown.stop
         >
-          <Poolcard v-for="id in joinedIDs_sorted" :key="id" :poolID="id" />
+          <Poolcard
+            v-for="pool in joinedPools_sorted"
+            :key="`${pool.chain}+${pool.id}`"
+            :poolID="pool.id"
+            :chain="pool.chain"
+          />
         </q-tab-panel>
 
         <q-tab-panel
@@ -67,9 +77,10 @@
           @mousedown.stop
         >
           <Poolcard
-            v-for="id in createdPoolIDs"
-            :key="id"
-            :poolID="id"
+            v-for="pool in createdPools"
+            :key="`${pool.chain}+${pool.id}`"
+            :poolID="pool.id"
+            :chain="pool.chain"
             :created="true"
           />
         </q-tab-panel>
@@ -119,8 +130,8 @@ export default {
   data() {
     return {
       tab: "all-pools",
-      joinedIDs: [],
-      featuredIDs: [],
+      joinedPools: [],
+      featuredPoolIdChains: [],
       claimableIDs: [],
       claimable: false,
       polling: null,
@@ -132,46 +143,49 @@ export default {
     ...mapGetters("pools", [
       "getAllPoolIDs",
       "getCreatedPoolIDs",
+      "getCreatedPools",
       "getPublishedPoolIDs",
       "getPoolIDsByStatus",
       "getPoolByID",
-      "getAllPools"
+      "getAllPools",
+      "getPublishedPools"
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("blockchains", ["currentChain"]),
 
     poolIDs() {
       return this.getAllPoolIDs;
     },
-    createdPoolIDs() {
-      return this.getCreatedPoolIDs(this.accountName); // TODO do like joined, maybe slower?
+    createdPools() {
+      return this.getCreatedPools(
+        this.accountName,
+        this.currentChain.NETWORK_NAME
+      ); // TODO do like joined, maybe slower?
     },
-    publishedPoolIDs() {
-      return this.sortPools(this.getPublishedPoolIDs);
+    publishedPools() {
+      return this.sortPools(this.getPublishedPools);
     },
-    publishedPoolsIdChains() {
-      // console.log(this.getPublishedPoolIDs)
-      return this.getPublishedPoolIDs
+    joinedPools_sorted() {
+      return this.sortPools(this.joinedPools);
     },
-    joinedIDs_sorted() {
-      return this.sortPools(this.joinedIDs);
-    },
-    featuredIDs_sorted() {
+    featuredPoolIdChains_sorted() {
       //check if published
-      let new_featured_ids = [];
-      for (const id of this.featuredIDs) {
-        const temp_pool = this.getPoolByID(id);
-        if (temp_pool.status !== "draft") {
-          new_featured_ids.push(id);
-        }
-      }
-      return this.sortPools(new_featured_ids);
+      // let new_featured_ids = [];
+      // for (const id of this.featuredPoolIdChains) {
+      //   const temp_pool = this.getPoolByID(id);
+      //   if (temp_pool.status !== "draft") {
+      //     new_featured_ids.push(id);
+      //   }
+      // }
+      // return this.sortPools(this.featuredPoolIdChains);
+      return this.featuredPoolIdChains;
     },
     totalPages() {
       // amount of pools / 9 ceil
-      return Math.ceil(this.publishedPoolIDs.length / 9);
+      return Math.ceil(this.publishedPools.length / 9);
     },
-    pagedPublishedPoolIDs() {
-      return this.publishedPoolIDs.slice(
+    pagedPublishedPools() {
+      return this.publishedPools.slice(
         (this.page - 1) * this.totalPages,
         (this.page - 1) * this.totalPages + 9
       );
@@ -188,30 +202,19 @@ export default {
       "getAllocationByPool"
     ]),
 
-    sortPools(id_list) {
-      let result = [];
-      let open = this.getPoolIDsByStatus("open");
-      let upcoming = this.getPoolIDsByStatus("upcoming");
-      let completed = this.getPoolIDsByStatus("completed");
-      let filled = this.getPoolIDsByStatus("filled");
-      let cancelled = this.getPoolIDsByStatus("cancelled");
-      result = result.concat(
-        this.claimableIDs,
-        open,
-        upcoming,
-        completed,
-        filled,
-        cancelled
-      );
-      result = result.filter(value => id_list.includes(value));
-      result = [...new Set(result)]; // remove duplicates
+    sortPools(pools) {
+      // TODO claimable
+      let order = ["open", "upcoming", "completed", "filled", "cancelled"];
+      pools.sort((a, b) => {
+        return order.indexOf(a.pool_status) - order.indexOf(b.pool_status);
+      });
       // console.log(result);
-      return result;
+      return pools.map(a => ({ id: a.id, chain: a.chain }));
     },
 
     // If any joined pools claimable, show alert
     async findClaimable() {
-      for (const id of this.joinedIDs) {
+      for (const id of this.joinedPools) {
         const joined_pool = this.getPoolByID(id);
         let payload = { account: this.accountName, poolID: id };
         let allocation = await this.getAllocationByPool(payload);
@@ -229,8 +232,8 @@ export default {
   async mounted() {
     await this.getAllChainPools();
     await this.getCreatedChainPools(this.accountName);
-    this.joinedIDs = await this.getJoinedChainPools(this.accountName);
-    this.featuredIDs = await this.getFeaturedChainPools();
+    this.joinedPools = await this.getJoinedChainPools(this.accountName);
+    this.featuredPoolIdChains = await this.getFeaturedChainPools();
     await this.findClaimable();
     // Start polling every 1min for any updates
     this.polling = setInterval(async () => {
@@ -242,8 +245,8 @@ export default {
     async accountName() {
       await this.getAllChainPools();
       await this.getCreatedChainPools(this.accountName);
-      this.joinedIDs = await this.getJoinedChainPools(this.accountName);
-      this.featuredIDs = await this.getFeaturedChainPools();
+      this.joinedPools = await this.getJoinedChainPools(this.accountName);
+      this.featuredPoolIdChains = await this.getFeaturedChainPools();
       await this.findClaimable();
     }
   }
