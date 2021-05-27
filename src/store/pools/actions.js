@@ -89,10 +89,13 @@ export const getChainPoolByIDChain = async function(
     poolTable.public_end = new Date(poolTable.public_end + "Z").valueOf();
 
     // set chain in pool
-    poolTable.chain = api.chains[rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)].NETWORK_NAME;
+    poolTable.chain =
+    rpcs.chains[
+      rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)
+    ].NETWORK_NAME;
 
     commit("updatePoolOnState", { poolTable });
-    await dispatch("updatePoolSettings", { id, chain: poolTable.chain });
+    await dispatch("updatePoolSettings", { id: poolTable.id, chain: poolTable.chain });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -420,7 +423,7 @@ export const getCreatedChainPools = async function(
         reverse: false, // Optional: Get reversed data
         show_payer: false // Optional: Show ram payer
       });
-      console.log("Created pools:");
+      // console.log("Created pools:");
       for (const pool of tableResults.rows) {
         // console.log(pool);
         let id = pool.id;
@@ -461,7 +464,7 @@ export const getJoinedChainPools = async function(
         show_payer: false // Optional: Show ram payer
       });
 
-      console.log("Joined pools:");
+      // console.log("Joined pools:");
       // console.log(tableResults.rows);
       // console.log(this.$api.currentChain.NETWORK_NAME);
       // sort according to nearest pool open
@@ -475,16 +478,17 @@ export const getJoinedChainPools = async function(
       pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
       // console.log(pool_id_list);
 
-      for (const pool_id of pool_id_list) {
-        // console.log(this.$api.currentChain.NETWORK_NAME)
-        dispatch("getChainPoolByIDChain", {
-          id: pool_id,
-          chain: this.$api.currentChain.NETWORK_NAME
-        });
-        id_chain_list.push({
-          id: pool_id,
-          chain: this.$api.currentChain.NETWORK_NAME
-        });
+      if (pool_id_list.length > 0) {
+        for (const pool_id of pool_id_list) {
+          await dispatch("getChainPoolByIDChain", {
+            id: pool_id,
+            chain: this.$api.currentChain.NETWORK_NAME
+          });
+          id_chain_list.push({
+            id: pool_id,
+            chain: this.$api.currentChain.NETWORK_NAME
+          });
+        }
       }
 
       return id_chain_list;
@@ -496,6 +500,7 @@ export const getJoinedChainPools = async function(
   }
 };
 
+// for each blockchain get the featured pool ids
 export const getFeaturedChainPools = async function({
   commit,
   getters,
@@ -503,7 +508,6 @@ export const getFeaturedChainPools = async function({
 }) {
   try {
     let rpcs = await dispatch("possibleRPCs", { root: true });
-    console.log(rpcs)
     let id_chain_list = [];
 
     for (const [index, api] of rpcs.apis.entries()) {
@@ -518,23 +522,25 @@ export const getFeaturedChainPools = async function({
         reverse: false, // Optional: Get reversed data
         show_payer: false // Optional: Show ram payer
       });
-      console.log("Featured pools:");
+      // console.log("Featured pools:");
       // console.log(rpcs.chains[index].NETWORK_NAME);
 
       let pool_id_list = [];
       pool_id_list = tableResults.rows[0].featured_pools;
       pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
-      console.log(pool_id_list);
+      // console.log(pool_id_list);
 
-      for (const pool_id of pool_id_list) {
-        dispatch("getChainPoolByIDChain", {
-          id: pool_id,
-          chain: rpcs.chains[index].NETWORK_NAME
-        });
-        id_chain_list.push({
-          id: pool_id,
-          chain: rpcs.chains[index].NETWORK_NAME
-        });
+      if (pool_id_list.length > 0) {
+        for (const pool_id of pool_id_list) {
+          await dispatch("getChainPoolByIDChain", {
+            id: pool_id,
+            chain: rpcs.chains[index].NETWORK_NAME
+          });
+          id_chain_list.push({
+            id: pool_id,
+            chain: rpcs.chains[index].NETWORK_NAME
+          });
+        }
       }
     }
     // console.log(id_chain_list);
@@ -566,29 +572,32 @@ export const getUpcomingChainPools = async function({ commit, dispatch }) {
         show_payer: false // Optional: Show ram payer
       });
 
-      console.log("Upcoming pools");
-      
+      // console.log("Upcoming pools");
+
       // sort according to nearest pool open
       tableResults.rows.sort(function(a, b) {
         return new Date(a.pool_open) - new Date(b.pool_open);
       });
-      
+
       // console.log(tableResults);
       let pool_id_list = [];
       pool_id_list = tableResults.rows.map(a => a.id);
       pool_id_list = [...new Set(pool_id_list)]; // remove duplicates
 
-      console.log(pool_id_list);
+      // console.log(rpcs.chains[index].NETWORK_NAME);
+      // console.log(pool_id_list);
 
-      for (const pool_id of pool_id_list) {
-        dispatch("getChainPoolByIDChain", {
-          id: pool_id,
-          chain: rpcs.chains[index].NETWORK_NAME
-        });
-        pool_list.push({
-          id: pool_id,
-          chain: rpcs.chains[index].NETWORK_NAME
-        });
+      if (pool_id_list.length > 0) {
+        for (const pool_id of pool_id_list) {
+          await dispatch("getChainPoolByIDChain", {
+            id: pool_id,
+            chain: rpcs.chains[index].NETWORK_NAME
+          });
+          pool_list.push({
+            id: pool_id,
+            chain: rpcs.chains[index].NETWORK_NAME
+          });
+        }
       }
     }
     return pool_list;

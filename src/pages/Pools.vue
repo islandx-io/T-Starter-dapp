@@ -148,7 +148,8 @@ export default {
       "getPoolIDsByStatus",
       "getPoolByID",
       "getAllPools",
-      "getPublishedPools"
+      "getPublishedPools",
+      "getPoolByIDChain"
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("blockchains", ["currentChain"]),
@@ -160,7 +161,7 @@ export default {
       return this.getCreatedPools(
         this.accountName,
         this.currentChain.NETWORK_NAME
-      ); // TODO do like joined, maybe slower?
+      );
     },
     publishedPools() {
       return this.sortPools(this.getPublishedPools);
@@ -169,7 +170,21 @@ export default {
       return this.sortPools(this.joinedPools);
     },
     featuredPoolIdChains_sorted() {
-      return this.sortPools(this.featuredPoolIdChains);
+      if (this.featuredPoolIdChains.length > 0) {
+        let featuredPools = [];
+        for (const id_chain of this.featuredPoolIdChains) {
+          var temp_pool = this.getPoolByIDChain(id_chain.id, id_chain.chain);
+          if (
+            temp_pool.status !== undefined &&
+            (temp_pool.status === "published" || temp_pool.status === "success")
+          ) {
+            featuredPools.push(temp_pool);
+          }
+        }
+        return this.sortPools(featuredPools);
+      } else {
+        return [];
+      }
     },
     totalPages() {
       // amount of pools / 9 ceil

@@ -169,16 +169,21 @@ export default {
     },
 
     featuredPoolIdChains_sorted() {
-      // TODO check if published
-      // let featuredPools = [];
-      // for (const id_chain of this.featuredPoolIdChains) {
-      //   const temp_pool = this.getPoolByIDChain(id_chain.id, id_chain.chain);
-      //   console.log(temp_pool)
-
-      //   featuredPools.push(temp_pool);
-      // }
-      //   console.log(this.featuredPools)
-      return this.sortPools(this.featuredPoolIdChains);
+      if (this.featuredPoolIdChains.length > 0) {
+        let featuredPools = [];
+        for (const id_chain of this.featuredPoolIdChains) {
+          var temp_pool = this.getPoolByIDChain(id_chain.id, id_chain.chain);
+          if (
+            temp_pool.status !== undefined &&
+            (temp_pool.status === "published" || temp_pool.status === "success")
+          ) {
+            featuredPools.push(temp_pool);
+          }
+        }
+        return this.sortPools(featuredPools);
+      } else {
+        return [];
+      }
     }
   },
   methods: {
@@ -212,7 +217,7 @@ export default {
     console.log("Go to the ant, you sluggard! Consider her ways and be wise,");
     this.featuredPoolIdChains = await this.getFeaturedChainPools();
     if (this.featuredPoolIdChains.length === 0) this.noFeaturedPools = true;
-    await this.getAllChainPools(); // TODO replace with get open pools
+    await this.getAllChainPools();
     this.upcomingIDs = await this.getUpcomingChainPools();
     if (this.upcomingIDs.length === 0) this.noUpcomingPools = true;
     // Start polling every 1min for any updates

@@ -16,7 +16,10 @@ export const updatePoolOnState = (state, { poolTable }) => {
 
   // if pool in store update, else push
   if (state.pools.some(a => a.id === poolTable.id && a.chain === poolTable.chain)) {
-    state.pools[state.pools.findIndex(el => el.id === poolTable.id && el.chain === poolTable.chain)] = poolTable;
+    // state.pools[state.pools.findIndex(el => el.id === poolTable.id && el.chain === poolTable.chain)] = poolTable;
+    const index = state.pools.findIndex(el => el.id === poolTable.id && el.chain === poolTable.chain)
+    state.pools[index] = poolTable
+    state.pools = [...state.pools]
     // console.log(poolTable);
   } else {
     state.pools.push(poolTable);
