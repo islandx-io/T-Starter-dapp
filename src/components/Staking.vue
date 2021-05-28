@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref="dialog" @hide="onDialogHide">
+  <q-dialog ref="dialog" @hide="onDialogHide" class="staking-dialog">
     <q-card class="col-shrink">
       <div class="column items-center">
         <div class="text-h2 q-py-sm text-center">Staking Rewards</div>
@@ -119,7 +119,6 @@
           :disable="!hasClaimableRewards"
           @click="claim"
         />
-        <!-- <div>{{ stakeWallet }}</div> -->
       </div>
     </q-card>
   </q-dialog>
@@ -130,9 +129,6 @@ import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
 
 export default {
-  props: {
-    // ...your custom props
-  },
   components: { tokenAvatar },
   data() {
     return {
@@ -419,8 +415,8 @@ export default {
 .text-h2 {
   line-height: 3rem;
 }
-// .q-table td,
-// .q-table td {
-//   padding: 0;
-// }
+.q-card {
+  padding-left: 3vw;
+  padding-right: 3vw;
+}
 </style>
