@@ -2,7 +2,23 @@
   <q-dialog ref="dialog" @hide="onDialogHide" class="staking-dialog">
     <q-card class="col-shrink">
       <div class="column items-center">
-        <div class="text-h2 q-py-sm text-center">Staking Rewards</div>
+        <div class="self-stretch row justify-between q-py-sm">
+          <div class="" style="width: 40px" />
+          <div class="col text-h2 text-center">Staking Rewards</div>
+          <div class="text-center" style="width: 40px">
+            <q-btn
+              padding="xs"
+              size="18px"
+              flat
+              color="secondary"
+              text-color="black"
+              icon="far fa-times-circle"
+              class="hover-accent"
+              round
+              @click="hide"
+            />
+          </div>
+        </div>
         <div class="col-shrink row">
           <div
             class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm"
@@ -141,7 +157,7 @@ export default {
           if (val > 0) return val
           else return 0
         }},
-        { name: "lifetime_total", label: "Claimed", field: "lifetime_total", align: "center", format(val) {
+        { name: "lifetime_return", label: "Claimed", field: "lifetime_return", align: "center", format(val) {
           if (val > 0) return val
           else return 0
         }},
@@ -227,11 +243,6 @@ export default {
       // or with payload: this.$emit('ok', { ... })
 
       // then hiding dialog
-      this.hide();
-    },
-
-    onCancelClick() {
-      // we just need to hide dialog
       this.hide();
     },
 

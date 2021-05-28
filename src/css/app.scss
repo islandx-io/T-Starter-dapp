@@ -135,4 +135,7 @@ h6 {
 .staking-dialog .q-dialog__inner {
   padding-left: 3vw;
   padding-right: 3vw;
+  & > div {
+    box-shadow: none;
+  }
 }

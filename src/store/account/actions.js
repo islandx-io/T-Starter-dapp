@@ -324,7 +324,7 @@ export const getChainStakeWallet = async function(
       reverse: false,
       show_payer: false
     });
-    // console.log({ stakeRewards: stakeRewards });
+    // console.log({ rewardsResult: rewardsResult });
 
     // get wallets table
     const walletsResult = await this.$api.getTableRows({
@@ -335,6 +335,7 @@ export const getChainStakeWallet = async function(
       reverse: false, // Optional: Get reversed data
       show_payer: false // Optional: Show ram payer
     });
+    // console.log({ walletsResult: walletsResult });
 
     // compile stake wallet
     let stakeWallet = [];
@@ -345,7 +346,7 @@ export const getChainStakeWallet = async function(
         contract: baseToken.token_info.contract,
         avatar: baseToken.avatar,
         balance: 0,
-        lifetime_total: 0
+        lifetime_return: 0
       };
       for (const reward of rewardsResult.rows) {
         if (
@@ -360,11 +361,11 @@ export const getChainStakeWallet = async function(
       for (const walletToken of walletsResult.rows) {
         if (baseToken.token_info.contract === walletToken.contract) {
           token.balance += this.$chainToQty(walletToken.balance);
-          token.lifetime_total +=
-            this.$chainToQty(walletToken.lifetime_total) - token.balance;
+          token.lifetime_return +=
+            this.$chainToQty(walletToken.lifetime_return) - token.balance;
         }
       }
-      if (token.balance > 0 || token.lifetime_total > 0)
+      if (token.balance > 0 || token.lifetime_return > 0)
         stakeWallet.push(token);
     }
 
