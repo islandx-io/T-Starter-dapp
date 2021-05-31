@@ -150,6 +150,37 @@
         </q-carousel>
       </div>
     </q-dialog>
+    <q-dialog v-model="res.showDialog">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-icon
+            name="fas fa-exclamation-circle"
+            size="lg"
+            class="q-pr-sm"
+            color="primary"
+          />
+          <div class="text-h6">Insufficient resources</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          You do not have enough RAM or CPU to complete transactions on this
+          app. Resources available:
+          <ul>
+            <li>
+              {{ res.ramAvail }} bytes of RAM (need {{ res.ramThres }} bytes)
+            </li>
+            <li>
+              {{ res.cpuAvail }} &mu;s of CPU (need {{ res.cpuThres }} &mu;s)
+            </li>
+          </ul>
+        </q-card-section>
+
+        <q-card-actions class="q-pt-none" align="right">
+          <q-btn outline label="Top up" color="accent" class="hover-accent" />
+          <q-btn flat label="Cancel" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -165,7 +196,16 @@ export default {
       error: null,
       showLogout: false,
       balanceSTR: "0 START",
-      dialogSlide: "loginSlide"
+      dialogSlide: "loginSlide",
+      res: {
+        ramThres: 1000000,
+        cpuThres: 40,
+        ramAvail: 0,
+        cpuAvail: 0,
+        ramLow: false,
+        cpuLow: false,
+        showDialog: false
+      }
     };
   },
   props: {
@@ -189,6 +229,7 @@ export default {
     ...mapActions("account", ["login", "logout", "autoLogin"]),
     ...mapActions("pools", ["getBalanceFromChain"]),
     copyAccountName() {
+      // this.checkResources();
       copyToClipboard(this.accountName).then(() => {
         this.$q.notify({
           color: "green-4",
@@ -206,7 +247,16 @@ export default {
       } else {
         this.error = error;
       }
-      await this.getBalance();
+      this.getBalance();
+      this.checkResources();
+    },
+
+    async checkResources() {
+      let account = await this.$store.$api.getAccount(this.accountName);
+      this.res.ramAvail = account.ram_quota - account.ram_usage;
+      if (this.res.ramAvail < this.res.ramThres) this.res.ramLow = true;
+      if (this.res.cpuAvail < this.res.cpuThres) this.res.cpuLow = true;
+      this.res.showDialog = this.res.ramLow || this.res.cpuLow;
     },
 
     openUrl(url) {
