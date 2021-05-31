@@ -64,7 +64,7 @@
           @mousedown.stop
         >
           <Poolcard
-            v-for="pool in joinedPools_sorted"
+            v-for="pool in joinedIdChains_sorted"
             :key="`${pool.chain}+${pool.id}`"
             :poolID="pool.id"
             :chain="pool.chain"
@@ -130,7 +130,7 @@ export default {
   data() {
     return {
       tab: "all-pools",
-      joinedPools: [],
+      joinedIdChains: [],
       featuredPoolIdChains: [],
       claimableIDs: [],
       claimable: false,
@@ -166,8 +166,8 @@ export default {
     publishedPools() {
       return this.sortPools(this.getPublishedPools);
     },
-    joinedPools_sorted() {
-      return this.sortPools(this.joinedPools);
+    joinedIdChains_sorted() {
+      return this.sortPools(this.joinedIdChains);
     },
     featuredPoolIdChains_sorted() {
       if (this.featuredPoolIdChains.length > 0) {
@@ -218,15 +218,20 @@ export default {
       return pools.map(a => ({ id: a.id, chain: a.chain }));
     },
 
-    // If any joined pools claimable, show alert
+    // If any joined pools claimable on current chain, show alert
     async findClaimable() {
-      for (const id of this.joinedPools.map(a => a.id)) {
-        const joined_pool = this.getPoolByID(id);
+      for (const id of this.joinedIdChains.map(a => a.id)) {
+        const joined_pool = this.getPoolByIDChain(
+          id,
+          this.currentChain.NETWORK_NAME
+        );
         let payload = { account: this.accountName, poolID: id };
         let allocation = await this.getAllocationByPool(payload);
         if (
           Object.keys(allocation).length > 0 &&
-          joined_pool.status === ("success" || "fail")
+          (joined_pool.pool_status === "filled" ||
+            joined_pool.pool_status === "completed" ||
+            joined_pool.pool_status === "cancelled")
         ) {
           this.claimable = true;
           this.claimableIDs.push(id);
@@ -238,7 +243,7 @@ export default {
   async mounted() {
     await this.getAllChainPools();
     await this.getCreatedChainPools(this.accountName);
-    this.joinedPools = await this.getJoinedChainPools(this.accountName);
+    this.joinedIdChains = await this.getJoinedChainPools(this.accountName);
     this.featuredPoolIdChains = await this.getFeaturedChainPools();
     await this.findClaimable();
     // Start polling every 1min for any updates
@@ -251,7 +256,7 @@ export default {
     async accountName() {
       await this.getAllChainPools();
       await this.getCreatedChainPools(this.accountName);
-      this.joinedPools = await this.getJoinedChainPools(this.accountName);
+      this.joinedIdChains = await this.getJoinedChainPools(this.accountName);
       this.featuredPoolIdChains = await this.getFeaturedChainPools();
       await this.findClaimable();
     }

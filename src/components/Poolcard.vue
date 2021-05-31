@@ -115,6 +115,7 @@ export default {
       "getPoolByIDChain"
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("blockchains", ["currentChain"]),
 
     hardCap() {
       if (this.pool.hard_cap === "Loading") {
@@ -150,7 +151,10 @@ export default {
       let allocation = await this.getAllocationByPool(payload);
       if (
         this.hasAllocations(allocation) &&
-        this.pool.status === ("success" || "fail")
+        (this.pool.pool_status === "completed" ||
+          this.pool.pool_status === "filled" ||
+          this.pool.pool_status === "cancelled") &&
+        this.pool.chain === this.currentChain.NETWORK_NAME
       ) {
         this.claimable = true;
       }

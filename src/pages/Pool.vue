@@ -383,11 +383,14 @@ export default {
     },
 
     async getClaimStatus() {
-      let payload = { account: this.accountName, poolID: this.pool.id };
+     let payload = { account: this.accountName, poolID: this.pool.id };
       let allocation = await this.getAllocationByPool(payload);
       if (
         this.hasAllocations(allocation) &&
-        this.pool.status === ("success" || "fail")
+        (this.pool.pool_status === "completed" ||
+          this.pool.pool_status === "filled" ||
+          this.pool.pool_status === "cancelled") &&
+        this.pool.chain === this.currentChain.NETWORK_NAME
       ) {
         this.claimable = true;
       }
