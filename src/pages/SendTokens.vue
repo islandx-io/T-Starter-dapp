@@ -162,8 +162,8 @@
                   currentChain.NETWORK_NAME.toUpperCase()
               "
             >
-              <q-icon name="fas fa-info-circle" /> Sending tokens across chains
-              can take up to several minutes.
+              <q-icon name="fas fa-info-circle" class="q-pr-xs" /> Sending
+              tokens across chains can take up to several minutes.
             </div>
 
             <!-- Transaction sent dialog -->

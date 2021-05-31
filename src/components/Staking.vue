@@ -21,14 +21,15 @@
         </div>
         <div class="col-shrink row">
           <div
-            class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm"
+            class="col-sm col-xs-12 column items-center q-px-md q-py-sm q-gutter-y-sm"
           >
             <!-- START balance  -->
             <div class="text-center">
-              <span class="text-weight-light text-subtitle2"
-                >START Balance</span
-              >
-              <br />{{ balanceSTARTstr }}
+              <span class="text-weight-light text-subtitle2">
+                START Balance
+              </span>
+              <br />
+              <span class="text-subtitle1">{{ balanceSTARTstr }}</span>
             </div>
             <!-- Stake input -->
             <q-input outlined v-model="amountStake">
@@ -50,12 +51,12 @@
             />
           </div>
           <div
-            class="col-sm col-xs-12 column items-center q-pa-md q-gutter-y-sm"
+            class="col-sm col-xs-12 column items-center q-px-md q-py-sm q-gutter-y-sm"
           >
             <!-- Staked amount -->
             <div class="text-center">
               <span class="text-weight-light text-subtitle2">START Staked</span>
-              <br />{{ stakedSTARTstr }}
+              <br /><span class="text-subtitle1">{{ stakedSTARTstr }}</span>
             </div>
             <!-- Unstake input -->
             <q-input outlined v-model="amountUnstake">
@@ -77,6 +78,7 @@
             />
           </div>
         </div>
+        <q-separator class="q-mb-lg q-mt-md" inset size="2px" />
         <q-table
           v-if="isAuthenticated && stakeWallet.length > 0"
           class=" wallet-inner-table "
@@ -135,6 +137,14 @@
           :disable="!hasClaimableRewards"
           @click="claim"
         />
+        <div
+          class="text-center text-caption q-px-sm q-pb-sm text-grey-7"
+          style="max-width:500px"
+        >
+          <q-icon name="fas fa-info-circle" class="q-pr-xs" />Staking is
+          chain-specific. If you want to accrue rewards from multiple chains,
+          you will have to stake and claim on each chain individually.
+        </div>
       </div>
     </q-card>
   </q-dialog>
