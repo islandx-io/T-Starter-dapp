@@ -13,6 +13,7 @@ export const updatePoolOnState = (state, { poolTable }) => {
     console.error("No pool table");
     return;
   }
+  // console.log(poolTable);
 
   // if pool in store update, else push
   if (state.pools.some(a => a.id === poolTable.id && a.chain === poolTable.chain)) {
@@ -20,7 +21,6 @@ export const updatePoolOnState = (state, { poolTable }) => {
     const index = state.pools.findIndex(el => el.id === poolTable.id && el.chain === poolTable.chain)
     state.pools[index] = poolTable
     state.pools = [...state.pools]
-    // console.log(poolTable);
   } else {
     state.pools.push(poolTable);
     // console.log(poolTable);

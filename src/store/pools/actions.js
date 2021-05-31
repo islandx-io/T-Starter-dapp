@@ -434,6 +434,7 @@ export const getCreatedChainPools = async function(
         pool.public_end = new Date(pool.public_end + "Z").valueOf();
 
         // set chain in pool
+        let poolTable = pool
         poolTable.chain = this.$api.currentChain.NETWORK_NAME;
 
         commit("updatePoolOnState", { poolTable });
