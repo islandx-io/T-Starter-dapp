@@ -27,17 +27,17 @@ export const updatePoolOnState = (state, { poolTable }) => {
   }
 };
 
-export const setPoolSentimentTable = (state, { id, sentiment_table }) => {
-  let pool = state.pools.find(el => el.id === id);
+export const setPoolSentimentTable = (state, { id, sentiment_table, chain }) => {
+  let pool = state.pools.find(el => el.id === id && el.chain === chain);
   pool.sentiment_table = sentiment_table;
 };
 
-export const setPoolCommentsTable = (state, { id, comments_table }) => {
-  let pool = state.pools.find(el => el.id === id);
+export const setPoolCommentsTable = (state, { id, comments_table, chain }) => {
+  let pool = state.pools.find(el => el.id === id && el.chain === chain);
   pool.comments_table = comments_table;
 };
 
-export const updateSingleComment = (state, { pool_id, comment_id, value }) => {
-  let pool = state.pools.find(el => el.id === pool_id);
+export const updateSingleComment = (state, { pool_id, comment_id, value, chain }) => {
+  let pool = state.pools.find(el => el.id === pool_id && el.chain === chain);
   pool.comments_table.find(el => el.id === comment_id).comment = value;
 };

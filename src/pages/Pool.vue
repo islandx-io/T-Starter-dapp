@@ -372,7 +372,9 @@ export default {
       "getAllocationByPool",
       "getPlatformToken",
       "getBalanceFromChain",
-      "getPoolsSettings"
+      "getPoolsSettings",
+      "updateSentimentByPoolID",
+      "updateCommentsByPoolID"
     ]),
     ...mapActions("account", ["getChainSTART"]),
     getPoolInfo() {
@@ -438,6 +440,8 @@ export default {
           try {
             const transaction = await this.$store.$api.signTransaction(actions);
             await this.loadChainData();
+            await this.updateSentimentByPoolID(this.poolID);
+            await this.updateCommentsByPoolID(this.poolID);
             this.getPoolInfo();
           } catch (error) {
             this.$errorNotification(error);
@@ -447,17 +451,23 @@ export default {
     }
   },
   async mounted() {
-    this.settings = await this.getPoolsSettings();
     // get data from chain, write to store, get from store
+    this.settings = await this.getPoolsSettings();
     await this.loadChainData();
+    await this.updateSentimentByPoolID(this.poolID);
+    await this.updateCommentsByPoolID(this.poolID);
     this.getPoolInfo();
     await this.getChainSTART(this.accountName);
     await this.getClaimStatus();
+
     // Start polling
     this.polling = setInterval(async () => {
       await this.loadChainData();
+      await this.updateSentimentByPoolID(this.poolID);
+      await this.updateCommentsByPoolID(this.poolID);
       this.getPoolInfo();
     }, 20000);
+
     // if rerouting with tab
     if (this.$route.query.tab == "allocations") {
       this.tab = "allocations";

@@ -400,8 +400,9 @@ export const updatePoolSettings = async function(
     chain: pool.chain
   });
 
-  await dispatch("updateSentimentByPoolID", payload.id);
-  await dispatch("updateCommentsByPoolID", payload.id);
+  // TODO Is this needed?
+  // await dispatch("updateSentimentByPoolID", payload.id);
+  // await dispatch("updateCommentsByPoolID", payload.id);
 };
 
 // Get pools created from chain
@@ -811,7 +812,7 @@ export const updateSentimentByPoolID = async function({ commit }, poolID) {
       show_payer: false
     });
     const sentiment_table = tableResults.rows;
-    commit("setPoolSentimentTable", { id: poolID, sentiment_table });
+    commit("setPoolSentimentTable", { id: poolID, sentiment_table, chain: this.$api.currentChain.NETWORK_NAME});
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -836,7 +837,7 @@ export const updateCommentsByPoolID = async function({ commit }, poolID) {
       if (a.timestamp < b.timestamp) return 1;
       return 0;
     });
-    commit("setPoolCommentsTable", { id: poolID, comments_table });
+    commit("setPoolCommentsTable", { id: poolID, comments_table, chain: this.$api.currentChain.NETWORK_NAME });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
