@@ -24,7 +24,7 @@ export const login = async function(
       localStorage.setItem("autoLogin", authenticator.constructor.name);
       localStorage.setItem("account", accountName);
       localStorage.setItem("returning", true);
-      dispatch("getAccountProfile");
+      // dispatch("getAccountProfile"); // this is TELOS only
     }
   } catch (e) {
     const error =
@@ -95,6 +95,7 @@ export const getUserProfile = async function({ commit }, accountName) {
     const profile = profileResult.rows[0];
     commit("setProfile", profile);
   } catch (error) {
+    console.log('aggenee')
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };

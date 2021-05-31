@@ -400,8 +400,8 @@ export const updatePoolSettings = async function(
     chain: pool.chain
   });
 
-  // await dispatch("updateSentimentByPoolID", poolID);
-  // await dispatch("updateCommentsByPoolID", poolID);
+  await dispatch("updateSentimentByPoolID", payload.id);
+  await dispatch("updateCommentsByPoolID", payload.id);
 };
 
 // Get pools created from chain

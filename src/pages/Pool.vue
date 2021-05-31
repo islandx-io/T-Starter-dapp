@@ -376,14 +376,17 @@ export default {
     ]),
     ...mapActions("account", ["getChainSTART"]),
     getPoolInfo() {
-      this.pool = this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME);
+      this.pool = this.getPoolByIDChain(
+        this.poolID,
+        this.currentChain.NETWORK_NAME
+      );
     },
     hasAllocations(data) {
       return Object.keys(data).length > 0;
     },
 
     async getClaimStatus() {
-     let payload = { account: this.accountName, poolID: this.pool.id };
+      let payload = { account: this.accountName, poolID: this.pool.id };
       let allocation = await this.getAllocationByPool(payload);
       if (
         this.hasAllocations(allocation) &&
@@ -434,6 +437,8 @@ export default {
           });
           try {
             const transaction = await this.$store.$api.signTransaction(actions);
+            await this.loadChainData();
+            this.getPoolInfo();
           } catch (error) {
             this.$errorNotification(error);
           }
