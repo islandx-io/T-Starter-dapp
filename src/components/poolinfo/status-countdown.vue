@@ -140,7 +140,7 @@ export default {
 // Mini
 .c-mini {
   padding: 0px;
-  margin: 5px 0 0 0;
+  margin: 0;
 }
 .c-mini li {
   display: inline-block;

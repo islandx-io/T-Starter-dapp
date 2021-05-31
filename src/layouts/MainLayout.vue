@@ -4,7 +4,10 @@
       <q-toolbar class="toolbar items-center">
         <q-toolbar-title>
           <div class="row items-center">
-            <router-link :to="{path:`/${currentChain.NETWORK_NAME.toLowerCase()}`}" class="router-link">
+            <router-link
+              :to="{ path: `/${currentChain.NETWORK_NAME.toLowerCase()}` }"
+              class="router-link"
+            >
               <img
                 class="header-logo"
                 src="~assets/logo/logo-light.svg"
@@ -28,14 +31,14 @@
             class="hover-accent"
             color="secondary"
             flat
-            :to="{name: 'createpool'}"
+            :to="{ name: 'createpool' }"
             label="Create pool"
           />
           <q-btn
             class="hover-accent"
             color="secondary"
             flat
-            :to="{name: 'allpools'}"
+            :to="{ name: 'allpools' }"
             label="Pools"
           />
           <q-btn
@@ -46,7 +49,7 @@
             :to="{ name: 'wallet', params: { accountName: accountName } }"
             label="Wallet"
           />
-          <login-button class="q-pl-md" />
+          <login-button class="q-pl-sm" />
           <chain-selector class="q-pl-md" />
         </div>
         <!-- Mobile menu -->
@@ -75,7 +78,7 @@
                 v-if="accountName === admin_address"
                 color="secondary"
                 text-color="black"
-                :to="{name: 'createpool'}"
+                :to="{ name: 'createpool' }"
                 outline
               />
               <q-btn
@@ -83,7 +86,7 @@
                 color="secondary"
                 text-color="black"
                 outline
-                :to="{name: 'allpools'}"
+                :to="{ name: 'allpools' }"
               />
               <q-btn
                 label="Wallet"
@@ -119,7 +122,8 @@
               />
             </router-link>
             <p class="text-body1">
-              The place to discover and back projects building on {{currentChain.NETWORK_DISPLAY_NAME}}
+              The place to discover and back projects building on
+              {{ currentChain.NETWORK_DISPLAY_NAME }}
             </p>
           </div>
           <div class="col-sm-3 column items-start content-end">

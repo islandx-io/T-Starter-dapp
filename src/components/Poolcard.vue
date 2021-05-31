@@ -18,16 +18,23 @@
           <token-avatar :avatar="pool.avatar" :avatarSize="60" />
         </q-item-section>
         <!-- chain avatar -->
-        <token-avatar :token="pool.chain" :avatarSize="20" />
         <q-item-section top side>
-          <div class="text-accent column items-end justify-between">
-            <status-badge :poolStatus="pool.pool_status" />
-            <status-countdown
-              v-if="pool.pool_status === 'upcoming'"
-              :deadline="pool.pool_open"
-              mini
-              @countdown-finished="getPoolInfo"
+          <div class="text-accent row">
+            <token-avatar
+              class="q-mr-sm"
+              :token="pool.chain"
+              :avatarSize="28"
+              style="padding: 4px"
             />
+            <div class="column items-center justify-between">
+              <status-badge :poolStatus="pool.pool_status" />
+              <status-countdown
+                v-if="pool.pool_status === 'upcoming'"
+                :deadline="pool.pool_open"
+                mini
+                @countdown-finished="getPoolInfo"
+              />
+            </div>
           </div>
         </q-item-section>
       </q-item>
