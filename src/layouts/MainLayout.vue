@@ -57,7 +57,7 @@
             :to="{ name: 'wallet', params: { accountName: accountName } }"
             label="Wallet"
           />
-          <login-button class="q-pl-md" />
+          <login-button class="q-pl-sm" />
           <chain-selector class="q-pl-md" />
         </div>
         <!-- Mobile menu -->
@@ -143,7 +143,8 @@
               />
             </router-link>
             <p class="text-body1">
-              The place to discover and back projects building on {{currentChain.NETWORK_DISPLAY_NAME}}
+              The place to discover and back projects building on
+              {{ currentChain.NETWORK_DISPLAY_NAME }}
             </p>
           </div>
           <div class="col-sm-3 column items-start content-end">

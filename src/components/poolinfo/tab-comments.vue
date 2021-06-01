@@ -191,7 +191,8 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    ...mapGetters("pools", ["getPoolByID"]),
+    ...mapGetters("pools", ["getPoolByID", "getPoolByIDChain"]),
+    ...mapGetters("blockchains", ["currentChain"]),
     START_info() {
       return this.wallet.find(el => (el.sym = "START"));
     }
@@ -215,7 +216,7 @@ export default {
     ...mapActions("account", ["getChainSTART"]),
     async getChainInfo() {
       await this.updateCommentsByPoolID(this.poolID);
-      this.pool = await this.getPoolByID(this.poolID);
+      this.pool = await this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME);
       this.comments = JSON.parse(JSON.stringify(this.pool.comments_table));
       this.getChainSTART(this.accountName);
     },

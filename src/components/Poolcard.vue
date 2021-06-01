@@ -1,7 +1,10 @@
 <template>
   <router-link
     class="router-link"
-    :to="{ name: 'pooldetails', params: { id: poolID } }"
+    :to="{
+      name: 'pooldetails',
+      params: { id: poolID, chain: chain.toLowerCase() }
+    }"
     :event="clickable ? '' : 'click'"
   >
     <q-card
@@ -14,15 +17,24 @@
         <q-item-section top>
           <token-avatar :avatar="pool.avatar" :avatarSize="60" />
         </q-item-section>
+        <!-- chain avatar -->
         <q-item-section top side>
-          <div class="text-accent column items-end justify-between">
-            <status-badge :poolStatus="pool.pool_status" />
-            <status-countdown
-              v-if="pool.pool_status === 'upcoming'"
-              :deadline="pool.pool_open"
-              mini
-              @countdown-finished="getPoolInfo"
+          <div class="text-accent row">
+            <token-avatar
+              class="q-mr-sm"
+              :token="pool.chain"
+              :avatarSize="28"
+              style="padding: 4px"
             />
+            <div class="column items-center justify-between">
+              <status-badge :poolStatus="pool.pool_status" />
+              <status-countdown
+                v-if="pool.pool_status === 'upcoming'"
+                :deadline="pool.pool_open"
+                mini
+                @countdown-finished="getPoolInfo"
+              />
+            </div>
           </div>
         </q-item-section>
       </q-item>
@@ -57,7 +69,10 @@
         <q-btn
           outline
           color="primary"
-          :to="{ name: 'updatepool', params: { id: poolID } }"
+          :to="{
+            name: 'updatepool',
+            params: { id: poolID, chain: chain.toLowerCase() }
+          }"
           label="Update pool"
         />
       </q-card-section>
@@ -83,6 +98,9 @@ export default {
       default: 0,
       required: true
     },
+    chain: {
+      default: "telos"
+    },
     created: {
       default: false,
       required: false
@@ -97,8 +115,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
+    ...mapGetters("pools", [
+      "getAllPools",
+      "getPoolByID",
+      "getAllPoolIDs",
+      "getPoolByIDChain"
+    ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("blockchains", ["currentChain"]),
 
     hardCap() {
       if (this.pool.hard_cap === "Loading") {
@@ -119,9 +143,9 @@ export default {
     ...mapActions("pools", ["getAllocationByPool"]),
 
     getPoolInfo: function() {
-      const pool = this.getPoolByID(this.poolID);
+      const pool = this.getPoolByIDChain(this.poolID, this.chain);
       if (pool !== undefined) {
-        this.pool = this.getPoolByID(this.poolID);
+        this.pool = this.getPoolByIDChain(this.poolID, this.chain);
       }
     },
 
@@ -134,7 +158,10 @@ export default {
       let allocation = await this.getAllocationByPool(payload);
       if (
         this.hasAllocations(allocation) &&
-        this.pool.status === ("success" || "fail")
+        (this.pool.pool_status === "completed" ||
+          this.pool.pool_status === "filled" ||
+          this.pool.pool_status === "cancelled") &&
+        this.pool.chain === this.currentChain.NETWORK_NAME
       ) {
         this.claimable = true;
       }

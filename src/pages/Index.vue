@@ -19,7 +19,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
           <h2>
             The place to discover and
             <span>back projects</span>
-            building on {{currentChain.NETWORK_DISPLAY_NAME}}
+            building on {{ currentChain.NETWORK_DISPLAY_NAME }}
           </h2>
 
           <div class="q-gutter-x-sm">
@@ -27,7 +27,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
               class="hover-accent"
               color="secondary"
               outline
-              :to="{name: 'allpools'}"
+              :to="{ name: 'allpools' }"
               label="VIEW ALL POOLS"
             />
             <q-btn
@@ -69,13 +69,14 @@ that you may prove what is that good and acceptable and perfect will of God. - R
         </p>
         <div
           class="poolcard-container col"
-          v-else-if="featuredIDs_sorted.length !== 0"
+          v-else-if="featuredPoolIdChains_sorted.length !== 0"
         >
           <Poolcard
             class="col"
-            v-for="id in featuredIDs_sorted"
-            :key="'featured-' + id"
-            :poolID="id"
+            v-for="pool in featuredPoolIdChains_sorted"
+            :key="`featured-${pool.chain}+${pool.id}`"
+            :poolID="pool.id"
+            :chain="pool.chain"
           />
         </div>
         <Poolcard v-else class="col-shrink" :poolID="-1" />
@@ -83,11 +84,16 @@ that you may prove what is that good and acceptable and perfect will of God. - R
         <!-- Open pools -->
         <h2 class="col-12 text-center q-pt-xl">Open Pools</h2>
         <rocket-line class="col-12 text-center" />
-        <p class="col-12 text-center" v-if="openIDs.length === 0">
+        <p class="col-12 text-center" v-if="openPools.length === 0">
           There are no open pools at the moment.
         </p>
-        <div class="poolcard-container col" v-else-if="openIDs.length !== 0">
-          <Poolcard v-for="id in openIDs" :key="'open-' + id" :poolID="id" />
+        <div class="poolcard-container col" v-else-if="openPools.length !== 0">
+          <Poolcard
+            v-for="pool in openPools"
+            :key="`open-${pool.chain}+${pool.id}`"
+            :poolID="pool.id"
+            :chain="pool.chain"
+          />
         </div>
         <Poolcard v-else class="col-shrink" :poolID="-1" />
 
@@ -99,12 +105,13 @@ that you may prove what is that good and acceptable and perfect will of God. - R
         </p>
         <div
           class="poolcard-container col"
-          v-else-if="upcomingIDs_comp.length !== 0"
+          v-else-if="upcomingPools_sort.length !== 0"
         >
           <Poolcard
-            v-for="id in upcomingIDs_comp"
-            :key="'upcoming-' + id"
-            :poolID="id"
+            v-for="pool in upcomingPools_sort"
+            :key="`upcoming-${pool.chain}+${pool.id}`"
+            :poolID="pool.id"
+            :chain="pool.chain"
           />
         </div>
         <Poolcard v-else class="col-shrink" :poolID="-1" />
@@ -114,7 +121,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
             class="hover-accent"
             color="accent"
             outline
-            :to="{name: 'allpools'}"
+            :to="{ name: 'allpools' }"
             label="VIEW ALL POOLS"
           />
         </div>
@@ -132,46 +139,51 @@ export default {
   components: { Poolcard, RocketLine, SpaceBubble },
   data() {
     return {
-      featuredIDs: [],
+      featuredPoolIdChains: [],
       upcomingIDs: [],
       noUpcomingPools: false,
       noFeaturedPools: false,
-      polling: null,
+      polling: null
     };
   },
   computed: {
     ...mapGetters("pools", [
       "getAllPoolIDs",
       "getPoolIDsByStatus",
+      "getPoolsByStatus",
       "getPoolByID",
-      "getPublishedPoolIDs"
+      "getPublishedPoolIDs",
+      "getPoolByIDChain"
     ]),
     ...mapGetters("blockchains", ["currentChain"]),
-    openIDs() {
-      let open_pools = this.getPoolIDsByStatus("open");
-      let published_pools = this.getPublishedPoolIDs;
-      open_pools = open_pools.filter(value => published_pools.includes(value));
+    openPools() {
+      let open_pools = this.getPoolsByStatus("open");
       if (open_pools === undefined) return [];
       else return open_pools;
     },
 
-    upcomingIDs_comp() {
-      let pools = this.getPoolIDsByStatus("upcoming");
+    upcomingPools_sort() {
+      let pools = this.getPoolsByStatus("upcoming");
       if (pools === undefined) return [];
       else return pools;
     },
 
-    featuredIDs_sorted() {
-      //check if published
-      let new_featured_ids = [];
-      for (const id of this.featuredIDs) {
-        const temp_pool = this.getPoolByID(id);
-        if (temp_pool === undefined) return [];
-        else if (temp_pool.status !== "draft") {
-          new_featured_ids.push(id);
+    featuredPoolIdChains_sorted() {
+      if (this.featuredPoolIdChains.length > 0) {
+        let featuredPools = [];
+        for (const id_chain of this.featuredPoolIdChains) {
+          var temp_pool = this.getPoolByIDChain(id_chain.id, id_chain.chain);
+          if (
+            temp_pool.status !== undefined &&
+            (temp_pool.status === "published" || temp_pool.status === "success")
+          ) {
+            featuredPools.push(temp_pool);
+          }
         }
+        return this.sortPools(featuredPools);
+      } else {
+        return [];
       }
-      return this.sortPools(new_featured_ids);
     }
   },
   methods: {
@@ -181,25 +193,14 @@ export default {
       "getUpcomingChainPools"
     ]),
 
-    sortPools(id_list) {
-      let result = [];
-      let open = this.getPoolIDsByStatus("open");
-      let upcoming = this.getPoolIDsByStatus("upcoming");
-      let completed = this.getPoolIDsByStatus("completed");
-      let filled = this.getPoolIDsByStatus("filled");
-      let cancelled = this.getPoolIDsByStatus("cancelled");
-      result = result.concat(
-        this.claimableIDs,
-        open,
-        upcoming,
-        completed,
-        filled,
-        cancelled
-      );
-      result = result.filter(value => id_list.includes(value));
-      result = [...new Set(result)]; // remove duplicates
+    sortPools(pools) {
+      // TODO claimable
+      let order = ["open", "upcoming", "completed", "filled", "cancelled"];
+      pools.sort((a, b) => {
+        return order.indexOf(a.pool_status) - order.indexOf(b.pool_status);
+      });
       // console.log(result);
-      return result;
+      return pools.map(a => ({ id: a.id, chain: a.chain }));
     },
 
     beforeAppear: function(el) {
@@ -213,10 +214,10 @@ export default {
     }
   },
   async mounted() {
-    console.log("Go to the ant, you sluggard! Consider her ways and be wise,")
-    this.featuredIDs = await this.getFeaturedChainPools();
-    if (this.featuredIDs.length === 0) this.noFeaturedPools = true;
-    await this.getAllChainPools(); // TODO replace with get open pools
+    console.log("Go to the ant, you sluggard! Consider her ways and be wise,");
+    this.featuredPoolIdChains = await this.getFeaturedChainPools();
+    if (this.featuredPoolIdChains.length === 0) this.noFeaturedPools = true;
+    await this.getAllChainPools();
     this.upcomingIDs = await this.getUpcomingChainPools();
     if (this.upcomingIDs.length === 0) this.noUpcomingPools = true;
     // Start polling every 1min for any updates
