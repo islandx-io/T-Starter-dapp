@@ -20,6 +20,13 @@
         "
       />
     </div>
+    <div v-if="hasLockup">
+      <h6>Lockup:</h6>
+      <h5>
+        {{ (pool.lockup_percent / 100).toFixed(0) }}% /
+        {{ pool.lockup_period }} days
+      </h5>
+    </div>
     <div>
       <h6>Opening Time:</h6>
       <h5>{{ this.$toDate(pool.pool_open) }}</h5>
@@ -59,6 +66,9 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     hasWhitelist() {
       return this.pool.whitelist.length > 0;
+    },
+    hasLockup() {
+      return this.pool.token_lockup > 0;
     },
     whitelisted() {
       if (this.pool.whitelist.includes(this.accountName)) {
