@@ -21,7 +21,7 @@
       />
     </div>
     <div v-if="hasLockup">
-      <h6>Lockup:</h6>
+      <h6>Vesting:</h6>
       <h5>
         {{ (pool.lockup_percent / 100).toFixed(0) }}% over
         {{ pool.lockup_period }} days
