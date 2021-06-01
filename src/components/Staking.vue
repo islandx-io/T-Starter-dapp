@@ -428,6 +428,13 @@ export default {
   async mounted() {
     await this.getChainSTART(this.accountName);
     await this.getChainStakeWallet(this.accountName);
+  },
+
+  watch: {
+    async accountName() {
+      await this.getChainSTART(this.accountName);
+      await this.getChainStakeWallet(this.accountName);
+    }
   }
 };
 </script>
