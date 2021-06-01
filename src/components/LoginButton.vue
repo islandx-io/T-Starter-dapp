@@ -151,7 +151,7 @@
       </div>
     </q-dialog>
     <q-dialog v-model="ramLow">
-      <q-card style="max-width: 350px">
+      <q-card style="max-width: 400px">
         <q-card-section class="row items-center">
           <q-icon
             name="fas fa-exclamation-circle"
@@ -163,8 +163,21 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          You have {{ ramAvail / 1000 }} KB of RAM, which may not be enough for
-          transactions on this app.
+          <p>
+            You have {{ ramAvail / 1000 }} KB of RAM available, which may not be
+            enough for transactions on this app.
+          </p>
+          <div class="text-caption text-grey-7">
+            <q-icon name="fas fa-info-circle" class="q-pr-xs" />
+            {{ ramThres / 1000 }} KB of RAM would cost about
+            {{ (ramPrice * ramThres).toFixed(4) }}
+            {{ currentChain.NAITIVE_TOKEN }}.
+          </div>
+          <div class="text-caption text-grey-7" v-if="!canPayForRAM">
+            <q-icon name="fas fa-exclamation-triangle" class="q-pr-xs" />
+            Transfer {{ currentChain.NAITIVE_TOKEN }} to your account to buy
+            more RAM.
+          </div>
         </q-card-section>
 
         <q-card-actions class="q-pt-none" align="right">
@@ -174,6 +187,7 @@
             color="accent"
             class="hover-accent"
             @click="buyRAM"
+            :disable="!canPayForRAM"
           />
           <q-btn flat label="Cancel" color="primary" v-close-popup />
         </q-card-actions>
@@ -195,9 +209,11 @@ export default {
       showLogout: false,
       balanceSTR: "0 START",
       dialogSlide: "loginSlide",
-      ramThres: 1000000,
+      ramThres: 1000,
       ramAvail: 0,
-      ramLow: false
+      ramLow: false,
+      ramPrice: 0,
+      naitiveTokenBalance: 0
     };
   },
   props: {
@@ -210,18 +226,21 @@ export default {
       "loading",
       "isAutoLoading"
     ]),
+    ...mapGetters("blockchains", ["currentChain"]),
     isMobile() {
       return Platform.is.mobile;
     },
     PlatformInfo() {
       return Platform;
+    },
+    canPayForRAM() {
+      return this.naitiveTokenBalance > this.ramPrice * this.ramThres;
     }
   },
   methods: {
     ...mapActions("account", ["login", "logout", "autoLogin"]),
     ...mapActions("pools", ["getBalanceFromChain"]),
     copyAccountName() {
-      // this.checkResources();
       copyToClipboard(this.accountName).then(() => {
         this.$q.notify({
           color: "green-4",
@@ -244,8 +263,9 @@ export default {
     },
 
     async checkResources() {
+      await this.getNaitiveTokenBalance();
+      await this.getRamPrice();
       let account = await this.$store.$api.getAccount(this.accountName);
-      // console.log(account);
       this.ramAvail = account.ram_quota - account.ram_usage;
       if (this.ramAvail < this.ramThres) this.ramLow = true;
     },
@@ -253,7 +273,7 @@ export default {
     async buyRAM() {
       const actions = [];
       actions.push({
-        account: this.accountName,
+        account: "eosio",
         name: "buyrambytes",
         data: {
           payer: this.accountName,
@@ -261,11 +281,13 @@ export default {
           bytes: 1000
         }
       });
-      console.log(actions);
-      const transaction = await this.$store.$api.signTransaction(actions);
-      if (transaction) {
-        this.ramLow = false;
+      let transaction = false;
+      try {
+        transaction = await this.$store.$api.signTransaction(actions);
+      } catch (error) {
+        this.$errorNotification(error);
       }
+      if (transaction) this.ramLow = false;
     },
 
     openUrl(url) {
@@ -277,6 +299,34 @@ export default {
       if (this.$router.currentRoute.path !== accountPath) {
         this.$router.push({ path: accountPath });
       }
+    },
+
+    async getNaitiveTokenBalance() {
+      if (this.isAuthenticated) {
+        let payload = {
+          address: "eosio.token",
+          sym: this.currentChain.NAITIVE_TOKEN,
+          accountName: this.accountName
+        };
+        this.naitiveTokenBalance = this.$chainToQty(
+          await this.getBalanceFromChain(payload)
+        );
+      }
+    },
+
+    async getRamPrice() {
+      const res = await this.$store.$api.getTableRows({
+        code: "eosio",
+        scope: "eosio",
+        table: "rammarket",
+        limit: 1,
+        show_payer: false
+      });
+      let ramInfo = res.rows[0];
+      this.ramPrice =
+        this.$chainToQty(ramInfo.quote.balance) /
+        this.$chainToQty(ramInfo.base.balance);
+      // TODO Check formula and incorporate weight: parseFloat(ramInfo.quote.weight)
     },
 
     async getBalance() {
@@ -292,6 +342,7 @@ export default {
       }
     }
   },
+
   async mounted() {
     // await this.autoLogin(this.$route.query.returnUrl); // FIXME this causes telos sign to pop up, not good on prod
     await this.getBalance();
