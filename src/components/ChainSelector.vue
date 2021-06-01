@@ -8,6 +8,7 @@
       style="margin: 0px"
       color="black"
       outline
+      :menu-offset="[0, 5]"
     >
       <template v-slot:label>
         <div class="flex items-center justify-center wrap q-pa-xs">
@@ -56,8 +57,8 @@ export default {
   data() {
     return {
       selectedChain: "TELOS",
-      chainOptions: ["TELOS", "EOS"]
-      // chainOptions: ["TELOS", "EOS", "WAX"]
+      // chainOptions: ["TELOS", "EOS"]
+      chainOptions: ["TELOS", "EOS", "WAX"]
     };
   },
 
@@ -80,12 +81,17 @@ export default {
   },
 
   watch: {
-    selectedChain() {
+    async selectedChain() {
       if (this.selectedChain != localStorage.getItem("selectedChain")) {
         this.switchChain();
         // this.logout();
-        this.$router.push({name: 'home',params: {chain: this.selectedChain.toLowerCase()}});
-        this.$router.push({params: {chain: this.selectedChain.toLowerCase()}});
+        await this.$router.push({
+          name: "home",
+          params: { chain: this.selectedChain.toLowerCase() }
+        });
+        this.$router.push({
+          params: { chain: this.selectedChain.toLowerCase() }
+        });
         // this.$router.push({name:'home'})
         this.$router.go();
       }
@@ -112,5 +118,9 @@ h2 {
   margin: 0 -10px 0 5px;
   font-size: 1rem;
   font-weight: 500;
+}
+.q-item:hover {
+  background-color: $accent;
+  color: $secondary;
 }
 </style>
