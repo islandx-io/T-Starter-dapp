@@ -81,11 +81,11 @@ export default {
   },
 
   watch: {
-    selectedChain() {
+    async selectedChain() {
       if (this.selectedChain != localStorage.getItem("selectedChain")) {
         this.switchChain();
         // this.logout();
-        this.$router.push({
+        await this.$router.push({
           name: "home",
           params: { chain: this.selectedChain.toLowerCase() }
         });
