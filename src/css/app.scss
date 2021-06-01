@@ -81,20 +81,26 @@ h6 {
   & .q-btn__wrapper::before {
     transition: all 0.15s ease-in-out;
   }
-  &:hover .q-btn__wrapper::before {
-    background-color: $accent;
-    border-color: $accent;
-  }
-  &:hover .q-btn__wrapper .q-btn__content {
-    color: $secondary;
+  &:hover,
+  &:focus {
+    & .q-btn__wrapper::before {
+      background-color: $accent;
+      border-color: $accent;
+    }
+    & .q-btn__wrapper .q-btn__content {
+      color: $secondary;
+    }
   }
   &.disabled {
     color: gray !important;
   }
-  &:hover.disabled .q-btn__wrapper::before {
-    color: gray;
-    background-color: gray;
-    border-color: gray;
+  &:hover.disabled,
+  &:focus.disabled {
+    & .q-btn__wrapper::before {
+      color: gray;
+      background-color: gray;
+      border-color: gray;
+    }
   }
 }
 

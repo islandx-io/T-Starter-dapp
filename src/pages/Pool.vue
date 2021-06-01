@@ -41,10 +41,10 @@
           >
             <div class="col" style="min-width: 260px">
               <div
-                class="col row justify-between items-center"
+                class="col row items-center"
                 v-if="pool.pool_status === 'upcoming'"
               >
-                <div>Opens in:</div>
+                <div class="q-mr-md">Opens in:</div>
                 <status-countdown
                   :deadline="pool.pool_open"
                   :poolID="poolID"
@@ -190,6 +190,11 @@
             class="allocation-tab"
             :alert="claimable ? 'accent' : claimable"
           />
+          <q-tab
+            v-if="['open', 'upcoming'].includes(pool.pool_status)"
+            name="comments"
+            label="COMMENTS"
+          />
         </q-tabs>
 
         <q-separator />
@@ -206,9 +211,11 @@
           <q-tab-panel name="overview" @mousedown.stop>
             <tab-overview :pool="pool" />
           </q-tab-panel>
-
           <q-tab-panel name="allocations" @mousedown.stop>
             <tab-allocations :pool="pool" />
+          </q-tab-panel>
+          <q-tab-panel name="comments" @mousedown.stop>
+            <tab-comments :poolID="poolID" />
           </q-tab-panel>
         </q-tab-panels>
 
@@ -258,6 +265,7 @@ import statusBadge from "src/components/poolinfo/status-badge";
 import tabOverview from "src/components/poolinfo/tab-overview.vue";
 import tabAllocations from "src/components/poolinfo/tab-allocations.vue";
 import tabDetails from "src/components/poolinfo/tab-details.vue";
+import tabComments from "src/components/poolinfo/tab-comments.vue";
 import statusProgress from "src/components/poolinfo/status-progress";
 import tokenAvatar from "src/components/TokenAvatar";
 import { mapGetters, mapActions } from "vuex";
@@ -268,6 +276,7 @@ export default {
     tabOverview,
     tabAllocations,
     tabDetails,
+    tabComments,
     statusCountdown,
     statusBadge,
     statusProgress,
@@ -281,12 +290,13 @@ export default {
       polling: null,
       claimable: false,
       insufficient_start_show: false,
-      buyStartUrl: process.env.BUY_START_URL
+      buyStartUrl: process.env.BUY_START_URL,
+      settings: {}
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    ...mapGetters("pools", ["getPoolByID"]),
+    ...mapGetters("pools", ["getPoolByID", "getPoolByIDChain"]),
     ...mapGetters("blockchains", ["currentChain"]),
 
     START_info() {
@@ -360,11 +370,17 @@ export default {
       "getChainPoolByID",
       "getAllocationByPool",
       "getPlatformToken",
-      "getBalanceFromChain"
+      "getBalanceFromChain",
+      "getPoolsSettings",
+      "updateSentimentByPoolID",
+      "updateCommentsByPoolID"
     ]),
     ...mapActions("account", ["getChainSTART"]),
     getPoolInfo() {
-      this.pool = this.getPoolByID(this.poolID);
+      this.pool = this.getPoolByIDChain(
+        this.poolID,
+        this.currentChain.NETWORK_NAME
+      );
     },
     hasAllocations(data) {
       return Object.keys(data).length > 0;
@@ -375,7 +391,10 @@ export default {
       let allocation = await this.getAllocationByPool(payload);
       if (
         this.hasAllocations(allocation) &&
-        this.pool.status === ("success" || "fail")
+        (this.pool.pool_status === "completed" ||
+          this.pool.pool_status === "filled" ||
+          this.pool.pool_status === "cancelled") &&
+        this.pool.chain === this.currentChain.NETWORK_NAME
       ) {
         this.claimable = true;
       }
@@ -389,6 +408,7 @@ export default {
       else return 0;
     },
     async updateUserSentiment(side) {
+      // TODO Check logic
       if (this.isAuthenticated) {
         await this.getChainSTART(this.accountName);
         const actions = [];
@@ -396,20 +416,12 @@ export default {
           this.insufficient_start_show = true;
         } else {
           if (this.START_info.liquid < 1) {
-            actions.push({
-              account: this.START_info.token_contract,
-              name: "transfer",
-              data: {
-                from: this.accountName,
-                to: process.env.CONTRACT_ADDRESS,
-                quantity: this.$toChainString(
-                  1,
-                  this.START_info.decimals,
-                  this.START_info.sym
-                ),
-                memo: `Send ${this.START_info.sym} to liquid`
-              }
-            });
+            actions.push(
+              this.$startBalanceToLiquidAction(
+                this.$chainToQty(this.START_info),
+                this.settings.social_fee
+              )
+            );
           }
           let vote = 0; // abstain
           if (side === "upvote" && this.userSentiment !== "upvote") vote = 1;
@@ -424,24 +436,37 @@ export default {
               vote: vote
             }
           });
-          const transaction = await this.$store.$api.signTransaction(actions);
-          await this.loadChainData();
-          this.getPoolInfo();
+          try {
+            const transaction = await this.$store.$api.signTransaction(actions);
+            await this.loadChainData();
+            await this.updateSentimentByPoolID(this.poolID);
+            await this.updateCommentsByPoolID(this.poolID);
+            this.getPoolInfo();
+          } catch (error) {
+            this.$errorNotification(error);
+          }
         }
       }
     }
   },
   async mounted() {
     // get data from chain, write to store, get from store
+    this.settings = await this.getPoolsSettings();
     await this.loadChainData();
+    await this.updateSentimentByPoolID(this.poolID);
+    await this.updateCommentsByPoolID(this.poolID);
     this.getPoolInfo();
-    await this.getChainSTART();
+    await this.getChainSTART(this.accountName);
     await this.getClaimStatus();
+
     // Start polling
-    this.polling = setInterval( async () => {
+    this.polling = setInterval(async () => {
       await this.loadChainData();
+      await this.updateSentimentByPoolID(this.poolID);
+      await this.updateCommentsByPoolID(this.poolID);
       this.getPoolInfo();
     }, 20000);
+
     // if rerouting with tab
     if (this.$route.query.tab == "allocations") {
       this.tab = "allocations";
@@ -455,7 +480,8 @@ export default {
 
   watch: {
     async accountName() {
-      await this.getChainSTART();
+      this.settings = await this.getPoolsSettings();
+      await this.getChainSTART(this.accountName);
       await this.getClaimStatus();
     }
   }

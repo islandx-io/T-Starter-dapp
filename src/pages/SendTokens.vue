@@ -249,8 +249,8 @@ export default {
 
     networkOptions() {
       if (this.selectedTokenSym.toUpperCase() === "START")
-        // return ["TELOS", "EOS", "WAX"];
-        return ["TELOS", "EOS"];
+        return ["TELOS", "EOS", "WAX"];
+        // return ["TELOS", "EOS"];
       else return [this.selectedNetwork];
     }
   },
@@ -365,12 +365,7 @@ export default {
           message: "Sent"
         });
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
       }
     }
   },

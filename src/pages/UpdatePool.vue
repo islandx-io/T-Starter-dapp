@@ -7,7 +7,7 @@
     <section class="body-container">
       <q-card>
         <q-form
-          v-if="accountName === pool.owner"
+          v-if="this.accountName === this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME).owner"
           @submit="onSubmit"
           @reset="onReset"
           ref="updateForm"
@@ -321,7 +321,7 @@
                   :disable="
                     pool.status === 'published' ||
                       this.funded ||
-                      getPoolByID(poolID).title == ''
+                      this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME).title == ''
                   "
                   v-if="pool.status === 'draft'"
                   color="primary"
@@ -467,7 +467,8 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
-    ...mapGetters("pools", ["getPoolByID"]),
+    ...mapGetters("pools", ["getPoolByID", "getPoolByIDChain"]),
+    ...mapGetters("blockchains", ["currentChain"]),
 
     selected_base_token() {
       return this.base_token_options.find(
@@ -607,7 +608,7 @@ export default {
     },
 
     getPoolInfo() {
-      this.pool = JSON.parse(JSON.stringify(this.getPoolByID(this.poolID))); //make deep copy
+      this.pool = JSON.parse(JSON.stringify(this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME))); //make deep copy
       this.getTokenSymbolFromPool();
       // pool to numbers
       this.pool.swap_ratio.quantity = this.$chainToQty(
@@ -791,12 +792,7 @@ export default {
           });
           this.redirectPoolPage();
         } catch (error) {
-          this.$q.notify({
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: `${error}`
-          });
+          this.$errorNotification(error);
         }
       }
     },
@@ -822,12 +818,7 @@ export default {
             this.redirectPoolPage();
           }
         } catch (error) {
-          this.$q.notify({
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: `${error}`
-          });
+          this.$errorNotification(error);
         }
       }
     },
@@ -859,12 +850,7 @@ export default {
             this.redirectPoolPage();
           }
         } catch (error) {
-          this.$q.notify({
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: `${error}`
-          });
+          this.$errorNotification(error);
         }
       }
     },
@@ -880,12 +866,7 @@ export default {
         });
         this.redirectPoolPage();
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
       }
     },
 
