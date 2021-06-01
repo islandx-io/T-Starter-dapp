@@ -1,6 +1,7 @@
 export default function() {
   return {
     currentChain: {
+      NAITIVE_TOKEN: "TLOS",
       NETWORK_NAME: "TELOS",
       NETWORK_DISPLAY_NAME: "Telos",
       TEST_NETWORK: true,
@@ -14,6 +15,7 @@ export default function() {
     },
     blockchainList: [
       {
+        NAITIVE_TOKEN: "TLOS",
         NETWORK_NAME: "TELOS",
         NETWORK_DISPLAY_NAME: "Telos",
         TEST_NETWORK: true,
@@ -26,6 +28,7 @@ export default function() {
         HYPERION_ENDPOINT: "https://testnet.telos.africa"
       },
       {
+        NAITIVE_TOKEN: "TLOS",
         NETWORK_NAME: "TELOS",
         NETWORK_DISPLAY_NAME: "Telos",
         TEST_NETWORK: false,
@@ -38,6 +41,7 @@ export default function() {
         HYPERION_ENDPOINT: "https://telos.caleos.io"
       },
       {
+        NAITIVE_TOKEN: "EOS",
         NETWORK_NAME: "EOS",
         NETWORK_DISPLAY_NAME: "EOS",
         TEST_NETWORK: true,
@@ -50,6 +54,7 @@ export default function() {
         HYPERION_ENDPOINT: "https://jungle3.cryptolions.io:443"
       },
       {
+        NAITIVE_TOKEN: "EOS",
         NETWORK_NAME: "EOS",
         NETWORK_DISPLAY_NAME: "EOS",
         TEST_NETWORK: false,
@@ -60,8 +65,9 @@ export default function() {
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://bloks.io",
         HYPERION_ENDPOINT: "https://eos.greymass.com:443"
-      },
+      }
       // {
+      // NAITIVE_TOKEN: "WAX",
       //   NETWORK_NAME: "WAX",
       //   NETWORK_DISPLAY_NAME: "WAX",
       //   TEST_NETWORK: true,
@@ -74,6 +80,7 @@ export default function() {
       //   HYPERION_ENDPOINT: "https://testnet.waxsweden.org:443"
       // },
       // {
+      //  NAITIVE_TOKEN: "WAX",
       //   NETWORK_NAME: "WAX",
       //   NETWORK_DISPLAY_NAME: "WAX",
       //   TEST_NETWORK: false,
