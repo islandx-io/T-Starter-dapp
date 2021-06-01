@@ -55,8 +55,9 @@
                 <time-until
                   :deadline="props.row.ballot_close"
                   :poolID="props.row.id"
-                  @countdown-finished="getBallotByIDChain(props.row.id, props.row.chain)"
-                 
+                  @countdown-finished="
+                    getBallotByIDChain(props.row.id, props.row.chain)
+                  "
                 />
               </q-td>
 
@@ -102,6 +103,9 @@
                     "
                   >
                     {{ props.row.votes.find(a => a.key === "downvote") }}
+                  </div>
+                  <div>
+                    Voting progress: {{ votingProgress(props.row.votes) }}
                   </div>
                 </div>
               </q-td>
@@ -150,13 +154,16 @@ export default {
           align: "center"
         }
       ],
-      userVote: "none"
+      userVote: "none",
+      stakeTotal: 0,
+      ballotConfig: {},
+      poolSettings: {}
     };
   },
   computed: {
     ...mapGetters("ballots", [
       "getAllBallotIDs",
-      "getBallotByID",      
+      "getBallotByID",
       "getBallotByIDChain",
       "getAllBallots",
       "getPublishedBallots"
@@ -164,9 +171,26 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"])
   },
   methods: {
-    ...mapActions("ballots", ["getAllChainBallots", "getChainBallotByID"]),
+    ...mapActions("ballots", [
+      "getAllChainBallots",
+      "getChainBallotByID",
+      "getBallotConfig"
+    ]),
+    ...mapActions("pools", ["getPoolsSettings"]),
 
-    // FIXME get what the users voted on a pool?
+    // Calculate voting progress
+    votingProgress(voteTable) {
+      //(upvote - downvote) / stake_total > lead
+      if (voteTable.length > 0 && this.ballotConfig.lead !== undefined && this.stakeTotal !== 0) {
+        let upvote = this.$chainToQty(voteTable.find(a => a.key === "upvote").value);
+        let downvote = this.$chainToQty(voteTable.find(a => a.key === "downvote").value);
+        return ((upvote - downvote) / this.stakeTotal) / this.ballotConfig.lead;
+      } else {
+        return "Loading";
+      }
+    },
+
+    // TODO get what the users voted on a pool?
     userSentiment() {
       let result = "none";
       if (this.pool.sentiment_table) {
@@ -218,6 +242,9 @@ export default {
   },
   async mounted() {
     await this.getAllChainBallots();
+    this.ballotConfig = await this.getBallotConfig();
+    this.poolSettings = await this.getPoolsSettings();
+    this.stakeTotal = this.$chainToQty(this.poolSettings.stake_pool);
   }
 };
 </script>
