@@ -150,8 +150,8 @@
         </q-carousel>
       </div>
     </q-dialog>
-    <q-dialog v-model="res.showDialog">
-      <q-card>
+    <q-dialog v-model="ramLow">
+      <q-card style="max-width: 350px">
         <q-card-section class="row items-center">
           <q-icon
             name="fas fa-exclamation-circle"
@@ -159,24 +159,22 @@
             class="q-pr-sm"
             color="primary"
           />
-          <div class="text-h6">Insufficient resources</div>
+          <div class="col text-h6">Insufficient RAM</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          You do not have enough RAM or CPU to complete transactions on this
-          app. Resources available:
-          <ul>
-            <li>
-              {{ res.ramAvail }} bytes of RAM (need {{ res.ramThres }} bytes)
-            </li>
-            <li>
-              {{ res.cpuAvail }} &mu;s of CPU (need {{ res.cpuThres }} &mu;s)
-            </li>
-          </ul>
+          You have {{ ramAvail / 1000 }} KB of RAM, which may not be enough for
+          transactions on this app.
         </q-card-section>
 
         <q-card-actions class="q-pt-none" align="right">
-          <q-btn outline label="Top up" color="accent" class="hover-accent" />
+          <q-btn
+            outline
+            label="Buy 1 KB of RAM"
+            color="accent"
+            class="hover-accent"
+            @click="buyRAM"
+          />
           <q-btn flat label="Cancel" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
@@ -197,15 +195,9 @@ export default {
       showLogout: false,
       balanceSTR: "0 START",
       dialogSlide: "loginSlide",
-      res: {
-        ramThres: 1000000,
-        cpuThres: 40,
-        ramAvail: 0,
-        cpuAvail: 0,
-        ramLow: false,
-        cpuLow: false,
-        showDialog: false
-      }
+      ramThres: 1000000,
+      ramAvail: 0,
+      ramLow: false
     };
   },
   props: {
@@ -253,10 +245,27 @@ export default {
 
     async checkResources() {
       let account = await this.$store.$api.getAccount(this.accountName);
-      this.res.ramAvail = account.ram_quota - account.ram_usage;
-      if (this.res.ramAvail < this.res.ramThres) this.res.ramLow = true;
-      if (this.res.cpuAvail < this.res.cpuThres) this.res.cpuLow = true;
-      this.res.showDialog = this.res.ramLow || this.res.cpuLow;
+      // console.log(account);
+      this.ramAvail = account.ram_quota - account.ram_usage;
+      if (this.ramAvail < this.ramThres) this.ramLow = true;
+    },
+
+    async buyRAM() {
+      const actions = [];
+      actions.push({
+        account: this.accountName,
+        name: "buyrambytes",
+        data: {
+          payer: this.accountName,
+          receiver: this.accountName,
+          bytes: 1000
+        }
+      });
+      console.log(actions);
+      const transaction = await this.$store.$api.signTransaction(actions);
+      if (transaction) {
+        this.ramLow = false;
+      }
     },
 
     openUrl(url) {
