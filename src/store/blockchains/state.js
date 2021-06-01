@@ -80,11 +80,11 @@ export default function() {
         TEST_NETWORK: false,
         NETWORK_CHAIN_ID:
           "1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4",
-        NETWORK_HOST: "chain.wax.io",
+        NETWORK_HOST: "wax.greymass.com",
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://wax.bloks.io",
-        HYPERION_ENDPOINT: "https://chain.wax.io:443"
+        HYPERION_ENDPOINT: "https://wax.greymass.com:443"
       }
     ]
   };
