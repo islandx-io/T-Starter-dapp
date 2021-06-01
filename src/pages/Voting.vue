@@ -55,7 +55,8 @@
                 <time-until
                   :deadline="props.row.ballot_close"
                   :poolID="props.row.id"
-                  @countdown-finished="getBallotByID(props.row.id)"
+                  @countdown-finished="getBallotByIDChain(props.row.id, props.row.chain)"
+                 
                 />
               </q-td>
 
@@ -155,7 +156,8 @@ export default {
   computed: {
     ...mapGetters("ballots", [
       "getAllBallotIDs",
-      "getBallotByID",
+      "getBallotByID",      
+      "getBallotByIDChain",
       "getAllBallots",
       "getPublishedBallots"
     ]),

@@ -37,11 +37,12 @@ export default {
     return {
       now: Math.trunc(Date.now() / 1000), //  Current time (seconds)
       endDate: null, // Deadline (seconds)
-      diff: 0 // Time difference (seconds)
+      diff: 0, // Time difference (seconds)
+      interval: null
     };
   },
   created() {
-    interval = setInterval(() => {
+    this.interval = setInterval(() => {
       this.now = Math.trunc(Date.now() / 1000);
     }, 1000); // Update the current time every second
   },
@@ -60,7 +61,7 @@ export default {
     }
   },
   watch: {
-    async now() {
+    async now() {      
       if (!this.deadline) {
         throw new Error("Missing prop 'deadline'");
       }
@@ -71,7 +72,7 @@ export default {
       this.diff = this.endDate - this.now;
       if (this.diff <= 0 || this.reset) {
         this.diff = 0;
-        clearInterval(interval); // Stop countdown
+        // clearInterval(interval); // Stop countdown
         // await this.getChainBallotByID(this.poolID); // update status //FIXME reenable me when working
         this.$emit("countdown-finished");
         // console.log("Time finished");

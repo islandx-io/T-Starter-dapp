@@ -5,3 +5,6 @@ export const getPublishedBallots = ({ ballots }) => ballots.filter(a => a.status
 export const getAllBallotIDs = ({ ballots }) => ballots.map(el => el.id);
 
 export const getBallotByID = ({ ballots }) => id => ballots.find(el => el.id === id);
+
+export const getBallotByIDChain = ({ ballots }) => (id, chain) =>
+ballots.find(el => el.id === id && el.chain === chain);
