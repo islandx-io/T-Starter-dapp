@@ -180,7 +180,7 @@
           </div>
         </q-card-section>
 
-        <q-card-actions class="q-pt-none" align="right">
+        <q-card-actions class="q-pt-none" align="center">
           <q-btn
             outline
             label="Buy 1 KB of RAM"
@@ -189,7 +189,13 @@
             @click="buyRAM"
             :disable="!canPayForRAM"
           />
-          <q-btn flat label="Cancel" color="primary" v-close-popup />
+          <q-btn
+            outline
+            class="hover-accent"
+            label="Skip"
+            color="primary"
+            v-close-popup
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
