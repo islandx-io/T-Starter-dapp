@@ -57,6 +57,49 @@ export const getChainBallotByID = async function({ commit, dispatch }, id) {
   }
 };
 
+// Get pool info from chain by id, put into store
+export const getChainPoolByIDChain = async function(
+  { commit, dispatch },
+  payload
+) {
+  try {
+    let rpcs = await dispatch("possibleRPCs", { root: true });
+    let api =
+      rpcs.apis[rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)];
+
+    const tableResults = await api.get_table_rows({
+      json: true,
+      code: process.env.CONTRACT_ADDRESS, // Contract that we target
+      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+      table: process.env.CONTRACT_TABLE, // Table name
+      lower_bound: payload.id, // Table primary key value
+      limit: 1, // Maximum number of rows that we want to get
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+    // console.log(this.$api.currentChain);
+
+    let ballotTable = tableResults.rows[tableResults.rows.length - 1];
+    // console.log(ballotTable);
+
+    //check dates are unix
+    ballotTable.pool_open = new Date(ballotTable.pool_open + "Z").valueOf();
+    ballotTable.private_end = new Date(ballotTable.private_end + "Z").valueOf();
+    ballotTable.public_end = new Date(ballotTable.public_end + "Z").valueOf();
+
+    // set chain in pool
+    ballotTable.chain =
+    rpcs.chains[
+      rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)
+    ].NETWORK_NAME;
+
+    commit("updatePoolOnState", { ballotTable });
+    // await dispatch("updatePoolSettings", { id: ballotTable.id, chain: ballotTable.chain });
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
 // get all ballots from chain, populate store
 export const getAllChainBallots = async function({ commit, dispatch }) {
   try {
@@ -113,31 +156,31 @@ export const updateBallotSettings = async function(
 };
 
 // find the created ballot id
-export const findCreatedBallotID = async function({ commit, dispatch }, owner) {
-  try {
-    const tableResults = await this.$api.getTableRows({
-      code: process.env.BALLOT_ADDRESS, // Contract that we target
-      scope: process.env.BALLOT_ADDRESS, // Account that owns the data
-      table: "ballots", // Table name
-      index_position: 2,
-      key_type: "i64",
-      lower_bound: owner,
-      upper_bound: owner,
-      limit: 10000, // Maximum number of rows that we want to get
-      reverse: false, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
-    });
+// export const findCreatedBallotID = async function({ commit, dispatch }, owner) {
+//   try {
+//     const tableResults = await this.$api.getTableRows({
+//       code: process.env.BALLOT_ADDRESS, // Contract that we target
+//       scope: process.env.BALLOT_ADDRESS, // Account that owns the data
+//       table: "ballots", // Table name
+//       index_position: 2,
+//       key_type: "i64",
+//       lower_bound: owner,
+//       upper_bound: owner,
+//       limit: 10000, // Maximum number of rows that we want to get
+//       reverse: false, // Optional: Get reversed data
+//       show_payer: false // Optional: Show ram payer
+//     });
 
-    const ballotTable = tableResults.rows[tableResults.rows.length - 1];
-    console.log(ballotTable);
+//     const ballotTable = tableResults.rows[tableResults.rows.length - 1];
+//     console.log(ballotTable);
 
-    return ballotTable.id;
-    // commit("updateBallotOnState", { ballotTable, id });
-    //   await dispatch("updatePoolSettings", id);
-  } catch (error) {
-    commit("general/setErrorMsg", error.message || error, { root: true });
-  }
-};
+//     return ballotTable.id;
+//     // commit("updateBallotOnState", { ballotTable, id });
+//     //   await dispatch("updatePoolSettings", id);
+//   } catch (error) {
+//     commit("general/setErrorMsg", error.message || error, { root: true });
+//   }
+// };
 
 // if pool is funded with the token
 export const ifBallotFunded = async function(

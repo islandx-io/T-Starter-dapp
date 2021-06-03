@@ -580,7 +580,8 @@ export default {
       "getAllChainBallots",
       "getChainBallotByID",
       "findCreatedBallotID",
-      "ifBallotFunded"
+      "ifBallotFunded",
+      "getBallotConfig"
     ]),
     ...mapActions("pools", [
       "getChainAccountInfo",
@@ -748,13 +749,43 @@ export default {
       }
     },
 
-    async updateChainPool() {
+    async publishPool() {
       const actions = [
+        {
+          account: process.env.BALLOT_ADDRESS,
+          name: "openballot",
+          data: {
+            id: this.poolID
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
+    async createBallot() {
+      const actions = [
+        {
+          account: "token.start",
+          name: "transfer",
+          data: {
+            from: this.accountName,
+            to: process.env.BALLOT_ADDRESS,
+            quantity: this.settings.listing_fee,
+            memo: `ballot fee`
+          }
+        },
+        {
+          account: process.env.BALLOT_ADDRESS,
+          name: "newballot",
+          data: {
+            owner: this.accountName
+          }
+        },
         {
           account: process.env.BALLOT_ADDRESS,
           name: "updateballot",
           data: {
-            id: this.poolID,
+            id: this.ballotConfig.last_ballot_id + 1,
             title: this.pool.title,
             avatar: this.pool.avatar,
             tag_line: this.pool.tag_line,
@@ -787,42 +818,6 @@ export default {
             public_end: this.pool.public_end,
             whitelist: this.pool.whitelist,
             web_links: this.cleanedWebLinks
-          }
-        }
-      ];
-      const transaction = await this.$store.$api.signTransaction(actions);
-    },
-
-    async publishPool() {
-      const actions = [
-        {
-          account: process.env.BALLOT_ADDRESS,
-          name: "openballot",
-          data: {
-            id: this.poolID
-          }
-        }
-      ];
-      const transaction = await this.$store.$api.signTransaction(actions);
-    },
-
-    async createBallot() {
-      const actions = [
-        {
-          account: "token.start",
-          name: "transfer",
-          data: {
-            from: this.accountName,
-            to: process.env.BALLOT_ADDRESS,
-            quantity: this.settings.listing_fee,
-            memo: `ballot fee`
-          }
-        },
-        {
-          account: process.env.BALLOT_ADDRESS,
-          name: "newballot",
-          data: {
-            owner: this.accountName
           }
         }
       ];
@@ -868,15 +863,10 @@ export default {
         // if not owned pool create ballot
         if (this.accountName != this.pool.owner) {
           await this.createBallot();
-          this.poolID = await this.findCreatedBallotID(this.accountName);
+          this.poolID = this.ballotConfig.last_ballot_id + 1;
         }
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
       }
     },
 
@@ -898,8 +888,6 @@ export default {
         try {
           // try create pool
           await this.tryCreatePool();
-          //update ballot
-          await this.updateChainPool();
           this.$q.notify({
             color: "green-4",
             textColor: "white",
@@ -908,12 +896,7 @@ export default {
           });
           this.redirectBallotPage();
         } catch (error) {
-          this.$q.notify({
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: `${error}`
-          });
+          this.$errorNotification(error);
         }
       }
     },
@@ -939,12 +922,7 @@ export default {
             this.redirectBallotPage();
           }
         } catch (error) {
-          this.$q.notify({
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: `${error}`
-          });
+          this.$errorNotification(error);
         }
       }
     },
@@ -970,12 +948,7 @@ export default {
             this.redirectBallotPage();
           }
         } catch (error) {
-          this.$q.notify({
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: `${error}`
-          });
+          this.$errorNotification(error);
         }
       }
     },
@@ -991,12 +964,7 @@ export default {
         });
         this.redirectBallotPage();
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
       }
     },
 
@@ -1017,6 +985,7 @@ export default {
 
   async mounted() {
     this.settings = await this.getPoolsSettings();
+    this.ballotConfig = await this.getBallotConfig();
 
     if (this.poolID) {
       await this.getChainBallotByID(this.poolID);

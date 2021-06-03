@@ -9,3 +9,6 @@ export const getBallotByID = ({ ballots }) => id => ballots.find(el => el.id ===
 
 export const getBallotByIDChain = ({ ballots }) => (id, chain) =>
 ballots.find(el => el.id === id && el.chain === chain);
+
+export const getOwnedBallots = ({ ballots }) => (owner) =>
+ballots.find(el => el.owner === owner);

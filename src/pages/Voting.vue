@@ -10,6 +10,8 @@
         label="Create Ballot"
         :to="{ name: 'createballot' }"
       />
+      <q-btn color="primary" label="My Ballots" @click="filter.value='myballots'"/>
+      <q-btn color="primary" label="Reset filter" @click="filter.value='none'"/>
       <!-- {{ getPublishedBallots }} -->
 
       <!-- Search bar -->
@@ -21,6 +23,8 @@
           :columns="columns"
           row-key="name"
           :pagination="{ rowsPerPage: 20 }"
+          :filter="filter"
+          :filter-method="ballotsFilter"
         >
           <template v-slot:body="props">
             <q-tr
@@ -56,7 +60,7 @@
                 :key="props.cols[props.cols.length - 2].name"
               >
                 <time-until
-                  :deadline="props.row.ballot_close"
+                  :deadline="(props.row.ballot_close > 0) ? props.row.ballot_close: Date.now().valueOf()"
                   :poolID="props.row.id"
                   @countdown-finished="
                     getBallotByIDChain(props.row.id, props.row.chain)
@@ -138,7 +142,7 @@ export default {
           field: "title",
           format: val => `${val}`,
           sortable: true,
-          style: "max-width: 200px; min-width: 200px",
+          style: "max-width: 200px; min-width: 200px"
         },
         {
           name: "price",
@@ -162,7 +166,8 @@ export default {
       userVote: "none",
       stakeTotal: 0,
       ballotConfig: {},
-      poolSettings: {}
+      poolSettings: {},
+      filter: {value: 'none'}
     };
   },
   computed: {
@@ -188,9 +193,16 @@ export default {
       // Here you can navigate to where ever you have to
       this.$router.push({
         name: "ballotdetails",
-        params: { id: row.id, chain: row.chain }
+        params: { id: row.id, chain: row.chain.toLowerCase() }
       });
       // console.log(row);
+    },
+
+    ballotsFilter() {
+      if (this.filter.value === "myballots") {
+        return this.getAllBallots.filter(row => row.owner === this.accountName);
+      }
+      return this.getUpcomingBallots;
     },
 
     // Calculate voting progress

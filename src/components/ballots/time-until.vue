@@ -24,7 +24,8 @@ export default {
   props: {
     deadline: {
       type: Number,
-      required: true
+      // required: true
+      default: Date.now().valueOf()
     },
     reset: {
       type: Boolean
