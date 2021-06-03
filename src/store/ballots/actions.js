@@ -1,3 +1,28 @@
+// possible rpcs
+export const possibleRPCs = async function({
+  commit,
+  dispatch,
+  rootGetters,
+  getters
+}) {
+  let blockchains = rootGetters["blockchains/allBlockchains"];
+  let possibleChains = blockchains.filter(
+    a => String(a.TEST_NETWORK) === process.env.TESTNET
+  );
+
+  let apis = [];
+
+  for (const chain of possibleChains) {
+    let rpc = new JsonRpc(
+      `${chain.NETWORK_PROTOCOL}://${chain.NETWORK_HOST}:${chain.NETWORK_PORT}`
+    );
+    apis.push(rpc);
+  }
+
+  // console.log(apis)
+  return { apis: apis, chains: possibleChains };
+};
+
 // Get ballot info from chain by id, put into store
 export const getChainBallotByID = async function({ commit, dispatch }, id) {
   try {
@@ -22,8 +47,10 @@ export const getChainBallotByID = async function({ commit, dispatch }, id) {
     ballotTable.private_end = new Date(ballotTable.private_end + "Z").valueOf();
     ballotTable.public_end = new Date(ballotTable.public_end + "Z").valueOf();
 
-    
-    commit("updateBallotOnState", { ballotTable, id });
+    // set chain in pool
+    ballotTable.chain = this.$api.currentChain.NETWORK_NAME;
+
+    commit("updateBallotOnState", { ballotTable });
     // await dispatch("updateBallotSettings", id);
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -58,8 +85,10 @@ export const getAllChainBallots = async function({ commit, dispatch }) {
       pool.public_end = new Date(pool.public_end + "Z").valueOf();
 
       let ballotTable = pool;
+      // set chain in pool
+      ballotTable.chain = this.$api.currentChain.NETWORK_NAME;
 
-      commit("updateBallotOnState", { ballotTable, id });
+      commit("updateBallotOnState", { ballotTable });
       // await dispatch("updateBallotSettings", id);
     }
   } catch (error) {
@@ -71,7 +100,7 @@ export const updateBallotSettings = async function(
   { commit, getters, dispatch },
   poolID
 ) {
-  console.log("in action")
+  console.log("in action");
   const pool = getters.getBallotByID(poolID);
 
   commit({
@@ -81,7 +110,6 @@ export const updateBallotSettings = async function(
     access_type: "jai",
     progress: "progress"
   });
-
 };
 
 // find the created ballot id
@@ -103,7 +131,7 @@ export const findCreatedBallotID = async function({ commit, dispatch }, owner) {
     const ballotTable = tableResults.rows[tableResults.rows.length - 1];
     console.log(ballotTable);
 
-    return ballotTable.id
+    return ballotTable.id;
     // commit("updateBallotOnState", { ballotTable, id });
     //   await dispatch("updatePoolSettings", id);
   } catch (error) {
@@ -139,9 +167,12 @@ export const ifBallotFunded = async function(
       );
       // console.log(amount_inwallet);
 
-      let amount_required =
-        parseFloat((this.$chainToQty(pool.swap_ratio.quantity) *
-        this.$chainToQty(pool.hard_cap)).toPrecision(15));
+      let amount_required = parseFloat(
+        (
+          this.$chainToQty(pool.swap_ratio.quantity) *
+          this.$chainToQty(pool.hard_cap)
+        ).toPrecision(15)
+      );
       // console.log(amount_required);
 
       // if ammount of tokens in wallets tabel enough

@@ -17,31 +17,34 @@
       <!-- Table with pools -->
       <div class="q-pa-md">
         <q-table
-          :data="getPublishedBallots"
+          :data="getUpcomingBallots"
           :columns="columns"
           row-key="name"
           :pagination="{ rowsPerPage: 20 }"
         >
           <template v-slot:body="props">
-            <q-tr :props="props" :key="props.row.id">
+            <q-tr
+              :props="props"
+              :key="props.row.id"
+              @click="onRowClick(props.row)"
+            >
               <!-- {{props}} -->
               <!-- Avatar -->
-              <!-- <q-td :props="props" :key="props.cols[0].name">
+              <q-td :props="props" :key="props.cols[0].name">
                 <div class="row justify-start items-center">
                   <token-avatar
-                    :token="props.row.token_sym"
                     :avatar="props.row.avatar"
                     :avatarSize="35"
                     class="q-mr-sm"
                   />
                   <div>{{ props.cols[0].value }}</div>
                 </div>
-              </q-td> -->
+              </q-td>
 
               <!-- Info -->
               <q-td
                 :props="props"
-                v-for="col in props.cols.slice(0, 4)"
+                v-for="col in props.cols.slice(1, 4)"
                 :key="col.name"
               >
                 {{ col.value }}
@@ -76,7 +79,7 @@
                     class="hover-accent"
                     size="1.05rem"
                     :color="userVote === 'upvote' ? 'positive' : 'black'"
-                    @click="tryVote(1, props.row.id)"
+                    @click.stop="tryVote(1, props.row.id)"
                     :disable="!isAuthenticated"
                   />
                   <div
@@ -94,7 +97,7 @@
                     icon="fas fa-thumbs-down"
                     class="hover-accent"
                     :color="userVote === 'downvote' ? 'accent' : 'black'"
-                    @click="tryVote(-1, props.row.id)"
+                    @click.stop="tryVote(-1, props.row.id)"
                     :disable="!isAuthenticated"
                   />
                   <div
@@ -119,10 +122,11 @@
 
 <script>
 import TimeUntil from "src/components/ballots/time-until.vue";
+import tokenAvatar from "src/components/TokenAvatar";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  components: { TimeUntil },
+  components: { TimeUntil, tokenAvatar },
   data() {
     return {
       columns: [
@@ -133,7 +137,8 @@ export default {
           align: "left",
           field: "title",
           format: val => `${val}`,
-          sortable: true
+          sortable: true,
+          style: "max-width: 200px; min-width: 200px",
         },
         {
           name: "price",
@@ -146,7 +151,7 @@ export default {
         },
         { name: "softcap", label: "Softcap", field: "soft_cap" },
         { name: "hardcap", label: "Hardcap", field: "hard_cap" },
-        { name: "closesin", label: "Closes in", field: "ballot_close" },
+        { name: "closesin", label: "Voting ends in", field: "ballot_close" },
         {
           name: "voting",
           label: "Voting",
@@ -166,7 +171,8 @@ export default {
       "getBallotByID",
       "getBallotByIDChain",
       "getAllBallots",
-      "getPublishedBallots"
+      "getPublishedBallots",
+      "getUpcomingBallots"
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"])
   },
@@ -178,13 +184,30 @@ export default {
     ]),
     ...mapActions("pools", ["getPoolsSettings"]),
 
+    onRowClick(row) {
+      // Here you can navigate to where ever you have to
+      this.$router.push({
+        name: "ballotdetails",
+        params: { id: row.id, chain: row.chain }
+      });
+      // console.log(row);
+    },
+
     // Calculate voting progress
     votingProgress(voteTable) {
       //(upvote - downvote) / stake_total > lead
-      if (voteTable.length > 0 && this.ballotConfig.lead !== undefined && this.stakeTotal !== 0) {
-        let upvote = this.$chainToQty(voteTable.find(a => a.key === "upvote").value);
-        let downvote = this.$chainToQty(voteTable.find(a => a.key === "downvote").value);
-        return ((upvote - downvote) / this.stakeTotal) / this.ballotConfig.lead;
+      if (
+        voteTable.length > 0 &&
+        this.ballotConfig.lead !== undefined &&
+        this.stakeTotal !== 0
+      ) {
+        let upvote = this.$chainToQty(
+          voteTable.find(a => a.key === "upvote").value
+        );
+        let downvote = this.$chainToQty(
+          voteTable.find(a => a.key === "downvote").value
+        );
+        return (upvote - downvote) / this.stakeTotal / this.ballotConfig.lead;
       } else {
         return "Loading";
       }
