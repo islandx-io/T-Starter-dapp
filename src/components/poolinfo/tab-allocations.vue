@@ -1,21 +1,32 @@
 <template>
   <div class="column justify-between">
     <div class="row justify-between" v-if="hasAllocations">
-      <h6>Bid:</h6>
-      <h5>{{ this.$chainStrReformat(data.bid) }}</h5>
-    </div>
-    <div class="row justify-between" v-if="hasAllocations">
       <h6>Allocation:</h6>
-      <h5>{{ this.$chainStrReformat(data.allocation) }}</h5>
+      <h5>
+        {{ this.$chainStrReformat(allocationData.allocation, tokenDecimals) }}
+      </h5>
     </div>
     <div class="row justify-between" v-if="hasAllocations">
-      <h6>Note:</h6>
-      <p>
-        Your tokens will be sent as soon as the pool is closed. In the event
-        that the number of participating accounts become too big for the Telos
-        blockchain to send all tokens in a single transaction, you will be able
-        to claim your allocation from this tab.
-      </p>
+      <h6>Vesting:</h6>
+      <h5>{{ this.$toChainString(vesting, tokenDecimals, tokenSymbol) }}</h5>
+    </div>
+    <div class="row justify-between" v-if="hasAllocations">
+      <h6>To be claimed:</h6>
+      <h5>{{ this.$toChainString(claimable, tokenDecimals, tokenSymbol) }}</h5>
+    </div>
+    <div class="row justify-between" v-if="hasAllocations">
+      <h6>Claimed:</h6>
+      <h5>{{ this.$toChainString(claimed, tokenDecimals, tokenSymbol) }}</h5>
+    </div>
+    <div
+      v-if="hasAllocations"
+      class="text-left q-pt-md text-caption text-grey-7"
+    >
+      <q-icon name="fas fa-info-circle" class="q-pr-xs" />Your tokens will be
+      sent as soon as the pool is closed. In the event that the number of
+      participating accounts become too big for the Telos blockchain to send all
+      tokens in a single transaction, you will be able to claim your allocation
+      from this tab.
     </div>
     <q-btn
       outline
@@ -25,7 +36,7 @@
       v-if="
         hasAllocations &&
           Date.now() > pool.public_end + poolclosedelay &&
-          pool.status === 'published'
+          pool.pool_status === 'completed'
       "
       @click="tryClosePool"
     />
@@ -34,7 +45,9 @@
       color="accent"
       label="Claim"
       class="hover-accent self-end q-mt-md"
-      v-if="hasAllocations && pool.status === ('success' || 'fail')"
+      v-if="
+        hasAllocations && ['filled', 'cancelled'].includes(pool.pool_status)
+      "
       @click="tryClaimTokens"
     />
     <p class="q-pt-md text-grey-6" v-if="!hasAllocations">
@@ -59,7 +72,7 @@ export default {
   data() {
     return {
       loadingData: true,
-      data: {},
+      allocationData: {},
       poolclosedelay: 86400000 //24 hours to miliseconds
       // poolclosedelay: 0 //24 hours to miliseconds
     };
@@ -68,7 +81,46 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     hasAllocations() {
-      return Object.keys(this.data).length > 0;
+      return Object.keys(this.allocationData).length > 0;
+    },
+    allocation() {
+      return this.$chainToQty(this.allocationData.allocation);
+    },
+    claimable() {
+      if (this.hasAllocations) {
+        if (this.pool.token_lockup) {
+          let start = new Date(
+            this.allocationData.lockup_start + "Z"
+          ).valueOf();
+          let percent = this.allocationData.lockup_percent / 10000;
+          let period = this.allocationData.lockup_period;
+          console.log(
+            `Start: ${start}, Percent: ${percent}, Period: ${period}`
+          );
+          console.log(`Date.now() - start: ${Date.now() - start}`);
+          console.log(`Alloc: ${this.allocation}`);
+          return (
+            this.allocation *
+            (1 - (percent * (Date.now() - start)) / period - 1)
+          );
+        } else return this.allocation;
+      } else return 0;
+    },
+    claimed() {
+      if (this.hasAllocations) {
+        return this.$chainToQty(this.allocationData.distributed);
+      } else return 0;
+    },
+    vesting() {
+      if (this.hasAllocations) {
+        return this.allocation - this.claimable - this.claimed;
+      } else return 0;
+    },
+    tokenSymbol() {
+      return this.$chainToSym(this.allocationData.allocation);
+    },
+    tokenDecimals() {
+      return this.$chainToDecimals(this.allocationData.allocation);
     }
   },
 
@@ -141,7 +193,7 @@ export default {
   async mounted() {
     let payload = { account: this.accountName, poolID: this.pool.id };
     this.loadingData = true;
-    this.data = await this.getAllocationByPool(payload);
+    this.allocationData = await this.getAllocationByPool(payload);
     this.loadingData = false;
   }
 };
