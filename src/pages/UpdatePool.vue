@@ -198,6 +198,8 @@
                     v-model="lockup_fraction"
                     label="Lockup fraction"
                     outlined
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                   />
                 </q-item-section>
               </q-item>
@@ -207,6 +209,8 @@
                     v-model="lockup_period"
                     label="Lockup period"
                     outlined
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                   /> </q-item-section
               ></q-item>
               <!-- <div class="col column">
