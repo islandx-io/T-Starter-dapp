@@ -7,7 +7,11 @@
     <section class="body-container">
       <q-card>
         <q-form
-          v-if="this.accountName === this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME).owner"
+          v-if="
+            this.accountName ===
+              this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME)
+                .owner
+          "
           @submit="onSubmit"
           @reset="onReset"
           ref="updateForm"
@@ -182,8 +186,29 @@
                   />
                 </q-item-section>
               </q-item>
-              {{this.private_end}}
-              {{this.pool_open}}
+
+              <!-- Vesting -->
+              <q-item>
+                <q-checkbox v-model="vesting" label="Vesting" />
+              </q-item>
+
+              <q-item v-if="vesting">
+                <q-item-section>
+                  <q-input
+                    v-model="lockup_fraction"
+                    label="Lockup fraction"
+                    outlined
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item v-if="vesting">
+                <q-item-section>
+                  <q-input
+                    v-model="lockup_period"
+                    label="Lockup period"
+                    outlined
+                  /> </q-item-section
+              ></q-item>
               <!-- <div class="col column">
                 <div>Type</div>
                 <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
@@ -451,9 +476,9 @@ export default {
       customDate: "",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
-      pool_open: { date: this.toDateString(Date.now())},
+      pool_open: { date: this.toDateString(Date.now()) },
       // private_end: { date: "" },
-      public_end: { date: this.toDateString(Date.now())},
+      public_end: { date: this.toDateString(Date.now()) },
 
       cleanedWebLinks: [],
       // prettier-ignore
@@ -480,7 +505,10 @@ export default {
       accessType: "Premium",
       accessOptions: ["Public", "Premium"],
       premiumDuration: 3, //hours
-      premiumDurationOptions: [3, 12, 24, 24 * 7]
+      premiumDurationOptions: [3, 12, 24, 24 * 7],
+      vesting: false,
+      lockup_fraction: 0.5,
+      lockup_period: 30,
     };
   },
   computed: {
@@ -489,8 +517,13 @@ export default {
     ...mapGetters("blockchains", ["currentChain"]),
 
     private_end() {
-      if (this.accessType === 'Premium') {
-        return {date: this.toDateString(this.toUnixTimestamp(this.pool_open.date) + this.premiumDuration*1000*60*60)}
+      if (this.accessType === "Premium") {
+        return {
+          date: this.toDateString(
+            this.toUnixTimestamp(this.pool_open.date) +
+              this.premiumDuration * 1000 * 60 * 60
+          )
+        };
       } else {
         return this.public_end;
       }
@@ -555,7 +588,7 @@ export default {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
     toUnixTimestamp(timeStamp) {
-      return new Date(timeStamp+ ' UTC').valueOf();
+      return new Date(timeStamp + " UTC").valueOf();
     },
     toDateString(timestamp) {
       // console.log(timestamp)
@@ -663,6 +696,8 @@ export default {
       if (this.pool.whitelist.length > 0) {
         this.haveWhitelist = true;
       }
+
+      this.vesting = this.pool.token_lockup ? true: false
     },
     getTokenSymbolFromPool() {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
@@ -711,7 +746,20 @@ export default {
     },
 
     async updateChainPool() {
-      const actions = [
+      var actions = []
+      if (this.vesting) {
+        actions.push({
+          account: process.env.CONTRACT_ADDRESS,
+          name: "setlockup",
+          data: {
+            pool_id: this.poolID,
+            token_lockup: this.vesting,
+            lockup_fraction: this.lockup_fraction,
+            lockup_period: this.lockup_period
+          }
+        })
+      }
+      actions.push(
         {
           account: process.env.CONTRACT_ADDRESS,
           name: "updatepool",
@@ -750,7 +798,7 @@ export default {
             web_links: this.cleanedWebLinks
           }
         }
-      ];
+      )
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
