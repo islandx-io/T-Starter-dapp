@@ -102,6 +102,18 @@ const errorNotification = function(error) {
   });
 };
 
+const formatTableDecimals = function(col, props) {
+  if (col.value === "") {
+    return "";
+  } else {
+    if (col.value === undefined) {
+      return "";
+    } else {
+      return col.value.toFixed(props.row.decimals);
+    }
+  }
+};
+
 export default ({ Vue, store }) => {
   Vue.prototype.$chainToQty = chainToQty;
   Vue.prototype.$toChainString = toChainString;
@@ -114,6 +126,7 @@ export default ({ Vue, store }) => {
   Vue.prototype.$toFixedDown = toFixedDown;
   Vue.prototype.$startBalanceToLiquidAction = startBalanceToLiquidAction;
   Vue.prototype.$errorNotification = errorNotification;
+  Vue.prototype.$formatTableDecimals = formatTableDecimals;
   store["$chainToQty"] = chainToQty;
   store["$chainToSym"] = chainToSym;
   store["$toChainString"] = toChainString;

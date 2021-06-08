@@ -27,6 +27,8 @@ export const setWalletToken = (state, { token_sym, token_contract }) => {
     staked: 0,
     unstaking: 0,
     decimals: 0,
+    locked: 0,
+    id: -1,
     avatar: "",
     stake_maturities: []
   };
@@ -56,6 +58,17 @@ export const setWalletTokenUnstaking = (state, { token_sym, amount }) => {
   token.unstaking = amount;
 };
 
+export const setWalletTokenLocked = (state, { token_sym, amount }) => {
+  let token = state.wallet.find(a => a.token_sym === token_sym);
+  token.locked = amount;
+};
+
+export const setWalletTokenId = (state, { token_sym, id }) => {
+  let token = state.wallet.find(a => a.token_sym === token_sym);
+  token.id = id;
+  state.wallet = [...state.wallet]
+};
+
 export const setWalletTokenAvatar = (state, { token_sym, avatar }) => {
   if (state.wallet.find(a => a.token_sym === token_sym).avatar === "") {
     let token = state.wallet.find(a => a.token_sym === token_sym);
@@ -75,7 +88,7 @@ export const setWalletStakeMaturities = (state, { arr }) => {
   token.stake_maturities = arr;
 };
 
-export const resetWalletState = (state) => {
+export const resetWalletState = state => {
   state.wallet = [
     {
       token_sym: "START",
@@ -85,14 +98,22 @@ export const resetWalletState = (state) => {
       staked: 0,
       unstaking: 0,
       decimals: 4,
-      avatar: "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
-      stake_maturities: [],
-    },
-  ]
+      avatar:
+        "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/STAR.png",
+      stake_maturities: []
+    }
+  ];
 };
 
-export const clearLiquid = (state) => {
+export const clearLiquid = state => {
   state.wallet.forEach(element => {
-    element.liquid = 0
+    element.liquid = 0;
   });
+};
+
+export const setStakeWallet = (state, { stake_wallet }) => {
+  if (!stake_wallet) {
+    return;
+  }
+  state.stakeWallet = stake_wallet;
 };

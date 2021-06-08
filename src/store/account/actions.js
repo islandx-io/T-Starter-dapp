@@ -95,7 +95,7 @@ export const getUserProfile = async function({ commit }, accountName) {
     const profile = profileResult.rows[0];
     commit("setProfile", profile);
   } catch (error) {
-    console.log('aggenee')
+    console.log("aggenee");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -203,6 +203,11 @@ export const setWalletPoolTokens = async function(
               amount: balance
             });
           }
+          // check vested lockup
+          await dispatch("setVestedTokens", {
+            account: account,
+            token_sym: sym
+          });
         })();
       }
     }
@@ -288,6 +293,95 @@ export const getChainWalletTable = async function(
   }
 };
 
+// get contract wallet table info for user
+export const getChainStakeWallet = async function(
+  { commit, dispatch },
+  account
+) {
+  try {
+    // get base tokens
+    let baseTokens = [];
+    baseTokens = await dispatch("pools/getBaseTokens", true, { root: true });
+
+    // get accounts table
+    const accountsResult = await this.$api.getTableRows({
+      code: process.env.STAKE_ADDRESS, // Contract that we target
+      scope: process.env.STAKE_ADDRESS, // Account that owns the data
+      table: "accounts", // Table name
+      limit: 1,
+      lower_bound: account,
+      upper_bound: account,
+      reverse: false,
+      show_payer: false
+    });
+    const stakeAccount = accountsResult.rows[0];
+    let account_stake_balance = this.$chainToQty(stakeAccount.stake_balance);
+
+    // console.log({ stakeAccount: stakeAccount });
+
+    // get rewards table (only claimable rewards)
+    const rewardsResult = await this.$api.getTableRows({
+      code: process.env.STAKE_ADDRESS, // Contract that we target
+      scope: process.env.STAKE_ADDRESS, // Account that owns the data
+      table: "rewards", // Table name
+      limit: 10000,
+      // lower_bound: 1,
+      lower_bound: stakeAccount.last_claim_id + 1,
+      reverse: false,
+      show_payer: false
+    });
+    // console.log({ rewardsResult: rewardsResult });
+
+    // get wallets table
+    const walletsResult = await this.$api.getTableRows({
+      code: process.env.STAKE_ADDRESS, // Contract that we target
+      scope: account, // Account that owns the data
+      table: "wallets", // Table name
+      limit: 10000,
+      reverse: false, // Optional: Get reversed data
+      show_payer: false // Optional: Show ram payer
+    });
+    // console.log({ walletsResult: walletsResult });
+
+    // compile stake wallet
+    let stakeWallet = [];
+    for (const baseToken of baseTokens) {
+      let token = {
+        sym: this.$getSymFromAsset(baseToken.token_info),
+        decimals: this.$getDecimalFromAsset(baseToken.token_info),
+        contract: baseToken.token_info.contract,
+        avatar: baseToken.avatar,
+        balance: 0,
+        lifetime_return: 0
+      };
+      for (const reward of rewardsResult.rows) {
+        if (
+          baseToken.token_info.contract === reward.total_distribution.contract
+        ) {
+          let stake_remaining = this.$chainToQty(reward.stake_remaining);
+          let share_remaining = this.$chainToQty(reward.share_remaining);
+          token.balance +=
+            share_remaining * (account_stake_balance / stake_remaining);
+        }
+      }
+      for (const walletToken of walletsResult.rows) {
+        if (baseToken.token_info.contract === walletToken.contract) {
+          token.balance += this.$chainToQty(walletToken.balance);
+          token.lifetime_return +=
+            this.$chainToQty(walletToken.lifetime_return) - token.balance;
+        }
+      }
+      if (token.balance > 0 || token.lifetime_return > 0)
+        stakeWallet.push(token);
+    }
+
+    // console.log({ stakeWallet: stakeWallet });
+    commit("setStakeWallet", { stake_wallet: stakeWallet });
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
 // check if tokens already staked
 export const getChainSTART = async function(
   { commit, getters, dispatch },
@@ -327,14 +421,18 @@ export const getChainSTART = async function(
         token_sym: "START",
         amount: unstaking_START
       });
+      commit("setWalletTokenLocked", {
+        token_sym: "START",
+        amount: unstaking_START + staked_START
+      });
       commit("setWalletStakeMaturities", {
         arr: stakeBalanceTbl.rows[0].stake_maturities
       });
 
       //set balance
       let payload = {
-        address: 'token.start',
-        sym: 'START',
+        address: "token.start",
+        sym: "START",
         accountName: account
       };
 
@@ -343,7 +441,7 @@ export const getChainSTART = async function(
       });
       let balance = this.$chainToQty(token_str);
       commit("setWalletTokenBalance", {
-        token_sym: 'START',
+        token_sym: "START",
         amount: balance
       });
     }
@@ -352,16 +450,61 @@ export const getChainSTART = async function(
   }
 };
 
-// reset wallet
-export const resetWallet = async function(
+// get personal allocation for pool
+export const setVestedTokens = async function(
   { commit, getters, dispatch },
+  payload
 ) {
+  try {
+    if (payload.account !== null) {
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: "poolaccounts", // Table name
+        limit: 10000,
+        index_position: 3,
+        key_type: "i64",
+        lower_bound: payload.account,
+        upper_bound: payload.account,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+
+      const allocationTable = tableResults.rows.filter(
+        a =>
+          a.account === payload.account &&
+          a.lockup_percent > 0 &&
+          this.$chainToSym(a.allocation) === payload.token_sym &&
+          this.$chainToQty(a.allocation) >= this.$chainToQty(a.distributed)
+      );
+      // console.log("Allocation:");
+      // console.log(allocationTable);
+
+      for (const token_info of allocationTable) {
+        let locked_amount =
+          this.$chainToQty(token_info.allocation) -
+          this.$chainToQty(token_info.distributed);
+        commit("setWalletTokenLocked", {
+          token_sym: payload.token_sym,
+          amount: locked_amount
+        });
+        commit("setWalletTokenId", {
+          token_sym: payload.token_sym,
+          id: token_info.pool_id
+        });
+      }
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// reset wallet
+export const resetWallet = async function({ commit, getters, dispatch }) {
   commit("resetWalletState");
-}
+};
 
 // reset liquid
-export const resetLiquid = async function(
-  { commit, getters, dispatch },
-) {
+export const resetLiquid = async function({ commit, getters, dispatch }) {
   commit("clearLiquid");
-}
+};

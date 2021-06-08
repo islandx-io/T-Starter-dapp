@@ -24,7 +24,7 @@
     <template v-slot:append>
       <q-icon name="access_time" class="cursor-pointer">
         <q-popup-proxy transition-show="scale" transition-hide="scale">
-          <q-time v-model="value.date" :mask="dateTimeMask" format24h>
+          <q-time v-model="value.date" :mask="dateTimeMask" format24h now-btn>
             <div class="row items-center justify-end">
               <q-btn v-close-popup label="Close" color="primary" flat />
             </div>

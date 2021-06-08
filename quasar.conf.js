@@ -57,6 +57,7 @@ module.exports = function(/* ctx */) {
         CONTRACT_ADDRESS: process.env.CONTRACT_ADDRESS,
         CONTRACT_TABLE: process.env.CONTRACT_TABLE,
         ADMIN_ADDRESS: process.env.ADMIN_ADDRESS,
+        STAKE_ADDRESS: process.env.STAKE_ADDRESS,
         BUY_START_URL: process.env.BUY_START_URL,
         SITE_VERSION: siteVersion,
         BALLOT_ADDRESS: process.env.BALLOT_ADDRESS
