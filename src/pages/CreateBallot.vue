@@ -203,6 +203,40 @@
               <!-- Dates -->
               <q-item>
                 <q-item-section>
+                  <q-select
+                    outlined
+                    v-model="accessType"
+                    :options="accessOptions"
+                    label="Access Type"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                  />
+                </q-item-section>
+                <q-item-section v-if="accessType === 'Premium'">
+                  <q-select
+                    outlined
+                    v-model="premiumDuration"
+                    :options="premiumDurationOptions"
+                    label="Premium duration (Hours)"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
                   <datetime-field
                     :value.sync="ballot_close"
                     :pool="pool"
@@ -210,31 +244,70 @@
                     class="q-pb-md"
                   />
                 </q-item-section>
+              </q-item>
+
+              <q-item>
                 <q-item-section>
                   <datetime-field
                     :value.sync="pool_open"
                     :pool="pool"
                     label="Opening time (UTC) *"
-                    class="q-pb-md"
-                  />
-                </q-item-section>
-              </q-item>
-              <q-item>
-                <q-item-section>
-                  <datetime-field
-                    :value.sync="private_end"
-                    :pool="pool"
-                    label="Premium end time (UTC) *"
                   />
                 </q-item-section>
                 <q-item-section>
                   <datetime-field
                     :value.sync="public_end"
                     :pool="pool"
-                    label="Public end time (UTC) *"
+                    label="End time (UTC) *"
                   />
                 </q-item-section>
               </q-item>
+
+              <!-- Vesting -->
+              <q-item>
+                <q-checkbox
+                  v-model="vesting"
+                  label="Vesting"
+                  :disable="
+                    pool.status !== 'draft' &&
+                      this.$route.params.id != undefined
+                  "
+                />
+              </q-item>
+
+              <q-item v-if="vesting">
+                <q-item-section>
+                  <q-input
+                    v-model="lockup_fraction"
+                    label="Lockup fraction"
+                    outlined
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item v-if="vesting">
+                <q-item-section>
+                  <q-input
+                    v-model="lockup_period"
+                    label="Lockup period"
+                    outlined
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                    :readonly="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                  /> </q-item-section
+              ></q-item>
               <!-- <div class="col column">
                 <div>Type</div>
                 <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
@@ -374,7 +447,12 @@
 
             <q-item class="justify-start">
               <q-item-section class="col-auto">
-                <q-btn v-if="this.$route.params.id === undefined" :label="'Create'" @click="confirm_fee=true" color="primary" />
+                <q-btn
+                  v-if="this.$route.params.id === undefined"
+                  :label="'Create'"
+                  @click="confirm_fee = true"
+                  color="primary"
+                />
                 <q-btn v-else :label="'Update'" type="submit" color="primary" />
               </q-item-section>
               <q-item-section class="col-auto">
@@ -502,7 +580,7 @@ export default {
       settings: {},
       ballot_close: { date: this.toDateString(new Date().valueOf()) },
       pool_open: { date: this.toDateString(new Date().valueOf()) },
-      private_end: { date: this.toDateString(new Date().valueOf()) },
+      // private_end: { date: this.toDateString(new Date().valueOf()) },
       public_end: { date: this.toDateString(new Date().valueOf()) },
 
       cleanedWebLinks: [],
@@ -524,7 +602,14 @@ export default {
       token_decimals: 1,
       accept: false,
       funded: false,
-      dialog_send_tokens: false
+      dialog_send_tokens: false,
+      accessType: "Premium",
+      accessOptions: ["Public", "Premium"],
+      premiumDuration: 3, //hours
+      premiumDurationOptions: [3, 12, 24, 24 * 7],
+      vesting: false,
+      lockup_fraction: 0.5,
+      lockup_period: 30
     };
   },
 
@@ -532,6 +617,19 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID"]),
     ...mapGetters("ballots", ["getBallotByID"]),
+
+    private_end() {
+      if (this.accessType === "Premium") {
+        return {
+          date: this.toDateString(
+            this.toUnixTimestamp(this.pool_open.date) +
+              this.premiumDuration * 1000 * 60 * 60
+          )
+        };
+      } else {
+        return this.public_end;
+      }
+    },
 
     selected_base_token() {
       return this.base_token_options.find(
@@ -596,7 +694,7 @@ export default {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
     toUnixTimestamp(timeStamp) {
-      return new Date(timeStamp).valueOf();
+      return new Date(timeStamp + " UTC").valueOf();
     },
     toDateString(timestamp) {
       if (timestamp <= 0) timestamp = new Date().valueOf();
@@ -745,6 +843,8 @@ export default {
           if (this.pool.whitelist.length > 0) {
             this.haveWhitelist = true;
           }
+
+          this.vesting = this.pool.token_lockup ? true : false;
         }
       }
     },
@@ -763,7 +863,7 @@ export default {
     },
 
     async createBallot() {
-      const actions = [
+      var actions = [
         {
           account: "token.start",
           name: "transfer",
@@ -821,6 +921,19 @@ export default {
           }
         }
       ];
+      // FIXME add when contracts allows it
+      // if (this.vesting) {
+      //   actions.push({
+      //     account: process.env.CONTRACT_ADDRESS,
+      //     name: "setlockup",
+      //     data: {
+      //       pool_id: this.ballotConfig.last_ballot_id + 1,
+      //       token_lockup: this.vesting,
+      //       lockup_fraction: this.lockup_fraction,
+      //       lockup_period: this.lockup_period
+      //     }
+      //   });
+      // }
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
@@ -858,18 +971,6 @@ export default {
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
-    async tryCreatePool() {
-      try {
-        // if not owned pool create ballot
-        if (this.accountName != this.pool.owner) {
-          await this.createBallot();
-          this.poolID = this.ballotConfig.last_ballot_id + 1;
-        }
-      } catch (error) {
-        this.$errorNotification(error);
-      }
-    },
-
     async onSubmit() {
       this.pool.ballot_close = this.ballot_close.date;
       this.pool.pool_open = this.pool_open.date;
@@ -886,8 +987,11 @@ export default {
         this.checkLinks();
         this.formatWhitelist();
         try {
-          // try create pool
-          await this.tryCreatePool();
+          // if not owned pool create ballot
+          if (this.accountName != this.pool.owner) {
+            await this.createBallot();
+            this.poolID = this.ballotConfig.last_ballot_id + 1;
+          }
           this.$q.notify({
             color: "green-4",
             textColor: "white",
@@ -980,7 +1084,7 @@ export default {
         name: "ballotdetails",
         params: { id: this.poolID }
       });
-    },
+    }
   },
 
   async mounted() {

@@ -10,8 +10,16 @@
         label="Create Ballot"
         :to="{ name: 'createballot' }"
       />
-      <q-btn color="primary" label="My Ballots" @click="filter.value='myballots'"/>
-      <q-btn color="primary" label="Reset filter" @click="filter.value='none'"/>
+      <q-btn
+        color="primary"
+        label="My Ballots"
+        @click="filter.value = 'myballots'"
+      />
+      <q-btn
+        color="primary"
+        label="Reset filter"
+        @click="filter.value = 'none'"
+      />
       <!-- {{ getPublishedBallots }} -->
 
       <!-- Search bar -->
@@ -19,7 +27,7 @@
       <!-- Table with pools -->
       <div class="q-pa-md">
         <q-table
-          :data="getUpcomingBallots"
+          :data="getAllBallots"
           :columns="columns"
           row-key="name"
           :pagination="{ rowsPerPage: 20 }"
@@ -60,7 +68,11 @@
                 :key="props.cols[props.cols.length - 2].name"
               >
                 <time-until
-                  :deadline="(props.row.ballot_close > 0) ? props.row.ballot_close: Date.now().valueOf()"
+                  :deadline="
+                    props.row.ballot_close > 0
+                      ? props.row.ballot_close
+                      : Date.now().valueOf()
+                  "
                   :poolID="props.row.id"
                   @countdown-finished="
                     getBallotByIDChain(props.row.id, props.row.chain)
@@ -155,7 +167,7 @@ export default {
         },
         { name: "softcap", label: "Softcap", field: "soft_cap" },
         { name: "hardcap", label: "Hardcap", field: "hard_cap" },
-        { name: "closesin", label: "Voting ends in", field: "ballot_close" },
+        { name: "closesin", label: "Voting ends in", field: "ballot_close", sortable: true },
         {
           name: "voting",
           label: "Voting",
@@ -167,7 +179,7 @@ export default {
       stakeTotal: 0,
       ballotConfig: {},
       poolSettings: {},
-      filter: {value: 'none'}
+      filter: { value: "none" }
     };
   },
   computed: {
@@ -203,6 +215,27 @@ export default {
         return this.getAllBallots.filter(row => row.owner === this.accountName);
       }
       return this.getUpcomingBallots;
+    },
+
+    customSort(rows, sortBy, descending) {
+      const data = [...rows];
+
+      if (sortBy) {
+        data.sort((a, b) => {
+          const x = descending ? b : a;
+          const y = descending ? a : b;
+
+          if (sortBy === "name") {
+            // string sort
+            return x[sortBy] > y[sortBy] ? 1 : x[sortBy] < y[sortBy] ? -1 : 0;
+          } else {
+            // numeric sort
+            return parseFloat(x[sortBy]) - parseFloat(y[sortBy]);
+          }
+        });
+      }
+
+      return data;
     },
 
     // Calculate voting progress

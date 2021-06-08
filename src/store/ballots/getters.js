@@ -1,7 +1,7 @@
 export const getAllBallots = ({ ballots }) => ballots;
 
 export const getPublishedBallots = ({ ballots }) => ballots.filter(a => a.status === 'published');
-export const getUpcomingBallots = ({ ballots }) => ballots.filter(a => a.status === 'published' && a.ballot_close > Date.now());
+export const getUpcomingBallots = ({ ballots }) => ballots.filter(a => a.status === 'published' && a.ballot_close > Date.now().valueOf());
 
 export const getAllBallotIDs = ({ ballots }) => ballots.map(el => el.id);
 
