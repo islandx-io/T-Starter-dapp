@@ -1,6 +1,6 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide" class="staking-dialog">
-    <q-card class="col-shrink">
+    <q-card class="col-shrink slim-scrollbar">
       <div class="column items-center">
         <div class="self-stretch row justify-between q-py-sm">
           <div class="" style="width: 40px" />
