@@ -193,7 +193,7 @@
 
               <!-- Vesting -->
               <q-item>
-                <q-checkbox v-model="vesting" label="Vesting" />
+                <q-checkbox v-model="vesting" label="Vesting"  :disable="pool.status !== 'draft'"/>
               </q-item>
 
               <q-item v-if="vesting">

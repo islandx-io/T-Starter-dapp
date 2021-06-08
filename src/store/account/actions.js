@@ -416,6 +416,10 @@ export const getChainSTART = async function(
         token_sym: "START",
         amount: unstaking_START
       });
+      commit("setWalletTokenLocked", {
+        token_sym: "START",
+        amount: unstaking_START + staked_START
+      });
       commit("setWalletStakeMaturities", {
         arr: stakeBalanceTbl.rows[0].stake_maturities
       });

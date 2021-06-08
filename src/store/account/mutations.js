@@ -56,6 +56,11 @@ export const setWalletTokenUnstaking = (state, { token_sym, amount }) => {
   token.unstaking = amount;
 };
 
+export const setWalletTokenLocked = (state, { token_sym, amount }) => {
+  let token = state.wallet.find(a => a.token_sym === token_sym);
+  token.locked = amount;
+};
+
 export const setWalletTokenAvatar = (state, { token_sym, avatar }) => {
   if (state.wallet.find(a => a.token_sym === token_sym).avatar === "") {
     let token = state.wallet.find(a => a.token_sym === token_sym);
