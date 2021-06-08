@@ -165,8 +165,8 @@ export default {
               row.swap_ratio.quantity
             )} ${this.$chainToSym(row.swap_ratio.quantity)}`
         },
-        { name: "softcap", label: "Softcap", field: "soft_cap" },
-        { name: "hardcap", label: "Hardcap", field: "hard_cap" },
+        { name: "softcap", label: "Softcap", field: row => this.$chainStrReformat(row.soft_cap) },
+        { name: "hardcap", label: "Hardcap", field: row => this.$chainStrReformat(row.hard_cap) },
         { name: "closesin", label: "Voting ends in", field: "ballot_close", sortable: true },
         {
           name: "voting",
