@@ -401,6 +401,8 @@ export default {
     },
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
+      await this.updateSentimentByPoolID(this.poolID);
+      await this.updateCommentsByPoolID(this.poolID);
     },
     sentimentValue(key) {
       if (this.pool.sentiment.length > 0)
@@ -439,8 +441,6 @@ export default {
           try {
             const transaction = await this.$store.$api.signTransaction(actions);
             await this.loadChainData();
-            await this.updateSentimentByPoolID(this.poolID);
-            await this.updateCommentsByPoolID(this.poolID);
             this.getPoolInfo();
           } catch (error) {
             this.$errorNotification(error);
@@ -453,8 +453,6 @@ export default {
     // get data from chain, write to store, get from store
     this.settings = await this.getPoolsSettings();
     await this.loadChainData();
-    await this.updateSentimentByPoolID(this.poolID);
-    await this.updateCommentsByPoolID(this.poolID);
     this.getPoolInfo();
     await this.getChainSTART(this.accountName);
     await this.getClaimStatus();
@@ -462,8 +460,6 @@ export default {
     // Start polling
     this.polling = setInterval(async () => {
       await this.loadChainData();
-      await this.updateSentimentByPoolID(this.poolID);
-      await this.updateCommentsByPoolID(this.poolID);
       this.getPoolInfo();
     }, 20000);
 
