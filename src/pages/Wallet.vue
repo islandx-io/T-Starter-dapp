@@ -193,7 +193,8 @@ export default {
       "getChainSTART",
       "setWalletPoolTokens",
       "resetWallet",
-      "resetLiquid"
+      "resetLiquid",
+      "setVestedTokens"
     ]),
 
     async reloadWalletInfo() {

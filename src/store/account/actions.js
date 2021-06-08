@@ -95,7 +95,7 @@ export const getUserProfile = async function({ commit }, accountName) {
     const profile = profileResult.rows[0];
     commit("setProfile", profile);
   } catch (error) {
-    console.log('aggenee')
+    console.log("aggenee");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -203,6 +203,11 @@ export const setWalletPoolTokens = async function(
               amount: balance
             });
           }
+          // check vested lockup
+          await dispatch("setVestedTokens", {
+            account: account,
+            token_sym: sym
+          });
         })();
       }
     }
@@ -439,6 +444,55 @@ export const getChainSTART = async function(
         token_sym: "START",
         amount: balance
       });
+    }
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// get personal allocation for pool
+export const setVestedTokens = async function(
+  { commit, getters, dispatch },
+  payload
+) {
+  try {
+    if (payload.account !== null) {
+      const tableResults = await this.$api.getTableRows({
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: "poolaccounts", // Table name
+        limit: 10000,
+        index_position: 3,
+        key_type: "i64",
+        lower_bound: payload.account,
+        upper_bound: payload.account,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+
+      const allocationTable = tableResults.rows.filter(
+        a =>
+          a.account === payload.account &&
+          a.lockup_percent > 0 &&
+          this.$chainToSym(a.allocation) === payload.token_sym &&
+          this.$chainToQty(a.allocation) >= this.$chainToQty(a.distributed)
+      );
+      // console.log("Allocation:");
+      // console.log(allocationTable);
+
+      for (const token_info of allocationTable) {
+        let locked_amount =
+          this.$chainToQty(token_info.allocation) -
+          this.$chainToQty(token_info.distributed);
+        commit("setWalletTokenLocked", {
+          token_sym: payload.token_sym,
+          amount: locked_amount
+        });
+        commit("setWalletTokenId", {
+          token_sym: payload.token_sym,
+          id: token_info.pool_id
+        });
+      }
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
