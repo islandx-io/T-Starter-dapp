@@ -155,6 +155,8 @@
                     v-model="accessType"
                     :options="accessOptions"
                     label="Access Type"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                   />
                 </q-item-section>
                 <q-item-section v-if="accessType === 'Premium'">
@@ -163,6 +165,8 @@
                     v-model="premiumDuration"
                     :options="premiumDurationOptions"
                     label="Premium duration (Hours)"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
                   />
                 </q-item-section>
               </q-item>
@@ -182,8 +186,6 @@
                   />
                 </q-item-section>
               </q-item>
-              {{this.private_end}}
-              {{this.pool_open}}
               <!-- <div class="col column">
                 <div>Type</div>
                 <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
