@@ -221,18 +221,23 @@ export const neededFunds = async function(
         reverse: false, // Optional: Get reversed data
         show_payer: false // Optional: Show ram payer
       });
-      // console.log(tableResults.rows.length);
+      console.log(tableResults.rows);
 
       // get pool info
       const pool = getters.getPoolByID(payload.id);
       // console.log(pool);
       let amount_inwallet = 0;
+      let needed_sym = this.$chainToSym(pool.swap_ratio.quantity)
+      let token_contract_entries = tableResults.rows.filter(a => a.contract === pool.swap_ratio.contract)
+      // console.log(token_contract_entries)
 
-      if (tableResults.rows.length !== 0) {
-        amount_inwallet = this.$chainToQty(
-          tableResults.rows.find(el => el.contract === pool.swap_ratio.contract)
-            .balance
-        );
+      if (token_contract_entries.length > 0 ) {
+        if (token_contract_entries.filter(a => this.$chainToSym(a.balance) === needed_sym)) {
+          amount_inwallet = this.$chainToQty(
+            tableResults.rows.find(el => el.contract === pool.swap_ratio.contract)
+              .balance
+          );
+        }
       }
       // console.log(amount_inwallet);
 
