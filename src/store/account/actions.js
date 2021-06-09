@@ -314,16 +314,14 @@ export const getChainStakeWallet = async function(
       reverse: false,
       show_payer: false
     });
-    // console.log({ store_account: account });
+    // console.log({ account });
+    // console.log({ accountsResult });
     let stakeWallet = [];
-    if (accountsResult.length > 0) {
+    if (accountsResult.rows.length > 0) {
       const stakeAccount = accountsResult.rows[0];
       let account_stake_balance = this.$chainToQty(stakeAccount.stake_balance);
 
-      // console.log({ accountsResult: accountsResult });
-      // console.log({ stakeAccount: stakeAccount });
-
-      // console.log({ stakeAccount: stakeAccount });
+      // console.log({ stakeAccount });
 
       // get rewards table (only claimable rewards)
       const rewardsResult = await this.$api.getTableRows({
@@ -336,7 +334,7 @@ export const getChainStakeWallet = async function(
         reverse: false,
         show_payer: false
       });
-      // console.log({ rewardsResult: rewardsResult });
+      // console.log({ rewardsResult });
 
       // get wallets table
       const walletsResult = await this.$api.getTableRows({
@@ -347,7 +345,7 @@ export const getChainStakeWallet = async function(
         reverse: false, // Optional: Get reversed data
         show_payer: false // Optional: Show ram payer
       });
-      // console.log({ walletsResult: walletsResult });
+      // console.log({ walletsResult });
 
       // compile stake wallet
       for (const baseToken of baseTokens) {
