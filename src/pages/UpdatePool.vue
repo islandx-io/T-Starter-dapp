@@ -7,7 +7,11 @@
     <section class="body-container">
       <q-card>
         <q-form
-          v-if="this.accountName === this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME).owner"
+          v-if="
+            this.accountName ===
+              this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME)
+                .owner
+          "
           @submit="onSubmit"
           @reset="onReset"
           ref="updateForm"
@@ -148,33 +152,71 @@
                 </q-item-section>
               </q-item>
               <!-- Dates -->
-              <!-- TODO Add "today" button -->
+              <q-item>
+                <q-item-section>
+                  <q-select
+                    outlined
+                    v-model="accessType"
+                    :options="accessOptions"
+                    label="Access Type"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
+                  />
+                </q-item-section>
+                <q-item-section v-if="accessType === 'Premium'">
+                  <q-select
+                    outlined
+                    v-model="premiumDuration"
+                    :options="premiumDurationOptions"
+                    label="Premium duration (Hours)"
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
+                  />
+                </q-item-section>
+              </q-item>
               <q-item>
                 <q-item-section>
                   <datetime-field
                     :value.sync="pool_open"
                     :pool="pool"
                     label="Opening time (UTC) *"
-                    class="q-pb-md"
-                  />
-                </q-item-section>
-              </q-item>
-              <q-item>
-                <q-item-section>
-                  <datetime-field
-                    :value.sync="private_end"
-                    :pool="pool"
-                    label="Premium end time (UTC) *"
                   />
                 </q-item-section>
                 <q-item-section>
                   <datetime-field
                     :value.sync="public_end"
                     :pool="pool"
-                    label="Public end time (UTC) *"
+                    label="End time (UTC) *"
                   />
                 </q-item-section>
               </q-item>
+
+              <!-- Vesting -->
+              <q-item>
+                <q-checkbox v-model="vesting" label="Vesting"  :disable="pool.status !== 'draft'"/>
+              </q-item>
+
+              <q-item v-if="vesting">
+                <q-item-section>
+                  <q-input
+                    v-model="lockup_fraction"
+                    label="Lockup fraction"
+                    outlined
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item v-if="vesting">
+                <q-item-section>
+                  <q-input
+                    v-model="lockup_period"
+                    label="Lockup period"
+                    outlined
+                    :disable="pool.status !== 'draft'"
+                    :readonly="pool.status !== 'draft'"
+                  /> </q-item-section
+              ></q-item>
               <!-- <div class="col column">
                 <div>Type</div>
                 <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
@@ -323,7 +365,10 @@
                   :disable="
                     pool.status === 'published' ||
                       this.funded ||
-                      this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME).title == ''
+                      this.getPoolByIDChain(
+                        this.poolID,
+                        this.currentChain.NETWORK_NAME
+                      ).title == ''
                   "
                   v-if="pool.status === 'draft'"
                   color="primary"
@@ -439,9 +484,9 @@ export default {
       customDate: "",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
-      pool_open: { date: "" },
-      private_end: { date: "" },
-      public_end: { date: "" },
+      pool_open: { date: this.toDateString(Date.now()) },
+      // private_end: { date: "" },
+      public_end: { date: this.toDateString(Date.now()) },
 
       cleanedWebLinks: [],
       // prettier-ignore
@@ -464,13 +509,33 @@ export default {
       link_index: -1,
       funded: false,
       dialog_send_tokens: false,
-      amount_needed: undefined
+      amount_needed: undefined,
+      accessType: "Premium",
+      accessOptions: ["Public", "Premium"],
+      premiumDuration: 3, //hours
+      premiumDurationOptions: [3, 12, 24, 24 * 7],
+      vesting: false,
+      lockup_fraction: 0.5,
+      lockup_period: 30,
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID", "getPoolByIDChain"]),
     ...mapGetters("blockchains", ["currentChain"]),
+
+    private_end() {
+      if (this.accessType === "Premium") {
+        return {
+          date: this.toDateString(
+            this.toUnixTimestamp(this.pool_open.date) +
+              this.premiumDuration * 1000 * 60 * 60
+          )
+        };
+      } else {
+        return this.public_end;
+      }
+    },
 
     admin_address() {
       return process.env.ADMIN_ADDRESS;
@@ -531,9 +596,10 @@ export default {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
     toUnixTimestamp(timeStamp) {
-      return new Date(timeStamp).valueOf();
+      return new Date(timeStamp + " UTC").valueOf();
     },
     toDateString(timestamp) {
+      // console.log(timestamp)
       if (timestamp <= 0) timestamp = new Date().valueOf();
       return new Date(timestamp)
         .toISOString()
@@ -613,7 +679,11 @@ export default {
     },
 
     getPoolInfo() {
-      this.pool = JSON.parse(JSON.stringify(this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME))); //make deep copy
+      this.pool = JSON.parse(
+        JSON.stringify(
+          this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME)
+        )
+      ); //make deep copy
       this.getTokenSymbolFromPool();
       // pool to numbers
       this.pool.swap_ratio.quantity = this.$chainToQty(
@@ -634,6 +704,8 @@ export default {
       if (this.pool.whitelist.length > 0) {
         this.haveWhitelist = true;
       }
+
+      this.vesting = this.pool.token_lockup ? true: false
     },
     getTokenSymbolFromPool() {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
@@ -682,7 +754,20 @@ export default {
     },
 
     async updateChainPool() {
-      const actions = [
+      var actions = []
+      if (this.vesting) {
+        actions.push({
+          account: process.env.CONTRACT_ADDRESS,
+          name: "setlockup",
+          data: {
+            pool_id: this.poolID,
+            token_lockup: this.vesting,
+            lockup_fraction: this.lockup_fraction,
+            lockup_period: this.lockup_period
+          }
+        })
+      }
+      actions.push(
         {
           account: process.env.CONTRACT_ADDRESS,
           name: "updatepool",
@@ -721,7 +806,7 @@ export default {
             web_links: this.cleanedWebLinks
           }
         }
-      ];
+      )
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
@@ -776,7 +861,7 @@ export default {
       this.pool.pool_open = this.pool_open.date;
       this.pool.private_end = this.private_end.date;
       this.pool.public_end = this.public_end.date;
-      console.log({ "Submitted start date": this.pool.pool_open });
+      console.log({ "Submitted start date": this.private_end.date });
       if (this.accept !== true || !this.isAuthenticated) {
         this.$q.notify({
           color: "red-5",

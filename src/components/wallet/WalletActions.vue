@@ -96,6 +96,18 @@
       >
         <q-tooltip>Reclaim released stake</q-tooltip>
       </q-btn>
+      <!-- update claim -->
+      <q-btn
+        outline
+        flat
+        :padding="actionButtonPadding"
+        icon="fas fa-thumbtack"
+        @click.stop="tryClaimTokens(props)"
+        v-if="!isStart(props.row.token_sym) && props.row.locked > 0"
+        class="hover-accent"
+      >
+        <q-tooltip>Claim vested tokens</q-tooltip>
+      </q-btn>
       <!-- send tokens -->
       <q-btn
         outline
@@ -224,6 +236,36 @@ export default {
         }
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
+    async claimTokens(row) {
+      const actions = [
+        {
+          account: process.env.CONTRACT_ADDRESS,
+          name: "claim",
+          data: {
+            account: this.accountName,
+            pool_id: row.id
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
+    async tryClaimTokens(props) {
+      try {
+        await this.claimTokens(props.row);
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Tokens claimed"
+        });
+        // this.$router.push("/");
+        await this.$listeners.reloadWalletInfo();
+      } catch (error) {
+        this.$errorNotification(error);
+      }
     },
 
     async tryWithdraw(props) {
