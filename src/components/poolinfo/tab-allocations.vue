@@ -120,9 +120,9 @@ export default {
           let percent = this.allocationData.lockup_percent / 10000;
           let period = this.allocationData.lockup_period * 1000 * 60 * 60 * 24;
           let end = start + period;
-          console.log(
-            `Start: ${start}, Now: ${now}, End: ${end}, Percent: ${percent}, Period: ${period}`
-          );
+          // console.log(
+          //   `Start: ${start}, Now: ${now}, End: ${end}, Percent: ${percent}, Period: ${period}`
+          // );
           if (now < start) {
             return allocation * (1 - percent) - this.distributed;
           } else if (start <= now && now <= end) {
