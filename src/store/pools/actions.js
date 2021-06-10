@@ -90,12 +90,15 @@ export const getChainPoolByIDChain = async function(
 
     // set chain in pool
     poolTable.chain =
-    rpcs.chains[
-      rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)
-    ].NETWORK_NAME;
+      rpcs.chains[
+        rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)
+      ].NETWORK_NAME;
 
     commit("updatePoolOnState", { poolTable });
-    await dispatch("updatePoolSettings", { id: poolTable.id, chain: poolTable.chain });
+    await dispatch("updatePoolSettings", {
+      id: poolTable.id,
+      chain: poolTable.chain
+    });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -227,15 +230,22 @@ export const neededFunds = async function(
       const pool = getters.getPoolByID(payload.id);
       // console.log(pool);
       let amount_inwallet = 0;
-      let needed_sym = this.$chainToSym(pool.swap_ratio.quantity)
-      let token_contract_entries = tableResults.rows.filter(a => a.contract === pool.swap_ratio.contract)
+      let needed_sym = this.$chainToSym(pool.swap_ratio.quantity);
+      let token_contract_entries = tableResults.rows.filter(
+        a => a.contract === pool.swap_ratio.contract
+      );
       // console.log(token_contract_entries)
 
-      if (token_contract_entries.length > 0 ) {
-        if (token_contract_entries.filter(a => this.$chainToSym(a.balance) === needed_sym)) {
+      if (token_contract_entries.length > 0) {
+        if (
+          token_contract_entries.filter(
+            a => this.$chainToSym(a.balance) === needed_sym
+          )
+        ) {
           amount_inwallet = this.$chainToQty(
-            tableResults.rows.find(el => el.contract === pool.swap_ratio.contract)
-              .balance
+            tableResults.rows.find(
+              el => el.contract === pool.swap_ratio.contract
+            ).balance
           );
         }
       }
@@ -302,19 +312,21 @@ export const getBalanceFromChain = async function({ commit }, payload) {
     //     payload.sym
     //   )
     // );
-    let balance = (
-      await rpc.get_currency_balance(
-        payload.address,
-        payload.accountName,
-        payload.sym
-      )
-    )[0];
-    // console.log("balance:")
-    // console.log(balance)
-    if (balance !== undefined) {
-      return balance;
-    } else {
-      return `0 ${payload.sym}`;
+    if (payload.accountName !== null) {
+      let balance = (
+        await rpc.get_currency_balance(
+          payload.address,
+          payload.accountName,
+          payload.sym
+        )
+      )[0];
+      // console.log("balance:")
+      // console.log(balance)
+      if (balance !== undefined) {
+        return balance;
+      } else {
+        return `0 ${payload.sym}`;
+      }
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -440,7 +452,7 @@ export const getCreatedChainPools = async function(
         pool.public_end = new Date(pool.public_end + "Z").valueOf();
 
         // set chain in pool
-        let poolTable = pool
+        let poolTable = pool;
         poolTable.chain = this.$api.currentChain.NETWORK_NAME;
 
         commit("updatePoolOnState", { poolTable });
@@ -817,7 +829,11 @@ export const updateSentimentByPoolID = async function({ commit }, poolID) {
       show_payer: false
     });
     const sentiment_table = tableResults.rows;
-    commit("setPoolSentimentTable", { id: poolID, sentiment_table, chain: this.$api.currentChain.NETWORK_NAME});
+    commit("setPoolSentimentTable", {
+      id: poolID,
+      sentiment_table,
+      chain: this.$api.currentChain.NETWORK_NAME
+    });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -842,7 +858,11 @@ export const updateCommentsByPoolID = async function({ commit }, poolID) {
       if (a.timestamp < b.timestamp) return 1;
       return 0;
     });
-    commit("setPoolCommentsTable", { id: poolID, comments_table, chain: this.$api.currentChain.NETWORK_NAME });
+    commit("setPoolCommentsTable", {
+      id: poolID,
+      comments_table,
+      chain: this.$api.currentChain.NETWORK_NAME
+    });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

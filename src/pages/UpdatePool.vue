@@ -229,6 +229,7 @@
                     outlined
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
+                    :rules="[val => val > 30 || 'Must be more than 30 days']"
                   />
                 </q-item-section>
               </q-item>
@@ -810,7 +811,7 @@ export default {
           web_links: this.cleanedWebLinks
         }
       });
-      if (this.vesting) {
+      if (this.vesting && this.pool.status === 'draft') {
         actions.push({
           account: process.env.CONTRACT_ADDRESS,
           name: "setlockup",
