@@ -722,7 +722,7 @@ export default {
       }
 
       this.vesting = this.pool.token_lockup ? true : false;
-      this.lockup_fraction = this.pool.lockup_percent/10000;
+      this.lockup_fraction = this.pool.lockup_percent / 10000;
       this.lockup_period = this.pool.lockup_period;
     },
     getTokenSymbolFromPool() {
@@ -811,17 +811,30 @@ export default {
           web_links: this.cleanedWebLinks
         }
       });
-      if (this.vesting && this.pool.status === 'draft') {
-        actions.push({
-          account: process.env.CONTRACT_ADDRESS,
-          name: "setlockup",
-          data: {
-            pool_id: this.poolID,
-            token_lockup: this.vesting,
-            lockup_fraction: this.lockup_fraction,
-            lockup_period: this.lockup_period
-          }
-        });
+      if (this.pool.status === "draft") {
+        if (this.vesting) {
+          actions.push({
+            account: process.env.CONTRACT_ADDRESS,
+            name: "setlockup",
+            data: {
+              pool_id: this.poolID,
+              token_lockup: this.vesting,
+              lockup_fraction: this.lockup_fraction,
+              lockup_period: this.lockup_period
+            }
+          });
+        } else {
+          actions.push({
+            account: process.env.CONTRACT_ADDRESS,
+            name: "setlockup",
+            data: {
+              pool_id: this.poolID,
+              token_lockup: this.vesting,
+              lockup_fraction: 0,
+              lockup_period: 0
+            }
+          });
+        }
       }
       const transaction = await this.$store.$api.signTransaction(actions);
     },

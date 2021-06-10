@@ -273,7 +273,7 @@ export const getChainWalletTable = async function(
     });
 
     let contractWalletTbl = tableResults.rows;
-    console.log(contractWalletTbl)
+    // console.log(contractWalletTbl)
 
     // Set each token on state
     for (const token_info of contractWalletTbl) {
@@ -413,7 +413,7 @@ export const getChainSTART = async function(
         show_payer: false // Optional: Show ram payer
       });
 
-      console.log(stakeBalanceTbl.rows);
+      // console.log(stakeBalanceTbl.rows);
       let staked_START = 0;
       let liquid_START = 0;
       let unstaking_START = 0;
@@ -425,6 +425,10 @@ export const getChainSTART = async function(
         stake_maturities = stakeBalanceTbl.rows[0].stake_maturities;
       }
 
+      commit("setWalletTokenLiquid", {
+        token_sym: "START",
+        amount: liquid_START
+      });
       commit("setWalletTokenStaked", {
         token_sym: "START",
         amount: staked_START
