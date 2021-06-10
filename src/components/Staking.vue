@@ -163,11 +163,11 @@ export default {
       // prettier-ignore
       columns: [
         { name: "token", label: "Token", field: "sym", align: "center" },
-        { name: "balance", label: "Claimable", field: "balance", align: "center", format(val) {
+        { name: "balance", label: "Unclaimed", field: "balance", align: "center", format(val) {
           if (val > 0) return val
           else return 0
         }},
-        { name: "lifetime_return", label: "Claimed", field: "lifetime_return", align: "center", format(val) {
+        { name: "lifetime_return", label: "Earned", field: "lifetime_return", align: "center", format(val) {
           if (val > 0) return val
           else return 0
         }},
