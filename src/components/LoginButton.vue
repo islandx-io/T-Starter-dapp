@@ -114,6 +114,7 @@
               </q-item>
             </q-list>
             <q-btn
+              v-if="currentChain.NETWORK_NAME === 'TELOS'"
               label="Create New Account"
               class="hover-accent text-secondary"
               outline
