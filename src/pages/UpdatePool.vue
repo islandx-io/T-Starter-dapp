@@ -724,6 +724,8 @@ export default {
       this.vesting = this.pool.token_lockup ? true : false;
       this.lockup_fraction = this.pool.lockup_percent / 10000;
       this.lockup_period = this.pool.lockup_period;
+
+      this.accessType = this.pool.access_type
     },
     getTokenSymbolFromPool() {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
