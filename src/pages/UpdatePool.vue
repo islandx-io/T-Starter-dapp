@@ -202,25 +202,27 @@
 
               <q-item v-if="vesting">
                 <q-item-section>
-                  <q-slider
-                    v-model="lockup_fraction"
-                    :min="0"
-                    :max="1"
-                    :step="0.05"
-                    label
-                    color="primary"
-                  >
-                  </q-slider>
-                </q-item-section>
-                <q-item-section side class="col-4">
                   <q-input
                     v-model="lockup_fraction"
                     label="Lockup fraction"
                     outlined
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
-                /></q-item-section>
-                <q-item-section>
+                  >
+                  </q-input>
+                  <div class="q-px-xs">
+                    <q-slider
+                      v-model="lockup_fraction"
+                      :min="0"
+                      :max="1"
+                      :step="0.05"
+                      label
+                      color="primary"
+                    >
+                    </q-slider>
+                  </div>
+                </q-item-section>
+                <q-item-section top>
                   <q-input
                     v-model="lockup_period"
                     label="Lockup period (Days)"
@@ -230,7 +232,6 @@
                   />
                 </q-item-section>
               </q-item>
-              <q-item v-if="vesting"> </q-item>
               <!-- <div class="col column">
                 <div>Type</div>
                 <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
@@ -527,7 +528,7 @@ export default {
       accessType: "Premium",
       accessOptions: ["Public", "Premium"],
       premiumDuration: 3, //hours
-      premiumDurationOptions: [3, 12, 24, 24 * 7],
+      premiumDurationOptions: [3, 6, 12, 24],
       vesting: false,
       lockup_fraction: 0.5,
       lockup_period: 30
@@ -720,6 +721,8 @@ export default {
       }
 
       this.vesting = this.pool.token_lockup ? true : false;
+      this.lockup_fraction = this.pool.lockup_percent/10000;
+      this.lockup_period = this.pool.lockup_period;
     },
     getTokenSymbolFromPool() {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
@@ -769,18 +772,6 @@ export default {
 
     async updateChainPool() {
       var actions = [];
-      if (this.vesting) {
-        actions.push({
-          account: process.env.CONTRACT_ADDRESS,
-          name: "setlockup",
-          data: {
-            pool_id: this.poolID,
-            token_lockup: this.vesting,
-            lockup_fraction: this.lockup_fraction,
-            lockup_period: this.lockup_period
-          }
-        });
-      }
       actions.push({
         account: process.env.CONTRACT_ADDRESS,
         name: "updatepool",
@@ -819,6 +810,18 @@ export default {
           web_links: this.cleanedWebLinks
         }
       });
+      if (this.vesting) {
+        actions.push({
+          account: process.env.CONTRACT_ADDRESS,
+          name: "setlockup",
+          data: {
+            pool_id: this.poolID,
+            token_lockup: this.vesting,
+            lockup_fraction: this.lockup_fraction,
+            lockup_period: this.lockup_period
+          }
+        });
+      }
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
