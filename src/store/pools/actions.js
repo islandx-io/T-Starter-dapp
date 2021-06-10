@@ -204,6 +204,7 @@ export const ifPoolFunded = async function(
       }
     }
   } catch (error) {
+    console.error("ifPoolFunded")
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };

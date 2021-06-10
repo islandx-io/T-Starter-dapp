@@ -143,6 +143,7 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
       });
     }
   } catch (error) {
+    console.log("setWalletBaseTokens");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -212,6 +213,7 @@ export const setWalletPoolTokens = async function(
       }
     }
   } catch (error) {
+    console.log("setWalletPoolTokens");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -222,32 +224,35 @@ export const setWalletBalances = async function(
   account
 ) {
   try {
-    const wallet = getters.wallet;
+    if (account != null) {
+      const wallet = getters.wallet;
 
-    for (const token_info of wallet) {
-      let payload = {
-        address: token_info.token_contract,
-        sym: token_info.token_sym,
-        accountName: account
-      };
-      // console.log(payload)
+      for (const token_info of wallet) {
+        let payload = {
+          address: token_info.token_contract,
+          sym: token_info.token_sym,
+          accountName: account
+        };
+        // console.log(payload)
 
-      let token_str = await dispatch("pools/getBalanceFromChain", payload, {
-        root: true
-      });
-      // console.log(token_str)
-      let balance = this.$chainToQty(token_str);
-      // console.log(balance)
-      commit("setWalletTokenBalance", {
-        token_sym: token_info.token_sym,
-        amount: balance
-      });
-      commit("setWalletTokenDecimals", {
-        token_sym: token_info.token_sym,
-        amount: this.$chainToDecimals(token_str)
-      });
+        let token_str = await dispatch("pools/getBalanceFromChain", payload, {
+          root: true
+        });
+        // console.log(token_str)
+        let balance = this.$chainToQty(token_str);
+        // console.log(balance)
+        commit("setWalletTokenBalance", {
+          token_sym: token_info.token_sym,
+          amount: balance
+        });
+        commit("setWalletTokenDecimals", {
+          token_sym: token_info.token_sym,
+          amount: this.$chainToDecimals(token_str)
+        });
+      }
     }
   } catch (error) {
+    console.log("setWalletBalances");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -268,6 +273,7 @@ export const getChainWalletTable = async function(
     });
 
     let contractWalletTbl = tableResults.rows;
+    console.log(contractWalletTbl)
 
     // Set each token on state
     for (const token_info of contractWalletTbl) {
@@ -289,6 +295,7 @@ export const getChainWalletTable = async function(
       });
     }
   } catch (error) {
+    console.error("getChainWalletTable");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -406,7 +413,7 @@ export const getChainSTART = async function(
         show_payer: false // Optional: Show ram payer
       });
 
-      // console.log({ stakeBalanceTbl: stakeBalanceTbl });
+      console.log(stakeBalanceTbl.rows);
       let staked_START = 0;
       let liquid_START = 0;
       let unstaking_START = 0;
@@ -418,10 +425,6 @@ export const getChainSTART = async function(
         stake_maturities = stakeBalanceTbl.rows[0].stake_maturities;
       }
 
-      commit("setWalletTokenLiquid", {
-        token_sym: "START",
-        amount: liquid_START
-      });
       commit("setWalletTokenStaked", {
         token_sym: "START",
         amount: staked_START
@@ -455,6 +458,7 @@ export const getChainSTART = async function(
       });
     }
   } catch (error) {
+    console.error("getChainSTART");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };

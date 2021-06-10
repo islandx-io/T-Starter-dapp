@@ -549,7 +549,7 @@ export default {
           )
         };
       } else {
-        return this.public_end;
+        return this.pool_open;
       }
     },
 
