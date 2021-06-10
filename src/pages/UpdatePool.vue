@@ -193,30 +193,44 @@
 
               <!-- Vesting -->
               <q-item>
-                <q-checkbox v-model="vesting" label="Vesting"  :disable="pool.status !== 'draft'"/>
+                <q-checkbox
+                  v-model="vesting"
+                  label="Vesting"
+                  :disable="pool.status !== 'draft'"
+                />
               </q-item>
 
               <q-item v-if="vesting">
                 <q-item-section>
+                  <q-slider
+                    v-model="lockup_fraction"
+                    :min="0"
+                    :max="1"
+                    :step="0.05"
+                    label
+                    color="primary"
+                  >
+                  </q-slider>
+                </q-item-section>
+                <q-item-section side class="col-4">
                   <q-input
                     v-model="lockup_fraction"
                     label="Lockup fraction"
                     outlined
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
-                  />
-                </q-item-section>
-              </q-item>
-              <q-item v-if="vesting">
+                /></q-item-section>
                 <q-item-section>
                   <q-input
                     v-model="lockup_period"
-                    label="Lockup period"
+                    label="Lockup period (Days)"
                     outlined
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
-                  /> </q-item-section
-              ></q-item>
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item v-if="vesting"> </q-item>
               <!-- <div class="col column">
                 <div>Type</div>
                 <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
@@ -516,7 +530,7 @@ export default {
       premiumDurationOptions: [3, 12, 24, 24 * 7],
       vesting: false,
       lockup_fraction: 0.5,
-      lockup_period: 30,
+      lockup_period: 30
     };
   },
   computed: {
@@ -705,7 +719,7 @@ export default {
         this.haveWhitelist = true;
       }
 
-      this.vesting = this.pool.token_lockup ? true: false
+      this.vesting = this.pool.token_lockup ? true : false;
     },
     getTokenSymbolFromPool() {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
@@ -754,7 +768,7 @@ export default {
     },
 
     async updateChainPool() {
-      var actions = []
+      var actions = [];
       if (this.vesting) {
         actions.push({
           account: process.env.CONTRACT_ADDRESS,
@@ -765,48 +779,46 @@ export default {
             lockup_fraction: this.lockup_fraction,
             lockup_period: this.lockup_period
           }
-        })
+        });
       }
-      actions.push(
-        {
-          account: process.env.CONTRACT_ADDRESS,
-          name: "updatepool",
-          data: {
-            id: this.poolID,
-            title: this.pool.title,
-            avatar: this.pool.avatar,
-            tag_line: this.pool.tag_line,
-            description: this.pool.description,
-            base_token: this.BaseTokenToChain,
-            swap_ratio: this.swapRatio,
-            soft_cap: this.$toChainString(
-              this.pool.soft_cap,
-              this.selected_base_token.decimals,
-              this.selected_base_token.sym
-            ),
-            hard_cap: this.$toChainString(
-              this.pool.hard_cap,
-              this.selected_base_token.decimals,
-              this.selected_base_token.sym
-            ),
-            minimum_swap: this.$toChainString(
-              this.pool.minimum_swap,
-              this.selected_base_token.decimals,
-              this.selected_base_token.sym
-            ),
-            maximum_swap: this.$toChainString(
-              this.pool.maximum_swap,
-              this.selected_base_token.decimals,
-              this.selected_base_token.sym
-            ),
-            pool_open: this.pool.pool_open,
-            private_end: this.pool.private_end,
-            public_end: this.pool.public_end,
-            whitelist: this.pool.whitelist,
-            web_links: this.cleanedWebLinks
-          }
+      actions.push({
+        account: process.env.CONTRACT_ADDRESS,
+        name: "updatepool",
+        data: {
+          id: this.poolID,
+          title: this.pool.title,
+          avatar: this.pool.avatar,
+          tag_line: this.pool.tag_line,
+          description: this.pool.description,
+          base_token: this.BaseTokenToChain,
+          swap_ratio: this.swapRatio,
+          soft_cap: this.$toChainString(
+            this.pool.soft_cap,
+            this.selected_base_token.decimals,
+            this.selected_base_token.sym
+          ),
+          hard_cap: this.$toChainString(
+            this.pool.hard_cap,
+            this.selected_base_token.decimals,
+            this.selected_base_token.sym
+          ),
+          minimum_swap: this.$toChainString(
+            this.pool.minimum_swap,
+            this.selected_base_token.decimals,
+            this.selected_base_token.sym
+          ),
+          maximum_swap: this.$toChainString(
+            this.pool.maximum_swap,
+            this.selected_base_token.decimals,
+            this.selected_base_token.sym
+          ),
+          pool_open: this.pool.pool_open,
+          private_end: this.pool.private_end,
+          public_end: this.pool.public_end,
+          whitelist: this.pool.whitelist,
+          web_links: this.cleanedWebLinks
         }
-      )
+      });
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
