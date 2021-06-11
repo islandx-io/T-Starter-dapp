@@ -95,7 +95,7 @@
                 v-for="col in props.cols"
                 :key="col.name"
                 :props="props"
-                style="font-size: 1.2rem; color: gray"
+                style="font-size: 1.1rem; padding: 0.5rem; color: gray"
               >
                 {{ col.label }}
               </q-th>

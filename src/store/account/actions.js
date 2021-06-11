@@ -378,7 +378,7 @@ export const getChainStakeWallet = async function(
           if (baseToken.token_info.contract === walletToken.contract) {
             token.balance += this.$chainToQty(walletToken.balance);
             token.lifetime_return +=
-              this.$chainToQty(walletToken.lifetime_return) - token.balance;
+              this.$chainToQty(walletToken.lifetime_return) + token.balance;
           }
         }
         if (token.balance > 0 || token.lifetime_return > 0)
