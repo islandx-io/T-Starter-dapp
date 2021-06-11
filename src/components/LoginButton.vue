@@ -122,26 +122,36 @@
               @click="dialogSlide = 'createSlide'"
             />
           </q-carousel-slide>
-          <q-carousel-slide class="column flex-center" name="createSlide">
+          <q-carousel-slide
+            class="column flex-center q-pa-none"
+            name="createSlide"
+          >
             <q-card>
               <p>
-                Create a Telos account through the official telos.net portal and
-                then login with the wallet of your choice. We recommend using
-                Anchor for desktop and Wombat for mobile.
+                Create a {{ currentChain.NETWORK_DISPLAY_NAME }} account through
+                an official portal and then login with the wallet of your
+                choice.
               </p>
-              <div class="row justify-between">
+              <p>
+                We recommend the
+                {{
+                  currentChain.NETWORK_NAME === "WAX"
+                    ? "WAX Cloud Wallet"
+                    : "Anchor wallet"
+                }}.
+              </p>
+              <div class="row justify-center q-gutter-x-sm">
                 <q-btn
                   label="Create account"
                   class="hover-accent text-accent"
                   outline
                   type="a"
-                  href="https://telos.net/create-account/"
+                  :href="currentChain.CREATE_ACCOUNT"
                   target="_blank"
                 />
                 <q-btn
                   label="Back"
                   class="text-black"
-                  flat
                   outline
                   @click="dialogSlide = 'loginSlide'"
                 />
@@ -383,6 +393,6 @@ export default {
 }
 .q-carousel__slide {
   overflow-x: hidden;
-  width: 300px;
+  max-width: 300px;
 }
 </style>
