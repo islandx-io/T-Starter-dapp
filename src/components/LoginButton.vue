@@ -181,7 +181,7 @@
           <div class="text-caption text-grey-7">
             <q-icon name="fas fa-info-circle" class="q-pr-xs" />
             {{ ramThres / 1000 }} KB of RAM would cost about
-            {{ (ramPrice * ramThres).toFixed(4) }}
+            {{ ((ramPrice * ramThres) / 0.995).toFixed(4) }}
             {{ currentChain.NAITIVE_TOKEN }}.
           </div>
           <div class="text-caption text-grey-7" v-if="!canPayForRAM">
