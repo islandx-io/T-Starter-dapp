@@ -11,7 +11,8 @@ export default function() {
       NETWORK_PORT: 443,
       NETWORK_PROTOCOL: "https",
       NETWORK_EXPLORER: "https://telos-test.bloks.io",
-      HYPERION_ENDPOINT: "https://testnet.telos.caleos.io"
+      HYPERION_ENDPOINT: "https://testnet.telos.caleos.io",
+      CREATE_ACCOUNT: "https://app.telos.net/testnet/developers"
     },
     blockchainList: [
       {
@@ -26,7 +27,8 @@ export default function() {
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://telos-test.bloks.io",
-        HYPERION_ENDPOINT: "https://testnet.telos.africa"
+        HYPERION_ENDPOINT: "https://testnet.telos.africa",
+        CREATE_ACCOUNT: "https://app.telos.net/testnet/developers"
       },
       {
         NAITIVE_TOKEN: "TLOS",
@@ -39,7 +41,8 @@ export default function() {
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://telos.bloks.io",
-        HYPERION_ENDPOINT: "https://telos.caleos.io"
+        HYPERION_ENDPOINT: "https://telos.caleos.io",
+        CREATE_ACCOUNT: "https://telos.net/create-account/"
       },
       {
         NAITIVE_TOKEN: "EOS",
@@ -52,7 +55,8 @@ export default function() {
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://jungle3.bloks.io",
-        HYPERION_ENDPOINT: "https://jungle3.cryptolions.io:443"
+        HYPERION_ENDPOINT: "https://jungle3.cryptolions.io:443",
+        CREATE_ACCOUNT: "https://monitor.jungletestnet.io/#account"
       },
       {
         NAITIVE_TOKEN: "EOS",
@@ -65,7 +69,8 @@ export default function() {
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://bloks.io",
-        HYPERION_ENDPOINT: "https://eos.greymass.com:443"
+        HYPERION_ENDPOINT: "https://eos.greymass.com:443",
+        CREATE_ACCOUNT: "https://eosauthority.com/wallet/create-account"
       },
       {
         NAITIVE_TOKEN: "WAX",
@@ -78,7 +83,8 @@ export default function() {
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://wax-test.bloks.io",
-        HYPERION_ENDPOINT: "https://testnet.waxsweden.org:443"
+        HYPERION_ENDPOINT: "https://testnet.waxsweden.org:443",
+        CREATE_ACCOUNT: "https://waxsweden.org/create-testnet-account/"
       },
       {
         NAITIVE_TOKEN: "WAX",
@@ -91,7 +97,8 @@ export default function() {
         NETWORK_PORT: 443,
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://wax.bloks.io",
-        HYPERION_ENDPOINT: "https://wax.greymass.com:443"
+        HYPERION_ENDPOINT: "https://wax.greymass.com:443",
+        CREATE_ACCOUNT: "https://all-access.wax.io/"
       }
     ]
   };
