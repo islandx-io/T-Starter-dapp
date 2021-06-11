@@ -62,7 +62,7 @@ const getAuthenticator = function(ual, wallet = null) {
   };
 };
 
-export const logout = async function({ commit }) {
+export const logout = async function({ commit, rootGetters }) {
   const { authenticator } = getAuthenticator(this.$ual);
   try {
     authenticator && (await authenticator.logout());
@@ -74,7 +74,9 @@ export const logout = async function({ commit }) {
   localStorage.removeItem("autoLogin");
 
   if (this.$router.currentRoute.path !== "/") {
-    this.$router.push({ path: "/" });
+    this.$router.push({
+      path: "/" + rootGetters["blockchains/currentChain"].NETWORK_NAME
+    });
     this.$router.go();
   }
 };
