@@ -61,7 +61,7 @@
             name="loginSlide"
             class="column flex-center q-gutter-y-sm q-pa-md"
           >
-            <q-list class="shadow-5">
+            <q-list class="login-list shadow-5">
               <q-item
                 v-for="(wallet, idx) in $ual.authenticators"
                 :key="wallet.getStyle().text"
@@ -114,7 +114,6 @@
               </q-item>
             </q-list>
             <q-btn
-              v-if="currentChain.NETWORK_NAME === 'TELOS'"
               label="Create New Account"
               class="hover-accent text-secondary"
               outline
@@ -394,5 +393,16 @@ export default {
 .q-carousel__slide {
   overflow-x: hidden;
   max-width: 300px;
+}
+.login-list {
+  $corner-radius: 15px;
+  .q-item:first-of-type {
+    border-top-left-radius: $corner-radius;
+    border-top-right-radius: $corner-radius;
+  }
+  .q-item:last-of-type {
+    border-bottom-left-radius: $corner-radius;
+    border-bottom-right-radius: $corner-radius;
+  }
 }
 </style>
