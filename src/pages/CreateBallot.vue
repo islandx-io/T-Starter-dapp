@@ -289,14 +289,24 @@
                       pool.status !== 'draft' &&
                         this.$route.params.id != undefined
                     "
-                  />
+                  >
+                  </q-input>
+                  <div class="q-px-xs">
+                    <q-slider
+                      v-model="lockup_fraction"
+                      :min="0"
+                      :max="1"
+                      :step="0.05"
+                      label
+                      color="primary"
+                    >
+                    </q-slider>
+                  </div>
                 </q-item-section>
-              </q-item>
-              <q-item v-if="vesting">
-                <q-item-section>
+                <q-item-section top>
                   <q-input
                     v-model="lockup_period"
-                    label="Lockup period"
+                    label="Lockup period (Days)"
                     outlined
                     :disable="
                       pool.status !== 'draft' &&
@@ -306,8 +316,10 @@
                       pool.status !== 'draft' &&
                         this.$route.params.id != undefined
                     "
-                  /> </q-item-section
-              ></q-item>
+                    :rules="[val => val > 29 || 'Must be more than 30 days']"
+                  />
+                </q-item-section>
+              </q-item>
               <!-- <div class="col column">
                 <div>Type</div>
                 <q-radio v-model="pool.pool_type" val="fixed" label="Fixed" />
@@ -453,7 +465,12 @@
                   @click="confirm_fee = true"
                   color="primary"
                 />
-                <q-btn v-else :label="'Update'" type="submit" color="primary" />
+                <q-btn
+                  v-else
+                  :label="'Update'"
+                  @click="onUpdate"
+                  color="primary"
+                />
               </q-item-section>
               <q-item-section class="col-auto">
                 <q-btn
@@ -595,7 +612,7 @@ export default {
         { key: "whitelist", value: "" }
       ],
 
-      base_token_symbol: "PBTC",
+      base_token_symbol: "",
       base_tokens_raw: [],
       base_token_options: [],
       token_symbol: "",
@@ -606,7 +623,7 @@ export default {
       accessType: "Premium",
       accessOptions: ["Public", "Premium"],
       premiumDuration: 3, //hours
-      premiumDurationOptions: [3, 12, 24, 24 * 7],
+      premiumDurationOptions: [3, 6, 12, 24],
       vesting: false,
       lockup_fraction: 0.5,
       lockup_period: 30
@@ -615,8 +632,8 @@ export default {
 
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
-    ...mapGetters("pools", ["getPoolByID"]),
-    ...mapGetters("ballots", ["getBallotByID"]),
+    ...mapGetters("ballots", ["getBallotByID", "getBallotByIDChain"]),
+    ...mapGetters("blockchains", ["currentChain"]),
 
     private_end() {
       if (this.accessType === "Premium") {
@@ -845,6 +862,10 @@ export default {
           }
 
           this.vesting = this.pool.token_lockup ? true : false;
+          this.lockup_fraction = this.pool.lockup_percent / 10000;
+          this.lockup_period = this.pool.lockup_period;
+
+          this.accessType = this.pool.access_type;
         }
       }
     },
@@ -859,6 +880,77 @@ export default {
           }
         }
       ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
+    async updateBallot() {
+      var actions = [
+        {
+          account: process.env.BALLOT_ADDRESS,
+          name: "updateballot",
+          data: {
+            id: this.poolID,
+            title: this.pool.title,
+            avatar: this.pool.avatar,
+            tag_line: this.pool.tag_line,
+            description: this.pool.description,
+            base_token: this.BaseTokenToChain,
+            swap_ratio: this.swapRatio,
+            soft_cap: this.$toChainString(
+              this.pool.soft_cap,
+              this.selected_base_token.decimals,
+              this.selected_base_token.sym
+            ),
+            hard_cap: this.$toChainString(
+              this.pool.hard_cap,
+              this.selected_base_token.decimals,
+              this.selected_base_token.sym
+            ),
+            minimum_swap: this.$toChainString(
+              this.pool.minimum_swap,
+              this.selected_base_token.decimals,
+              this.selected_base_token.sym
+            ),
+            maximum_swap: this.$toChainString(
+              this.pool.maximum_swap,
+              this.selected_base_token.decimals,
+              this.selected_base_token.sym
+            ),
+            ballot_close: this.pool.ballot_close,
+            pool_open: this.pool.pool_open,
+            private_end: this.pool.private_end,
+            public_end: this.pool.public_end,
+            whitelist: this.pool.whitelist,
+            web_links: this.cleanedWebLinks
+          }
+        }
+      ];
+      //TODO enable if cesting supported
+      // if (this.pool.status === "draft") {
+      //   if (this.vesting) {
+      //     actions.push({
+      //       account: process.env.CONTRACT_ADDRESS,
+      //       name: "setlockup",
+      //       data: {
+      //         pool_id: this.poolID,
+      //         token_lockup: this.vesting,
+      //         lockup_fraction: this.lockup_fraction,
+      //         lockup_period: this.lockup_period
+      //       }
+      //     });
+      //   } else {
+      //     actions.push({
+      //       account: process.env.CONTRACT_ADDRESS,
+      //       name: "setlockup",
+      //       data: {
+      //         pool_id: this.poolID,
+      //         token_lockup: this.vesting,
+      //         lockup_fraction: 0,
+      //         lockup_period: 0
+      //       }
+      //     });
+      //   }
+      // }
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
@@ -921,19 +1013,31 @@ export default {
           }
         }
       ];
-      // FIXME add when contracts allows it
-      // if (this.vesting) {
-      //   actions.push({
-      //     account: process.env.CONTRACT_ADDRESS,
-      //     name: "setlockup",
-      //     data: {
-      //       pool_id: this.ballotConfig.last_ballot_id + 1,
-      //       token_lockup: this.vesting,
-      //       lockup_fraction: this.lockup_fraction,
-      //       lockup_period: this.lockup_period
-      //     }
-      //   });
-      // }
+      if (this.pool.status === "draft") {
+        if (this.vesting) {
+          actions.push({
+            account: process.env.CONTRACT_ADDRESS,
+            name: "setlockup",
+            data: {
+              pool_id: this.poolID,
+              token_lockup: this.vesting,
+              lockup_fraction: this.lockup_fraction,
+              lockup_period: this.lockup_period
+            }
+          });
+        } else {
+          actions.push({
+            account: process.env.CONTRACT_ADDRESS,
+            name: "setlockup",
+            data: {
+              pool_id: this.poolID,
+              token_lockup: this.vesting,
+              lockup_fraction: 0,
+              lockup_period: 0
+            }
+          });
+        }
+      }
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
@@ -969,6 +1073,38 @@ export default {
         }
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
+    async onUpdate() {
+      this.pool.ballot_close = this.ballot_close.date;
+      this.pool.pool_open = this.pool_open.date;
+      this.pool.private_end = this.private_end.date;
+      this.pool.public_end = this.public_end.date;
+      if (this.accept !== true || !this.isAuthenticated) {
+        this.$q.notify({
+          color: "red-5",
+          textColor: "white",
+          icon: "warning",
+          message: "You need to accept the terms and conditions first"
+        });
+      } else {
+        this.checkLinks();
+        this.formatWhitelist();
+        try {
+          if (await this.$refs.updateForm.validate()) {
+            await this.updateBallot();
+            this.$q.notify({
+              color: "green-4",
+              textColor: "white",
+              icon: "cloud_done",
+              message: "Updated"
+            });
+            this.redirectBallotPage();
+          }
+        } catch (error) {
+          this.$errorNotification(error);
+        }
+      }
     },
 
     async onSubmit() {

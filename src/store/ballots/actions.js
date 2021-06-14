@@ -51,7 +51,7 @@ export const getChainBallotByID = async function({ commit, dispatch }, id) {
     ballotTable.chain = this.$api.currentChain.NETWORK_NAME;
 
     commit("updateBallotOnState", { ballotTable });
-    // await dispatch("updateBallotSettings", id);
+    await dispatch("updateBallotSettings", {id, chain: ballotTable.chain});
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -94,7 +94,7 @@ export const getChainPoolByIDChain = async function(
     ].NETWORK_NAME;
 
     commit("updatePoolOnState", { ballotTable });
-    // await dispatch("updatePoolSettings", { id: ballotTable.id, chain: ballotTable.chain });
+    await dispatch("updateBallotSettings", {id, chain: ballotTable.chain});
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -132,7 +132,7 @@ export const getAllChainBallots = async function({ commit, dispatch }) {
       ballotTable.chain = this.$api.currentChain.NETWORK_NAME;
 
       commit("updateBallotOnState", { ballotTable });
-      // await dispatch("updateBallotSettings", id);
+      await dispatch("updateBallotSettings", {id, chain: ballotTable.chain});
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -141,17 +141,54 @@ export const getAllChainBallots = async function({ commit, dispatch }) {
 
 export const updateBallotSettings = async function(
   { commit, getters, dispatch },
-  poolID
+  payload
 ) {
-  console.log("in action");
-  const pool = getters.getBallotByID(poolID);
+  const pool = getters.getBallotByIDChain(payload.id, payload.chain);
 
+  // Update status
+  var poolStatus = "loading";
+  const currentDate = Date.now();
+  if (pool.status === "draft") {
+    poolStatus = "draft";
+  } else if (currentDate < pool.pool_open) {
+    poolStatus = "upcoming";
+  } else if (
+    currentDate > pool.public_end ||
+    this.$chainToQty(pool.remaining_offer) <= 0
+  ) {
+    poolStatus = "completed";
+    if (pool.status === "success") poolStatus = "filled";
+    else if (pool.status === "cancelled") poolStatus = "cancelled";
+  } else {
+    poolStatus = "open";
+  }
+
+  // Update access type
+  var access_type = "Public";
+  if (pool.private_end >= pool.public_end) {
+    access_type = "Premium";
+  } else if (pool.private_end <= pool.pool_open) {
+    access_type = "Public";
+  } else if (currentDate > pool.private_end) {
+    access_type = "Public";
+  } else if (currentDate < pool.private_end) {
+    access_type = "Premium";
+  }
+
+  // Update progress
+  var progress = 0;
+  // const total_raise = this.$chainToQty(pool.total_raise);
+  // const hard_cap = this.$chainToQty(pool.hard_cap);
+  // if (hard_cap !== 0) progress = total_raise / hard_cap;
+
+  // Update chain on state
   commit({
     type: "setBallotSettings",
-    id: poolID,
-    pool_status: "ai",
-    access_type: "jai",
-    progress: "progress"
+    id: payload.id,
+    pool_status: poolStatus,
+    access_type: access_type,
+    progress: progress,
+    chain: pool.chain
   });
 };
 

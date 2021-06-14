@@ -1,17 +1,16 @@
 export const setBallotSettings = (
   state,
-  { id, pool_status, access_type, progress }
+  { id, pool_status, access_type, progress, chain }
 ) => {
-  console.log("in mutation")
-  let pool = state.ballots.find(el => el.id === id);
-  pool.ballot_close = 1621519800000;
+  let pool = state.ballots.find(el => el.id === id && el.chain === chain);
+  pool.pool_status = pool_status;
   pool.access_type = access_type;
   pool.progress = progress;
 };
 
 export const updateBallotOnState = (state, { ballotTable }) => {
   if (!ballotTable) {
-    console.log("[ERROR] No pool table");
+    console.error("[ERROR] No pool table");
     return;
   }
 

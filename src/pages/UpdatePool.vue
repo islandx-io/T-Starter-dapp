@@ -227,7 +227,7 @@
                     outlined
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
-                    :rules="[val => val > 30 || 'Must be more than 30 days']"
+                    :rules="[val => val > 29 || 'Must be more than 30 days']"
                   />
                 </q-item-section>
               </q-item>
@@ -514,7 +514,7 @@ export default {
         { key: "whitelist", value: "" }
       ],
 
-      base_token_symbol: "PBTC",
+      base_token_symbol: "",
       base_tokens_raw: [],
       base_token_options: [],
       token_symbol: "",
