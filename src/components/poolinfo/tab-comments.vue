@@ -31,7 +31,7 @@
       </q-form>
     </div>
     <div
-      class="comments-container q-px-sm scroll overflow-y"
+      class="slim-scrollbar q-px-sm scroll overflow-y"
       style="min-height: 60px; max-height: 800px"
     >
       <div v-if="comments.length === 0" class="text-grey-6 text-center q-pt-md">
@@ -216,7 +216,10 @@ export default {
     ...mapActions("account", ["getChainSTART"]),
     async getChainInfo() {
       await this.updateCommentsByPoolID(this.poolID);
-      this.pool = await this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME);
+      this.pool = await this.getPoolByIDChain(
+        this.poolID,
+        this.currentChain.NETWORK_NAME
+      );
       this.comments = JSON.parse(JSON.stringify(this.pool.comments_table));
       this.getChainSTART(this.accountName);
     },
@@ -318,24 +321,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.comments-container {
-  /* custom scrollbar */
-  &::-webkit-scrollbar {
-    width: 20px;
-  }
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: #d6dee1;
-    border-radius: 20px;
-    border: 6px solid transparent;
-    background-clip: content-box;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: $secondary;
-  }
-}
-</style>

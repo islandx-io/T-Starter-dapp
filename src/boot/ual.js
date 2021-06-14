@@ -4,6 +4,7 @@ import { Scatter } from "ual-scatter";
 import { Wombat } from "ual-wombat";
 import { Sqrl } from "@smontero/ual-sqrl";
 import { Anchor } from "ual-anchor";
+import {Wax} from "@eosdacio/ual-wax";
 
 export default async ({ Vue, store }) => {
   // set and get blockchain
@@ -31,6 +32,11 @@ export default async ({ Vue, store }) => {
   // if telos network, include 'telos sign' as login option
   if (currentChain.NETWORK_NAME === 'TELOS') {
     authenticators = authenticators.concat([new KeycatAuthenticator([chain], { appName: process.env.APP_NAME })])
+  }
+
+  // if wax network, include 'wax cloud wallet' as login option
+  if (currentChain.NETWORK_NAME === 'WAX') {
+    authenticators = authenticators.concat([new Wax([chain], { appName: process.env.APP_NAME })])
   }
 
   authenticators = authenticators.concat([

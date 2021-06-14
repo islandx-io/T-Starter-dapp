@@ -61,7 +61,7 @@
             name="loginSlide"
             class="column flex-center q-gutter-y-sm q-pa-md"
           >
-            <q-list class="shadow-5">
+            <q-list class="login-list shadow-5">
               <q-item
                 v-for="(wallet, idx) in $ual.authenticators"
                 :key="wallet.getStyle().text"
@@ -121,26 +121,36 @@
               @click="dialogSlide = 'createSlide'"
             />
           </q-carousel-slide>
-          <q-carousel-slide class="column flex-center" name="createSlide">
+          <q-carousel-slide
+            class="column flex-center q-pa-none"
+            name="createSlide"
+          >
             <q-card>
               <p>
-                Create a Telos account through the official telos.net portal and
-                then login with the wallet of your choice. We recommend using
-                Anchor for desktop and Wombat for mobile.
+                Create a {{ currentChain.NETWORK_DISPLAY_NAME }} account through
+                an official portal and then login with the wallet of your
+                choice.
               </p>
-              <div class="row justify-between">
+              <p>
+                We recommend the
+                {{
+                  currentChain.NETWORK_NAME === "WAX"
+                    ? "WAX Cloud Wallet"
+                    : "Anchor wallet"
+                }}.
+              </p>
+              <div class="row justify-center q-gutter-x-sm">
                 <q-btn
                   label="Create account"
                   class="hover-accent text-accent"
                   outline
                   type="a"
-                  href="https://telos.net/create-account/"
+                  :href="currentChain.CREATE_ACCOUNT"
                   target="_blank"
                 />
                 <q-btn
                   label="Back"
                   class="text-black"
-                  flat
                   outline
                   @click="dialogSlide = 'loginSlide'"
                 />
@@ -170,7 +180,7 @@
           <div class="text-caption text-grey-7">
             <q-icon name="fas fa-info-circle" class="q-pr-xs" />
             {{ ramThres / 1000 }} KB of RAM would cost about
-            {{ (ramPrice * ramThres).toFixed(4) }}
+            {{ ((ramPrice * ramThres) / 0.995).toFixed(4) }}
             {{ currentChain.NAITIVE_TOKEN }}.
           </div>
           <div class="text-caption text-grey-7" v-if="!canPayForRAM">
@@ -382,6 +392,17 @@ export default {
 }
 .q-carousel__slide {
   overflow-x: hidden;
-  width: 300px;
+  max-width: 300px;
+}
+.login-list {
+  $corner-radius: 15px;
+  .q-item:first-of-type {
+    border-top-left-radius: $corner-radius;
+    border-top-right-radius: $corner-radius;
+  }
+  .q-item:last-of-type {
+    border-bottom-left-radius: $corner-radius;
+    border-bottom-right-radius: $corner-radius;
+  }
 }
 </style>

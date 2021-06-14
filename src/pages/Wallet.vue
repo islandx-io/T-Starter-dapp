@@ -219,7 +219,13 @@ export default {
 
   async mounted() {
     await this.reloadWalletInfo();
-  }
+  },
+
+  watch: {
+    async accountName() {
+      await this.reloadWalletInfo();
+    }
+  },
 };
 </script>
 

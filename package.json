@@ -1,6 +1,6 @@
 {
   "name": "t-starter",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "The place to discover and back projects building on Telos",
   "productName": "T-STARTER",
   "author": "Jacques Beukes <jacques@aeterna.co.za>",
@@ -15,6 +15,7 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
+    "@eosdacio/ual-wax": "^1.4.4",
     "@eosrio/hyperion-stream-client": "^0.4.0-beta.5",
     "@metamask/onboarding": "^1.0.0",
     "@quasar/extras": "^1.0.0",
@@ -25,7 +26,6 @@
     "bignumber.js": "^9.0.1",
     "core-js": "^3.6.5",
     "dotenv": "^8.2.0",
-    "eosjs": "^21.0.3",
     "eosjs-ecc": "^4.0.7",
     "jdenticon": "^3.1.0",
     "moment": "^2.27.0",
@@ -41,7 +41,7 @@
     "universal-authenticator-library": "^0.3.0"
   },
   "devDependencies": {
-    "@quasar/app": "^2.0.0",
+    "@quasar/app": "^2.2.10",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",

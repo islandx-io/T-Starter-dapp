@@ -1,6 +1,6 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide" class="staking-dialog">
-    <q-card class="col-shrink">
+    <q-card class="col-shrink slim-scrollbar">
       <div class="column items-center">
         <div class="self-stretch row justify-between q-py-sm">
           <div class="" style="width: 40px" />
@@ -95,7 +95,7 @@
                 v-for="col in props.cols"
                 :key="col.name"
                 :props="props"
-                style="font-size: 1.2rem; color: gray"
+                style="font-size: 1.1rem; padding: 0.5rem; color: gray"
               >
                 {{ col.label }}
               </q-th>
@@ -163,11 +163,11 @@ export default {
       // prettier-ignore
       columns: [
         { name: "token", label: "Token", field: "sym", align: "center" },
-        { name: "balance", label: "Claimable", field: "balance", align: "center", format(val) {
+        { name: "balance", label: "Unclaimed", field: "balance", align: "center", format(val) {
           if (val > 0) return val
           else return 0
         }},
-        { name: "lifetime_return", label: "Claimed", field: "lifetime_return", align: "center", format(val) {
+        { name: "lifetime_return", label: "Earned", field: "lifetime_return", align: "center", format(val) {
           if (val > 0) return val
           else return 0
         }},

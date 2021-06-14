@@ -130,7 +130,8 @@
                       pool.pool_status !== `open` ||
                       not_enough_start ||
                       joining ||
-                      !isWhitelisted || allocationReached
+                      !isWhitelisted ||
+                      allocationReached
                   "
                 />
                 <div
@@ -169,19 +170,19 @@
             </q-card-section>
 
             <q-card-section class="q-pt-none">
-              T-Starter is a smart contract based token swap and sale
-              platform. Although the smart contracts, interfaces, code and logic
-              (altogether, the Service) that are available for use on
-              T-Starter have been audited by 3rd parties, T-Starter makes
-              no express warranties as to the completeness, safety, absense of
-              bugs or errors in the Service. T-Starter further disclaims all
-              liability or loss from its users due to the users' own negligence,
-              lack of knowledge, or lack of adequate safety measures on the part
-              of the users. In no way shall T-Starter be held liable for loss
-              of funds due to users' own malfeasance, ignorance, negligence, or
-              due to unforeseen network costs such as gas fees or fluctuations
-              in price. The platform and the Services are presented "as is", and
-              by utilising the Service, users warrant that they are aware of the
+              T-Starter is a smart contract based token swap and sale platform.
+              Although the smart contracts, interfaces, code and logic
+              (altogether, the Service) that are available for use on T-Starter
+              have been audited by 3rd parties, T-Starter makes no express
+              warranties as to the completeness, safety, absense of bugs or
+              errors in the Service. T-Starter further disclaims all liability
+              or loss from its users due to the users' own negligence, lack of
+              knowledge, or lack of adequate safety measures on the part of the
+              users. In no way shall T-Starter be held liable for loss of funds
+              due to users' own malfeasance, ignorance, negligence, or due to
+              unforeseen network costs such as gas fees or fluctuations in
+              price. The platform and the Services are presented "as is", and by
+              utilising the Service, users warrant that they are aware of the
               risks associated with interacting with smart contracts,
               cryptocurrency, cryptocurrency wallets, and blockchain based
               systems. Users' transactions cannot be reversed once sent, and
@@ -342,11 +343,15 @@ export default {
   components: { tokenAvatar },
   computed: {
     ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
-    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
 
+    START_info() {
+      return this.wallet.find(el => (el.sym = "START"));
+    },
+
     explorerUrl() {
-      return this.currentChain.NETWORK_EXPLORER
+      return this.currentChain.NETWORK_EXPLORER;
     },
 
     isWhitelisted() {
@@ -383,14 +388,15 @@ export default {
       }
       return result;
     },
-    
+
     allocationReached() {
-      // console.log(this.$chainToQty(this.allocation.bid))
-      // console.log(this.$chainToQty(this.pool.maximum_swap))
-      if (this.$chainToQty(this.allocation.bid) >= this.$chainToQty(this.pool.maximum_swap)) {
-        return true
+      if (
+        this.$chainToQty(this.allocation.bid) >=
+        this.$chainToQty(this.pool.maximum_swap)
+      ) {
+        return true;
       } else {
-        return false
+        return false;
       }
     }
   },
@@ -406,6 +412,7 @@ export default {
       "getPlatformToken",
       "getPoolsSettings"
     ]),
+    ...mapActions("account", ["getChainSTART"]),
     restrictDecimal() {
       this.amount = this.$toFixedDown(
         this.amount,
@@ -448,7 +455,7 @@ export default {
         sym: this.BaseTokenSymbol,
         accountName: this.accountName
       };
-      console.log(await this.getBalanceFromChain(payload));
+      // console.log(await this.getBalanceFromChain(payload));
       this.balance = this.$chainToQty(await this.getBalanceFromChain(payload));
     },
 
@@ -527,7 +534,6 @@ export default {
           }
         }
       );
-      console.log(actions);
       const transaction = await this.$store.$api.signTransaction(actions);
       if (transaction) {
         this.showTransaction = true;
@@ -576,45 +582,51 @@ export default {
           this.tryTransaction();
         }
       }
+    },
+
+    async checkBalances() {
+      if (this.isAuthenticated) {
+        this.getBalance();
+      }
+      this.premium_access_fee = await this.getPremiumStake();
+      this.platform_token = await this.getPlatformToken();
+
+      // check stake if premium pool
+      this.alreadyStaked = await this.checkStakedChain({
+        account: this.accountName,
+        poolID: this.poolID
+      });
+
+      // if START balance not enough and is premium pool, show dialog to buy
+      let start_balance = this.START_info.balance;
+      if (
+        start_balance < this.$chainToQty(this.premium_access_fee) &&
+        this.pool.access_type === "Premium" &&
+        !this.alreadyStaked
+      ) {        
+        this.stake_warning = true;
+        this.not_enough_start = true;
+      }
+       else {
+         this.stake_warning = false;
+        this.not_enough_start = false;
+       }
     }
   },
 
   async mounted() {
     await this.loadChainData();
     await this.getPoolInfo();
-    console.log(this.pool.access_type);
-
     await this.getAllocations();
+    await this.checkBalances();
+  },
 
-    if (this.isAuthenticated) {
-      this.getBalance();
-    }
-    this.premium_access_fee = await this.getPremiumStake();
-    this.platform_token = await this.getPlatformToken();
-
-    // check stake if premium pool
-    this.alreadyStaked = await this.checkStakedChain({
-      account: this.accountName,
-      poolID: this.poolID
-    });
-
-    // if START balance not enough and is premium pool, show dialog to buy
-    let payload = {
-      address: this.platform_token.contract,
-      sym: "START",
-      accountName: this.accountName
-    };
-    let start_balance = this.$chainToQty(
-      await this.getBalanceFromChain(payload)
-    );
-    console.log("Start balance:" + start_balance);
-    if (
-      start_balance < this.$chainToQty(this.premium_access_fee) &&
-      this.pool.access_type === "Premium" &&
-      !this.alreadyStaked
-    ) {
-      this.stake_warning = true;
-      this.not_enough_start = true;
+  watch: {
+    async accountName() {
+      await this.loadChainData();
+      await this.getPoolInfo();
+      await this.getChainSTART(this.accountName);
+      await this.checkBalances();
     }
   }
 };

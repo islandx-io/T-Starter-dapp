@@ -31,6 +31,7 @@
           size="lg"
           no-caps
           padding="xs"
+          style="min-width: 115px"
         >
           <div class="flex items-center justify-center wrap q-pa-xs">
             <div class="row items-center justify-center">

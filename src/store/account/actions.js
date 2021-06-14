@@ -62,7 +62,7 @@ const getAuthenticator = function(ual, wallet = null) {
   };
 };
 
-export const logout = async function({ commit }) {
+export const logout = async function({ commit, rootGetters }) {
   const { authenticator } = getAuthenticator(this.$ual);
   try {
     authenticator && (await authenticator.logout());
@@ -74,7 +74,9 @@ export const logout = async function({ commit }) {
   localStorage.removeItem("autoLogin");
 
   if (this.$router.currentRoute.path !== "/") {
-    this.$router.push({ path: "/" });
+    this.$router.push({
+      path: "/" + rootGetters["blockchains/currentChain"].NETWORK_NAME
+    });
     this.$router.go();
   }
 };
@@ -95,7 +97,7 @@ export const getUserProfile = async function({ commit }, accountName) {
     const profile = profileResult.rows[0];
     commit("setProfile", profile);
   } catch (error) {
-    console.log("aggenee");
+    // console.log("aggenee");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -143,6 +145,7 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
       });
     }
   } catch (error) {
+    console.log("setWalletBaseTokens");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -212,6 +215,7 @@ export const setWalletPoolTokens = async function(
       }
     }
   } catch (error) {
+    console.log("setWalletPoolTokens");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -222,32 +226,35 @@ export const setWalletBalances = async function(
   account
 ) {
   try {
-    const wallet = getters.wallet;
+    if (account != null) {
+      const wallet = getters.wallet;
 
-    for (const token_info of wallet) {
-      let payload = {
-        address: token_info.token_contract,
-        sym: token_info.token_sym,
-        accountName: account
-      };
-      // console.log(payload)
+      for (const token_info of wallet) {
+        let payload = {
+          address: token_info.token_contract,
+          sym: token_info.token_sym,
+          accountName: account
+        };
+        // console.log(payload)
 
-      let token_str = await dispatch("pools/getBalanceFromChain", payload, {
-        root: true
-      });
-      // console.log(token_str)
-      let balance = this.$chainToQty(token_str);
-      // console.log(balance)
-      commit("setWalletTokenBalance", {
-        token_sym: token_info.token_sym,
-        amount: balance
-      });
-      commit("setWalletTokenDecimals", {
-        token_sym: token_info.token_sym,
-        amount: this.$chainToDecimals(token_str)
-      });
+        let token_str = await dispatch("pools/getBalanceFromChain", payload, {
+          root: true
+        });
+        // console.log(token_str)
+        let balance = this.$chainToQty(token_str);
+        // console.log(balance)
+        commit("setWalletTokenBalance", {
+          token_sym: token_info.token_sym,
+          amount: balance
+        });
+        commit("setWalletTokenDecimals", {
+          token_sym: token_info.token_sym,
+          amount: this.$chainToDecimals(token_str)
+        });
+      }
     }
   } catch (error) {
+    console.log("setWalletBalances");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -268,6 +275,7 @@ export const getChainWalletTable = async function(
     });
 
     let contractWalletTbl = tableResults.rows;
+    // console.log(contractWalletTbl)
 
     // Set each token on state
     for (const token_info of contractWalletTbl) {
@@ -289,6 +297,7 @@ export const getChainWalletTable = async function(
       });
     }
   } catch (error) {
+    console.error("getChainWalletTable");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -314,65 +323,69 @@ export const getChainStakeWallet = async function(
       reverse: false,
       show_payer: false
     });
-    const stakeAccount = accountsResult.rows[0];
-    let account_stake_balance = this.$chainToQty(stakeAccount.stake_balance);
-
-    // console.log({ stakeAccount: stakeAccount });
-
-    // get rewards table (only claimable rewards)
-    const rewardsResult = await this.$api.getTableRows({
-      code: process.env.STAKE_ADDRESS, // Contract that we target
-      scope: process.env.STAKE_ADDRESS, // Account that owns the data
-      table: "rewards", // Table name
-      limit: 10000,
-      // lower_bound: 1,
-      lower_bound: stakeAccount.last_claim_id + 1,
-      reverse: false,
-      show_payer: false
-    });
-    // console.log({ rewardsResult: rewardsResult });
-
-    // get wallets table
-    const walletsResult = await this.$api.getTableRows({
-      code: process.env.STAKE_ADDRESS, // Contract that we target
-      scope: account, // Account that owns the data
-      table: "wallets", // Table name
-      limit: 10000,
-      reverse: false, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
-    });
-    // console.log({ walletsResult: walletsResult });
-
-    // compile stake wallet
+    // console.log({ account });
+    // console.log({ accountsResult });
     let stakeWallet = [];
-    for (const baseToken of baseTokens) {
-      let token = {
-        sym: this.$getSymFromAsset(baseToken.token_info),
-        decimals: this.$getDecimalFromAsset(baseToken.token_info),
-        contract: baseToken.token_info.contract,
-        avatar: baseToken.avatar,
-        balance: 0,
-        lifetime_return: 0
-      };
-      for (const reward of rewardsResult.rows) {
-        if (
-          baseToken.token_info.contract === reward.total_distribution.contract
-        ) {
-          let stake_remaining = this.$chainToQty(reward.stake_remaining);
-          let share_remaining = this.$chainToQty(reward.share_remaining);
-          token.balance +=
-            share_remaining * (account_stake_balance / stake_remaining);
+    if (accountsResult.rows.length > 0) {
+      const stakeAccount = accountsResult.rows[0];
+      let account_stake_balance = this.$chainToQty(stakeAccount.stake_balance);
+
+      // console.log({ stakeAccount });
+
+      // get rewards table (only claimable rewards)
+      const rewardsResult = await this.$api.getTableRows({
+        code: process.env.STAKE_ADDRESS, // Contract that we target
+        scope: process.env.STAKE_ADDRESS, // Account that owns the data
+        table: "rewards", // Table name
+        limit: 10000,
+        // lower_bound: 1,
+        lower_bound: stakeAccount.last_claim_id + 1,
+        reverse: false,
+        show_payer: false
+      });
+      // console.log({ rewardsResult });
+
+      // get wallets table
+      const walletsResult = await this.$api.getTableRows({
+        code: process.env.STAKE_ADDRESS, // Contract that we target
+        scope: account, // Account that owns the data
+        table: "wallets", // Table name
+        limit: 10000,
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+      // console.log({ walletsResult });
+
+      // compile stake wallet
+      for (const baseToken of baseTokens) {
+        let token = {
+          sym: this.$getSymFromAsset(baseToken.token_info),
+          decimals: this.$getDecimalFromAsset(baseToken.token_info),
+          contract: baseToken.token_info.contract,
+          avatar: baseToken.avatar,
+          balance: 0,
+          lifetime_return: 0
+        };
+        for (const reward of rewardsResult.rows) {
+          if (
+            baseToken.token_info.contract === reward.total_distribution.contract
+          ) {
+            let stake_remaining = this.$chainToQty(reward.stake_remaining);
+            let share_remaining = this.$chainToQty(reward.share_remaining);
+            token.balance +=
+              share_remaining * (account_stake_balance / stake_remaining);
+          }
         }
-      }
-      for (const walletToken of walletsResult.rows) {
-        if (baseToken.token_info.contract === walletToken.contract) {
-          token.balance += this.$chainToQty(walletToken.balance);
-          token.lifetime_return +=
-            this.$chainToQty(walletToken.lifetime_return) - token.balance;
+        for (const walletToken of walletsResult.rows) {
+          if (baseToken.token_info.contract === walletToken.contract) {
+            token.balance += this.$chainToQty(walletToken.balance);
+            token.lifetime_return +=
+              this.$chainToQty(walletToken.lifetime_return) + token.balance;
+          }
         }
+        if (token.balance > 0 || token.lifetime_return > 0)
+          stakeWallet.push(token);
       }
-      if (token.balance > 0 || token.lifetime_return > 0)
-        stakeWallet.push(token);
     }
 
     // console.log({ stakeWallet: stakeWallet });
@@ -402,12 +415,17 @@ export const getChainSTART = async function(
         show_payer: false // Optional: Show ram payer
       });
 
-      // console.log(stakeBalanceTbl);
-      const staked_START = this.$chainToQty(stakeBalanceTbl.rows[0].staked);
-      const liquid_START = this.$chainToQty(stakeBalanceTbl.rows[0].liquid);
-      const unstaking_START = this.$chainToQty(
-        stakeBalanceTbl.rows[0].unstaking
-      );
+      // console.log(stakeBalanceTbl.rows);
+      let staked_START = 0;
+      let liquid_START = 0;
+      let unstaking_START = 0;
+      let stake_maturities = [];
+      if (stakeBalanceTbl.rows.length > 0) {
+        staked_START = this.$chainToQty(stakeBalanceTbl.rows[0].staked);
+        liquid_START = this.$chainToQty(stakeBalanceTbl.rows[0].liquid);
+        unstaking_START = this.$chainToQty(stakeBalanceTbl.rows[0].unstaking);
+        stake_maturities = stakeBalanceTbl.rows[0].stake_maturities;
+      }
 
       commit("setWalletTokenLiquid", {
         token_sym: "START",
@@ -426,7 +444,7 @@ export const getChainSTART = async function(
         amount: unstaking_START + staked_START
       });
       commit("setWalletStakeMaturities", {
-        arr: stakeBalanceTbl.rows[0].stake_maturities
+        arr: stake_maturities
       });
 
       //set balance
@@ -446,6 +464,7 @@ export const getChainSTART = async function(
       });
     }
   } catch (error) {
+    console.error("getChainSTART");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
