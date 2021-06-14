@@ -62,7 +62,8 @@
                 />
               </div>
             </div>
-            <div class="row q-gutter-x-sm text-h6">
+            <!-- sentiment -->
+            <!-- <div class="row q-gutter-x-sm text-h6">
               <q-btn
                 outline
                 flat
@@ -99,7 +100,7 @@
               >
                 {{ sentimentValue("downvote") }}
               </div>
-            </div>
+            </div> -->
           </div>
           <q-item
             v-if="
@@ -358,19 +359,19 @@ export default {
         return `${totalRaise} / ${hardCap}`;
       }
     },
-    userSentiment() {
-      let result = "none";
-      if (this.pool.sentiment_table) {
-        let sentiment = this.pool.sentiment_table.find(
-          el => el.account === this.accountName
-        );
-        if (sentiment) {
-          if (sentiment.vote > 0) result = "upvote";
-          if (sentiment.vote < 0) result = "downvote";
-        }
-      }
-      return result;
-    }
+    // userSentiment() {
+    //   let result = "none";
+    //   if (this.pool.sentiment_table) {
+    //     let sentiment = this.pool.sentiment_table.find(
+    //       el => el.account === this.accountName
+    //     );
+    //     if (sentiment) {
+    //       if (sentiment.vote > 0) result = "upvote";
+    //       if (sentiment.vote < 0) result = "downvote";
+    //     }
+    //   }
+    //   return result;
+    // }
   },
   methods: {
     ...mapActions("pools", [
@@ -416,50 +417,50 @@ export default {
       // await this.updateSentimentByPoolID(this.poolID);
       // await this.updateCommentsByPoolID(this.poolID);
     },
-    sentimentValue(key) {
-      if (this.pool.sentiment.length > 0)
-        return this.pool.sentiment.find(el => el.key === key).value;
-      else return 0;
-    },
-    async updateUserSentiment(side) {
-      // TODO Check logic
-      if (this.isAuthenticated) {
-        await this.getChainSTART(this.accountName);
-        const actions = [];
-        if (this.START_info.liquid < 1 && this.START_info.balance < 1) {
-          this.insufficient_start_show = true;
-        } else {
-          if (this.START_info.liquid < 1) {
-            actions.push(
-              this.$startBalanceToLiquidAction(
-                this.$chainToQty(this.START_info),
-                this.settings.social_fee
-              )
-            );
-          }
-          let vote = 0; // abstain
-          if (side === "upvote" && this.userSentiment !== "upvote") vote = 1;
-          else if (side === "downvote" && this.userSentiment !== "downvote")
-            vote = -1;
-          actions.push({
-            account: process.env.CONTRACT_ADDRESS,
-            name: "sentiment",
-            data: {
-              account: this.accountName,
-              pool_id: this.poolID,
-              vote: vote
-            }
-          });
-          try {
-            const transaction = await this.$store.$api.signTransaction(actions);
-            await this.loadChainData();
-            this.getPoolInfo();
-          } catch (error) {
-            this.$errorNotification(error);
-          }
-        }
-      }
-    }
+    // sentimentValue(key) {
+    //   if (this.pool.sentiment.length > 0)
+    //     return this.pool.sentiment.find(el => el.key === key).value;
+    //   else return 0;
+    // },
+    // async updateUserSentiment(side) {
+    //   // TODO Check logic
+    //   if (this.isAuthenticated) {
+    //     await this.getChainSTART(this.accountName);
+    //     const actions = [];
+    //     if (this.START_info.liquid < 1 && this.START_info.balance < 1) {
+    //       this.insufficient_start_show = true;
+    //     } else {
+    //       if (this.START_info.liquid < 1) {
+    //         actions.push(
+    //           this.$startBalanceToLiquidAction(
+    //             this.$chainToQty(this.START_info),
+    //             this.settings.social_fee
+    //           )
+    //         );
+    //       }
+    //       let vote = 0; // abstain
+    //       if (side === "upvote" && this.userSentiment !== "upvote") vote = 1;
+    //       else if (side === "downvote" && this.userSentiment !== "downvote")
+    //         vote = -1;
+    //       actions.push({
+    //         account: process.env.CONTRACT_ADDRESS,
+    //         name: "sentiment",
+    //         data: {
+    //           account: this.accountName,
+    //           pool_id: this.poolID,
+    //           vote: vote
+    //         }
+    //       });
+    //       try {
+    //         const transaction = await this.$store.$api.signTransaction(actions);
+    //         await this.loadChainData();
+    //         this.getPoolInfo();
+    //       } catch (error) {
+    //         this.$errorNotification(error);
+    //       }
+    //     }
+    //   }
+    // }
   },
   async mounted() {
     // get data from chain, write to store, get from store
