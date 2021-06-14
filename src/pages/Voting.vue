@@ -34,6 +34,8 @@
           :filter="filter"
           :filter-method="ballotsFilter"
         >
+          <!-- :sort-method="customSort"
+          binary-state-sort -->
           <template v-slot:body="props">
             <q-tr
               :props="props"
@@ -165,9 +167,23 @@ export default {
               row.swap_ratio.quantity
             )} ${this.$chainToSym(row.swap_ratio.quantity)}`
         },
-        { name: "softcap", label: "Softcap", field: row => this.$chainStrReformat(row.soft_cap) },
-        { name: "hardcap", label: "Hardcap", field: row => this.$chainStrReformat(row.hard_cap) },
-        { name: "closesin", label: "Voting ends in", field: "ballot_close", sortable: true },
+        {
+          name: "softcap",
+          label: "Softcap",
+          field: row => this.$chainStrReformat(row.soft_cap)
+        },
+        {
+          name: "hardcap",
+          label: "Hardcap",
+          field: row => this.$chainStrReformat(row.hard_cap)
+        },
+        {
+          name: "closesin",
+          label: "Voting ends in",
+          field: "ballot_close",
+          sortable: true,
+          sortOrder: "ad"
+        },
         {
           name: "voting",
           label: "Voting",
