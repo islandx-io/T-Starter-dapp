@@ -192,7 +192,12 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.push("/");
+        await this.$listeners.loadChainData();
+        await this.$listeners.getPoolInfo();
+        this.$router.push({
+          name: "pooldetails",
+          params: { id: this.pool.id }
+        });
       } catch (error) {
         this.$errorNotification(error);
       }
@@ -207,12 +212,14 @@ export default {
           icon: "cloud_done",
           message: "Pool completed"
         });
+        await this.$listeners.loadChainData();
+        await this.$listeners.getPoolInfo();
         this.$router.push({
           name: "pooldetails",
           params: { id: this.pool.id },
           query: { tab: "allocations" }
         });
-        this.$router.push("/");
+        // this.$router.push("/");
       } catch (error) {
         this.$errorNotification(error);
       }

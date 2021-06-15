@@ -364,19 +364,11 @@ export default {
     // await this.autoLogin(this.$route.query.returnUrl); // FIXME this causes telos sign to pop up, not good on prod
     await this.getBalance();
 
-    this.accountStakeInfo = await this.getChainAccountStakeInfo(this.accountName);
-
     // Start polling every 30 seconds for any updates
     this.polling = setInterval(async () => {
       await this.getBalance();
     }, 30000);
   },
-
-  watch: {
-    async accountName() {
-      this.accountStakeInfo = await this.getChainAccountStakeInfo(this.accountName);
-    }
-  }
 };
 </script>
 

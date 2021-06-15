@@ -213,7 +213,11 @@
             <tab-overview :pool="pool" />
           </q-tab-panel>
           <q-tab-panel name="allocations" @mousedown.stop>
-            <tab-allocations :pool="pool" />
+            <tab-allocations
+              :pool="pool"
+              @loadChainData="loadChainData"
+              @getPoolInfo="getPoolInfo"
+            />
           </q-tab-panel>
           <q-tab-panel name="comments" @mousedown.stop>
             <tab-comments :poolID="poolID" />

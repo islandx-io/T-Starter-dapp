@@ -143,8 +143,8 @@ export default {
     },
 
     hasHeadstart() {
+      // console.log(this.accountStakeInfo)indefined
       if (Object.keys(this.accountStakeInfo).length > 0) {
-        // console.log(this.pool.pool_open)
         if (this.accountStakeInfo.tier > 0 && Date.now().valueOf() < this.pool.pool_open && Date.now().valueOf() > this.pool.pool_open - 3*60*60*1000) {
           return true;
         } else {

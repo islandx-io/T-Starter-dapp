@@ -547,7 +547,11 @@ export const getChainAccountStakeInfo = async function(
       });
       // console.log(accountsResult.rows[0]);
 
-      return accountsResult.rows[0]
+      if (accountsResult.rows[0] !== undefined) {
+        return accountsResult.rows[0]
+      } else {
+        return {}
+      }
     } else {
       return {}
     }
