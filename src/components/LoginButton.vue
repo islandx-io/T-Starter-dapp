@@ -229,7 +229,8 @@ export default {
       ramAvail: 0,
       ramLow: false,
       ramPrice: 0,
-      naitiveTokenBalance: 0
+      naitiveTokenBalance: 0,
+      accountStakeInfo: {},
     };
   },
   props: {
@@ -254,7 +255,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("account", ["login", "logout", "autoLogin"]),
+    ...mapActions("account", ["login", "logout", "autoLogin", "getChainAccountStakeInfo"]),
     ...mapActions("pools", ["getBalanceFromChain"]),
     copyAccountName() {
       copyToClipboard(this.accountName).then(() => {
@@ -362,10 +363,19 @@ export default {
   async mounted() {
     // await this.autoLogin(this.$route.query.returnUrl); // FIXME this causes telos sign to pop up, not good on prod
     await this.getBalance();
+
+    this.accountStakeInfo = await this.getChainAccountStakeInfo(this.accountName);
+
     // Start polling every 30 seconds for any updates
     this.polling = setInterval(async () => {
       await this.getBalance();
     }, 30000);
+  },
+
+  watch: {
+    async accountName() {
+      this.accountStakeInfo = await this.getChainAccountStakeInfo(this.accountName);
+    }
   }
 };
 </script>

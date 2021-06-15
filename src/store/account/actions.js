@@ -527,3 +527,32 @@ export const resetWallet = async function({ commit, getters, dispatch }) {
 export const resetLiquid = async function({ commit, getters, dispatch }) {
   commit("clearLiquid");
 };
+
+// get account stake informations. (Outputs: account, last_claim_id,	stake_balance,	tier,	tier_history)
+export const getChainAccountStakeInfo = async function(
+  { commit, getters, dispatch },
+  account
+) {
+  try {    
+    if (account !== null) {
+      const accountsResult = await this.$api.getTableRows({
+        code: process.env.STAKE_ADDRESS, // Contract that we target
+        scope: process.env.STAKE_ADDRESS, // Account that owns the data
+        table: "accounts", // Table name
+        limit: 1,
+        lower_bound: account,
+        upper_bound: account,
+        reverse: false,
+        show_payer: false
+      });
+      // console.log(accountsResult.rows[0]);
+
+      return accountsResult.rows[0]
+    } else {
+      return {}
+    }
+  } catch (error) {
+    console.error("getChainAccountStakeInfo");
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
