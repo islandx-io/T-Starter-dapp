@@ -1,5 +1,8 @@
 <template>
-  <q-layout view="hhh Lpr lff">
+  <q-layout
+    view="hhh Lpr lff"
+    :class="`chain-${currentChain.NETWORK_NAME.toLowerCase()}`"
+  >
     <q-header class="bg-transparent q-pt-xs">
       <q-toolbar class="toolbar items-center">
         <q-toolbar-title>
@@ -237,7 +240,6 @@ export default {
   }
 }
 .foot-bg {
-  background-image: url("~assets/main/clouds-foot.png");
   height: 450px;
   padding-top: 100px;
   color: $secondary;

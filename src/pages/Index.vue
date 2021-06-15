@@ -51,7 +51,7 @@ that you may prove what is that good and acceptable and perfect will of God. - R
           <div class="gt-sm rocket col row justify-center">
             <img
               class="col q-pt-md"
-              src="~assets/index/tstarter-rocket.svg"
+              src="~assets/logo/tstarter-rocket.svg"
               width="80%"
               alt="Illustration"
             />
