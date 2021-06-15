@@ -23,7 +23,7 @@
                 </div>
                 <div class="row col-xs-10 col-sm-shrink">
                   <status-badge
-                    :poolStatus="pool.pool_status"
+                    :poolStatus="hasHeadstart ? 'headstart' : pool.pool_status"
                     style="margin-left: 0"
                   />
                 </div>
@@ -110,13 +110,14 @@
               ) || pool.owner === accountName
             "
           >
+          <!-- Join pool button -->
             <q-btn
               class="col hover-accent"
               :to="{ name: 'joinpool', params: {} }"
-              :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
+              :color="pool.pool_status === 'upcoming' && !hasHeadstart ? 'grey-4' : 'primary'"
               :label="isAuthenticated ? 'Join pool' : 'Login to join'"
               :disable="
-                pool.pool_status === 'upcoming' ||
+                (pool.pool_status === 'upcoming' && !hasHeadstart) ||
                   !isAuthenticated ||
                   !isWhitelisted
               "
@@ -213,7 +214,11 @@
             <tab-overview :pool="pool" />
           </q-tab-panel>
           <q-tab-panel name="allocations" @mousedown.stop>
-            <tab-allocations :pool="pool" />
+            <tab-allocations
+              :pool="pool"
+              @loadChainData="loadChainData"
+              @getPoolInfo="getPoolInfo"
+            />
           </q-tab-panel>
           <q-tab-panel name="comments" @mousedown.stop>
             <tab-comments :poolID="poolID" />
@@ -292,7 +297,8 @@ export default {
       claimable: false,
       insufficient_start_show: false,
       buyStartUrl: process.env.BUY_START_URL,
-      settings: {}
+      settings: {},
+      accountStakeInfo: {}
     };
   },
   computed: {
@@ -364,6 +370,22 @@ export default {
         }
       }
       return result;
+    },
+    hasHeadstart() {
+      // console.log(this.accountStakeInfo)indefined
+      if (Object.keys(this.accountStakeInfo).length > 0) {
+        if (
+          this.accountStakeInfo.tier > 0 &&
+          Date.now().valueOf() < this.pool.pool_open &&
+          Date.now().valueOf() > this.pool.pool_open - 3 * 60 * 60 * 1000
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
     }
   },
   methods: {
@@ -376,7 +398,8 @@ export default {
       "updateSentimentByPoolID",
       "updateCommentsByPoolID"
     ]),
-    ...mapActions("account", ["getChainSTART"]),
+    ...mapActions("account", ["getChainSTART", "getChainAccountStakeInfo"]),
+
     getPoolInfo() {
       this.pool = this.getPoolByIDChain(
         this.poolID,
@@ -402,6 +425,8 @@ export default {
     },
     async loadChainData() {
       await this.getChainPoolByID(this.poolID);
+      await this.updateSentimentByPoolID(this.poolID);
+      await this.updateCommentsByPoolID(this.poolID);
     },
     sentimentValue(key) {
       if (this.pool.sentiment.length > 0)
@@ -440,8 +465,6 @@ export default {
           try {
             const transaction = await this.$store.$api.signTransaction(actions);
             await this.loadChainData();
-            await this.updateSentimentByPoolID(this.poolID);
-            await this.updateCommentsByPoolID(this.poolID);
             this.getPoolInfo();
           } catch (error) {
             this.$errorNotification(error);
@@ -454,18 +477,20 @@ export default {
     // get data from chain, write to store, get from store
     this.settings = await this.getPoolsSettings();
     await this.loadChainData();
-    await this.updateSentimentByPoolID(this.poolID);
-    await this.updateCommentsByPoolID(this.poolID);
     this.getPoolInfo();
     await this.getChainSTART(this.accountName);
     await this.getClaimStatus();
+    this.accountStakeInfo = await this.getChainAccountStakeInfo(
+      this.accountName
+    );
 
     // Start polling
     this.polling = setInterval(async () => {
       await this.loadChainData();
-      await this.updateSentimentByPoolID(this.poolID);
-      await this.updateCommentsByPoolID(this.poolID);
       this.getPoolInfo();
+      this.accountStakeInfo = await this.getChainAccountStakeInfo(
+        this.accountName
+      );
     }, 20000);
 
     // if rerouting with tab
@@ -484,6 +509,9 @@ export default {
       this.settings = await this.getPoolsSettings();
       await this.getChainSTART(this.accountName);
       await this.getClaimStatus();
+      this.accountStakeInfo = await this.getChainAccountStakeInfo(
+        this.accountName
+      );
     }
   }
 };

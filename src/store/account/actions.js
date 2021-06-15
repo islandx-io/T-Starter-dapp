@@ -527,3 +527,61 @@ export const resetWallet = async function({ commit, getters, dispatch }) {
 export const resetLiquid = async function({ commit, getters, dispatch }) {
   commit("clearLiquid");
 };
+
+// get account stake informations. (Outputs: account, last_claim_id,	stake_balance,	tier,	tier_history)
+export const getChainAccountStakeInfo = async function(
+  { commit, getters, dispatch },
+  account
+) {
+  try {
+    if (account !== null) {
+      const accountsResult = await this.$api.getTableRows({
+        code: process.env.STAKE_ADDRESS, // Contract that we target
+        scope: process.env.STAKE_ADDRESS, // Account that owns the data
+        table: "accounts", // Table name
+        limit: 1,
+        lower_bound: account,
+        upper_bound: account,
+        reverse: false,
+        show_payer: false
+      });
+      // console.log(accountsResult.rows[0]);
+
+      if (accountsResult.rows[0] !== undefined) {
+        return accountsResult.rows[0];
+      } else {
+        return {};
+      }
+    } else {
+      return {};
+    }
+  } catch (error) {
+    console.error("getChainAccountStakeInfo");
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// get account stake informations. (Outputs: id (key) threshold	members	weight	discount)
+export const getChainTiersTable = async function(
+  { commit, getters, dispatch }) {
+  try {
+    const tiersTable = await this.$api.getTableRows({
+      code: process.env.STAKE_ADDRESS, // Contract that we target
+      scope: process.env.STAKE_ADDRESS, // Account that owns the data
+      table: "tiers", // Table name
+      limit: 10,
+      reverse: false,
+      show_payer: false
+    });
+    
+    if (tiersTable.rows.length > 0) {
+      // console.log(tiersTable.rows);
+      return tiersTable.rows;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("getChainTiersTable");
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};

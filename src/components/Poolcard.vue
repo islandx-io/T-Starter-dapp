@@ -27,7 +27,9 @@
               style="padding: 4px"
             />
             <div class="column items-center justify-between">
-              <status-badge :poolStatus="pool.pool_status" />
+              <status-badge
+                :poolStatus="hasHeadstart ? 'headstart' : pool.pool_status"
+              />
               <status-countdown
                 v-if="pool.pool_status === 'upcoming'"
                 :deadline="pool.pool_open"
@@ -111,7 +113,8 @@ export default {
     return {
       pool: this.$defaultPoolInfo,
       polling: null,
-      claimable: false
+      claimable: false,
+      accountStakeInfo: {}
     };
   },
   computed: {
@@ -137,12 +140,26 @@ export default {
     },
     clickable() {
       return this.poolID === -1;
+    },
+
+    hasHeadstart() {
+      // console.log(this.accountStakeInfo)indefined
+      if (Object.keys(this.accountStakeInfo).length > 0) {
+        if (this.accountStakeInfo.tier > 0 && Date.now().valueOf() < this.pool.pool_open && Date.now().valueOf() > this.pool.pool_open - 3*60*60*1000) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
     }
   },
   methods: {
     ...mapActions("pools", ["getAllocationByPool"]),
+    ...mapActions("account", ["getChainAccountStakeInfo"]),
 
-    getPoolInfo: function() {
+    getPoolInfo() {
       const pool = this.getPoolByIDChain(this.poolID, this.chain);
       if (pool !== undefined) {
         this.pool = this.getPoolByIDChain(this.poolID, this.chain);
@@ -170,11 +187,24 @@ export default {
   async mounted() {
     this.getPoolInfo();
     await this.getClaimStatus();
+
+    this.accountStakeInfo = await this.getChainAccountStakeInfo(
+      this.accountName
+    );
     // Start polling every 1min for any updates
     this.polling = setInterval(() => {
       this.getPoolInfo();
     }, 30000);
   },
+
+  watch: {
+    async accountName() {
+      this.accountStakeInfo = await this.getChainAccountStakeInfo(
+        this.accountName
+      );
+    }
+  },
+
   beforeDestroy() {
     clearInterval(this.polling);
   }
