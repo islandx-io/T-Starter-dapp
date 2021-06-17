@@ -66,9 +66,16 @@ h6 {
   padding: 10px 20px;
 }
 
+// ----------------------------------------------
+// Header & Footer
+// ----------------------------------------------
 .header-bg {
-  background-image: url("~assets/index/clouds-head.png");
+  background-image: $header-bg-telos;
   height: 550px;
+}
+
+.foot-bg {
+  background-image: $footer-bg-telos;
 }
 
 .tab-panel-container {
@@ -156,5 +163,32 @@ h6 {
   }
   &::-webkit-scrollbar-thumb:hover {
     background-color: $secondary;
+  }
+}
+
+#notify-banner {
+  background-image: $header-bg-telos;
+}
+
+.chain-eos {
+  .header-bg {
+    background-image: $header-bg-eos;
+  }
+  .foot-bg {
+    background-image: $footer-bg-eos;
+  }
+  #notify-banner {
+    background-image: $header-bg-eos;
+  }
+}
+.chain-wax {
+  .header-bg {
+    background-image: $header-bg-wax;
+  }
+  .foot-bg {
+    background-image: $footer-bg-wax;
+  }
+  #notify-banner {
+    background-image: $header-bg-wax;
   }
 }
