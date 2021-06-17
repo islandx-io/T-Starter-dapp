@@ -538,7 +538,7 @@ export default {
 
     setMax() {
       if (this.balance >= this.maxAllocation) {
-        this.amount = this.maxAllocation;
+        this.amount = this.availableBuy;
       } else {
         this.amount = this.balance;
       }
