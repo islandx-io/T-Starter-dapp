@@ -110,11 +110,15 @@
               ) || pool.owner === accountName
             "
           >
-          <!-- Join pool button -->
+            <!-- Join pool button -->
             <q-btn
               class="col hover-accent"
               :to="{ name: 'joinpool', params: {} }"
-              :color="pool.pool_status === 'upcoming' && !hasHeadstart ? 'grey-4' : 'primary'"
+              :color="
+                pool.pool_status === 'upcoming' && !hasHeadstart
+                  ? 'grey-4'
+                  : 'primary'
+              "
               :label="isAuthenticated ? 'Join pool' : 'Login to join'"
               :disable="
                 (pool.pool_status === 'upcoming' && !hasHeadstart) ||
@@ -189,7 +193,6 @@
           <q-tab
             name="allocations"
             label="YOUR ALLOCATION"
-            class="allocation-tab"
             :alert="claimable ? 'accent' : claimable"
           />
           <q-tab
@@ -218,6 +221,7 @@
               :pool="pool"
               @loadChainData="loadChainData"
               @getPoolInfo="getPoolInfo"
+              @defaultTab="defaultTab"
             />
           </q-tab-panel>
           <q-tab-panel name="comments" @mousedown.stop>
@@ -400,6 +404,10 @@ export default {
     ]),
     ...mapActions("account", ["getChainSTART", "getChainAccountStakeInfo"]),
 
+    defaultTab() {
+      this.tab = 'details'
+    },
+
     getPoolInfo() {
       this.pool = this.getPoolByIDChain(
         this.poolID,
@@ -492,13 +500,6 @@ export default {
         this.accountName
       );
     }, 20000);
-
-    // if rerouting with tab
-    if (this.$route.query.tab == "allocations") {
-      this.tab = "allocations";
-    } else {
-      this.tab = "details";
-    }
   },
   beforeDestroy() {
     clearInterval(this.polling);
@@ -512,6 +513,19 @@ export default {
       this.accountStakeInfo = await this.getChainAccountStakeInfo(
         this.accountName
       );
+    },
+    $route(to, from) {
+      // if rerouting with tab
+      if (to.query.tab == "allocations") {
+        this.tab = "allocations";
+      } else {
+        this.tab = "details";
+        // this.$router.push(this.$route.path);
+
+        // let query = Object.assign({}, this.$route.query);
+        // delete query.tab;
+        // this.$router.replace({ query });
+      }
     }
   }
 };

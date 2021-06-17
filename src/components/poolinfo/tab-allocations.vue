@@ -194,10 +194,7 @@ export default {
         });
         await this.$listeners.loadChainData();
         await this.$listeners.getPoolInfo();
-        this.$router.push({
-          name: "pooldetails",
-          params: { id: this.pool.id }
-        });
+        await this.$listeners.defaultTab();
       } catch (error) {
         this.$errorNotification(error);
       }
@@ -214,11 +211,7 @@ export default {
         });
         await this.$listeners.loadChainData();
         await this.$listeners.getPoolInfo();
-        this.$router.push({
-          name: "pooldetails",
-          params: { id: this.pool.id },
-          query: { tab: "allocations" }
-        });
+        await this.$listeners.defaultTab();
         // this.$router.push("/");
       } catch (error) {
         this.$errorNotification(error);
@@ -230,6 +223,14 @@ export default {
     this.loadingData = true;
     this.allocationData = await this.getAllocationByPool(payload);
     this.loadingData = false;
+  },
+  watch: {
+    async accountName() {
+      let payload = { account: this.accountName, poolID: this.pool.id };
+      this.loadingData = true;
+      this.allocationData = await this.getAllocationByPool(payload);
+      this.loadingData = false;
+    }
   }
 };
 </script>
