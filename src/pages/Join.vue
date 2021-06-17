@@ -4,7 +4,7 @@
     <section class="header-bg" />
     <section class="body-container">
       <q-card
-        v-if="pool.pool_status !== 'open'"
+        v-if="pool.pool_status !== 'open' && !hasHeadstart"
         style="min-height: 100px"
         class="row justify-center content-center "
       >
@@ -38,7 +38,10 @@
             <!---------->
             <!-- From -->
             <!---------->
-            <q-item dense class="text-h6">From</q-item>
+            <div class="row justify-between items-end" style="padding: 0px 20px 0px 0px">
+              <q-item dense class="text-h6">From</q-item>
+              <div style="padding: 0px 0px 2px 15px">Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
+            </div>
             <q-card flat bordered class="inner-card row ">
               <div class="row q-gutter-x-md items-center">
                 <q-input
@@ -76,10 +79,24 @@
               </div>
               <div>
                 Max:
-                {{ zeroNaN($chainToQty(pool.maximum_swap)) }}
+                {{
+                  this.$toFixedDown(
+                    maxAllocation,
+                    this.$getDecimalFromAsset(this.pool.base_token)
+                  )
+                }}
                 {{ BaseTokenSymbol }}
               </div>
-              <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
+              <div>
+                Remaining:
+                {{
+                  this.$toFixedDown(
+                    availableBuy,
+                    this.$getDecimalFromAsset(this.pool.base_token)
+                  )
+                }}
+                {{ BaseTokenSymbol }}
+              </div>
             </div>
 
             <q-item class="justify-center">
@@ -125,13 +142,14 @@
                   type="submit"
                   color="primary"
                   :disable="
-                    !isAuthenticated ||
+                    (!isAuthenticated ||
                       balance <= $chainToQty(pool.minimum_swap) ||
                       pool.pool_status !== `open` ||
                       not_enough_start ||
                       joining ||
                       !isWhitelisted ||
-                      allocationReached
+                      allocationReached) &&
+                      !hasHeadstart
                   "
                 />
                 <div
@@ -338,6 +356,8 @@ export default {
       transaction: null,
       // explorerUrl: this.currentChain.NETWORK_EXPLORER,
       buyStartUrl: process.env.BUY_START_URL,
+      accountStakeInfo: {},
+      tiersTable: []
     };
   },
   components: { tokenAvatar },
@@ -398,6 +418,59 @@ export default {
       } else {
         return false;
       }
+    },
+
+    hasHeadstart() {
+      // console.log(this.accountStakeInfo)indefined
+      if (Object.keys(this.accountStakeInfo).length > 0) {
+        if (
+          this.accountStakeInfo.tier > 0 &&
+          Date.now().valueOf() < this.pool.pool_open &&
+          Date.now().valueOf() > this.pool.pool_open - 3 * 60 * 60 * 1000
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    },
+
+    maxAllocation() {
+      if (this.hasHeadstart) {
+        if (Object.keys(this.accountStakeInfo).length > 0) {
+          let max_allocation = 0;
+          let account_tier = this.accountStakeInfo.tier;
+          let denominator = 0;
+          for (const tier of [...this.tiersTable].reverse()) {
+            denominator += tier.members;
+            let weight = tier.weight / 10000.0;
+            let tier_allocation =
+              denominator === 0
+                ? 0.0
+                : (this.$chainToQty(this.pool.hard_cap) / denominator) * weight;
+
+            if (account_tier >= tier.id) {
+              max_allocation += tier_allocation;
+            }
+          }
+
+          return max_allocation;
+        } else {
+          return 0;
+        }
+      } else {
+        return this.zeroNaN(this.$chainToQty(this.pool.maximum_swap));
+      }
+    },
+
+    availableBuy() {
+      if (this.$chainToQty(this.allocation.bid) !== undefined) {
+        return this.maxAllocation - this.$chainToQty(this.allocation.bid);
+      } else {
+        return this.maxAllocation;
+      }
     }
   },
 
@@ -412,7 +485,12 @@ export default {
       "getPlatformToken",
       "getPoolsSettings"
     ]),
-    ...mapActions("account", ["getChainSTART"]),
+    ...mapActions("account", [
+      "getChainSTART",
+      "getChainAccountStakeInfo",
+      "getChainTiersTable"
+    ]),
+
     restrictDecimal() {
       this.amount = this.$toFixedDown(
         this.amount,
@@ -460,20 +538,25 @@ export default {
     },
 
     setMax() {
-      if (this.balance >= this.$chainToQty(this.pool.maximum_swap)) {
-        this.amount = this.$chainToQty(this.pool.maximum_swap);
+      if (this.balance >= this.maxAllocation) {
+        this.amount = this.availableBuy;
       } else {
         this.amount = this.balance;
       }
-      if (
-        this.amount >
-        this.$chainToQty(this.pool.maximum_swap) -
-          this.$chainToQty(this.allocation.bid)
-      ) {
-        this.amount =
-          this.$chainToQty(this.pool.maximum_swap) -
-          this.$chainToQty(this.allocation.bid);
-      }
+      this.amount = this.$toFixedDown(
+        this.amount,
+        this.$getDecimalFromAsset(this.pool.base_token)
+      );
+      // if (
+      //   this.amount >
+      //   this.maxAllocation -
+      //     this.$chainToQty(this.allocation.bid)
+      // ) {
+      //   this.amount =
+      //     this.maxAllocation -
+      //     this.$chainToQty(this.allocation.bid);
+      //     console.log(this.amount)
+      // }
     },
 
     checkAllowed() {
@@ -603,14 +686,13 @@ export default {
         start_balance < this.$chainToQty(this.premium_access_fee) &&
         this.pool.access_type === "Premium" &&
         !this.alreadyStaked
-      ) {        
+      ) {
         this.stake_warning = true;
         this.not_enough_start = true;
-      }
-       else {
-         this.stake_warning = false;
+      } else {
+        this.stake_warning = false;
         this.not_enough_start = false;
-       }
+      }
     }
   },
 
@@ -619,6 +701,11 @@ export default {
     await this.getPoolInfo();
     await this.getAllocations();
     await this.checkBalances();
+    // await this.getChainStakeWallet(this.accountName);
+    this.accountStakeInfo = await this.getChainAccountStakeInfo(
+      this.accountName
+    );
+    this.tiersTable = await this.getChainTiersTable();
   },
 
   watch: {
@@ -627,6 +714,11 @@ export default {
       await this.getPoolInfo();
       await this.getChainSTART(this.accountName);
       await this.checkBalances();
+      // await this.getChainStakeWallet(this.accountName);
+      this.accountStakeInfo = await this.getChainAccountStakeInfo(
+        this.accountName
+      );
+      this.tiersTable = await this.getChainTiersTable();
     }
   }
 };

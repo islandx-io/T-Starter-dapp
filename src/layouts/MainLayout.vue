@@ -1,5 +1,8 @@
 <template>
-  <q-layout view="hhh Lpr lff">
+  <q-layout
+    view="hhh Lpr lff"
+    :class="`chain-${currentChain.NETWORK_NAME.toLowerCase()}`"
+  >
     <q-header class="bg-transparent q-pt-xs">
       <q-toolbar class="toolbar items-center">
         <q-toolbar-title>
@@ -15,14 +18,6 @@
                 height="50px"
               />
             </router-link>
-            <!-- <q-chip
-              class="text-weight-bold vertical-bottom q-mt-sm"
-              color="secondary"
-              text-color="teal"
-              padding
-            >
-              BETA
-            </q-chip> -->
           </div>
         </q-toolbar-title>
         <div class="gt-sm row items-center">
@@ -267,7 +262,6 @@ export default {
   }
 }
 .foot-bg {
-  background-image: url("~assets/main/clouds-foot.png");
   height: 450px;
   padding-top: 100px;
   color: $secondary;

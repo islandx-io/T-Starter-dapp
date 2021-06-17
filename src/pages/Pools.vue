@@ -277,7 +277,6 @@ export default {
   padding-right: 0;
 }
 #notify-banner {
-  background-image: url("~assets/index/clouds-head.png");
   // height: 550px;
   padding-top: 50px;
   padding-bottom: 50px;

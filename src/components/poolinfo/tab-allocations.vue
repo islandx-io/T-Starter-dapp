@@ -192,7 +192,9 @@ export default {
           icon: "cloud_done",
           message: "Tokens claimed"
         });
-        this.$router.push("/");
+        await this.$listeners.loadChainData();
+        await this.$listeners.getPoolInfo();
+        await this.$listeners.defaultTab();
       } catch (error) {
         this.$errorNotification(error);
       }
@@ -207,12 +209,10 @@ export default {
           icon: "cloud_done",
           message: "Pool completed"
         });
-        this.$router.push({
-          name: "pooldetails",
-          params: { id: this.pool.id },
-          query: { tab: "allocations" }
-        });
-        this.$router.push("/");
+        await this.$listeners.loadChainData();
+        await this.$listeners.getPoolInfo();
+        await this.$listeners.defaultTab();
+        // this.$router.push("/");
       } catch (error) {
         this.$errorNotification(error);
       }
@@ -223,6 +223,14 @@ export default {
     this.loadingData = true;
     this.allocationData = await this.getAllocationByPool(payload);
     this.loadingData = false;
+  },
+  watch: {
+    async accountName() {
+      let payload = { account: this.accountName, poolID: this.pool.id };
+      this.loadingData = true;
+      this.allocationData = await this.getAllocationByPool(payload);
+      this.loadingData = false;
+    }
   }
 };
 </script>
