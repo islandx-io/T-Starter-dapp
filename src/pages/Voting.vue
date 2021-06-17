@@ -98,9 +98,10 @@
                     class="hover-accent"
                     size="1.05rem"
                     :color="userVote === 'upvote' ? 'positive' : 'black'"
-                    @click.stop="tryVote(1, props.row.id)"
                     :disable="!isAuthenticated"
+                    @click.stop="checkChain(1, props.row)"
                   />
+                  <!-- @click.stop="tryVote(1, props.row.id)" -->
                   <div
                     :class="
                       userVote === 'upvote' ? 'text-positive' : 'text-black'
@@ -116,7 +117,7 @@
                     icon="fas fa-thumbs-down"
                     class="hover-accent"
                     :color="userVote === 'downvote' ? 'accent' : 'black'"
-                    @click.stop="tryVote(-1, props.row.id)"
+                    @click.stop="checkChain(-1, props.row)"
                     :disable="!isAuthenticated"
                   />
                   <div
@@ -135,6 +136,34 @@
           </template>
         </q-table>
       </div>
+
+      <!-- Confirm chain switch -->
+      <q-dialog v-model="confirmChainSwitch" persistent>
+        <q-card>
+          <q-card-section class="row items-center">
+            <q-avatar color="primary" text-color="secondary" class="q-mr-sm">
+              <q-icon name="fas fa-random" size="28px" />
+            </q-avatar>
+            <span class="text-h6">Confirm Switching Chains?</span>
+          </q-card-section>
+          <q-card-section>
+            <span>
+              Confirm switching to {{this.newChain}} chain to vote?
+            </span>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn flat label="Cancel" color="primary" v-close-popup />
+            <q-btn
+              flat
+              label="Confirm"
+              color="primary"
+              @click="switchChain()"
+              v-close-popup
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </section>
   </q-page>
 </template>
@@ -148,8 +177,10 @@ export default {
   components: { TimeUntil, tokenAvatar },
   data() {
     return {
+      newChain: "",
+      confirmChainSwitch: false,
       loading: false,
-      pagination: { sortBy: 'closesin', descending: false, rowsPerPage: 5 },
+      pagination: { sortBy: "closesin", descending: false, rowsPerPage: 5 },
       columns: [
         {
           name: "name",
@@ -185,7 +216,7 @@ export default {
           label: "Voting ends in",
           field: "ballot_close",
           sortable: true,
-          sort: (a, b) => a - b,
+          sort: (a, b) => a - b
         },
         {
           name: "voting",
@@ -210,7 +241,8 @@ export default {
       "getPublishedBallots",
       "getUpcomingBallots"
     ]),
-    ...mapGetters("account", ["isAuthenticated", "accountName"])
+    ...mapGetters("account", ["isAuthenticated", "accountName"]),
+    ...mapGetters("blockchains", ["currentChain"])
   },
   methods: {
     ...mapActions("ballots", [
@@ -219,6 +251,7 @@ export default {
       "getBallotConfig"
     ]),
     ...mapActions("pools", ["getPoolsSettings"]),
+    ...mapActions("blockchains", ["setNewChain"]),
 
     onRowClick(row) {
       // Here you can navigate to where ever you have to
@@ -307,6 +340,23 @@ export default {
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
+    async checkChain(vote, ballot) {
+      if (ballot.chain === this.currentChain.NETWORK_NAME) {
+        await this.tryVote(vote, ballot.id);
+      } else {
+        //switch chain
+        this.newChain = ballot.chain;
+        this.confirmChainSwitch = true;
+      }
+    },
+
+    async switchChain() {
+      this.$router.push({
+        name: "voting",
+        params: {chain: this.newChain.toLowerCase() }
+      });
+    },
+
     async tryVote(vote, id) {
       try {
         await this.vote(vote, id);
@@ -318,12 +368,7 @@ export default {
         });
         await this.getAllChainBallots();
       } catch (error) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: `${error}`
-        });
+        this.$errorNotification(error);
       }
     }
   },
