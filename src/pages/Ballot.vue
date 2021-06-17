@@ -184,17 +184,6 @@
         >
           <q-tab name="details" label="DETAILS" />
           <q-tab name="overview" label="OVERVIEW" />
-          <q-tab
-            name="allocations"
-            label="YOUR ALLOCATION"
-            class="allocation-tab"
-            :alert="claimable ? 'accent' : claimable"
-          />
-          <q-tab
-            v-if="['open', 'upcoming'].includes(pool.pool_status)"
-            name="comments"
-            label="COMMENTS"
-          />
         </q-tabs>
 
         <q-separator />
@@ -210,12 +199,6 @@
           </q-tab-panel>
           <q-tab-panel name="overview" @mousedown.stop>
             <tab-overview :pool="pool" />
-          </q-tab-panel>
-          <q-tab-panel name="allocations" @mousedown.stop>
-            <tab-allocations :pool="pool" />
-          </q-tab-panel>
-          <q-tab-panel name="comments" @mousedown.stop>
-            <tab-comments :poolID="poolID" />
           </q-tab-panel>
         </q-tab-panels>
 
@@ -274,9 +257,7 @@ import { date } from "quasar";
 export default {
   components: {
     tabOverview,
-    tabAllocations,
     tabDetails,
-    tabComments,
     statusCountdown,
     statusBadge,
     statusProgress,

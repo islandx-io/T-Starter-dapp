@@ -241,7 +241,6 @@
                     :value.sync="ballot_close"
                     :pool="pool"
                     label="Voting close time (UTC) *"
-                    class="q-pb-md"
                   />
                 </q-item-section>
               </q-item>
@@ -925,32 +924,31 @@ export default {
           }
         }
       ];
-      //TODO enable if cesting supported
-      // if (this.pool.status === "draft") {
-      //   if (this.vesting) {
-      //     actions.push({
-      //       account: process.env.CONTRACT_ADDRESS,
-      //       name: "setlockup",
-      //       data: {
-      //         pool_id: this.poolID,
-      //         token_lockup: this.vesting,
-      //         lockup_fraction: this.lockup_fraction,
-      //         lockup_period: this.lockup_period
-      //       }
-      //     });
-      //   } else {
-      //     actions.push({
-      //       account: process.env.CONTRACT_ADDRESS,
-      //       name: "setlockup",
-      //       data: {
-      //         pool_id: this.poolID,
-      //         token_lockup: this.vesting,
-      //         lockup_fraction: 0,
-      //         lockup_period: 0
-      //       }
-      //     });
-      //   }
-      // }
+      if (this.pool.status === "draft") {
+        if (this.vesting) {
+          actions.push({
+            account: process.env.BALLOT_ADDRESS,
+            name: "setlockup",
+            data: {
+              ballot_id: this.poolID,
+              token_lockup: this.vesting,
+              lockup_fraction: this.lockup_fraction,
+              lockup_period: this.lockup_period
+            }
+          });
+        } else {
+          actions.push({
+            account: process.env.BALLOT_ADDRESS,
+            name: "setlockup",
+            data: {
+              ballot_id: this.poolID,
+              token_lockup: this.vesting,
+              lockup_fraction: 0,
+              lockup_period: 0
+            }
+          });
+        }
+      }
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
@@ -970,7 +968,8 @@ export default {
           account: process.env.BALLOT_ADDRESS,
           name: "newballot",
           data: {
-            owner: this.accountName
+            owner: this.accountName,
+            swap_token: this.swapRatio,
           }
         },
         {
@@ -1016,10 +1015,10 @@ export default {
       if (this.pool.status === "draft") {
         if (this.vesting) {
           actions.push({
-            account: process.env.CONTRACT_ADDRESS,
+            account: process.env.BALLOT_ADDRESS,
             name: "setlockup",
             data: {
-              pool_id: this.poolID,
+              ballot_id: this.ballotConfig.last_ballot_id + 1,
               token_lockup: this.vesting,
               lockup_fraction: this.lockup_fraction,
               lockup_period: this.lockup_period
@@ -1027,10 +1026,10 @@ export default {
           });
         } else {
           actions.push({
-            account: process.env.CONTRACT_ADDRESS,
+            account: process.env.BALLOT_ADDRESS,
             name: "setlockup",
             data: {
-              pool_id: this.poolID,
+              ballot_id: this.ballotConfig.last_ballot_id + 1,
               token_lockup: this.vesting,
               lockup_fraction: 0,
               lockup_period: 0
