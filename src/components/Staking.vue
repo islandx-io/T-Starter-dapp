@@ -80,9 +80,10 @@
         </div>
         <!-- <q-separator class="q-mt-md" inset size="2px" /> -->
         <!-- <div class="text-h4">VIP Level</div> -->
-        <ul class="tiers row">
-          <li v-for="t in Array(6).keys()" :key="t">
+        <ul class="tiers row q-my-md justify-center">
+          <li v-for="t in Array(6).keys()" :key="t" class="row items-center">
             <tier-badge :tier="t" :isCurrent="t === accountStakeInfo.tier" />
+            <div v-if="t < 5" class="tier-line" />
           </li>
         </ul>
         <!-- <div class="text-h4">Rewards</div> -->
@@ -462,15 +463,18 @@ export default {
   line-height: 3rem;
 }
 .q-card {
-  padding-left: 3vw;
-  padding-right: 3vw;
+  padding-left: clamp(2px, 3vw, 30px);
+  padding-right: clamp(2px, 3vw, 30px);
 }
 .tiers {
-  margin: 15px;
   padding: 0;
   li {
-    display: inline-block;
-    padding: 5px 10px;
+    padding: 5px 0;
+  }
+  .tier-line {
+    background: $loading;
+    height: 2px;
+    width: clamp(2px, 2vw, 20px);
   }
 }
 </style>
