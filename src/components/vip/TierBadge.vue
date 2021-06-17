@@ -24,7 +24,7 @@
         text-anchor="middle"
         :fill="textColor"
         class="svg-text"
-        :style="`font-size: ${40 * (512 / badgeSize)}px`"
+        :style="`font-size: ${35 * (512 / badgeSize)}px`"
       >
         {{ tier }}
       </text>
@@ -62,8 +62,7 @@ export default {
 }
 .tier {
   margin: 5px;
-  font-size: 40px;
-  //   font-size: 2rem;
+  font-size: 35px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -71,9 +70,6 @@ export default {
   color: $secondary;
   border-radius: 50%;
 }
-// .current-tier svg {
-//   text-shadow: 2px 2px 5px red;
-// }
 #idCurrentTier path {
   fill: url(#goldenGradient);
 }
