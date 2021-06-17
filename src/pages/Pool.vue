@@ -405,7 +405,7 @@ export default {
     ...mapActions("account", ["getChainSTART", "getChainAccountStakeInfo"]),
 
     defaultTab() {
-      this.tab = 'details'
+      this.tab = "details";
     },
 
     getPoolInfo() {
@@ -500,6 +500,13 @@ export default {
         this.accountName
       );
     }, 20000);
+
+    // if rerouting with tab
+    if (this.$route.query.tab == "allocations") {
+      this.tab = "allocations";
+    } else {
+      this.tab = "details";
+    }
   },
   beforeDestroy() {
     clearInterval(this.polling);
@@ -520,11 +527,6 @@ export default {
         this.tab = "allocations";
       } else {
         this.tab = "details";
-        // this.$router.push(this.$route.path);
-
-        // let query = Object.assign({}, this.$route.query);
-        // delete query.tab;
-        // this.$router.replace({ query });
       }
     }
   }

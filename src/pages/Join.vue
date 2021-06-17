@@ -38,7 +38,10 @@
             <!---------->
             <!-- From -->
             <!---------->
-            <q-item dense class="text-h6">From</q-item>
+            <div class="row justify-between items-end" style="padding: 0px 20px 0px 0px">
+              <q-item dense class="text-h6">From</q-item>
+              <div style="padding: 0px 0px 2px 15px">Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
+            </div>
             <q-card flat bordered class="inner-card row ">
               <div class="row q-gutter-x-md items-center">
                 <q-input
@@ -84,7 +87,16 @@
                 }}
                 {{ BaseTokenSymbol }}
               </div>
-              <div>Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
+              <div>
+                Remaining:
+                {{
+                  this.$toFixedDown(
+                    availableBuy,
+                    this.$getDecimalFromAsset(this.pool.base_token)
+                  )
+                }}
+                {{ BaseTokenSymbol }}
+              </div>
             </div>
 
             <q-item class="justify-center">
@@ -444,23 +456,20 @@ export default {
             }
           }
 
-          if (this.$chainToQty(this.allocation.bid) !== undefined) {
-            return max_allocation - this.$chainToQty(this.allocation.bid);
-          } else {
-            return max_allocation;
-          }
+          return max_allocation;
         } else {
           return 0;
         }
       } else {
-        if (this.$chainToQty(this.allocation.bid) !== undefined) {
-          return (
-            this.zeroNaN(this.$chainToQty(this.pool.maximum_swap)) -
-            this.$chainToQty(this.allocation.bid)
-          );
-        } else {
-          return this.zeroNaN(this.$chainToQty(this.pool.maximum_swap));
-        }
+        return this.zeroNaN(this.$chainToQty(this.pool.maximum_swap));
+      }
+    },
+
+    availableBuy() {
+      if (this.$chainToQty(this.allocation.bid) !== undefined) {
+        return this.maxAllocation - this.$chainToQty(this.allocation.bid);
+      } else {
+        return this.maxAllocation;
       }
     }
   },
