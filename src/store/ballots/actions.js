@@ -1,28 +1,3 @@
-// possible rpcs
-export const possibleRPCs = async function({
-  commit,
-  dispatch,
-  rootGetters,
-  getters
-}) {
-  let blockchains = rootGetters["blockchains/allBlockchains"];
-  let possibleChains = blockchains.filter(
-    a => String(a.TEST_NETWORK) === process.env.TESTNET
-  );
-
-  let apis = [];
-
-  for (const chain of possibleChains) {
-    let rpc = new JsonRpc(
-      `${chain.NETWORK_PROTOCOL}://${chain.NETWORK_HOST}:${chain.NETWORK_PORT}`
-    );
-    apis.push(rpc);
-  }
-
-  // console.log(apis)
-  return { apis: apis, chains: possibleChains };
-};
-
 // Get ballot info from chain by id, put into store
 export const getChainBallotByID = async function({ commit, dispatch }, id) {
   try {
@@ -51,7 +26,7 @@ export const getChainBallotByID = async function({ commit, dispatch }, id) {
     ballotTable.chain = this.$api.currentChain.NETWORK_NAME;
 
     commit("updateBallotOnState", { ballotTable });
-    await dispatch("updateBallotSettings", {id, chain: ballotTable.chain});
+    await dispatch("updateBallotSettings", { id, chain: ballotTable.chain });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -63,7 +38,7 @@ export const getChainPoolByIDChain = async function(
   payload
 ) {
   try {
-    let rpcs = await dispatch("possibleRPCs", { root: true });
+    let rpcs = await dispatch("pools/possibleRPCs", true, { root: true });
     let api =
       rpcs.apis[rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)];
 
@@ -89,13 +64,14 @@ export const getChainPoolByIDChain = async function(
 
     // set chain in pool
     ballotTable.chain =
-    rpcs.chains[
-      rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)
-    ].NETWORK_NAME;
+      rpcs.chains[
+        rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)
+      ].NETWORK_NAME;
 
     commit("updatePoolOnState", { ballotTable });
-    await dispatch("updateBallotSettings", {id, chain: ballotTable.chain});
+    await dispatch("updateBallotSettings", { id, chain: ballotTable.chain });
   } catch (error) {
+    console.error("getChainPoolByIDChain");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -103,38 +79,47 @@ export const getChainPoolByIDChain = async function(
 // get all ballots from chain, populate store
 export const getAllChainBallots = async function({ commit, dispatch }) {
   try {
-    const tableResults = await this.$api.getTableRows({
-      code: process.env.BALLOT_ADDRESS, // Contract that we target
-      scope: process.env.BALLOT_ADDRESS, // Account that owns the data
-      table: "ballots", // Table name
-      limit: 10000, // Maximum number of rows that we want to get
-      reverse: false, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
-    });
+    let rpcs = await dispatch("pools/possibleRPCs", true, { root: true });
+    // console.log(rpcs);
 
-    // sort according to nearest ballot close date
-    tableResults.rows.sort(function(a, b) {
-      return new Date(a.ballot_close) - new Date(b.ballot_close);
-    });
+    for (const [index, api] of rpcs.apis.entries()) {
+      const tableResults = await api.get_table_rows({
+        json: true,
+        code: process.env.BALLOT_ADDRESS, // Contract that we target
+        scope: process.env.BALLOT_ADDRESS, // Account that owns the data
+        table: "ballots", // Table name
+        limit: 10000, // Maximum number of rows that we want to get
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
 
-    for (const pool of tableResults.rows) {
-      //   console.log(pool);
-      let id = pool.id;
+      // sort according to nearest ballot close date
+      tableResults.rows.sort(function(a, b) {
+        return new Date(a.ballot_close) - new Date(b.ballot_close);
+      });
 
-      //check dates are unix
-      pool.ballot_close = new Date(pool.ballot_close + "Z").valueOf();
-      pool.pool_open = new Date(pool.pool_open + "Z").valueOf();
-      pool.private_end = new Date(pool.private_end + "Z").valueOf();
-      pool.public_end = new Date(pool.public_end + "Z").valueOf();
+      for (const pool of tableResults.rows) {
+        // console.log(pool);
+        let id = pool.id;
 
-      let ballotTable = pool;
-      // set chain in pool
-      ballotTable.chain = this.$api.currentChain.NETWORK_NAME;
+        //check dates are unix
+        pool.ballot_close = new Date(pool.ballot_close + "Z").valueOf();
+        pool.pool_open = new Date(pool.pool_open + "Z").valueOf();
+        pool.private_end = new Date(pool.private_end + "Z").valueOf();
+        pool.public_end = new Date(pool.public_end + "Z").valueOf();
 
-      commit("updateBallotOnState", { ballotTable });
-      await dispatch("updateBallotSettings", {id, chain: ballotTable.chain});
+        let ballotTable = pool;
+        // set chain in pool
+        ballotTable.chain = rpcs.chains[index].NETWORK_NAME;
+        commit("updateBallotOnState", { ballotTable });
+        await dispatch("updateBallotSettings", {
+          id,
+          chain: ballotTable.chain
+        });
+      }
     }
   } catch (error) {
+    console.error("getAllChainBallots");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };

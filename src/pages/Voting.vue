@@ -30,7 +30,8 @@
           :data="getAllBallots"
           :columns="columns"
           row-key="name"
-          :pagination="{ rowsPerPage: 20 }"
+          :pagination.sync="pagination"
+          :loading="loading"
           :filter="filter"
           :filter-method="ballotsFilter"
         >
@@ -147,6 +148,8 @@ export default {
   components: { TimeUntil, tokenAvatar },
   data() {
     return {
+      loading: false,
+      pagination: { sortBy: 'closesin', descending: false, rowsPerPage: 5 },
       columns: [
         {
           name: "name",
@@ -182,7 +185,7 @@ export default {
           label: "Voting ends in",
           field: "ballot_close",
           sortable: true,
-          sortOrder: "ad"
+          sort: (a, b) => a - b,
         },
         {
           name: "voting",
