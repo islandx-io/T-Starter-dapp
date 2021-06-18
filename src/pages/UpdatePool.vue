@@ -229,7 +229,7 @@
                     outlined
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
-                    :rules="[val => val > 30 || 'Must be more than 30 days']"
+                    :rules="[val => val >= 30 || 'Must be more than 30 days']"
                   />
                 </q-item-section>
               </q-item>
