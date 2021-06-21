@@ -658,7 +658,7 @@ export default {
         });
       } else {
         // this.checkAllowed();
-        if (!this.alreadyStaked && this.pool.access_type === "Premium") {
+        if (!this.alreadyStaked && Date.now() < this.pool.private_end) {
           this.confirm_stake = true;
         } else {
           this.tryTransaction();
@@ -683,7 +683,7 @@ export default {
       let start_balance = this.START_info.balance;
       if (
         start_balance < this.$chainToQty(this.premium_access_fee) &&
-        this.pool.access_type === "Premium" &&
+        Date.now() < this.pool.private_end &&
         !this.alreadyStaked
       ) {
         this.stake_warning = true;
