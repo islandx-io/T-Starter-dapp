@@ -10,44 +10,47 @@
     </div>
     <q-separator vertical inset size="0.1rem" />
     <div class="column items-start" :style="`width: ${voteBarWidth}px`">
-      <div
-        class="vote-bar upvote-bar"
-        :style="`width: ${voteBarWidth * (upvoteProgress / totalProgress)}px`"
-      />
-      <q-btn
-        outline
-        flat
-        padding="5px 7px"
-        icon="fas fa-thumbs-up"
-        class="hover-accent"
-        size="1rem"
-        :color="userVote === 'upvote' ? 'positive' : 'black'"
-        :disable="!isAuthenticated"
-        @click.stop="checkChain(1)"
-      />
-      <q-btn
-        outline
-        flat
-        padding="5px 7px"
-        size="1rem"
-        icon="fas fa-thumbs-down"
-        class="hover-accent"
-        :color="userVote === 'downvote' ? 'accent' : 'black'"
-        @click.stop="checkChain(-1)"
-        :disable="!isAuthenticated"
-      />
-      <div
-        class="vote-bar downvote-bar"
-        :style="`width: ${voteBarWidth * (downvoteProgress / totalProgress)}px`"
-      />
+      <div class="row items-center">
+        <div
+          class="vote-bar upvote-bar"
+          :style="`width: ${voteBarWidth * upvoteProgress}px`"
+        />
+        <q-btn
+          outline
+          flat
+          padding="5px 7px"
+          icon="fas fa-thumbs-up"
+          class="hover-accent"
+          size="1rem"
+          :color="userVote === 'upvote' ? 'positive' : 'black'"
+          :disable="!isAuthenticated"
+          @click.stop="checkChain(1)"
+        />
+      </div>
+      <div class="row items-center">
+        <div
+          class="vote-bar downvote-bar"
+          :style="`width: ${voteBarWidth * downvoteProgress}px`"
+        />
+        <q-btn
+          outline
+          flat
+          padding="5px 7px"
+          size="1rem"
+          icon="fas fa-thumbs-down"
+          class="hover-accent"
+          :color="userVote === 'downvote' ? 'accent' : 'black'"
+          @click.stop="checkChain(-1)"
+          :disable="!isAuthenticated"
+        />
+      </div>
     </div>
-    <!-- <div :class="userVote === 'upvote' ? 'text-positive' : 'text-black'">
+    <!-- <div>
       {{ votes.find(a => a.key === "upvote") }}
-    </div>
-    <div :class="userVote === 'downvote' ? 'text-negative' : 'text-black'">
       {{ votes.find(a => a.key === "downvote") }}
-    </div>
-    <div>Voting progress: {{ votingProgress }}</div> -->
+      Voting progress: {{ votingProgress }} Total Stake: {{ stakeTotal }} Upvote
+      Progress: {{ upvoteProgress }}
+    </div> -->
   </div>
 </template>
 
@@ -62,7 +65,7 @@ export default {
   data() {
     return {
       userVote: "none",
-      voteBarWidth: 200
+      voteBarWidth: 150
     };
   },
   computed: {
@@ -94,17 +97,17 @@ export default {
       return this.$chainToQty(this.votes.find(a => a.key === "downvote").value);
     },
     upvoteProgress() {
-      return this.upvotes / this.stakeTotal / this.ballotConfig.lead;
+      return this.upvotes / this.stakeTotal;
     },
     downvoteProgress() {
-      return this.downvotes / this.stakeTotal / this.ballotConfig.lead;
+      return this.downvotes / this.stakeTotal;
     },
     totalProgress() {
       return this.upvoteProgress + this.downvoteProgress;
     },
     ballotStatus() {
-      if (this.upvoteProgress > this.downvoteProgress) return "Succeeding";
-      if (this.upvoteProgress < this.downvoteProgress) return "Failing";
+      if (this.votingProgress > 0) return "Succeeding";
+      if (this.votingProgress < 0) return "Failing";
       else return "Tie";
     }
   },
@@ -177,12 +180,16 @@ export default {
   background-color: $primary;
 }
 .vote-bar {
-  height: 10px;
+  height: 12px;
   &.upvote-bar {
     background: $positive;
+    margin-top: 10px;
+    margin-right: -5px;
   }
   &.downvote-bar {
     background: $negative;
+    margin-bottom: 10px;
+    margin-right: -5px;
   }
 }
 </style>
