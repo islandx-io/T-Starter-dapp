@@ -19,6 +19,14 @@
             label="Reset filter"
             @click="filter.value = 'none'"
           />
+          <div v-for="chain in possibleChains" :key="chain.NETWORK_NAME">
+            <q-checkbox
+              v-model="filter.value"
+              :label="chain.NETWORK_NAME"
+              :true-value="`chain:` + chain.NETWORK_NAME"
+              false-value="none"
+            />
+          </div>
           <div class="col" />
           <q-btn
             class="hover-accent"
@@ -70,6 +78,11 @@
                   <token-avatar
                     :avatar="props.row.avatar"
                     :avatarSize="35"
+                    class="q-mr-sm"
+                  />
+                  <token-avatar
+                    :token="props.row.chain"
+                    :avatarSize="20"
                     class="q-mr-sm"
                   />
                   <div class="text-bold">{{ props.cols[0].value }}</div>
@@ -129,7 +142,7 @@
               <q-avatar color="primary" text-color="secondary" class="q-mr-sm">
                 <q-icon name="fas fa-random" size="28px" />
               </q-avatar>
-              <span class="text-h6">Confirm Switching Chains?</span>
+              <span class="text-h6">Switch Chain?</span>
             </q-card-section>
             <q-card-section>
               <span>
@@ -232,7 +245,15 @@ export default {
       "getUpcomingBallots"
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
-    ...mapGetters("blockchains", ["currentChain"])
+    ...mapGetters("blockchains", ["currentChain", "allBlockchains"]),
+
+    possibleChains() {
+      let blockchains = this.allBlockchains;
+      let possibleChains = blockchains.filter(
+        a => String(a.TEST_NETWORK) === process.env.TESTNET
+      );
+      return possibleChains;
+    }
   },
   methods: {
     ...mapActions("ballots", [
@@ -254,9 +275,17 @@ export default {
 
     ballotsFilter() {
       if (this.filter.value === "myballots") {
-        return this.getAllBallots.filter(row => row.owner === this.accountName);
+        return this.getAllBallots.filter(
+          row =>
+            row.owner === this.accountName &&
+            row.chain === this.currentChain.NETWORK_NAME
+        );
+      } else if (this.filter.value.startsWith("chain:")) {
+        let chain = this.filter.value.split(":")[1];
+        return this.getUpcomingBallots.filter(row => row.chain === chain);
+      } else {
+        return this.getUpcomingBallots;
       }
-      return this.getUpcomingBallots;
     },
 
     customSort(rows, sortBy, descending) {
