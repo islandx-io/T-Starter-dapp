@@ -41,6 +41,7 @@
           :loading="loading"
           :filter="filter"
           :filter-method="ballotsFilter"
+          dense
         >
           <!-- :sort-method="customSort"
           binary-state-sort -->
@@ -71,7 +72,7 @@
                     :avatarSize="35"
                     class="q-mr-sm"
                   />
-                  <div>{{ props.cols[0].value }}</div>
+                  <div class="text-bold">{{ props.cols[0].value }}</div>
                 </div>
               </q-td>
 
@@ -107,49 +108,15 @@
                 :props="props"
                 :key="props.cols[props.cols.length - 1].name"
               >
-                <!-- {{props.row.votes}} -->
-                <div class="row q-gutter-x-sm">
-                  <q-btn
-                    outline
-                    flat
-                    padding="6px 8px"
-                    icon="fas fa-thumbs-up"
-                    class="hover-accent"
-                    size="1.05rem"
-                    :color="userVote === 'upvote' ? 'positive' : 'black'"
-                    :disable="!isAuthenticated"
-                    @click.stop="checkChain(1, props.row)"
-                  />
-                  <!-- @click.stop="tryVote(1, props.row.id)" -->
-                  <div
-                    :class="
-                      userVote === 'upvote' ? 'text-positive' : 'text-black'
-                    "
-                  >
-                    {{ props.row.votes.find(a => a.key === "upvote") }}
-                  </div>
-                  <q-btn
-                    outline
-                    flat
-                    padding="6px 8px"
-                    size="1.05rem"
-                    icon="fas fa-thumbs-down"
-                    class="hover-accent"
-                    :color="userVote === 'downvote' ? 'accent' : 'black'"
-                    @click.stop="checkChain(-1, props.row)"
-                    :disable="!isAuthenticated"
-                  />
-                  <div
-                    :class="
-                      userVote === 'downvote' ? 'text-negative' : 'text-black'
-                    "
-                  >
-                    {{ props.row.votes.find(a => a.key === "downvote") }}
-                  </div>
-                  <div>
-                    Voting progress: {{ votingProgress(props.row.votes) }}
-                  </div>
-                </div>
+                <upDownVote
+                  :ballot="props.row"
+                  :ballotConfig="ballotConfig"
+                  :stakeTotal="stakeTotal"
+                  @confirmChainSwitch="
+                    confirmChainSwitch = true;
+                    newChain = props.row.chain;
+                  "
+                />
               </q-td>
             </q-tr>
           </template>
@@ -190,10 +157,11 @@
 <script>
 import TimeUntil from "src/components/ballots/time-until.vue";
 import tokenAvatar from "src/components/TokenAvatar";
+import upDownVote from "src/components/ballots/UpDownVote";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  components: { TimeUntil, tokenAvatar },
+  components: { TimeUntil, tokenAvatar, upDownVote },
   data() {
     return {
       newChain: "",
@@ -213,7 +181,7 @@ export default {
         },
         {
           name: "price",
-          align: "left",
+          align: "center",
           label: "Price",
           field: row =>
             `1 ${this.$getSymFromAsset(row.base_token)} = ${this.$chainToQty(
@@ -222,29 +190,32 @@ export default {
         },
         {
           name: "softcap",
+          align: "center",
           label: "Softcap",
           field: row => this.$chainStrReformat(row.soft_cap)
         },
         {
           name: "hardcap",
+          align: "center",
           label: "Hardcap",
           field: row => this.$chainStrReformat(row.hard_cap)
         },
         {
           name: "closesin",
-          label: "Voting ends in",
+          align: "center",
+          label: "Deadline",
           field: "ballot_close",
           sortable: true,
           sort: (a, b) => a - b
         },
         {
           name: "voting",
+          align: "center",
           label: "Voting",
           field: row => row.votes,
           align: "center"
         }
       ],
-      userVote: "none",
       stakeTotal: 0,
       ballotConfig: {},
       poolSettings: {},
@@ -309,86 +280,26 @@ export default {
       return data;
     },
 
-    // Calculate voting progress
-    votingProgress(voteTable) {
-      //(upvote - downvote) / stake_total > lead
-      if (
-        voteTable.length > 0 &&
-        this.ballotConfig.lead !== undefined &&
-        this.stakeTotal !== 0
-      ) {
-        let upvote = this.$chainToQty(
-          voteTable.find(a => a.key === "upvote").value
-        );
-        let downvote = this.$chainToQty(
-          voteTable.find(a => a.key === "downvote").value
-        );
-        return (upvote - downvote) / this.stakeTotal / this.ballotConfig.lead;
-      } else {
-        return "Loading";
-      }
-    },
-
     // TODO get what the users voted on a pool?
-    userSentiment() {
-      let result = "none";
-      if (this.pool.sentiment_table) {
-        let sentiment = this.pool.sentiment_table.find(
-          el => el.account === this.accountName
-        );
-        if (sentiment) {
-          if (sentiment.vote > 0) result = "upvote";
-          if (sentiment.vote < 0) result = "downvote";
-        }
-      }
-      return result;
-    },
-
-    async vote(vote, id) {
-      const actions = [
-        {
-          account: process.env.BALLOT_ADDRESS,
-          name: "vote",
-          data: {
-            account: this.accountName,
-            ballot_id: id,
-            vote: vote
-          }
-        }
-      ];
-      const transaction = await this.$store.$api.signTransaction(actions);
-    },
-
-    async checkChain(vote, ballot) {
-      if (ballot.chain === this.currentChain.NETWORK_NAME) {
-        await this.tryVote(vote, ballot.id);
-      } else {
-        //switch chain
-        this.newChain = ballot.chain;
-        this.confirmChainSwitch = true;
-      }
-    },
+    // userSentiment() {
+    //   let result = "none";
+    //   if (this.pool.sentiment_table) {
+    //     let sentiment = this.pool.sentiment_table.find(
+    //       el => el.account === this.accountName
+    //     );
+    //     if (sentiment) {
+    //       if (sentiment.vote > 0) result = "upvote";
+    //       if (sentiment.vote < 0) result = "downvote";
+    //     }
+    //   }
+    //   return result;
+    // },
 
     async switchChain() {
       this.$router.push({
         name: "voting",
         params: { chain: this.newChain.toLowerCase() }
       });
-    },
-
-    async tryVote(vote, id) {
-      try {
-        await this.vote(vote, id);
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Voted"
-        });
-        await this.getAllChainBallots();
-      } catch (error) {
-        this.$errorNotification(error);
-      }
     }
   },
   async mounted() {
