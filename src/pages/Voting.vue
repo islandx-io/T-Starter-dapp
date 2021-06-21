@@ -6,7 +6,7 @@
 
     <section class="body-container">
       <q-card class="justify-between content-start q-mb-lg">
-        <div class="row q-px-xs q-pb-sm q-gutter-sm">
+        <div class="row q-px-lg q-pb-sm q-gutter-sm">
           <q-btn
             class="hover-accent"
             color="primary"
@@ -410,5 +410,9 @@ export default {
   border: 1px solid #dbdddf;
   box-shadow: none;
   border-radius: $card-corner-radius;
+}
+.q-card {
+  padding-left: 0;
+  padding-right: 0;
 }
 </style>
