@@ -39,12 +39,15 @@ h6 {
 }
 
 .q-card,
-.q-table__container.wallet-table {
+.q-table__container.wallet-table,
+.q-table__container.voting-table {
   padding: 20px 20px;
   border-radius: $card-corner-radius;
   border-color: $secondary;
-  box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
   background-color: $secondary;
+  .wallet-table {
+    box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
+  }
 }
 .q-table__container.wallet-inner-table {
   background-color: $secondary;

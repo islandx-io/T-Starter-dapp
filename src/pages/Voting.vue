@@ -1,32 +1,39 @@
 <template>
   <q-page>
     <section class="header-bg row content-center justify-center">
-      <h2 class="text-white q-pt-xl">Pool Voting</h2>
+      <h2 class="text-white q-pt-xl">Voting</h2>
     </section>
 
     <section class="body-container">
-      <q-btn
-        color="primary"
-        label="Create Ballot"
-        :to="{ name: 'createballot' }"
-      />
-      <q-btn
-        color="primary"
-        label="My Ballots"
-        @click="filter.value = 'myballots'"
-      />
-      <q-btn
-        color="primary"
-        label="Reset filter"
-        @click="filter.value = 'none'"
-      />
-      <!-- {{ getPublishedBallots }} -->
+      <q-card class="justify-between content-start q-mb-lg">
+        <div class="row q-px-xs q-pb-sm q-gutter-sm">
+          <q-btn
+            class="hover-accent"
+            color="primary"
+            label="My Ballots"
+            @click="filter.value = 'myballots'"
+          />
+          <q-btn
+            class="hover-accent"
+            color="primary"
+            label="Reset filter"
+            @click="filter.value = 'none'"
+          />
+          <div class="col" />
+          <q-btn
+            class="hover-accent"
+            color="primary"
+            label="Create Ballot"
+            :to="{ name: 'createballot' }"
+          />
+        </div>
+        <!-- {{ getPublishedBallots }} -->
 
-      <!-- Search bar -->
+        <!-- Search bar -->
 
-      <!-- Table with pools -->
-      <div class="q-pa-md">
+        <!-- Table with pools -->
         <q-table
+          class="voting-table"
           :data="getAllBallots"
           :columns="columns"
           row-key="name"
@@ -37,6 +44,18 @@
         >
           <!-- :sort-method="customSort"
           binary-state-sort -->
+          <template v-slot:header="props">
+            <q-tr :props="props">
+              <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+                style="font-size: 20px; color: gray"
+              >
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
           <template v-slot:body="props">
             <q-tr
               :props="props"
@@ -135,35 +154,35 @@
             </q-tr>
           </template>
         </q-table>
-      </div>
 
-      <!-- Confirm chain switch -->
-      <q-dialog v-model="confirmChainSwitch" persistent>
-        <q-card>
-          <q-card-section class="row items-center">
-            <q-avatar color="primary" text-color="secondary" class="q-mr-sm">
-              <q-icon name="fas fa-random" size="28px" />
-            </q-avatar>
-            <span class="text-h6">Confirm Switching Chains?</span>
-          </q-card-section>
-          <q-card-section>
-            <span>
-              Confirm switching to {{this.newChain}} chain to vote?
-            </span>
-          </q-card-section>
+        <!-- Confirm chain switch -->
+        <q-dialog v-model="confirmChainSwitch" persistent>
+          <q-card>
+            <q-card-section class="row items-center">
+              <q-avatar color="primary" text-color="secondary" class="q-mr-sm">
+                <q-icon name="fas fa-random" size="28px" />
+              </q-avatar>
+              <span class="text-h6">Confirm Switching Chains?</span>
+            </q-card-section>
+            <q-card-section>
+              <span>
+                Confirm switching to {{ this.newChain }} chain to vote?
+              </span>
+            </q-card-section>
 
-          <q-card-actions align="right">
-            <q-btn flat label="Cancel" color="primary" v-close-popup />
-            <q-btn
-              flat
-              label="Confirm"
-              color="primary"
-              @click="switchChain()"
-              v-close-popup
-            />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
+            <q-card-actions align="right">
+              <q-btn flat label="Cancel" color="primary" v-close-popup />
+              <q-btn
+                flat
+                label="Confirm"
+                color="primary"
+                @click="switchChain()"
+                v-close-popup
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+      </q-card>
     </section>
   </q-page>
 </template>
@@ -353,7 +372,7 @@ export default {
     async switchChain() {
       this.$router.push({
         name: "voting",
-        params: {chain: this.newChain.toLowerCase() }
+        params: { chain: this.newChain.toLowerCase() }
       });
     },
 
