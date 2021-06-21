@@ -227,7 +227,7 @@
                     outlined
                     :disable="pool.status !== 'draft'"
                     :readonly="pool.status !== 'draft'"
-                    :rules="[val => val > 29 || 'Must be more than 30 days']"
+                    :rules="[val => val >= 30 || 'Must be more than 30 days']"
                   />
                 </q-item-section>
               </q-item>
@@ -723,7 +723,7 @@ export default {
       this.lockup_fraction = this.pool.lockup_percent / 10000;
       this.lockup_period = this.pool.lockup_period;
 
-      this.accessType = this.pool.access_type
+      this.accessType = this.pool.access_type;
     },
     getTokenSymbolFromPool() {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;

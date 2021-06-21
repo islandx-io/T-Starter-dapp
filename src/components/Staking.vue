@@ -78,7 +78,16 @@
             />
           </div>
         </div>
-        <q-separator class="q-mb-lg q-mt-md" inset size="2px" />
+        <!-- <q-separator class="q-mt-md" inset size="2px" /> -->
+        <!-- <div class="text-h4">VIP Level</div> -->
+        <ul class="tiers row q-my-md justify-center">
+          <li v-for="t in Array(6).keys()" :key="t" class="row items-center">
+            <tier-badge :tier="t" :isCurrent="t === accountStakeInfo.tier" />
+            <div v-if="t < 5" class="tier-line" />
+          </li>
+        </ul>
+        <!-- <div class="text-h4">Rewards</div> -->
+        <!-- <q-separator class="q-mb-lg" inset size="2px" /> -->
         <q-table
           v-if="isAuthenticated && stakeWallet.length > 0"
           class=" wallet-inner-table "
@@ -153,9 +162,11 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
+import tierBadge from "src/components/vip/TierBadge";
+import TierBadge from "./vip/TierBadge.vue";
 
 export default {
-  components: { tokenAvatar },
+  components: { tokenAvatar, tierBadge },
   data() {
     return {
       amountStake: 0,
@@ -171,7 +182,8 @@ export default {
           if (val > 0) return val
           else return 0
         }},
-      ]
+      ],
+      accountStakeInfo: {}
     };
   },
 
@@ -224,7 +236,8 @@ export default {
       "logout",
       "autoLogin",
       "getChainSTART",
-      "getChainStakeWallet"
+      "getChainStakeWallet",
+      "getChainAccountStakeInfo"
     ]),
     ...mapActions("pools", ["getBalanceFromChain"]),
     // following method is REQUIRED
@@ -428,12 +441,18 @@ export default {
   async mounted() {
     await this.getChainSTART(this.accountName);
     await this.getChainStakeWallet(this.accountName);
+    this.accountStakeInfo = await this.getChainAccountStakeInfo(
+      this.accountName
+    );
   },
 
   watch: {
     async accountName() {
       await this.getChainSTART(this.accountName);
       await this.getChainStakeWallet(this.accountName);
+      this.accountStakeInfo = await this.getChainAccountStakeInfo(
+        this.accountName
+      );
     }
   }
 };
@@ -444,7 +463,18 @@ export default {
   line-height: 3rem;
 }
 .q-card {
-  padding-left: 3vw;
-  padding-right: 3vw;
+  padding-left: clamp(2px, 3vw, 30px);
+  padding-right: clamp(2px, 3vw, 30px);
+}
+.tiers {
+  padding: 0;
+  li {
+    padding: 5px 0;
+  }
+  .tier-line {
+    background: $loading;
+    height: 2px;
+    width: clamp(2px, 2vw, 20px);
+  }
 }
 </style>
