@@ -43,7 +43,7 @@
                 class="col row items-center"
                 v-if="pool.pool_status === 'upcoming'"
               >
-                <div class="q-mr-md">Opens in:</div>
+                <div class="q-mr-md">Voting ends in:</div>
                 <status-countdown
                   :deadline="pool.pool_open"
                   :poolID="poolID"
@@ -102,25 +102,7 @@
               </div>
             </div> -->
           </div>
-          <q-item
-            v-if="
-              !['completed', 'filled', 'cancelled'].includes(
-                pool.pool_status
-              ) || pool.owner === accountName
-            "
-          >
-            <q-btn
-              class="col hover-accent"
-              :to="{ name: 'joinpool', params: {} }"
-              :color="pool.pool_status === 'upcoming' ? 'grey-4' : 'primary'"
-              :label="isAuthenticated ? 'Join pool' : 'Login to join'"
-              :disable="
-                pool.pool_status === 'upcoming' ||
-                  !isAuthenticated ||
-                  !isWhitelisted
-              "
-              v-if="['open', 'upcoming'].includes(pool.pool_status)"
-            />
+          <q-item v-if="pool.owner === accountName">
             <q-btn
               v-if="pool.owner === accountName"
               label="Update"
@@ -129,12 +111,6 @@
               :to="{ name: 'updateballot', params: { id: poolID } }"
               class="q-ml-sm"
             />
-            <q-tooltip v-if="!isAuthenticated">
-              Connect wallet
-            </q-tooltip>
-            <q-tooltip v-if="!isWhitelisted">
-              Not whitelisted. Apply now!
-            </q-tooltip>
           </q-item>
         </div>
         <q-item class="token-info col">
@@ -153,7 +129,11 @@
                 {{ swapRatio }}
               </h5>
             </div>
+            <!-- Voting progress -->
             <div class="row justify-between">
+              <h6>Voting progress:</h6>
+            </div>
+            <!-- <div class="row justify-between">
               <h6>Participants:</h6>
               <h5>{{ pool.participants }}</h5>
             </div>
@@ -164,7 +144,7 @@
             <div class="row justify-between">
               <h5>{{ progressToPercentage }}</h5>
               <h5>{{ progressLabel }}</h5>
-            </div>
+            </div> -->
           </div>
         </q-item>
 
@@ -260,7 +240,6 @@ export default {
     tabDetails,
     statusCountdown,
     statusBadge,
-    statusProgress,
     tokenAvatar
   },
   data() {
@@ -339,7 +318,7 @@ export default {
         let hardCap = this.$chainToQty(this.pool.hard_cap, 0);
         return `${totalRaise} / ${hardCap}`;
       }
-    },
+    }
     // userSentiment() {
     //   let result = "none";
     //   if (this.pool.sentiment_table) {
@@ -367,7 +346,7 @@ export default {
     ...mapActions("ballots", [
       "getAllChainBallots",
       "getChainBallotByID",
-      "getBallotConfig",
+      "getBallotConfig"
     ]),
     ...mapActions("account", ["getChainSTART"]),
     getPoolInfo() {
@@ -397,7 +376,7 @@ export default {
       await this.getChainBallotByID(this.poolID);
       // await this.updateSentimentByPoolID(this.poolID);
       // await this.updateCommentsByPoolID(this.poolID);
-    },
+    }
     // sentimentValue(key) {
     //   if (this.pool.sentiment.length > 0)
     //     return this.pool.sentiment.find(el => el.key === key).value;

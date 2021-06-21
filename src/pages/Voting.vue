@@ -299,7 +299,7 @@ export default {
 
     ballotsFilter() {
       if (this.filter.value === "myballots") {
-        return this.getAllBallots.filter(row => row.owner === this.accountName);
+        return this.getAllBallots.filter(row => row.owner === this.accountName && row.chain === this.currentChain.NETWORK_NAME);
       } else if (this.filter.value.startsWith("chain:")) {
         let chain = this.filter.value.split(":")[1];
         return this.getUpcomingBallots.filter(row => row.chain === chain);
