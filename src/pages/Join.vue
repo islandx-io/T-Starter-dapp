@@ -38,9 +38,14 @@
             <!---------->
             <!-- From -->
             <!---------->
-            <div class="row justify-between items-end" style="padding: 0px 20px 0px 0px">
+            <div
+              class="row justify-between items-end"
+              style="padding: 0px 20px 0px 0px"
+            >
               <q-item dense class="text-h6">From</q-item>
-              <div style="padding: 0px 0px 2px 15px">Balance: {{ balance }} {{ BaseTokenSymbol }}</div>
+              <div style="padding: 0px 0px 2px 15px">
+                Balance: {{ balance }} {{ BaseTokenSymbol }}
+              </div>
             </div>
             <q-card flat bordered class="inner-card row ">
               <div class="row q-gutter-x-md items-center">
@@ -88,7 +93,7 @@
                 {{ BaseTokenSymbol }}
               </div>
               <div>
-                Remaining:
+                Buyable:
                 {{
                   this.$toFixedDown(
                     availableBuy,
@@ -456,7 +461,11 @@ export default {
             }
           }
 
-          return max_allocation;
+          // return max_allocation;
+          return this.$toFixedDown(
+            max_allocation,
+            this.$getDecimalFromAsset(this.pool.base_token)
+          );
         } else {
           return 0;
         }
@@ -467,7 +476,11 @@ export default {
 
     availableBuy() {
       if (this.$chainToQty(this.allocation.bid) !== undefined) {
-        return this.maxAllocation - this.$chainToQty(this.allocation.bid);
+        if (this.$chainToQty(this.allocation.bid) > this.maxAllocation) {
+          return 0;
+        } else {
+          return this.maxAllocation - this.$chainToQty(this.allocation.bid);
+        }
       } else {
         return this.maxAllocation;
       }
@@ -569,7 +582,7 @@ export default {
 
     async joinPoolTransaction() {
       const actions = [];
-      if (this.pool.access_type === "Premium" && !this.alreadyStaked) {
+      if (Date.now() < this.pool.private_end && !this.alreadyStaked) {
         actions.push(
           // send start if premium
           {
@@ -659,7 +672,7 @@ export default {
         });
       } else {
         // this.checkAllowed();
-        if (!this.alreadyStaked && this.pool.access_type === "Premium") {
+        if (!this.alreadyStaked && Date.now() < this.pool.private_end) {
           this.confirm_stake = true;
         } else {
           this.tryTransaction();
@@ -684,7 +697,7 @@ export default {
       let start_balance = this.START_info.balance;
       if (
         start_balance < this.$chainToQty(this.premium_access_fee) &&
-        this.pool.access_type === "Premium" &&
+        Date.now() < this.pool.private_end &&
         !this.alreadyStaked
       ) {
         this.stake_warning = true;

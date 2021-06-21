@@ -527,7 +527,7 @@ export default {
       accessType: "Premium",
       accessOptions: ["Public", "Premium"],
       premiumDuration: 3, //hours
-      premiumDurationOptions: [3, 6, 12, 24],
+      premiumDurationOptions: [1, 3, 6, 12, 24],
       vesting: false,
       lockup_fraction: 0.5,
       lockup_period: 30

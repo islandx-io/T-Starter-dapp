@@ -10,7 +10,7 @@
     <q-card
       :class="
         `col bg-secondary text-black self-stretch ` +
-          `${claimable ? 'claimable' : ''}`
+          `${claimable ? 'claimable' : ''}` + `${hasHeadstart ? 'headstart' : ''}`
       "
     >
       <q-item>
@@ -31,7 +31,7 @@
                 :poolStatus="hasHeadstart ? 'headstart' : pool.pool_status"
               />
               <status-countdown
-                v-if="pool.pool_status === 'upcoming'"
+                v-if="pool.pool_status === 'upcoming' && !hasHeadstart"
                 :deadline="pool.pool_open"
                 mini
                 @countdown-finished="getPoolInfo"
@@ -222,6 +222,9 @@ export default {
   box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
   &.claimable {
     border: 1px solid $accent;
+  }
+  &.headstart {
+    border: 1px solid gold;
   }
 }
 .q-card:hover {
