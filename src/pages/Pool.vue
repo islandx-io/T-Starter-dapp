@@ -43,9 +43,20 @@
             <div class="col" style="min-width: 260px">
               <div
                 class="col row items-center"
-                v-if="pool.pool_status === 'upcoming'"
+                v-if="pool.pool_status === 'upcoming' && !hasHeadstart"
               >
                 <div class="q-mr-md">Opens in:</div>
+                <status-countdown
+                  :deadline="pool.pool_open"
+                  :poolID="poolID"
+                  @countdown-finished="getPoolInfo"
+                />
+              </div>
+              <div
+                class="col row items-center"
+                v-if="pool.pool_status === 'upcoming' && hasHeadstart"
+              >
+                <div class="q-mr-md">Headstart ends:</div>
                 <status-countdown
                   :deadline="pool.pool_open"
                   :poolID="poolID"
