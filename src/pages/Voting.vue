@@ -189,8 +189,7 @@ export default {
           align: "left",
           field: "title",
           format: val => `${val}`,
-          sortable: true,
-          style: "max-width: 200px; min-width: 200px"
+          sortable: true
         },
         {
           name: "price",
