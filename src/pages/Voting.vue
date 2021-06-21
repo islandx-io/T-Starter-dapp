@@ -79,6 +79,11 @@
                     :avatarSize="35"
                     class="q-mr-sm"
                   />
+                  <token-avatar
+                    :token="props.row.chain"
+                    :avatarSize="20"
+                    class="q-mr-sm"
+                  />
                   <div>{{ props.cols[0].value }}</div>
                 </div>
               </q-td>
@@ -170,7 +175,7 @@
               <q-avatar color="primary" text-color="secondary" class="q-mr-sm">
                 <q-icon name="fas fa-random" size="28px" />
               </q-avatar>
-              <span class="text-h6">Confirm Switching Chains?</span>
+              <span class="text-h6">Switch Chain?</span>
             </q-card-section>
             <q-card-section>
               <span>
@@ -299,7 +304,11 @@ export default {
 
     ballotsFilter() {
       if (this.filter.value === "myballots") {
-        return this.getAllBallots.filter(row => row.owner === this.accountName && row.chain === this.currentChain.NETWORK_NAME);
+        return this.getAllBallots.filter(
+          row =>
+            row.owner === this.accountName &&
+            row.chain === this.currentChain.NETWORK_NAME
+        );
       } else if (this.filter.value.startsWith("chain:")) {
         let chain = this.filter.value.split(":")[1];
         return this.getUpcomingBallots.filter(row => row.chain === chain);
