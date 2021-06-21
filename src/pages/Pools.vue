@@ -26,6 +26,58 @@
 
       <q-separator></q-separator>
 
+      <div class="q-gutter-md row items-start">
+        <q-input v-model="search.text" dense rounded outlined>
+          <template v-slot:prepend>
+            <q-icon name="fas fa-search" />
+          </template>
+        </q-input>
+
+        <!-- Filter  -->
+        <q-icon name="fas fa-sliders-h" style="font-size: 2em;">
+          <q-menu>
+            <q-list dense>
+              <q-item
+                v-for="filter in filterOptions"
+                :key="filter"
+                clickable
+                v-close-popup="filter.toLowerCase() !== 'chain'"
+                @click="filterPools(filter)"
+              >
+                <q-item-section>
+                  <q-item-label>{{ filter }}</q-item-label>
+                </q-item-section>
+
+                <!-- Chain submenu -->
+                <q-item-section side v-if="filter.toLowerCase() === 'chain'">
+                  <q-icon name="keyboard_arrow_right" />
+                </q-item-section>
+                <q-menu
+                  anchor="top right"
+                  self="top left"
+                  v-if="filter.toLowerCase() === 'chain'"
+                >
+                  <q-list>
+                    <q-item
+                      v-for="filter in chainFilterOptions"
+                      :key="filter"
+                      clickable
+                      v-close-popup
+                      dense
+                      @click="filterPools(filter)"
+                    >
+                      <q-item-section>
+                        <q-item-label>{{ filter }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-icon>
+      </div>
+
       <q-tab-panels
         v-model="tab"
         animated
@@ -136,7 +188,10 @@ export default {
       claimable: false,
       polling: null,
       currentPage: 1,
-      page: 1
+      page: 1,
+      filterOptions: ["All", "Open", "Upcoming", "Chain"],
+      chainFilterOptions: ["TELOS", "EOS", "WAX"],
+      search: {text: '', filter: ''}
     };
   },
   computed: {
@@ -216,6 +271,10 @@ export default {
       });
       // console.log(result);
       return pools.map(a => ({ id: a.id, chain: a.chain }));
+    },
+
+    filterPools(filter) {
+
     },
 
     // If any joined pools claimable on current chain, show alert
