@@ -245,10 +245,10 @@ export default {
         },
         {
           name: "closesin",
-          label: "Voting ends in",
+          label: "Voting end",
           field: "ballot_close",
           sortable: true,
-          sort: (a, b) => a - b
+          sort: (a, b) => a - b,
         },
         {
           name: "voting",
