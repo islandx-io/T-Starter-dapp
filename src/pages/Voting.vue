@@ -141,36 +141,33 @@
             </q-tr>
           </template>
         </q-table>
-
-        <!-- Confirm chain switch -->
-        <q-dialog v-model="confirmChainSwitch" persistent>
-          <q-card>
-            <q-card-section class="row items-center">
-              <q-avatar color="primary" text-color="secondary" class="q-mr-sm">
-                <q-icon name="fas fa-random" size="28px" />
-              </q-avatar>
-              <span class="text-h6">Switch Chain?</span>
-            </q-card-section>
-            <q-card-section>
-              <span>
-                Confirm switching to {{ this.newChain }} chain to vote?
-              </span>
-            </q-card-section>
-
-            <q-card-actions align="right">
-              <q-btn flat label="Cancel" color="primary" v-close-popup />
-              <q-btn
-                flat
-                label="Confirm"
-                color="primary"
-                @click="switchChain()"
-                v-close-popup
-              />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
       </q-card>
     </section>
+    <!-- Confirm chain switch -->
+    <q-dialog v-model="confirmChainSwitch" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar color="primary" text-color="secondary" class="q-mr-sm">
+            <q-icon name="fas fa-random" size="28px" />
+          </q-avatar>
+          <span class="text-h6">Switch Chain?</span>
+        </q-card-section>
+        <q-card-section>
+          <span> Confirm switching to {{ this.newChain }} chain to vote? </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup />
+          <q-btn
+            flat
+            label="Confirm"
+            color="primary"
+            @click="switchChain()"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -360,7 +357,7 @@ export default {
   box-shadow: none;
   border-radius: $card-corner-radius;
 }
-.q-card {
+.body-container .q-card {
   padding: 0;
   padding-top: 20px;
 }

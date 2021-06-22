@@ -22,9 +22,9 @@
           icon="fas fa-thumbs-up"
           class="hover-accent"
           size="1rem"
-          :color="userVote === 'upvote' ? 'positive' : 'black'"
+          :color="userVote === 'upvote' ? 'positive' : 'grey-8'"
           :disable="!isAuthenticated"
-          @click.stop="checkChain(1)"
+          @click.stop="vote('upvote')"
         />
       </div>
       <div class="row items-center">
@@ -39,12 +39,13 @@
           size="1rem"
           icon="fas fa-thumbs-down"
           class="hover-accent"
-          :color="userVote === 'downvote' ? 'accent' : 'black'"
-          @click.stop="checkChain(-1)"
+          :color="userVote === 'downvote' ? 'accent' : 'grey-8'"
+          @click.stop="vote('downvote')"
           :disable="!isAuthenticated"
         />
       </div>
     </div>
+    <!-- <div>{{ ballot.votes_table }}</div> -->
     <!-- <div>
       {{ votes.find(a => a.key === "upvote") }}
       {{ votes.find(a => a.key === "downvote") }}
@@ -64,8 +65,8 @@ export default {
   },
   data() {
     return {
-      userVote: "none",
       voteBarWidth: 100
+      // votesTable: []
     };
   },
   computed: {
@@ -89,6 +90,19 @@ export default {
       } else {
         return "Loading";
       }
+    },
+    userVote() {
+      let result = "none";
+      if (this.ballot.votes_table) {
+        let v = this.ballot.votes_table.find(
+          el => el.account === this.accountName
+        );
+        if (v) {
+          if (v["vote"] > 0) result = "upvote";
+          if (v["vote"] < 0) result = "downvote";
+        }
+      }
+      return result;
     },
     upvotes() {
       return this.$chainToQty(this.votes.find(a => a.key === "upvote").value);
@@ -117,47 +131,40 @@ export default {
       "getChainBallotByID",
       "getBallotConfig"
     ]),
-    async checkChain(vote) {
-      console.log(this.currentChain);
+
+    async vote(side) {
       if (this.ballot.chain === this.currentChain.NETWORK_NAME) {
-        await this.tryVote(vote, this.ballot.id);
-      } else {
-        //switch chain
-        this.$emit("confirmChainSwitch");
-      }
-    },
-
-    async tryVote(vote, id) {
-      console.log({ vote, id });
-      try {
-        await this.vote(vote, id);
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Voted"
-        });
-        await this.getAllChainBallots();
-      } catch (error) {
-        this.$errorNotification(error);
-      }
-    },
-
-    async vote(vote, id) {
-      console.log({ vote, id });
-      const actions = [
-        {
-          account: process.env.BALLOT_ADDRESS,
-          name: "vote",
-          data: {
-            account: this.accountName,
-            ballot_id: id,
-            vote: vote
-          }
+        try {
+          let vote = 0; // abstain
+          if (side === "upvote" && this.userVote !== "upvote") vote = 1;
+          else if (side === "downvote" && this.userVote !== "downvote")
+            vote = -1;
+          const actions = [
+            {
+              account: process.env.BALLOT_ADDRESS,
+              name: "vote",
+              data: {
+                account: this.accountName,
+                ballot_id: this.ballot.id,
+                vote: vote
+              }
+            }
+          ];
+          // console.log(actions);
+          const transaction = await this.$store.$api.signTransaction(actions);
+          this.$q.notify({
+            color: "green-4",
+            textColor: "white",
+            icon: "cloud_done",
+            message: "Voted"
+          });
+          await this.getAllChainBallots();
+        } catch (error) {
+          this.$errorNotification(error);
         }
-      ];
-      console.log(actions);
-      const transaction = await this.$store.$api.signTransaction(actions);
+      } else {
+        this.$emit("confirmChainSwitch"); //switch chain
+      }
     }
   }
 };

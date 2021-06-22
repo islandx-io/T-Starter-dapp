@@ -107,6 +107,7 @@ export const getAllChainBallots = async function({ commit, dispatch }) {
         pool.pool_open = new Date(pool.pool_open + "Z").valueOf();
         pool.private_end = new Date(pool.private_end + "Z").valueOf();
         pool.public_end = new Date(pool.public_end + "Z").valueOf();
+        pool.votes_table = [];
 
         let ballotTable = pool;
         // set chain in pool
