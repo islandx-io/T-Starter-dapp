@@ -203,7 +203,8 @@ export const updateBallotVotesTable = async function(
     v["vote"] = this.$chainToQty(v["vote"]);
     votes.push(v);
   }
-  console.log(payload.chain, payload.id, tableResults.rows, votes);
+  // console.log(payload.chain, payload.id, tableResults.rows, votes);
+
   // Update chain on state
   commit({
     type: "setBallotVotesTable",

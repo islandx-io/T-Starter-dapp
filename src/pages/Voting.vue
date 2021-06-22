@@ -7,8 +7,22 @@
     <section class="body-container">
       <q-card class="justify-between content-start q-mb-lg">
         <div class="row q-px-lg q-pb-sm q-gutter-sm">
+          <div v-for="chain in possibleChains" :key="chain.NETWORK_NAME">
+            <q-checkbox
+              v-model="filter.value"
+              :true-value="`chain:` + chain.NETWORK_NAME"
+              false-value="none"
+            >
+              <template v-slot:default>
+                <div>
+                  <token-avatar :token="chain.NETWORK_NAME" :avatarSize="20" />
+                  {{ chain.NETWORK_NAME }}
+                </div>
+              </template>
+            </q-checkbox>
+          </div>
           <q-btn
-            class="hover-accent"
+            class="hover-accent q-ml-md"
             color="primary"
             label="My Ballots"
             @click="filter.value = 'myballots'"
@@ -19,14 +33,6 @@
             label="Reset filter"
             @click="filter.value = 'none'"
           />
-          <div v-for="chain in possibleChains" :key="chain.NETWORK_NAME">
-            <q-checkbox
-              v-model="filter.value"
-              :label="chain.NETWORK_NAME"
-              :true-value="`chain:` + chain.NETWORK_NAME"
-              false-value="none"
-            />
-          </div>
           <div class="col" />
           <q-btn
             class="hover-accent"
