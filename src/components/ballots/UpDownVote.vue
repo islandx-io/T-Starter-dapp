@@ -65,7 +65,7 @@ export default {
   data() {
     return {
       userVote: "none",
-      voteBarWidth: 150
+      voteBarWidth: 100
     };
   },
   computed: {
@@ -181,6 +181,7 @@ export default {
 }
 .vote-bar {
   height: 12px;
+  border-radius: 2px;
   &.upvote-bar {
     background: $positive;
     margin-top: 10px;

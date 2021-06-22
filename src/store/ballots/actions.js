@@ -116,6 +116,11 @@ export const getAllChainBallots = async function({ commit, dispatch }) {
           id,
           chain: ballotTable.chain
         });
+        dispatch("updateBallotVotesTable", {
+          id,
+          chain: ballotTable.chain,
+          api
+        });
       }
     }
   } catch (error) {
@@ -173,6 +178,37 @@ export const updateBallotSettings = async function(
     pool_status: poolStatus,
     access_type: access_type,
     progress: progress,
+    chain: pool.chain
+  });
+};
+
+export const updateBallotVotesTable = async function(
+  { commit, getters, dispatch },
+  payload
+) {
+  const pool = getters.getBallotByIDChain(payload.id, payload.chain);
+
+  const tableResults = await payload.api.get_table_rows({
+    json: true,
+    code: process.env.BALLOT_ADDRESS,
+    scope: payload.id,
+    table: "votes",
+    limit: 10000,
+    reverse: false,
+    show_payer: false
+  });
+
+  let votes = [];
+  for (let v of tableResults.rows) {
+    v["vote"] = this.$chainToQty(v["vote"]);
+    votes.push(v);
+  }
+  console.log(payload.chain, payload.id, tableResults.rows, votes);
+  // Update chain on state
+  commit({
+    type: "setBallotVotesTable",
+    id: payload.id,
+    votes_table: votes,
     chain: pool.chain
   });
 };

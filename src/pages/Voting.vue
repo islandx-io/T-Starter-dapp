@@ -224,8 +224,7 @@ export default {
           name: "voting",
           align: "center",
           label: "Voting",
-          field: row => row.votes,
-          align: "center"
+          field: row => row.votes
         }
       ],
       stakeTotal: 0,
@@ -351,7 +350,7 @@ export default {
   border-radius: $card-corner-radius;
 }
 .q-card {
-  padding-left: 0;
-  padding-right: 0;
+  padding: 0;
+  padding-top: 20px;
 }
 </style>
