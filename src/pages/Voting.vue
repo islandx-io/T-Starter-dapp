@@ -24,14 +24,15 @@
           <q-btn
             class="hover-accent q-ml-md"
             color="primary"
-            label="My Ballots"
-            @click="filter.value = 'myballots'"
-          />
-          <q-btn
-            class="hover-accent"
-            color="primary"
-            label="Reset filter"
-            @click="filter.value = 'none'"
+            :label="
+              filter.value === 'myballots' ? 'Reset filter' : 'My Ballots'
+            "
+            v-if="myBallots.length > 0"
+            @click="
+              filter.value === 'myballots'
+                ? (filter.value = 'none')
+                : (filter.value = 'myballots')
+            "
           />
           <div class="col" />
           <q-btn
@@ -257,6 +258,14 @@ export default {
         a => String(a.TEST_NETWORK) === process.env.TESTNET
       );
       return possibleChains;
+    },
+
+    myBallots() {
+      return this.getAllBallots.filter(
+        row =>
+          row.owner === this.accountName &&
+          row.chain === this.currentChain.NETWORK_NAME
+      );
     }
   },
   methods: {
@@ -279,11 +288,7 @@ export default {
 
     ballotsFilter() {
       if (this.filter.value === "myballots") {
-        return this.getAllBallots.filter(
-          row =>
-            row.owner === this.accountName &&
-            row.chain === this.currentChain.NETWORK_NAME
-        );
+        return this.myBallots;
       } else if (this.filter.value.startsWith("chain:")) {
         let chain = this.filter.value.split(":")[1];
         return this.getUpcomingBallots.filter(row => row.chain === chain);
