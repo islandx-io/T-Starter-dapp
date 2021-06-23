@@ -163,22 +163,35 @@
                 >
                   You do not have enough START tokens to participate in this
                   pool.
-                  <a target="_blank" :href="buyStartUrl">Get here</a>
+                  <a target="_blank" :href="currentChain.BUY_START_URL">
+                    Get here
+                  </a>
                 </div>
               </q-item-section>
-              <q-tooltip v-if="!isAuthenticated">
+              <q-tooltip :offset="joinTooltipOffset" v-if="!isAuthenticated">
                 Connect wallet
               </q-tooltip>
-              <q-tooltip v-if="balance <= $chainToQty(pool.minimum_swap)">
-                Zero balance
-              </q-tooltip>
-              <q-tooltip v-if="not_enough_start">
+              <q-tooltip
+                v-else-if="not_enough_start"
+                :offset="joinTooltipOffset"
+              >
                 Not enough START
               </q-tooltip>
-              <q-tooltip v-if="!isWhitelisted">
+              <q-tooltip
+                v-else-if="
+                  isAuthenticated && balance <= $chainToQty(pool.minimum_swap)
+                "
+                :offset="joinTooltipOffset"
+              >
+                Zero balance
+              </q-tooltip>
+              <q-tooltip v-else-if="!isWhitelisted" :offset="joinTooltipOffset">
                 Not whitelisted for this pool
               </q-tooltip>
-              <q-tooltip v-if="allocationReached">
+              <q-tooltip
+                v-else-if="allocationReached"
+                :offset="joinTooltipOffset"
+              >
                 Maximum allocation reached
               </q-tooltip>
             </q-item>
@@ -246,7 +259,7 @@
                 outline
                 type="a"
                 target="_blank"
-                :href="buyStartUrl"
+                :href="currentChain.BUY_START_URL"
                 label="Buy START"
                 color="accent"
                 class="hover-accent"
@@ -360,14 +373,14 @@ export default {
       showTransaction: false,
       transaction: null,
       // explorerUrl: this.currentChain.NETWORK_EXPLORER,
-      buyStartUrl: process.env.BUY_START_URL,
       accountStakeInfo: {},
-      tiersTable: []
+      tiersTable: [],
+      joinTooltipOffset: [0, -45]
     };
   },
   components: { tokenAvatar },
   computed: {
-    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
+    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs", "getPoolByIDChain"]),
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
 
@@ -516,7 +529,7 @@ export default {
       else return val;
     },
     getPoolInfo() {
-      this.pool = this.getPoolByID(this.poolID);
+      this.pool = this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME);
     },
 
     validateInput(val) {

@@ -271,7 +271,7 @@
             v-close-popup
             type="a"
             target="_blank"
-            :href="buyStartUrl"
+            :href="currentChain.BUY_START_URL"
           />
         </q-card-actions>
       </q-card>
@@ -310,7 +310,6 @@ export default {
       polling: null,
       claimable: false,
       insufficient_start_show: false,
-      buyStartUrl: process.env.BUY_START_URL,
       settings: {},
       accountStakeInfo: {}
     };

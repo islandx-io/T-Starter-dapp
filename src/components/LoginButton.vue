@@ -230,7 +230,7 @@ export default {
       ramLow: false,
       ramPrice: 0,
       naitiveTokenBalance: 0,
-      accountStakeInfo: {},
+      accountStakeInfo: {}
     };
   },
   props: {
@@ -255,7 +255,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions("account", ["login", "logout", "autoLogin", "getChainAccountStakeInfo"]),
+    ...mapActions("account", [
+      "login",
+      "logout",
+      "autoLogin",
+      "getChainAccountStakeInfo"
+    ]),
     ...mapActions("pools", ["getBalanceFromChain"]),
     copyAccountName() {
       copyToClipboard(this.accountName).then(() => {
@@ -368,7 +373,7 @@ export default {
     this.polling = setInterval(async () => {
       await this.getBalance();
     }, 30000);
-  },
+  }
 };
 </script>
 
@@ -391,6 +396,9 @@ export default {
   &:hover .q-btn__wrapper .q-btn__content {
     color: $secondary;
   }
+}
+.chain-wax .account-badge {
+  background-color: #1641bc;
 }
 .q-carousel__slide {
   overflow-x: hidden;
