@@ -158,7 +158,7 @@
             v-close-popup
             type="a"
             target="_blank"
-            :href="buyStartUrl"
+            :href="currentChain.BUY_START_URL"
           />
         </q-card-actions>
       </q-card>
@@ -180,7 +180,6 @@ export default {
     return {
       newComment: "",
       insufficient_start_show: false,
-      buyStartUrl: process.env.BUY_START_URL,
       editID: -1,
       pool: this.$defaultPoolInfo,
       comments: [],

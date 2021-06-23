@@ -77,7 +77,7 @@
         icon="far fa-credit-card"
         type="a"
         target="_blank"
-        :href="buyStartUrl"
+        :href="currentChain.BUY_START_URL"
         v-if="isStart(props.row.token_sym)"
         class="hover-accent"
         @click.stop
@@ -147,7 +147,6 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   data() {
     return {
-      buyStartUrl: process.env.BUY_START_URL,
       baseTokenSymbols: ["TLOS", "PBTC", "PETH", "PUSDC", "PUSDT", "EOS"], // TODO make dynamic
       truncateActions: true,
       actionButtonPadding: "5px 8px"
@@ -165,6 +164,7 @@ export default {
 
   computed: {
     // TODO If staked tokens can be released. i.e. past release date
+    ...mapGetters("blockchains", ["currentChain"]),
     canRelease() {
       let now = new Date().valueOf();
       let can_release = false;
