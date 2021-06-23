@@ -204,7 +204,7 @@ export const ifPoolFunded = async function(
       }
     }
   } catch (error) {
-    console.error("ifPoolFunded")
+    console.error("ifPoolFunded");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -725,6 +725,35 @@ export const getPoolsSettings = async function({ commit, getters, dispatch }) {
     });
 
     return tableResults.rows[0];
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
+
+// get settings table of a specific chain
+export const getPoolsSettingsAllChains = async function({ commit, dispatch }) {
+  try {
+    let rpcs = await dispatch("possibleRPCs", { root: true });
+    let result = {};
+    for (let i = 0; i < rpcs.apis.length; i++) {
+      let api = rpcs.apis[i];
+      let chain = rpcs.chains[i];
+      const tableResults = await api.get_table_rows({
+        json: true,
+        code: process.env.CONTRACT_ADDRESS, // Contract that we target
+        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+        table: "settings", // Table name
+        limit: 1000,
+        index_position: 1,
+        key_type: "i64",
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      });
+      // console.log(api, chain, tableResults.rows[0]);
+      result[chain.NETWORK_NAME] = tableResults.rows[0];
+    }
+    // console.log(result);
+    return result;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

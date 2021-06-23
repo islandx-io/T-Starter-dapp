@@ -131,7 +131,7 @@
                 <upDownVote
                   :ballot="props.row"
                   :ballotConfig="ballotConfig"
-                  :stakeTotal="stakeTotal"
+                  :stakePool="stakePool[props.row.chain]"
                   @confirmChainSwitch="
                     confirmChainSwitch = true;
                     newChain = props.row.chain;
@@ -231,9 +231,13 @@ export default {
           field: row => row.votes
         }
       ],
-      stakeTotal: 0,
+      stakePool: {
+        TELOS: 0,
+        EOS: 0,
+        WAX: 0
+      },
       ballotConfig: {},
-      poolSettings: {},
+      poolSettingsAllChains: {},
       filter: { value: "none" }
     };
   },
@@ -271,7 +275,7 @@ export default {
       "getChainBallotByID",
       "getBallotConfig"
     ]),
-    ...mapActions("pools", ["getPoolsSettings"]),
+    ...mapActions("pools", ["getPoolsSettingsAllChains"]),
     ...mapActions("blockchains", ["setNewChain"]),
 
     onRowClick(row) {
@@ -340,8 +344,12 @@ export default {
   async mounted() {
     await this.getAllChainBallots();
     this.ballotConfig = await this.getBallotConfig();
-    this.poolSettings = await this.getPoolsSettings();
-    this.stakeTotal = this.$chainToQty(this.poolSettings.stake_pool);
+    this.poolSettingsAllChains = await this.getPoolsSettingsAllChains();
+    for (const [networkName, poolSettings] of Object.entries(
+      this.poolSettingsAllChains
+    )) {
+      this.stakePool[networkName] = this.$chainToQty(poolSettings.stake_pool);
+    }
   }
 };
 </script>

@@ -47,10 +47,10 @@
     </div>
     <!-- <div>{{ ballot.votes_table }}</div> -->
     <!-- <div>
-      {{ votes.find(a => a.key === "upvote") }}
-      {{ votes.find(a => a.key === "downvote") }}
-      Voting progress: {{ votingProgress }} Total Stake: {{ stakeTotal }} Upvote
-      Progress: {{ upvoteProgress }}
+      Voting progress: {{ votingProgress }} 
+      stakePool:
+      {{ stakePool }} upvoteProgress: {{ upvoteProgress }} upvotes:
+      {{ upvotes }}
     </div> -->
   </div>
 </template>
@@ -61,7 +61,7 @@ export default {
   props: {
     ballot: { type: Object },
     ballotConfig: { type: Object },
-    stakeTotal: { type: Number }
+    stakePool: { type: Number }
   },
   data() {
     return {
@@ -80,11 +80,11 @@ export default {
       if (
         this.votes.length > 0 &&
         this.ballotConfig.lead !== undefined &&
-        this.stakeTotal !== 0
+        this.stakePool !== 0
       ) {
         return (
           (this.upvotes - this.downvotes) /
-          this.stakeTotal /
+          this.stakePool /
           this.ballotConfig.lead
         );
       } else {
@@ -111,10 +111,10 @@ export default {
       return this.$chainToQty(this.votes.find(a => a.key === "downvote").value);
     },
     upvoteProgress() {
-      return this.upvotes / this.stakeTotal;
+      return this.upvotes / this.stakePool;
     },
     downvoteProgress() {
-      return this.downvotes / this.stakeTotal;
+      return this.downvotes / this.stakePool;
     },
     totalProgress() {
       return this.upvoteProgress + this.downvoteProgress;
