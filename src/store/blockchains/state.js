@@ -12,7 +12,9 @@ export default function() {
       NETWORK_PROTOCOL: "https",
       NETWORK_EXPLORER: "https://telos-test.bloks.io",
       HYPERION_ENDPOINT: "https://testnet.telos.caleos.io",
-      CREATE_ACCOUNT: "https://app.telos.net/testnet/developers"
+      CREATE_ACCOUNT: "https://app.telos.net/testnet/developers",
+      BUY_START_URL:
+        "https://www.tswaps.com/tlos?base=eosio.token-TLOS&quote=token.start-START"
     },
     blockchainList: [
       {
@@ -28,7 +30,9 @@ export default function() {
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://telos-test.bloks.io",
         HYPERION_ENDPOINT: "https://testnet.telos.africa",
-        CREATE_ACCOUNT: "https://app.telos.net/testnet/developers"
+        CREATE_ACCOUNT: "https://app.telos.net/testnet/developers",
+        BUY_START_URL:
+          "https://www.tswaps.com/tlos?base=eosio.token-TLOS&quote=token.start-START"
       },
       {
         NAITIVE_TOKEN: "TLOS",
@@ -42,7 +46,9 @@ export default function() {
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://telos.bloks.io",
         HYPERION_ENDPOINT: "https://telos.caleos.io",
-        CREATE_ACCOUNT: "https://telos.net/create-account/"
+        CREATE_ACCOUNT: "https://telos.net/create-account/",
+        BUY_START_URL:
+          "https://www.tswaps.com/tlos?base=eosio.token-TLOS&quote=token.start-START"
       },
       {
         NAITIVE_TOKEN: "EOS",
@@ -56,7 +62,8 @@ export default function() {
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://jungle3.bloks.io",
         HYPERION_ENDPOINT: "https://jungle3.cryptolions.io:443",
-        CREATE_ACCOUNT: "https://monitor.jungletestnet.io/#account"
+        CREATE_ACCOUNT: "https://monitor.jungletestnet.io/#account",
+        BUY_START_URL: "https://defibox.io/pool-market-details/1609"
       },
       {
         NAITIVE_TOKEN: "EOS",
@@ -70,7 +77,8 @@ export default function() {
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://bloks.io",
         HYPERION_ENDPOINT: "https://eos.greymass.com:443",
-        CREATE_ACCOUNT: "https://eosauthority.com/wallet/create-account"
+        CREATE_ACCOUNT: "https://eosauthority.com/wallet/create-account",
+        BUY_START_URL: "https://defibox.io/pool-market-details/1609"
       },
       {
         NAITIVE_TOKEN: "WAX",
@@ -84,7 +92,9 @@ export default function() {
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://wax-test.bloks.io",
         HYPERION_ENDPOINT: "https://testnet.waxsweden.org:443",
-        CREATE_ACCOUNT: "https://waxsweden.org/create-testnet-account/"
+        CREATE_ACCOUNT: "https://waxsweden.org/create-testnet-account/",
+        BUY_START_URL:
+          "https://wax.alcor.exchange/swap?output=START-token.start&input=WAX-eosio.token"
       },
       {
         NAITIVE_TOKEN: "WAX",
@@ -98,7 +108,9 @@ export default function() {
         NETWORK_PROTOCOL: "https",
         NETWORK_EXPLORER: "https://wax.bloks.io",
         HYPERION_ENDPOINT: "https://wax.greymass.com:443",
-        CREATE_ACCOUNT: "https://all-access.wax.io/"
+        CREATE_ACCOUNT: "https://all-access.wax.io/",
+        BUY_START_URL:
+          "https://wax.alcor.exchange/swap?output=START-token.start&input=WAX-eosio.token"
       }
     ]
   };
