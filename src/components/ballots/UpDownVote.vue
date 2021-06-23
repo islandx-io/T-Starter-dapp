@@ -172,7 +172,7 @@ export default {
 <style lang="scss" scoped>
 .ballot-status {
   width: 95px;
-  padding: 8px 8px;
+  padding: 5px 8px;
   color: $secondary;
   border-radius: $card-corner-radius;
 }
