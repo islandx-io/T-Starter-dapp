@@ -97,19 +97,27 @@
                     :avatarSize="35"
                     class="q-mr-sm"
                   />
+                  <div class="text-bold">{{ props.cols[0].value }}</div>
+                </div>
+              </q-td>
+
+              <!-- Chain -->
+              <q-td :props="props" :key="props.cols[1].name">
+                <div class="row justify-start items-center">
                   <token-avatar
                     :token="props.row.chain"
                     :avatarSize="20"
-                    class="q-mr-sm"
+                    class="q-mr-xs"
+                    :svg="true"
                   />
-                  <div class="text-bold">{{ props.cols[0].value }}</div>
+                  <div>{{ props.cols[1].value }}</div>
                 </div>
               </q-td>
 
               <!-- Info -->
               <q-td
                 :props="props"
-                v-for="col in props.cols.slice(1, 4)"
+                v-for="col in props.cols.slice(2, 5)"
                 :key="col.name"
               >
                 {{ col.value }}
@@ -202,6 +210,15 @@ export default {
           label: "Name",
           align: "left",
           field: "title",
+          format: val => `${val}`,
+          sortable: true
+        },
+        {
+          name: "chain",
+          required: true,
+          label: "Chain",
+          align: "left",
+          field: "chain",
           format: val => `${val}`,
           sortable: true
         },
