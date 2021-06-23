@@ -26,7 +26,7 @@
 
       <q-separator></q-separator>
 
-      <div class=" q-mt-xs row items-start items-center">
+      <div v-if="tab === 'all-pools'" class=" q-mt-xs row items-start items-center">
         <q-input
           v-model="search.text"
           @input="filterPools()"
