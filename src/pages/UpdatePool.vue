@@ -216,6 +216,7 @@
                       :step="0.05"
                       label
                       color="primary"
+                      :disable="pool.status !== 'draft'"
                     >
                     </q-slider>
                   </div>

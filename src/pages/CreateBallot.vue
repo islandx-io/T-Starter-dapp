@@ -298,6 +298,10 @@
                       :step="0.05"
                       label
                       color="primary"
+                      :disable="
+                        pool.status !== 'draft' &&
+                          this.$route.params.id != undefined
+                      "
                     >
                     </q-slider>
                   </div>
@@ -969,7 +973,7 @@ export default {
           name: "newballot",
           data: {
             owner: this.accountName,
-            swap_token: this.swapRatio,
+            swap_token: this.swapRatio
           }
         },
         {
@@ -1236,7 +1240,7 @@ export default {
     this.funded = await this.ifBallotFunded({
       account: this.accountName,
       id: this.poolID,
-      chain: this.currentChain.NETWORK_NAME 
+      chain: this.currentChain.NETWORK_NAME
     });
   },
 
