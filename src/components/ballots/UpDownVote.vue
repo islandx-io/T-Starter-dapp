@@ -73,7 +73,14 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("blockchains", ["currentChain"]),
     votes() {
-      return this.ballot.votes;
+      if (this.ballot.votes.length > 0) {
+        return this.ballot.votes;
+      } else
+        return [
+          { key: "downvote", value: "0.0000 START" },
+          { key: "totalvote", value: "0.0000 START" },
+          { key: "upvote", value: "0.0000 START" }
+        ];
     },
     votingProgress() {
       //(upvote - downvote) / stake_total > lead
