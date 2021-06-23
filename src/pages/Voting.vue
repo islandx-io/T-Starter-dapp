@@ -226,9 +226,9 @@ export default {
           align: "center",
           label: "Price",
           field: row =>
-            `1 ${this.$getSymFromAsset(row.base_token)} = ${this.$chainToQty(
+            `${this.$chainToQty(
               row.swap_ratio.quantity
-            )} ${this.$chainToSym(row.swap_ratio.quantity)}`
+            )} ${this.$chainToSym(row.swap_ratio.quantity)} / ${this.$getSymFromAsset(row.base_token)}`
         },
         {
           name: "softcap",
