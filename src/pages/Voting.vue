@@ -202,7 +202,7 @@ export default {
       newChain: "",
       confirmChainSwitch: false,
       loading: false,
-      pagination: { sortBy: "closesin", descending: false, rowsPerPage: 5 },
+      pagination: { sortBy: "closesin", descending: false, rowsPerPage: 10 },
       columns: [
         {
           name: "name",
@@ -219,16 +219,16 @@ export default {
           label: "Chain",
           align: "left",
           field: "chain",
-          format: val => `${val}`,
+          format: val => `${val}`
         },
         {
           name: "price",
           align: "center",
           label: "Price",
           field: row =>
-            `${this.$chainToQty(
+            `${this.$chainToQty(row.swap_ratio.quantity)} ${this.$chainToSym(
               row.swap_ratio.quantity
-            )} ${this.$chainToSym(row.swap_ratio.quantity)} / ${this.$getSymFromAsset(row.base_token)}`
+            )} / ${this.$getSymFromAsset(row.base_token)}`
         },
         {
           name: "softcap",
@@ -383,5 +383,8 @@ export default {
 .body-container .q-card {
   padding: 0;
   padding-top: 20px;
+}
+.q-td {
+  font-size: 0.9rem;
 }
 </style>
