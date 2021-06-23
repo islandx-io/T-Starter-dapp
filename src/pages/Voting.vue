@@ -6,20 +6,33 @@
 
     <section class="body-container">
       <q-card class="justify-between content-start q-mb-lg">
+        <!-- Filters -->
         <div class="row q-px-lg q-pb-sm q-gutter-sm">
+          <q-btn
+            outline
+            rounded
+            :color="filter.value === `none` ? 'accent' : 'primary'"
+            @click="filter.value = `none`"
+            label="All"
+          />
           <div v-for="chain in possibleChains" :key="chain.NETWORK_NAME">
-            <q-checkbox
-              v-model="filter.value"
-              :true-value="`chain:` + chain.NETWORK_NAME"
-              false-value="none"
+            <q-btn
+              outline
+              rounded
+              :color="
+                filter.value === `chain:` + chain.NETWORK_NAME
+                  ? 'accent'
+                  : 'primary'
+              "
+              @click="filter.value = `chain:` + chain.NETWORK_NAME"
             >
               <template v-slot:default>
-                <div>
+                <div style="padding: 0px 3px 0px 0px">
                   <token-avatar :token="chain.NETWORK_NAME" :avatarSize="20" />
-                  {{ chain.NETWORK_NAME }}
                 </div>
+                {{ chain.NETWORK_NAME }}
               </template>
-            </q-checkbox>
+            </q-btn>
           </div>
           <q-btn
             class="hover-accent q-ml-md"
@@ -42,9 +55,6 @@
             :to="{ name: 'createballot' }"
           />
         </div>
-        <!-- {{ getPublishedBallots }} -->
-
-        <!-- Search bar -->
 
         <!-- Table with pools -->
         <q-table
