@@ -26,15 +26,23 @@
 
       <q-separator></q-separator>
 
-      <div class="q-gutter-md row items-start">
-        <q-input v-model="search.text" dense rounded outlined>
+      <div class=" q-mt-xs row items-start items-center">
+        <q-input
+          v-model="search.text"
+          @input="searchPools()"
+          dense
+          rounded
+          outlined
+          class="col-11"
+          label="Search by Name, Token contract, Description"
+        >
           <template v-slot:prepend>
             <q-icon name="fas fa-search" />
           </template>
         </q-input>
 
         <!-- Filter  -->
-        <q-icon name="fas fa-sliders-h" style="font-size: 2em;">
+        <q-icon class="col" name="fas fa-sliders-h" style="font-size: 2em;">
           <q-menu>
             <q-list dense>
               <q-item
@@ -42,7 +50,7 @@
                 :key="filter"
                 clickable
                 v-close-popup="filter.toLowerCase() !== 'chain'"
-                @click="filterPools(filter)"
+                @click="searchPools(filter)"
               >
                 <q-item-section>
                   <q-item-label>{{ filter }}</q-item-label>
@@ -64,7 +72,7 @@
                       clickable
                       v-close-popup
                       dense
-                      @click="filterPools(filter)"
+                      @click="searchPools(filter)"
                     >
                       <q-item-section>
                         <q-item-label>{{ filter }}</q-item-label>
@@ -191,7 +199,8 @@ export default {
       page: 1,
       filterOptions: ["All", "Open", "Upcoming", "Chain"],
       chainFilterOptions: ["TELOS", "EOS", "WAX"],
-      search: {text: '', filter: ''}
+      search: { text: "", filter: "" },
+      filteredPools: []
     };
   },
   computed: {
@@ -204,7 +213,8 @@ export default {
       "getPoolByID",
       "getAllPools",
       "getPublishedPools",
-      "getPoolByIDChain"
+      "getPoolByIDChain",
+      "getAllPools"
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("blockchains", ["currentChain"]),
@@ -219,6 +229,9 @@ export default {
       );
     },
     publishedPools() {
+      if (this.search.text.length > 0) {
+        return this.sortPools(this.filteredPools);
+      }
       return this.sortPools(this.getPublishedPools);
     },
     joinedIdChains_sorted() {
@@ -273,8 +286,29 @@ export default {
       return pools.map(a => ({ id: a.id, chain: a.chain }));
     },
 
-    filterPools(filter) {
-
+    searchPools(filter) {
+      let allPools = this.getAllPools;
+      this.filteredPools = allPools.filter(pool => {
+        if (
+          pool.title.toLowerCase().indexOf(this.search.text.toLowerCase()) !=
+          "-1"
+        ) {
+          return pool;
+        }
+        if (
+          pool.swap_ratio.contract
+            .toLowerCase()
+            .indexOf(this.search.text.toLowerCase()) != "-1"
+        ) {
+          return pool;
+        }
+        if (
+          pool.tag_line.toLowerCase().indexOf(this.search.text.toLowerCase()) !=
+          "-1"
+        ) {
+          return pool;
+        }
+      });
     },
 
     // If any joined pools claimable on current chain, show alert
