@@ -725,7 +725,7 @@ export default {
       this.lockup_fraction = this.pool.lockup_percent / 10000;
       this.lockup_period = this.pool.lockup_period;
 
-      this.accessType = this.pool.access_type
+      this.accessType = this.pool.access_type;
     },
     getTokenSymbolFromPool() {
       let idx = this.pool.swap_ratio.quantity.indexOf(" ") + 1;
@@ -1022,11 +1022,25 @@ export default {
     // check if already funded
     this.funded = await this.ifPoolFunded({
       account: this.accountName,
-      id: this.poolID
+      id: this.poolID,
+      chain: this.currentChain.NETWORK_NAME
     });
   },
 
-  watch: {}
+  watch: {
+    async accountName() {
+      await this.loadChainData();
+      await this.getPoolInfo();
+      await this.setBaseTokenOptions();
+
+      // check if already funded
+      this.funded = await this.ifPoolFunded({
+        account: this.accountName,
+        id: this.poolID,
+        chain: this.currentChain.NETWORK_NAME
+      });
+    }
+  }
 };
 </script>
 

@@ -176,7 +176,7 @@ export const ifPoolFunded = async function(
       });
 
       // get pool info
-      const pool = getters.getPoolByID(payload.id);
+      const pool = getters.getPoolByIDChain(payload.id, payload.chain);
       // console.log(pool);
 
       // console.log(tableResults.rows);
