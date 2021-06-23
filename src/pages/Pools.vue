@@ -29,7 +29,7 @@
       <div class=" q-mt-xs row items-start items-center">
         <q-input
           v-model="search.text"
-          @input="searchPools()"
+          @input="filterPools()"
           dense
           rounded
           outlined
@@ -50,7 +50,7 @@
                 :key="filter"
                 clickable
                 v-close-popup="filter.toLowerCase() !== 'chain'"
-                @click="searchPools(filter)"
+                @click="filterPools(filter)"
               >
                 <q-item-section>
                   <q-item-label>{{ filter }}</q-item-label>
@@ -72,7 +72,7 @@
                       clickable
                       v-close-popup
                       dense
-                      @click="searchPools(filter)"
+                      @click="filterPools(filter)"
                     >
                       <q-item-section>
                         <q-item-label>{{ filter }}</q-item-label>
@@ -229,7 +229,7 @@ export default {
       );
     },
     publishedPools() {
-      if (this.search.text.length > 0) {
+      if (this.search.text.length > 0 || this.filteredPools.length > 0) {
         return this.sortPools(this.filteredPools);
       }
       return this.sortPools(this.getPublishedPools);
@@ -278,7 +278,7 @@ export default {
 
     sortPools(pools) {
       // TODO claimable
-      let order = ["open", "upcoming", "completed", "filled", "cancelled"];
+      let order = ["open", "upcoming", "completed", "filled", "cancelled", 'draft'];
       pools.sort((a, b) => {
         return order.indexOf(a.pool_status) - order.indexOf(b.pool_status);
       });
@@ -286,29 +286,42 @@ export default {
       return pools.map(a => ({ id: a.id, chain: a.chain }));
     },
 
-    searchPools(filter) {
-      let allPools = this.getAllPools;
-      this.filteredPools = allPools.filter(pool => {
-        if (
-          pool.title.toLowerCase().indexOf(this.search.text.toLowerCase()) !=
-          "-1"
-        ) {
-          return pool;
-        }
-        if (
-          pool.swap_ratio.contract
-            .toLowerCase()
-            .indexOf(this.search.text.toLowerCase()) != "-1"
-        ) {
-          return pool;
-        }
-        if (
-          pool.tag_line.toLowerCase().indexOf(this.search.text.toLowerCase()) !=
-          "-1"
-        ) {
-          return pool;
-        }
-      });
+    filterPools(filter) {
+      if (filter) {
+        this.filteredPools = this.getPublishedPools.filter(pool => {
+          if (
+            pool.pool_status.toLowerCase().indexOf(filter.toLowerCase()) != "-1"
+          ) {
+            return pool;
+          }
+          if (pool.chain.toLowerCase().indexOf(filter.toLowerCase()) != "-1") {
+            return pool;
+          }
+        });
+      } else {
+        this.filteredPools = this.getAllPools.filter(pool => {
+          if (
+            pool.title.toLowerCase().indexOf(this.search.text.toLowerCase()) !=
+            "-1"
+          ) {
+            return pool;
+          }
+          if (
+            pool.swap_ratio.contract
+              .toLowerCase()
+              .indexOf(this.search.text.toLowerCase()) != "-1"
+          ) {
+            return pool;
+          }
+          if (
+            pool.tag_line
+              .toLowerCase()
+              .indexOf(this.search.text.toLowerCase()) != "-1"
+          ) {
+            return pool;
+          }
+        });
+      }
     },
 
     // If any joined pools claimable on current chain, show alert
