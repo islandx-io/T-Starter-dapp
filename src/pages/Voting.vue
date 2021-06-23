@@ -220,7 +220,6 @@ export default {
           align: "left",
           field: "chain",
           format: val => `${val}`,
-          sortable: true
         },
         {
           name: "price",
