@@ -367,7 +367,7 @@ export default {
   },
   components: { tokenAvatar },
   computed: {
-    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs"]),
+    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs", "getPoolByIDChain"]),
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
 
@@ -515,7 +515,7 @@ export default {
       else return val;
     },
     getPoolInfo() {
-      this.pool = this.getPoolByID(this.poolID);
+      this.pool = this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME);
     },
 
     validateInput(val) {
