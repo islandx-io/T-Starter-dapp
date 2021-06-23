@@ -47,7 +47,6 @@
     </div>
     <!-- <div>{{ ballot.votes_table }}</div> -->
     <!-- <div>
-      Voting progress: {{ votingProgress }} 
       stakePool:
       {{ stakePool }} upvoteProgress: {{ upvoteProgress }} upvotes:
       {{ upvotes }}
@@ -74,22 +73,6 @@ export default {
     ...mapGetters("blockchains", ["currentChain"]),
     votes() {
       return this.ballot.votes;
-    },
-    votingProgress() {
-      //(upvote - downvote) / stake_total > lead
-      if (
-        this.votes.length > 0 &&
-        this.ballotConfig.lead !== undefined &&
-        this.stakePool !== 0
-      ) {
-        return (
-          (this.upvotes - this.downvotes) /
-          this.stakePool /
-          this.ballotConfig.lead
-        );
-      } else {
-        return "Loading";
-      }
     },
     userVote() {
       let result = "none";
@@ -120,9 +103,18 @@ export default {
       return this.upvoteProgress + this.downvoteProgress;
     },
     ballotStatus() {
-      if (this.votingProgress > 0) return "Succeeding";
-      if (this.votingProgress < 0) return "Failing";
-      else return "Tie";
+      if (
+        this.votes.length > 0 &&
+        this.ballotConfig.lead !== undefined &&
+        this.stakePool !== 0
+      ) {
+        let votingProgress = (this.upvotes - this.downvotes) / this.stakePool;
+        if (votingProgress > this.ballotConfig.lead) return "Succeeding";
+        if (votingProgress < this.ballotConfig.lead) return "Failing";
+        else return "Tie";
+      } else {
+        return "Loading";
+      }
     }
   },
   methods: {
@@ -185,6 +177,9 @@ export default {
 }
 .tie-badge {
   background-color: $primary;
+}
+.loading-badge {
+  background-color: $loading;
 }
 .vote-bar {
   height: 12px;

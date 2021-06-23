@@ -130,7 +130,7 @@
               >
                 <upDownVote
                   :ballot="props.row"
-                  :ballotConfig="ballotConfig"
+                  :ballotConfig="ballotConfig[props.row.chain]"
                   :stakePool="stakePool[props.row.chain]"
                   @confirmChainSwitch="
                     confirmChainSwitch = true;
@@ -236,7 +236,11 @@ export default {
         EOS: 0,
         WAX: 0
       },
-      ballotConfig: {},
+      ballotConfig: {
+        TELOS: {},
+        EOS: {},
+        WAX: {}
+      },
       poolSettingsAllChains: {},
       filter: { value: "none" }
     };
@@ -273,7 +277,7 @@ export default {
     ...mapActions("ballots", [
       "getAllChainBallots",
       "getChainBallotByID",
-      "getBallotConfig"
+      "getBallotConfigAllChains"
     ]),
     ...mapActions("pools", ["getPoolsSettingsAllChains"]),
     ...mapActions("blockchains", ["setNewChain"]),
@@ -319,21 +323,6 @@ export default {
       return data;
     },
 
-    // TODO get what the users voted on a pool?
-    // userSentiment() {
-    //   let result = "none";
-    //   if (this.pool.sentiment_table) {
-    //     let sentiment = this.pool.sentiment_table.find(
-    //       el => el.account === this.accountName
-    //     );
-    //     if (sentiment) {
-    //       if (sentiment.vote > 0) result = "upvote";
-    //       if (sentiment.vote < 0) result = "downvote";
-    //     }
-    //   }
-    //   return result;
-    // },
-
     async switchChain() {
       this.$router.push({
         name: "voting",
@@ -343,7 +332,7 @@ export default {
   },
   async mounted() {
     await this.getAllChainBallots();
-    this.ballotConfig = await this.getBallotConfig();
+    this.ballotConfig = await this.getBallotConfigAllChains();
     this.poolSettingsAllChains = await this.getPoolsSettingsAllChains();
     for (const [networkName, poolSettings] of Object.entries(
       this.poolSettingsAllChains

@@ -311,3 +311,32 @@ export const getBallotConfig = async function({ commit, getters, dispatch }) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
+
+// get config table of ballots for all the chains
+export const getBallotConfigAllChains = async function({ commit, dispatch }) {
+  try {
+    let rpcs = await dispatch("pools/possibleRPCs", true, { root: true });
+    let result = {};
+    for (let i = 0; i < rpcs.apis.length; i++) {
+      let api = rpcs.apis[i];
+      let chain = rpcs.chains[i];
+      const tableResults = await api.get_table_rows({
+        json: true,
+        code: process.env.BALLOT_ADDRESS,
+        scope: process.env.BALLOT_ADDRESS,
+        table: "config",
+        limit: 1000,
+        index_position: 1,
+        key_type: "i64",
+        reverse: false,
+        show_payer: false
+      });
+      // console.log(api, chain, tableResults.rows[0]);
+      result[chain.NETWORK_NAME] = tableResults.rows[0];
+    }
+    // console.log(result);
+    return result;
+  } catch (error) {
+    commit("general/setErrorMsg", error.message || error, { root: true });
+  }
+};
