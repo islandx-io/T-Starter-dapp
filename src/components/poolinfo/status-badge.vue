@@ -1,6 +1,10 @@
 <template>
   <q-chip
-    :class="poolStatus + '-badge text-weight-bold' + ` ${poolStatus === 'headstart' ? 'glossy' : ''}`"
+    :class="
+      poolStatus +
+        '-badge text-weight-bold' +
+        ` ${poolStatus === 'headstart' ? 'glossy' : ''}`
+    "
     text-color="secondary"
   >
     {{ statusMessage }}
@@ -54,5 +58,8 @@ export default {
 }
 .headstart-badge {
   background-color: $positive;
+}
+.voting-badge {
+  background-color: $accent;
 }
 </style>

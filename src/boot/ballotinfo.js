@@ -30,10 +30,10 @@ const defaultPoolInfo = {
   whitelist: [],
   web_links: loading,
   tags: loading,
-  votes: loading, // balllot only
+  votes: [], // balllot only
   // Not in contract
   slug: loading,
-  pool_status: loading,
+  pool_status: "Loading",
   access_type: loading,
   progress: 0
 };

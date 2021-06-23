@@ -14,16 +14,13 @@
                   <div class="text-h3 q-pb-md q-pt-sm">{{ pool.title }}</div>
                   <p style="margin-bottom: 0">
                     Contract:
-                    <a target="_blank" :href="contractURL">{{
-                      pool.swap_ratio.contract
-                    }}</a>
+                    <a target="_blank" :href="contractURL">
+                      {{ pool.swap_ratio.contract }}
+                    </a>
                   </p>
                 </div>
                 <div class="row col-xs-10 col-sm-shrink">
-                  <status-badge
-                    :poolStatus="pool.pool_status"
-                    style="margin-left: 0"
-                  />
+                  <status-badge poolStatus="voting" style="margin-left: 0" />
                 </div>
               </div>
             </q-item-section>
@@ -131,7 +128,12 @@
             </div>
             <!-- Voting progress -->
             <div class="row justify-between">
-              <h6>Voting progress:</h6>
+              <!-- <h6>Voting progress:</h6> -->
+              <upDownVote
+                :ballot="pool"
+                :ballotConfig="ballotConfig"
+                :stakePool="stakePool"
+              />
             </div>
             <!-- <div class="row justify-between">
               <h6>Participants:</h6>
@@ -233,6 +235,7 @@ import statusProgress from "src/components/poolinfo/status-progress";
 import tokenAvatar from "src/components/TokenAvatar";
 import { mapGetters, mapActions } from "vuex";
 import { date } from "quasar";
+import upDownVote from "src/components/ballots/UpDownVote";
 
 export default {
   components: {
@@ -240,18 +243,21 @@ export default {
     tabDetails,
     statusCountdown,
     statusBadge,
-    tokenAvatar
+    tokenAvatar,
+    upDownVote
   },
   data() {
     return {
       tab: "details",
       poolID: Number(this.$route.params.id),
-      pool: this.$defaultPoolInfo,
+      pool: this.$defaultBallotInfo,
       polling: null,
       claimable: false,
       insufficient_start_show: false,
       buyStartUrl: process.env.BUY_START_URL,
-      settings: {}
+      settings: {},
+      ballotConfig: {},
+      stakePool: 0
     };
   },
   computed: {
@@ -426,6 +432,7 @@ export default {
     // get data from chain, write to store, get from store
     this.settings = await this.getPoolsSettings();
     this.ballotConfig = await this.getBallotConfig();
+    this.stakePool = this.$chainToQty(this.settings.stake_pool);
     await this.loadChainData();
     this.getPoolInfo();
     await this.getChainSTART(this.accountName);

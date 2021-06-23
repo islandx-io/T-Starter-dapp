@@ -21,12 +21,17 @@ export const getChainBallotByID = async function({ commit, dispatch }, id) {
     ballotTable.pool_open = new Date(ballotTable.pool_open + "Z").valueOf();
     ballotTable.private_end = new Date(ballotTable.private_end + "Z").valueOf();
     ballotTable.public_end = new Date(ballotTable.public_end + "Z").valueOf();
+    ballotTable.votes_table = [];
 
     // set chain in pool
     ballotTable.chain = this.$api.currentChain.NETWORK_NAME;
 
     commit("updateBallotOnState", { ballotTable });
     await dispatch("updateBallotSettings", { id, chain: ballotTable.chain });
+    dispatch("updateBallotVotesTable", {
+      id,
+      chain: ballotTable.chain
+    });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
@@ -61,6 +66,7 @@ export const getChainPoolByIDChain = async function(
     ballotTable.pool_open = new Date(ballotTable.pool_open + "Z").valueOf();
     ballotTable.private_end = new Date(ballotTable.private_end + "Z").valueOf();
     ballotTable.public_end = new Date(ballotTable.public_end + "Z").valueOf();
+    ballotTable.votes_table = [];
 
     // set chain in pool
     ballotTable.chain =
@@ -70,6 +76,11 @@ export const getChainPoolByIDChain = async function(
 
     commit("updatePoolOnState", { ballotTable });
     await dispatch("updateBallotSettings", { id, chain: ballotTable.chain });
+    dispatch("updateBallotVotesTable", {
+      id,
+      chain: ballotTable.chain,
+      api
+    });
   } catch (error) {
     console.error("getChainPoolByIDChain");
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -189,15 +200,21 @@ export const updateBallotVotesTable = async function(
 ) {
   const pool = getters.getBallotByIDChain(payload.id, payload.chain);
 
-  const tableResults = await payload.api.get_table_rows({
-    json: true,
+  let tableResults;
+  const options = {
     code: process.env.BALLOT_ADDRESS,
     scope: payload.id,
     table: "votes",
     limit: 10000,
     reverse: false,
     show_payer: false
-  });
+  };
+  if (payload.api) {
+    tableResults = await payload.api.get_table_rows({
+      json: true,
+      ...options
+    });
+  } else tableResults = await this.$api.getTableRows(options);
 
   let votes = [];
   for (let v of tableResults.rows) {
