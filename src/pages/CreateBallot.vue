@@ -1235,7 +1235,8 @@ export default {
     // check if already funded
     this.funded = await this.ifBallotFunded({
       account: this.accountName,
-      id: this.poolID
+      id: this.poolID,
+      chain: this.currentChain.NETWORK_NAME 
     });
   },
 
@@ -1249,7 +1250,8 @@ export default {
       // check if already funded
       this.funded = await this.ifBallotFunded({
         account: this.accountName,
-        id: this.poolID
+        id: this.poolID,
+        chain: this.currentChain.NETWORK_NAME
       });
     }
   }

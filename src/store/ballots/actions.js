@@ -277,7 +277,7 @@ export const ifBallotFunded = async function(
       });
 
       // get pool info
-      const pool = getters.getBallotByID(payload.id);
+      const pool = getters.getPoolByIDChain(payload.id, payload.chain);
       // console.log(pool);
 
       // console.log(tableResults.rows);
