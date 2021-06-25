@@ -157,7 +157,9 @@ export default {
             icon: "cloud_done",
             message: "Voted"
           });
-          await this.getAllChainBallots();
+          // await this.getAllChainBallots();
+          await this.getChainBallotByID(this.ballot.id);
+          this.$emit("voteSubmitted");
         } catch (error) {
           this.$errorNotification(error);
         }

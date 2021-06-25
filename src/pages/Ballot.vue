@@ -133,6 +133,7 @@
                 :ballot="pool"
                 :ballotConfig="ballotConfig"
                 :stakePool="stakePool"
+                @voteSubmitted="getPoolInfo"
               />
             </div>
             <!-- <div class="row justify-between">
