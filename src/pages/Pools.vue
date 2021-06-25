@@ -26,14 +26,17 @@
 
       <q-separator></q-separator>
 
-      <div v-if="tab === 'all-pools'" class=" q-mt-xs row items-start items-center">
+      <div
+        v-if="tab === 'all-pools'"
+        class=" q-mt-xs row items-start items-center"
+      >
         <q-input
           v-model="search.text"
           @input="filterPools()"
           dense
           rounded
           outlined
-          class="col-11"
+          class="col"
           label="Search by Name, Token contract, Description"
         >
           <template v-slot:prepend>
@@ -42,48 +45,53 @@
         </q-input>
 
         <!-- Filter  -->
-        <q-icon class="col" name="fas fa-sliders-h" style="font-size: 2em;">
-          <q-menu>
-            <q-list dense>
-              <q-item
-                v-for="filter in filterOptions"
-                :key="filter"
-                clickable
-                v-close-popup="filter.toLowerCase() !== 'chain'"
-                @click="filterPools(filter)"
-              >
-                <q-item-section>
-                  <q-item-label>{{ filter }}</q-item-label>
-                </q-item-section>
+        <div class="row q-px-xs q-gutter-xs ">
+          <q-btn
+            outline
+            rounded
+            :color="search.filter.chain === `all` ? 'accent' : 'primary'"
+            @click="filterPools((search.filter.chain = 'all'))"
+            label="All"
+          />
+          <div v-for="chain in possibleChains" :key="chain.NETWORK_NAME">
+            <q-btn
+              outline
+              rounded
+              :color="
+                search.filter.chain === chain.NETWORK_NAME
+                  ? 'accent'
+                  : 'primary'
+              "
+              @click="filterPools((search.filter.chain = chain.NETWORK_NAME))"
+            >
+              <template v-slot:default>
+                <div style="padding: 0px 3px 0px 0px">
+                  <token-avatar :token="chain.NETWORK_NAME" :avatarSize="20" />
+                </div>
+                {{ chain.NETWORK_NAME }}
+              </template>
+            </q-btn>
+          </div>
+        </div>
+      </div>
 
-                <!-- Chain submenu -->
-                <q-item-section side v-if="filter.toLowerCase() === 'chain'">
-                  <q-icon name="keyboard_arrow_right" />
-                </q-item-section>
-                <q-menu
-                  anchor="top right"
-                  self="top left"
-                  v-if="filter.toLowerCase() === 'chain'"
-                >
-                  <q-list>
-                    <q-item
-                      v-for="filter in chainFilterOptions"
-                      :key="filter"
-                      clickable
-                      v-close-popup
-                      dense
-                      @click="filterPools(filter)"
-                    >
-                      <q-item-section>
-                        <q-item-label>{{ filter }}</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-icon>
+      <!-- Status filter -->
+      <div class=" q-mt-xs row items-start items-center q-gutter-x-sm">
+        <a
+          href="javascript:void(0);"
+          @click="filterPools((search.filter.status = 'all'))"
+          >All Status</a
+        >
+        <a
+          href="javascript:void(0);"
+          @click="filterPools((search.filter.status = 'open'))"
+          >Open</a
+        >
+        <a
+          href="javascript:void(0);"
+          @click="filterPools((search.filter.status = 'upcoming'))"
+          >Upcoming</a
+        >
       </div>
 
       <q-tab-panels
@@ -184,9 +192,10 @@
 import Poolcard from "src/components/Poolcard.vue";
 import { mapGetters, mapActions } from "vuex";
 import { Api, JsonRpc } from "eosjs";
+import tokenAvatar from "src/components/TokenAvatar";
 
 export default {
-  components: { Poolcard },
+  components: { Poolcard, tokenAvatar },
   data() {
     return {
       tab: "all-pools",
@@ -197,9 +206,9 @@ export default {
       polling: null,
       currentPage: 1,
       page: 1,
-      filterOptions: ["All", "Open", "Upcoming", "Chain"],
+      // filterOptions: ["All", "Open", "Upcoming", "Chain"],
       chainFilterOptions: ["TELOS", "EOS", "WAX"],
-      search: { text: "", filter: "" },
+      search: { text: "", filter: { chain: "all", status: "all" } },
       filteredPools: []
     };
   },
@@ -218,6 +227,15 @@ export default {
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("blockchains", ["currentChain"]),
+    ...mapGetters("blockchains", ["currentChain", "allBlockchains"]),
+
+    possibleChains() {
+      let blockchains = this.allBlockchains;
+      let possibleChains = blockchains.filter(
+        a => String(a.TEST_NETWORK) === process.env.TESTNET
+      );
+      return possibleChains;
+    },
 
     poolIDs() {
       return this.getAllPoolIDs;
@@ -229,7 +247,11 @@ export default {
       );
     },
     publishedPools() {
-      if (this.search.text.length > 0 || this.filteredPools.length > 0) {
+      if (
+        this.search.text.length > 0 ||
+        this.search.filter.chain !== "all" ||
+        this.search.filter.status !== "all"
+      ) {
         return this.sortPools(this.filteredPools);
       }
       return this.sortPools(this.getPublishedPools);
@@ -278,7 +300,14 @@ export default {
 
     sortPools(pools) {
       // TODO claimable
-      let order = ["open", "upcoming", "completed", "filled", "cancelled", 'draft'];
+      let order = [
+        "open",
+        "upcoming",
+        "completed",
+        "filled",
+        "cancelled",
+        "draft"
+      ];
       pools.sort((a, b) => {
         return order.indexOf(a.pool_status) - order.indexOf(b.pool_status);
       });
@@ -287,41 +316,72 @@ export default {
     },
 
     filterPools(filter) {
-      if (filter) {
+      if (
+        this.search.filter.chain != "all" ||
+        this.search.filter.status != "all"
+      ) {
         this.filteredPools = this.getPublishedPools.filter(pool => {
+          // status filter
           if (
-            pool.pool_status.toLowerCase().indexOf(filter.toLowerCase()) != "-1"
+            pool.pool_status
+              .toLowerCase()
+              .indexOf(this.search.filter.status.toLowerCase()) != "-1" &&
+            this.search.filter.chain.toLowerCase() === "all"
           ) {
             return pool;
           }
-          if (pool.chain.toLowerCase().indexOf(filter.toLowerCase()) != "-1") {
+          //chain filter
+          if (
+            pool.chain
+              .toLowerCase()
+              .indexOf(this.search.filter.chain.toLowerCase()) != "-1" &&
+            this.search.filter.status.toLowerCase() === "all"
+          ) {
+            return pool;
+          }
+          // both filter
+          if (
+            pool.pool_status
+              .toLowerCase()
+              .indexOf(this.search.filter.status.toLowerCase()) != "-1" &&
+            pool.chain
+              .toLowerCase()
+              .indexOf(this.search.filter.chain.toLowerCase()) != "-1"
+          ) {
             return pool;
           }
         });
+        if (this.search.text.length > 0) {
+          console.log("text with filter");
+          this.filterByText(this.filteredPools);
+        }
       } else {
-        this.filteredPools = this.getAllPools.filter(pool => {
-          if (
-            pool.title.toLowerCase().indexOf(this.search.text.toLowerCase()) !=
-            "-1"
-          ) {
-            return pool;
-          }
-          if (
-            pool.swap_ratio.contract
-              .toLowerCase()
-              .indexOf(this.search.text.toLowerCase()) != "-1"
-          ) {
-            return pool;
-          }
-          if (
-            pool.tag_line
-              .toLowerCase()
-              .indexOf(this.search.text.toLowerCase()) != "-1"
-          ) {
-            return pool;
-          }
-        });
+        this.filterByText(this.getAllPools);
       }
+    },
+
+    filterByText(pools) {
+      this.filteredPools = pools.filter(pool => {
+        if (
+          pool.title.toLowerCase().indexOf(this.search.text.toLowerCase()) !=
+          "-1"
+        ) {
+          return pool;
+        }
+        if (
+          pool.swap_ratio.contract
+            .toLowerCase()
+            .indexOf(this.search.text.toLowerCase()) != "-1"
+        ) {
+          return pool;
+        }
+        if (
+          pool.tag_line.toLowerCase().indexOf(this.search.text.toLowerCase()) !=
+          "-1"
+        ) {
+          return pool;
+        }
+      });
     },
 
     // If any joined pools claimable on current chain, show alert
