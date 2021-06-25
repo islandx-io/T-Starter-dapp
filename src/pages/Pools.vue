@@ -76,7 +76,7 @@
       </div>
 
       <!-- Status filter -->
-      <div class=" q-mt-xs row items-start items-center q-gutter-x-sm">
+      <div v-if="tab === 'all-pools'" class=" q-mt-xs row items-start items-center q-gutter-x-sm">
         <a
           href="javascript:void(0);"
           @click="filterPools((search.filter.status = 'all'))"
@@ -91,6 +91,11 @@
           href="javascript:void(0);"
           @click="filterPools((search.filter.status = 'upcoming'))"
           >Upcoming</a
+        >
+        <a
+          href="javascript:void(0);"
+          @click="filterPools((search.filter.status = 'completed'))"
+          >Completed</a
         >
       </div>
 
