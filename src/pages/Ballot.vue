@@ -20,7 +20,14 @@
                   </p>
                 </div>
                 <div class="row col-xs-10 col-sm-shrink">
-                  <status-badge poolStatus="voting" style="margin-left: 0" />
+                  <status-badge
+                    :poolStatus="
+                      ['loading', 'draft'].includes(pool.pool_status)
+                        ? pool.pool_status
+                        : 'voting'
+                    "
+                    style="margin-left: 0"
+                  />
                 </div>
               </div>
             </q-item-section>
@@ -127,7 +134,7 @@
               </h5>
             </div>
             <!-- Voting progress -->
-            <div class="row justify-between">
+            <div class="row justify-center q-pt-md">
               <!-- <h6>Voting progress:</h6> -->
               <upDownVote
                 :ballot="pool"

@@ -9,8 +9,8 @@
       {{ ballotStatus }}
     </div>
     <q-separator vertical inset size="0.1rem" />
-    <div class="column items-start" :style="`width: ${voteBarWidth}px`">
-      <div class="row items-center">
+    <div class="column items-start" :style="`width: ${voteBarWidth + 80}px`">
+      <div class="row items-center ">
         <div
           class="vote-bar upvote-bar"
           :style="`width: ${voteBarWidth * upvoteProgress}px`"
@@ -26,6 +26,9 @@
           :disable="!isAuthenticated"
           @click.stop="vote('upvote')"
         />
+        <div class="upvote-percentage q-pl-xs">
+          {{ (upvoteProgress * 100).toFixed(2) }}%
+        </div>
       </div>
       <div class="row items-center">
         <div
@@ -43,6 +46,9 @@
           @click.stop="vote('downvote')"
           :disable="!isAuthenticated"
         />
+        <div class="downvote-percentage q-pl-xs">
+          {{ (downvoteProgress * 100).toFixed(2) }}%
+        </div>
       </div>
     </div>
     <!-- <div>{{ ballot.votes_table }}</div> -->
@@ -64,7 +70,7 @@ export default {
   },
   data() {
     return {
-      voteBarWidth: 100
+      voteBarWidth: 80
       // votesTable: []
     };
   },
@@ -101,10 +107,12 @@ export default {
       return this.$chainToQty(this.votes.find(a => a.key === "downvote").value);
     },
     upvoteProgress() {
-      return this.upvotes / this.stakePool;
+      if (this.stakePool === 0) return 0;
+      else return this.upvotes / this.stakePool;
     },
     downvoteProgress() {
-      return this.downvotes / this.stakePool;
+      if (this.stakePool === 0) return 0;
+      else return this.downvotes / this.stakePool;
     },
     totalProgress() {
       return this.upvoteProgress + this.downvoteProgress;
@@ -203,5 +211,11 @@ export default {
     margin-bottom: 10px;
     margin-right: -5px;
   }
+}
+.upvote-percentage {
+  margin-top: 10px;
+}
+.downvote-percentage {
+  margin-bottom: 10px;
 }
 </style>
