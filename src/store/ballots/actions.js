@@ -33,12 +33,13 @@ export const getChainBallotByID = async function({ commit, dispatch }, id) {
       chain: ballotTable.chain
     });
   } catch (error) {
+    console.error("getChainBallotByID")
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
 
 // Get pool info from chain by id, put into store
-export const getChainPoolByIDChain = async function(
+export const getChainBallotByIDChain = async function(
   { commit, dispatch },
   payload
 ) {
@@ -49,9 +50,9 @@ export const getChainPoolByIDChain = async function(
 
     const tableResults = await api.get_table_rows({
       json: true,
-      code: process.env.CONTRACT_ADDRESS, // Contract that we target
-      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-      table: process.env.CONTRACT_TABLE, // Table name
+      code: process.env.BALLOT_ADDRESS, // Contract that we target
+      scope: process.env.BALLOT_ADDRESS, // Account that owns the data
+      table: "ballots", // Table name
       lower_bound: payload.id, // Table primary key value
       limit: 1, // Maximum number of rows that we want to get
       reverse: false, // Optional: Get reversed data
@@ -74,15 +75,15 @@ export const getChainPoolByIDChain = async function(
         rpcs.chains.findIndex(el => el.NETWORK_NAME === payload.chain)
       ].NETWORK_NAME;
 
-    commit("updatePoolOnState", { ballotTable });
-    await dispatch("updateBallotSettings", { id, chain: ballotTable.chain });
+    commit("updateBallotOnState", { ballotTable });
+    await dispatch("updateBallotSettings", { id: payload.id, chain: ballotTable.chain });
     dispatch("updateBallotVotesTable", {
-      id,
+      id: payload.id,
       chain: ballotTable.chain,
       api
     });
   } catch (error) {
-    console.error("getChainPoolByIDChain");
+    console.error("getChainBallotByIDChain");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -276,8 +277,8 @@ export const ifBallotFunded = async function(
         show_payer: false // Optional: Show ram payer
       });
 
-      // get pool info
-      const pool = getters.getPoolByIDChain(payload.id, payload.chain);
+      // get ballot info
+      const pool = getters.getBallotByIDChain(payload.id, payload.chain);
       // console.log(pool);
 
       // console.log(tableResults.rows);

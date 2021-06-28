@@ -270,7 +270,6 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    ...mapGetters("pools", ["getPoolByID", "getPoolByIDChain"]),
     ...mapGetters("blockchains", ["currentChain"]),
     ...mapGetters("ballots", [
       "getAllBallotIDs",
