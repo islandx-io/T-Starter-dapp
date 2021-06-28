@@ -482,7 +482,7 @@
                   :disable="
                     pool.status === 'published' ||
                       this.funded ||
-                      pool.title == ''
+                      this.getBallotByIDChain(this.poolID, this.currentChain.NETWORK_NAME).title == ''
                   "
                   v-if="pool.status === 'draft'"
                   color="primary"
@@ -697,6 +697,7 @@ export default {
     ...mapActions("ballots", [
       "getAllChainBallots",
       "getChainBallotByID",
+      "getChainBallotByIDChain",
       "findCreatedBallotID",
       "ifBallotFunded",
       "getBallotConfig"
@@ -704,9 +705,7 @@ export default {
     ...mapActions("pools", [
       "getChainAccountInfo",
       "getTokenPrecision",
-      "getChainPoolByID",
       "updatePoolStatus",
-      "ifPoolFunded",
       "getBaseTokens",
       "getPoolsSettings"
     ]),
@@ -839,7 +838,7 @@ export default {
 
     getPoolInfo() {
       if (this.poolID) {
-        this.pool = JSON.parse(JSON.stringify(this.getBallotByID(this.poolID))); //make deep copy
+        this.pool = JSON.parse(JSON.stringify(this.getBallotByIDChain(this.poolID, this.currentChain.NETWORK_NAME))); //make deep copy
         // if this pool is owned by user, populate the fields
         if (this.pool.owner === this.accountName) {
           this.getTokenSymbolFromPool();
@@ -1016,30 +1015,28 @@ export default {
           }
         }
       ];
-      if (this.pool.status === "draft") {
-        if (this.vesting) {
-          actions.push({
-            account: process.env.BALLOT_ADDRESS,
-            name: "setlockup",
-            data: {
-              ballot_id: this.ballotConfig.last_ballot_id + 1,
-              token_lockup: this.vesting,
-              lockup_fraction: this.lockup_fraction,
-              lockup_period: this.lockup_period
-            }
-          });
-        } else {
-          actions.push({
-            account: process.env.BALLOT_ADDRESS,
-            name: "setlockup",
-            data: {
-              ballot_id: this.ballotConfig.last_ballot_id + 1,
-              token_lockup: this.vesting,
-              lockup_fraction: 0,
-              lockup_period: 0
-            }
-          });
-        }
+      if (this.vesting) {
+        actions.push({
+          account: process.env.BALLOT_ADDRESS,
+          name: "setlockup",
+          data: {
+            ballot_id: this.ballotConfig.last_ballot_id + 1,
+            token_lockup: this.vesting,
+            lockup_fraction: this.lockup_fraction,
+            lockup_period: this.lockup_period
+          }
+        });
+      } else {
+        actions.push({
+          account: process.env.BALLOT_ADDRESS,
+          name: "setlockup",
+          data: {
+            ballot_id: this.ballotConfig.last_ballot_id + 1,
+            token_lockup: this.vesting,
+            lockup_fraction: 0,
+            lockup_period: 0
+          }
+        });
       }
       const transaction = await this.$store.$api.signTransaction(actions);
     },
@@ -1231,7 +1228,7 @@ export default {
     this.ballotConfig = await this.getBallotConfig();
 
     if (this.poolID) {
-      await this.getChainBallotByID(this.poolID);
+      await this.getChainBallotByIDChain({id: this.poolID, chain: this.currentChain.NETWORK_NAME});
       this.getPoolInfo();
     }
     await this.setBaseTokenOptions();
@@ -1247,7 +1244,7 @@ export default {
   watch: {
     async accountName() {
       if (this.poolID) {
-        await this.getChainBallotByID(this.poolID);
+        await this.getChainBallotByIDChain({id: this.poolID, chain: this.currentChain.NETWORK_NAME});
         this.getPoolInfo();
       }
 
