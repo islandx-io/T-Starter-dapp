@@ -64,6 +64,7 @@ export const getChainBallotByIDChain = async function(
     // console.log(ballotTable);
 
     //check dates are unix
+    ballotTable.ballot_close = new Date(ballotTable.ballot_close + "Z").valueOf();
     ballotTable.pool_open = new Date(ballotTable.pool_open + "Z").valueOf();
     ballotTable.private_end = new Date(ballotTable.private_end + "Z").valueOf();
     ballotTable.public_end = new Date(ballotTable.public_end + "Z").valueOf();

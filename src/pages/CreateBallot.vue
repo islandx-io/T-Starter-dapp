@@ -509,18 +509,15 @@
                   Already published
                 </q-tooltip>
               </q-item-section>
-              <!-- <q-item-section class="col-shrink">
-                <q-btn label="Reset" type="reset" color="primary" flat />
-              </q-item-section> -->
+
               <!-- Close pool button -->
               <q-item-section class="col-auto">
                 <q-btn
-                  label="Close Pool"
+                  label="Complete Voting"
                   @click="onClosePool"
                   color="accent"
                   v-if="
-                    (this.$chainToQty(pool.remaining_offer) === 0 ||
-                      Date.now() > pool.public_end) &&
+                    (Date.now() > pool.ballot_close) &&
                       pool.status === 'published'
                   "
                 />
@@ -578,6 +575,39 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
+
+      <!-- Close ballot dialog -->
+    <!-- <q-dialog v-model="dialog_close_ballot" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar
+            icon="fas fa-money-bill-alt"
+            color="primary"
+            text-color="white"
+          />
+          <span class="q-ml-sm">
+            Send tokens to participants?
+          </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            label="No"
+            color="primary"
+            @click="tryClosePool(false)"
+            v-close-popup
+          />
+          <q-btn
+            flat
+            label="Yes"
+            color="primary"
+            @click="tryClosePool(true)"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog> -->
     </section>
   </q-page>
 </template>
@@ -622,7 +652,7 @@ export default {
       token_decimals: 1,
       accept: false,
       funded: false,
-      dialog_send_tokens: false,
+      dialog_close_ballot: false,
       accessType: "Premium",
       accessOptions: ["Public", "Premium"],
       premiumDuration: 3, //hours
@@ -1065,10 +1095,9 @@ export default {
       const actions = [
         {
           account: process.env.BALLOT_ADDRESS,
-          name: "closepool",
+          name: "closeballot",
           data: {
-            pool_id: this.poolID,
-            send_tokens: send_tokens
+            id: this.poolID,
           }
         }
       ];
@@ -1200,7 +1229,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Pool completed"
+          message: "Voting completed"
         });
         this.redirectBallotPage();
       } catch (error) {
@@ -1209,7 +1238,8 @@ export default {
     },
 
     async onClosePool() {
-      this.dialog_send_tokens = true;
+      // this.dialog_close_ballot = true;
+      await this.tryClosePool(false)
     },
 
     onReset() {},
