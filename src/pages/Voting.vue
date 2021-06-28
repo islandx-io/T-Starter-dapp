@@ -76,7 +76,7 @@
                 v-for="col in props.cols"
                 :key="col.name"
                 :props="props"
-                style="font-size: 20px; color: gray"
+                style="font-size: 1.3em; color: gray"
               >
                 {{ col.label }}
               </q-th>
@@ -142,19 +142,23 @@
               </q-td>
 
               <!-- Voting -->
+
               <q-td
                 :props="props"
                 :key="props.cols[props.cols.length - 1].name"
               >
-                <upDownVote
-                  :ballot="props.row"
-                  :ballotConfig="ballotConfig[props.row.chain]"
-                  :stakePool="stakePool[props.row.chain]"
-                  @confirmChainSwitch="
-                    confirmChainSwitch = true;
-                    newChain = props.row.chain;
-                  "
-                />
+                <div class="row no-wrap q-gutter-x-sm">
+                  <q-separator vertical inset size="0.1em" />
+                  <upDownVote
+                    :ballot="props.row"
+                    :ballotConfig="ballotConfig[props.row.chain]"
+                    :stakePool="stakePool[props.row.chain]"
+                    @confirmChainSwitch="
+                      confirmChainSwitch = true;
+                      newChain = props.row.chain;
+                    "
+                  />
+                </div>
               </q-td>
             </q-tr>
           </template>
@@ -217,7 +221,7 @@ export default {
           name: "chain",
           required: true,
           label: "Chain",
-          align: "left",
+          align: "center",
           field: "chain",
           format: val => `${val}`
         },

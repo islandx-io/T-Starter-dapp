@@ -8,7 +8,7 @@
     >
       {{ ballotStatus }}
     </div>
-    <q-separator vertical inset size="0.1rem" />
+    <!-- <q-separator vertical inset size="0.1rem" /> -->
     <div class="column items-start" :style="`width: ${voteBarWidth + 80}px`">
       <div class="row items-center ">
         <div
