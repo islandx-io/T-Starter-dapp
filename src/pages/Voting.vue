@@ -103,11 +103,11 @@
 
               <!-- Chain -->
               <q-td :props="props" :key="props.cols[1].name">
-                <div class="row justify-start items-center">
+                <div class="column items-center ">
                   <token-avatar
                     :token="props.row.chain"
                     :avatarSize="20"
-                    class="q-mr-xs"
+                    class="q-mb-xs"
                     :svg="true"
                   />
                   <div>{{ props.cols[1].value }}</div>
