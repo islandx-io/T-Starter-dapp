@@ -3,182 +3,200 @@
     <section class="header-bg row content-center justify-center">
       <h2 class="text-white q-pt-xl">Pools</h2>
     </section>
-
     <section class="body-container">
-      <q-tabs
-        v-model="tab"
-        dense
-        class="text-grey"
-        active-color="primary"
-        indicator-color="primary"
-        align="justify"
-        narrow-indicator
-      >
-        <q-tab name="all-pools" label="ALL"></q-tab>
-        <q-tab name="featured-pools" label="FEATURED"></q-tab>
-        <q-tab
-          name="joined-pools"
-          label="JOINED"
-          :alert="claimable ? 'accent' : claimable"
-        ></q-tab>
-        <q-tab name="created-pools" label="CREATED"></q-tab>
-      </q-tabs>
-
-      <q-separator></q-separator>
-
-      <div
-        v-if="tab === 'all-pools'"
-        class=" q-mt-xs row items-start items-center"
-      >
-        <q-input
-          v-model="search.text"
-          @input="filterPools()"
+      <q-card>
+        <q-tabs
+          v-model="tab"
           dense
-          rounded
-          outlined
-          class="col"
-          label="Search by Name, Token contract, Description"
+          class="text-grey"
+          active-color="primary"
+          indicator-color="primary"
+          align="justify"
+          narrow-indicator
         >
-          <template v-slot:prepend>
-            <q-icon name="fas fa-search" />
-          </template>
-        </q-input>
+          <q-tab name="all-pools" label="ALL"></q-tab>
+          <q-tab name="featured-pools" label="FEATURED"></q-tab>
+          <q-tab
+            name="joined-pools"
+            label="JOINED"
+            :alert="claimable ? 'accent' : claimable"
+          ></q-tab>
+          <q-tab name="created-pools" label="CREATED"></q-tab>
+        </q-tabs>
 
-        <!-- Filter  -->
-        <div class="row q-px-xs q-gutter-xs ">
-          <q-btn
-            outline
+        <q-separator inset class="q-mb-sm" />
+
+        <div
+          v-if="tab === 'all-pools'"
+          class="row items-center q-px-lg q-gutter-y-sm q-gutter-x-sm"
+        >
+          <q-input
+            v-model="search.text"
+            @input="filterPools()"
+            dense
             rounded
-            :color="search.filter.chain === `all` ? 'accent' : 'primary'"
-            @click="filterPools((search.filter.chain = 'all'))"
-            label="All"
-          />
-          <div v-for="chain in possibleChains" :key="chain.NETWORK_NAME">
+            outlined
+            class="col-sm col-xs-12 q-mt-md"
+            label="Search by Name, Token contract, Description"
+          >
+            <template v-slot:prepend>
+              <q-icon name="fas fa-search" />
+            </template>
+          </q-input>
+
+          <!-- Filter  -->
+          <div class="row q-gutter-sm ">
             <q-btn
               outline
               rounded
-              :color="
-                search.filter.chain === chain.NETWORK_NAME
-                  ? 'accent'
-                  : 'primary'
-              "
-              @click="filterPools((search.filter.chain = chain.NETWORK_NAME))"
+              :color="search.filter.chain === `all` ? 'accent' : 'primary'"
+              @click="filterPools((search.filter.chain = 'all'))"
+              label="All"
+            />
+            <div v-for="chain in possibleChains" :key="chain.NETWORK_NAME">
+              <q-btn
+                outline
+                rounded
+                :color="
+                  search.filter.chain === chain.NETWORK_NAME
+                    ? 'accent'
+                    : 'primary'
+                "
+                @click="filterPools((search.filter.chain = chain.NETWORK_NAME))"
+              >
+                <template v-slot:default>
+                  <div style="padding: 0px 3px 0px 0px">
+                    <token-avatar
+                      :token="chain.NETWORK_NAME"
+                      :avatarSize="20"
+                    />
+                  </div>
+                  {{ chain.NETWORK_NAME }}
+                </template>
+              </q-btn>
+            </div>
+          </div>
+          <!-- Status filter -->
+          <div
+            v-if="tab === 'all-pools'"
+            class="status-filter col-12 row items-start items-center q-gutter-x-sm q-pl-sm q-pt-sm"
+          >
+            <div>Status:</div>
+            <a
+              href="javascript:void(0);"
+              :class="`${search.filter.status === 'all'}`"
+              @click="filterPools((search.filter.status = 'all'))"
             >
-              <template v-slot:default>
-                <div style="padding: 0px 3px 0px 0px">
-                  <token-avatar :token="chain.NETWORK_NAME" :avatarSize="20" />
-                </div>
-                {{ chain.NETWORK_NAME }}
-              </template>
-            </q-btn>
+              All
+            </a>
+            <a
+              href="javascript:void(0);"
+              :class="`${search.filter.status === 'open'}`"
+              @click="filterPools((search.filter.status = 'open'))"
+            >
+              Open
+            </a>
+            <a
+              href="javascript:void(0);"
+              :class="`${search.filter.status === 'upcoming'}`"
+              @click="filterPools((search.filter.status = 'upcoming'))"
+            >
+              Upcoming
+            </a>
+            <a
+              href="javascript:void(0);"
+              :class="`${search.filter.status === 'completed'}`"
+              @click="filterPools((search.filter.status = 'completed'))"
+            >
+              Completed
+            </a>
+            <a
+              href="javascript:void(0);"
+              :class="`${search.filter.status === 'filled'}`"
+              @click="filterPools((search.filter.status = 'filled'))"
+            >
+              Filled
+            </a>
+            <a
+              href="javascript:void(0);"
+              :class="`${search.filter.status === 'cancelled'}`"
+              @click="filterPools((search.filter.status = 'cancelled'))"
+            >
+              Cancelled
+            </a>
           </div>
         </div>
-      </div>
 
-      <!-- Status filter -->
-      <div v-if="tab === 'all-pools'" class=" q-mt-xs row items-start items-center q-gutter-x-sm">
-        <a
-          href="javascript:void(0);"
-          @click="filterPools((search.filter.status = 'all'))"
-          >All Status</a
+        <q-tab-panels
+          v-model="tab"
+          animated
+          swipeable
+          class="tab-panel-container"
         >
-        <a
-          href="javascript:void(0);"
-          @click="filterPools((search.filter.status = 'open'))"
-          >Open</a
-        >
-        <a
-          href="javascript:void(0);"
-          @click="filterPools((search.filter.status = 'upcoming'))"
-          >Upcoming</a
-        >
-        <a
-          href="javascript:void(0);"
-          @click="filterPools((search.filter.status = 'completed'))"
-          >Completed</a
-        >
-        <a
-          href="javascript:void(0);"
-          @click="filterPools((search.filter.status = 'filled'))"
-          >Filled</a
-        >
-        <a
-          href="javascript:void(0);"
-          @click="filterPools((search.filter.status = 'cancelled'))"
-          >Cancelled</a
-        >
-      </div>
+          <q-tab-panel
+            name="all-pools"
+            class="poolcard-container"
+            @mousedown.stop
+          >
+            <Poolcard
+              v-for="pool in pagedPublishedPools"
+              :key="`${pool.chain}+${pool.id}`"
+              :poolID="pool.id"
+              :chain="pool.chain"
+            />
+          </q-tab-panel>
 
-      <q-tab-panels
-        v-model="tab"
-        animated
-        swipeable
-        class="tab-panel-container"
-      >
-        <q-tab-panel
-          name="all-pools"
-          class="poolcard-container"
-          @mousedown.stop
-        >
-          <Poolcard
-            v-for="pool in pagedPublishedPools"
-            :key="`${pool.chain}+${pool.id}`"
-            :poolID="pool.id"
-            :chain="pool.chain"
-          />
-        </q-tab-panel>
+          <q-tab-panel
+            name="featured-pools"
+            class="poolcard-container"
+            @mousedown.stop
+          >
+            <Poolcard
+              v-for="pool in featuredPoolIdChains_sorted"
+              :key="`${pool.chain}+${pool.id}`"
+              :poolID="pool.id"
+              :chain="pool.chain"
+            />
+          </q-tab-panel>
 
-        <q-tab-panel
-          name="featured-pools"
-          class="poolcard-container"
-          @mousedown.stop
-        >
-          <Poolcard
-            v-for="pool in featuredPoolIdChains_sorted"
-            :key="`${pool.chain}+${pool.id}`"
-            :poolID="pool.id"
-            :chain="pool.chain"
-          />
-        </q-tab-panel>
+          <q-tab-panel
+            name="joined-pools"
+            class="poolcard-container"
+            @mousedown.stop
+          >
+            <Poolcard
+              v-for="pool in joinedIdChains_sorted"
+              :key="`${pool.chain}+${pool.id}`"
+              :poolID="pool.id"
+              :chain="pool.chain"
+            />
+          </q-tab-panel>
 
-        <q-tab-panel
-          name="joined-pools"
-          class="poolcard-container"
-          @mousedown.stop
-        >
-          <Poolcard
-            v-for="pool in joinedIdChains_sorted"
-            :key="`${pool.chain}+${pool.id}`"
-            :poolID="pool.id"
-            :chain="pool.chain"
-          />
-        </q-tab-panel>
+          <q-tab-panel
+            name="created-pools"
+            class="poolcard-container"
+            @mousedown.stop
+          >
+            <Poolcard
+              v-for="pool in createdPools"
+              :key="`${pool.chain}+${pool.id}`"
+              :poolID="pool.id"
+              :chain="pool.chain"
+              :created="true"
+            />
+          </q-tab-panel>
+        </q-tab-panels>
 
-        <q-tab-panel
-          name="created-pools"
-          class="poolcard-container"
-          @mousedown.stop
-        >
-          <Poolcard
-            v-for="pool in createdPools"
-            :key="`${pool.chain}+${pool.id}`"
-            :poolID="pool.id"
-            :chain="pool.chain"
-            :created="true"
-          />
-        </q-tab-panel>
-      </q-tab-panels>
-
-      <!-- Page controller -->
-      <q-pagination
-        v-if="tab === 'all-pools'"
-        class="q-pa-lg flex flex-center"
-        v-model="page"
-        :min="currentPage"
-        :max="totalPages"
-        direction-links
-      />
-
+        <!-- Page controller -->
+        <q-pagination
+          v-if="tab === 'all-pools'"
+          class="q-pa-lg flex flex-center"
+          v-model="page"
+          :min="currentPage"
+          :max="totalPages"
+          direction-links
+        />
+      </q-card>
       <q-card
         outline
         flat
@@ -448,20 +466,28 @@ export default {
 <style lang="scss" scoped>
 .header-bg {
   height: 200px;
+  margin-bottom: -50px;
 }
 .poolcard-container {
-  padding: 30px;
+  padding: 30px 2vw 30px 2vw;
+  // padding-left: 2vw;
+  // padding-right: 2vw;
   min-height: 400px;
 }
 .body-container {
-  padding-left: 0;
-  padding-right: 0;
+  padding: 10px 0 30px 0;
+  // padding-left: 0;
+  // padding-right: 0;
+  .q-card {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }
 #notify-banner {
   // height: 550px;
   padding-top: 50px;
   padding-bottom: 50px;
-  margin: 0 30px 0 30px;
+  margin: 35px 20px 0 20px;
   & h1 {
     font-weight: 600;
     font-size: 80px;
@@ -471,6 +497,11 @@ export default {
       font-size: 12vw;
       line-height: 16vw;
     }
+  }
+}
+.status-filter a {
+  &.true {
+    color: $accent;
   }
 }
 </style>
