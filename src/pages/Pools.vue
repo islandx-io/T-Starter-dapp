@@ -97,6 +97,16 @@
           @click="filterPools((search.filter.status = 'completed'))"
           >Completed</a
         >
+        <a
+          href="javascript:void(0);"
+          @click="filterPools((search.filter.status = 'filled'))"
+          >Filled</a
+        >
+        <a
+          href="javascript:void(0);"
+          @click="filterPools((search.filter.status = 'cancelled'))"
+          >Cancelled</a
+        >
       </div>
 
       <q-tab-panels
@@ -325,7 +335,7 @@ export default {
         this.search.filter.chain != "all" ||
         this.search.filter.status != "all"
       ) {
-        this.filteredPools = this.getPublishedPools.filter(pool => {
+        this.filteredPools = this.getAllPools.filter(pool => {
           // status filter
           if (
             pool.pool_status
