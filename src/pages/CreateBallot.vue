@@ -530,6 +530,13 @@
                   />
                 </div>
               </q-item-section>
+              <q-item-section class="col-auto justify-between">
+                <q-btn
+                  label="Cancel Ballot"
+                  @click="onBallotCancel"
+                  color="accent"
+                />
+              </q-item-section>
             </q-item>
           </q-list>
         </q-form>
@@ -570,6 +577,39 @@
               label="Confirm"
               color="primary"
               @click="onSubmit()"
+              v-close-popup
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+
+      <!-- Confirm stake dialog -->
+      <q-dialog v-model="dialog_cancel_ballot">
+        <q-card>
+          <q-card-section class="row items-center">
+            <q-avatar color="accent" text-color="secondary" class="q-mr-sm">
+              <q-icon name="fas fa-exclamation-circle" size="28px" />
+            </q-avatar>
+            <span class="text-h6">Cancel ballot</span>
+          </q-card-section>
+          <q-card-section>
+            <span>
+              Confirm cancelling ballot? Funded tokens will be refunded (excluding START).
+            </span>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn
+              flat
+              label="No"
+              color="primary"
+              v-close-popup
+            />
+            <q-btn
+              flat
+              label="Confirm"
+              color="primary"
+              @click="tryBallotCancel()"
               v-close-popup
             />
           </q-card-actions>
@@ -653,6 +693,7 @@ export default {
       accept: false,
       funded: false,
       dialog_close_ballot: false,
+      dialog_cancel_ballot: false,
       accessType: "Premium",
       accessOptions: ["Public", "Premium"],
       premiumDuration: 3, //hours
@@ -1242,13 +1283,44 @@ export default {
       await this.tryClosePool(false)
     },
 
+    onBallotCancel() {
+      this.dialog_cancel_ballot = true
+    },
+
+    async tryBallotCancel() {
+      try {
+        await this.cancelBallot();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Ballot Cancelled"
+        });
+        this.redirectBallotPage();
+      } catch (error) {
+        this.$errorNotification(error);
+      }
+    },
+
+    async cancelBallot() {
+      const actions = [
+        {
+          account: process.env.BALLOT_ADDRESS,
+          name: "cancelballot",
+          data: {
+            id: this.poolID,
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
     onReset() {},
 
     // TODO do better redirects
     redirectBallotPage() {
       this.$router.push({
-        name: "ballotdetails",
-        params: { id: this.poolID }
+        name: "voting",
       });
     }
   },
