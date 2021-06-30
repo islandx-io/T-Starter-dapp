@@ -10,7 +10,8 @@
     <q-card
       :class="
         `col bg-secondary text-black self-stretch ` +
-          `${claimable ? 'claimable' : ''}` + `${hasHeadstart ? 'headstart' : ''}`
+          `${claimable ? 'claimable' : ''}` +
+          `${hasHeadstart ? 'headstart' : ''}`
       "
     >
       <q-item>
@@ -145,7 +146,11 @@ export default {
     hasHeadstart() {
       // console.log(this.accountStakeInfo)indefined
       if (Object.keys(this.accountStakeInfo).length > 0) {
-        if (this.accountStakeInfo.tier > 0 && Date.now().valueOf() < this.pool.pool_open && Date.now().valueOf() > this.pool.pool_open - 3*60*60*1000) {
+        if (
+          this.accountStakeInfo.tier > 0 &&
+          Date.now().valueOf() < this.pool.pool_open &&
+          Date.now().valueOf() > this.pool.pool_open - 3 * 60 * 60 * 1000
+        ) {
           return true;
         } else {
           return false;
@@ -219,7 +224,7 @@ export default {
   padding: 10px;
   border-radius: $card-corner-radius;
   border-color: $secondary;
-  box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 2vw 0 rgba(0, 0, 0, 0.08);
   &.claimable {
     border: 1px solid $accent;
   }
