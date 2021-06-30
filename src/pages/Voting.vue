@@ -71,14 +71,31 @@
           <!-- :sort-method="customSort"
           binary-state-sort -->
           <template v-slot:header="props">
-            <q-tr :props="props">
+            <q-tr class="text-grey-7" :props="props">
               <q-th
-                v-for="col in props.cols"
+                v-for="col in props.cols.slice(0, 6)"
                 :key="col.name"
                 :props="props"
-                style="font-size: 1.3em; color: gray"
+                style="font-size: 1.1rem"
               >
                 {{ col.label }}
+              </q-th>
+              <q-th :props="props" :key="props.cols[6].name">
+                <div class="row justify-center">
+                  <div style="font-size: 1.1rem">
+                    {{ props.cols[6].label }}
+                  </div>
+                  <q-icon name="fas fa-info-circle" class="q-pr-xs">
+                    <q-tooltip
+                      :offset="[0, 3]"
+                      self="bottom middle"
+                      anchor="top middle"
+                    >
+                      Successfull if Lead >
+                      {{ (ballotConfig["TELOS"].lead * 100).toFixed(0) }}%
+                    </q-tooltip>
+                  </q-icon>
+                </div>
               </q-th>
             </q-tr>
           </template>

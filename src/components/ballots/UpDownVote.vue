@@ -1,15 +1,20 @@
 <template>
   <div class="row items-center no-wrap q-gutter-x-sm">
-    <div
-      :class="
-        ballotStatus.toLowerCase() +
-          '-badge ballot-status text-weight-bold text-center'
-      "
-    >
-      {{ ballotStatus }}
+    <div class="row justify-center q-pr-xs" style="width: 80px">
+      <div
+        :class="
+          ballotStatus.toLowerCase() +
+            '-badge ballot-status text-weight-bold text-center'
+        "
+      >
+        {{ (votingProgress * 100).toFixed(2) }} %
+      </div>
+      <q-tooltip :offset="[0, 5]">
+        Lead
+      </q-tooltip>
     </div>
     <!-- <q-separator vertical inset size="0.1rem" /> -->
-    <div class="column items-start" :style="`width: ${voteBarWidth + 80}px`">
+    <div class="column items-start" :style="`width: ${voteBarWidth + 100}px`">
       <div class="row items-center ">
         <div
           class="vote-bar upvote-bar"
@@ -51,12 +56,6 @@
         </div>
       </div>
     </div>
-    <!-- <div>{{ ballot.votes_table }}</div> -->
-    <!-- <div>
-      stakePool:
-      {{ stakePool }} upvoteProgress: {{ upvoteProgress }} upvotes:
-      {{ upvotes }}
-    </div> -->
   </div>
 </template>
 
@@ -70,7 +69,7 @@ export default {
   },
   data() {
     return {
-      voteBarWidth: 80
+      voteBarWidth: 70
       // votesTable: []
     };
   },
@@ -106,6 +105,11 @@ export default {
     downvotes() {
       return this.$chainToQty(this.votes.find(a => a.key === "downvote").value);
     },
+    votingProgress() {
+      if (this.votes.length > 0 && this.stakePool !== 0) {
+        return (this.upvotes - this.downvotes) / this.stakePool;
+      } else return 0;
+    },
     upvoteProgress() {
       if (this.stakePool === 0) return 0;
       else return this.upvotes / this.stakePool;
@@ -118,14 +122,9 @@ export default {
       return this.upvoteProgress + this.downvoteProgress;
     },
     ballotStatus() {
-      if (
-        this.votes.length > 0 &&
-        this.ballotConfig.lead !== undefined &&
-        this.stakePool !== 0
-      ) {
-        let votingProgress = (this.upvotes - this.downvotes) / this.stakePool;
-        if (votingProgress > this.ballotConfig.lead) return "Succeeding";
-        if (votingProgress < this.ballotConfig.lead) return "Failing";
+      if (this.ballotConfig.lead !== undefined) {
+        if (this.votingProgress > this.ballotConfig.lead) return "Succeeding";
+        if (this.votingProgress < this.ballotConfig.lead) return "Failing";
         else return "Tie";
       } else {
         return "Loading";
@@ -181,13 +180,13 @@ export default {
 
 <style lang="scss" scoped>
 .ballot-status {
-  width: 95px;
-  padding: 5px 8px;
+  // width: 95px;
+  padding: 3px 9px;
   color: $secondary;
   border-radius: $card-corner-radius;
 }
 .failing-badge {
-  background-color: $negative;
+  background-color: $warning;
 }
 .succeeding-badge {
   background-color: $positive;

@@ -117,7 +117,7 @@
             />
           </q-item>
         </div>
-        <q-item class="token-info col">
+        <q-item class="token-info col column">
           <div class="border col column justify-between">
             <div class="row justify-between">
               <h6>Hard cap:</h6>
@@ -133,28 +133,15 @@
                 {{ swapRatio }}
               </h5>
             </div>
-            <!-- Voting progress -->
-            <div class="row justify-center q-pt-md">
-              <!-- <h6>Voting progress:</h6> -->
-              <upDownVote
-                :ballot="pool"
-                :ballotConfig="ballotConfig"
-                :stakePool="stakePool"
-                @voteSubmitted="getPoolInfo"
-              />
-            </div>
-            <!-- <div class="row justify-between">
-              <h6>Participants:</h6>
-              <h5>{{ pool.participants }}</h5>
-            </div>
-            <div class="row justify-between">
-              <h6>Progress:</h6>
-            </div>
-            <status-progress :progress="pool.progress" />
-            <div class="row justify-between">
-              <h5>{{ progressToPercentage }}</h5>
-              <h5>{{ progressLabel }}</h5>
-            </div> -->
+          </div>
+          <!-- Voting progress -->
+          <div class="row justify-center q-pt-sm">
+            <upDownVote
+              :ballot="pool"
+              :ballotConfig="ballotConfig"
+              :stakePool="stakePool"
+              @voteSubmitted="getPoolInfo"
+            />
           </div>
         </q-item>
 
@@ -318,7 +305,9 @@ export default {
         else {
           let baseSym = this.pool.base_token.sym.split(",")[1];
           let [quantity, sym] = this.pool.swap_ratio.quantity.split(" ");
-          return `1 ${baseSym} = ${parseFloat(quantity)} ${sym}`;
+          if (baseSym && quantity && sym)
+            return `1 ${baseSym} = ${parseFloat(quantity)} ${sym}`;
+          else return "";
         }
       } catch (error) {
         return "Error";
