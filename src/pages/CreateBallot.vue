@@ -237,11 +237,22 @@
               </q-item>
               <q-item>
                 <q-item-section>
-                  <datetime-field
+                  <q-select
+                    outlined
+                    v-model="ballot_close"
+                    :options="votingTimeOptions"
+                    label="Voting duration"
+                    :disable="
+                      pool.status !== 'draft' &&
+                        this.$route.params.id != undefined
+                    "
+                  />
+                  <!-- Keep for dev purposed -->
+                  <!-- <datetime-field
                     :value.sync="ballot_close"
                     :pool="pool"
                     label="Voting close time (UTC) *"
-                  />
+                  /> -->
                 </q-item-section>
               </q-item>
 
@@ -482,7 +493,10 @@
                   :disable="
                     pool.status === 'published' ||
                       this.funded ||
-                      this.getBallotByIDChain(this.poolID, this.currentChain.NETWORK_NAME).title == ''
+                      this.getBallotByIDChain(
+                        this.poolID,
+                        this.currentChain.NETWORK_NAME
+                      ).title == ''
                   "
                   v-if="pool.status === 'draft'"
                   color="primary"
@@ -517,7 +531,7 @@
                   @click="onClosePool"
                   color="accent"
                   v-if="
-                    (Date.now() > pool.ballot_close) &&
+                    Date.now() > pool.ballot_close &&
                       pool.status === 'published'
                   "
                 />
@@ -535,9 +549,7 @@
                   label="Cancel Ballot"
                   @click="onBallotCancel"
                   color="accent"
-                  v-if="
-                    pool.status === 'published' || pool.status === 'draft'
-                  "
+                  v-if="pool.status === 'published' || pool.status === 'draft'"
                 />
               </q-item-section>
             </q-item>
@@ -597,17 +609,13 @@
           </q-card-section>
           <q-card-section>
             <span>
-              Confirm cancelling ballot? Funded tokens will be refunded (excluding START).
+              Confirm cancelling ballot? Funded tokens will be refunded
+              (excluding START).
             </span>
           </q-card-section>
 
           <q-card-actions align="right">
-            <q-btn
-              flat
-              label="No"
-              color="primary"
-              v-close-popup
-            />
+            <q-btn flat label="No" color="primary" v-close-popup />
             <q-btn
               flat
               label="Confirm"
@@ -620,7 +628,7 @@
       </q-dialog>
 
       <!-- Close ballot dialog -->
-    <!-- <q-dialog v-model="dialog_close_ballot" persistent>
+      <!-- <q-dialog v-model="dialog_close_ballot" persistent>
       <q-card>
         <q-card-section class="row items-center">
           <q-avatar
@@ -671,7 +679,12 @@ export default {
       poolID: Number(this.$route.params.id),
       pool: this.$defaultBallotInfo,
       settings: {},
-      ballot_close: { date: this.toDateString(new Date().valueOf()) },
+      weekInMs: 7 * 24 * 60 * 60 * 1000,
+      ballot_close: {
+          label: "2 Weeks",
+          date: this.toDateString(Date.now() + 2 * 7 * 24 * 60 * 60 * 1000),
+          category: "2"
+        },
       pool_open: { date: this.toDateString(new Date().valueOf()) },
       // private_end: { date: this.toDateString(new Date().valueOf()) },
       public_end: { date: this.toDateString(new Date().valueOf()) },
@@ -700,8 +713,6 @@ export default {
       accessType: "Premium",
       accessOptions: ["Public", "Premium"],
       premiumDuration: 3, //hours
-      weekInMs: 7*24*60*60*1000,
-      votingTimeOptions: ["1 Week", '2 Weeks'],
       premiumDurationOptions: [1, 3, 6, 12, 24],
       vesting: false,
       lockup_fraction: 0.5,
@@ -713,6 +724,21 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("ballots", ["getBallotByID", "getBallotByIDChain"]),
     ...mapGetters("blockchains", ["currentChain"]),
+
+    votingTimeOptions() {
+      return [
+        {
+          label: "1 Week",
+          date: this.toDateString(Date.now() + 1 * this.weekInMs),
+          category: "1"
+        },
+        {
+          label: "2 Weeks",
+          date: this.toDateString(Date.now() + 2 * this.weekInMs),
+          category: "2"
+        }
+      ];
+    },
 
     private_end() {
       if (this.accessType === "Premium") {
@@ -914,7 +940,11 @@ export default {
 
     getPoolInfo() {
       if (this.poolID) {
-        this.pool = JSON.parse(JSON.stringify(this.getBallotByIDChain(this.poolID, this.currentChain.NETWORK_NAME))); //make deep copy
+        this.pool = JSON.parse(
+          JSON.stringify(
+            this.getBallotByIDChain(this.poolID, this.currentChain.NETWORK_NAME)
+          )
+        ); //make deep copy
         // if this pool is owned by user, populate the fields
         if (this.pool.owner === this.accountName) {
           this.getTokenSymbolFromPool();
@@ -1143,7 +1173,7 @@ export default {
           account: process.env.BALLOT_ADDRESS,
           name: "closeballot",
           data: {
-            id: this.poolID,
+            id: this.poolID
           }
         }
       ];
@@ -1285,11 +1315,11 @@ export default {
 
     async onClosePool() {
       // this.dialog_close_ballot = true;
-      await this.tryClosePool(false)
+      await this.tryClosePool(false);
     },
 
     onBallotCancel() {
-      this.dialog_cancel_ballot = true
+      this.dialog_cancel_ballot = true;
     },
 
     async tryBallotCancel() {
@@ -1313,7 +1343,7 @@ export default {
           account: process.env.BALLOT_ADDRESS,
           name: "cancelballot",
           data: {
-            id: this.poolID,
+            id: this.poolID
           }
         }
       ];
@@ -1325,7 +1355,7 @@ export default {
     // TODO do better redirects
     redirectBallotPage() {
       this.$router.push({
-        name: "voting",
+        name: "voting"
       });
     }
   },
@@ -1335,7 +1365,10 @@ export default {
     this.ballotConfig = await this.getBallotConfig();
 
     if (this.poolID) {
-      await this.getChainBallotByIDChain({id: this.poolID, chain: this.currentChain.NETWORK_NAME});
+      await this.getChainBallotByIDChain({
+        id: this.poolID,
+        chain: this.currentChain.NETWORK_NAME
+      });
       this.getPoolInfo();
     }
     await this.setBaseTokenOptions();
@@ -1351,7 +1384,10 @@ export default {
   watch: {
     async accountName() {
       if (this.poolID) {
-        await this.getChainBallotByIDChain({id: this.poolID, chain: this.currentChain.NETWORK_NAME});
+        await this.getChainBallotByIDChain({
+          id: this.poolID,
+          chain: this.currentChain.NETWORK_NAME
+        });
         this.getPoolInfo();
       }
 

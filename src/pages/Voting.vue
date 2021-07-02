@@ -398,7 +398,7 @@ export default {
       )) {
         this.stakePool[networkName] = this.$chainToQty(poolSettings.stake_pool);
       }
-    }, 30000);
+    }, 60000);
   }
 };
 </script>
