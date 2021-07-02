@@ -220,6 +220,7 @@ export default {
   components: { TimeUntil, tokenAvatar, upDownVote },
   data() {
     return {
+      polling: null,
       newChain: "",
       confirmChainSwitch: false,
       loading: false,
@@ -386,6 +387,18 @@ export default {
     )) {
       this.stakePool[networkName] = this.$chainToQty(poolSettings.stake_pool);
     }
+
+    // Start polling
+    this.polling = setInterval(async () => {
+      await this.getAllChainBallots();
+      this.ballotConfig = await this.getBallotConfigAllChains();
+      this.poolSettingsAllChains = await this.getPoolsSettingsAllChains();
+      for (const [networkName, poolSettings] of Object.entries(
+        this.poolSettingsAllChains
+      )) {
+        this.stakePool[networkName] = this.$chainToQty(poolSettings.stake_pool);
+      }
+    }, 30000);
   }
 };
 </script>
