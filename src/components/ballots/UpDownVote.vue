@@ -84,9 +84,9 @@
           <div class="text-center">1. This project has purpose and potential <q-icon name="fas fa-check" class="text-green" style="font-size: 1rem;" /></div> 
           <div class="text-center">2. Github has active development activity <q-icon name="fas fa-check" class="text-green" style="font-size: 1rem;" /></div>
           <div class="text-center">3. Smart Contract audit results are positive <q-icon name="fas fa-check" class="text-green" style="font-size: 1rem;" /></div>
-          <div class="text-center">4. Devs are not anon or I am comfortable with them <q-icon name="fas fa-check" class="text-green" style="font-size: 1rem;" /></div>
+          <div class="text-center">4. Devs are not anonymous or I am comfortable with them <q-icon name="fas fa-check" class="text-green" style="font-size: 1rem;" /></div>
           <div class="text-center">5. Tokenomics are generally sound <q-icon name="fas fa-check" class="text-green" style="font-size: 1rem;" /></div>
-          <div class="text-center">6. This does not look like a rug or scam <q-icon name="fas fa-check" class="text-green" style="font-size: 1rem;" /></div>
+          <div class="text-center">6. This does not look like a rug-pull or scam <q-icon name="fas fa-check" class="text-green" style="font-size: 1rem;" /></div>
         </q-card-section>
 
         <q-card-actions align="center">
