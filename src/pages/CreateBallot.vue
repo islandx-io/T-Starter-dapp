@@ -535,6 +535,9 @@
                   label="Cancel Ballot"
                   @click="onBallotCancel"
                   color="accent"
+                  v-if="
+                    pool.status === 'published' || pool.status === 'draft'
+                  "
                 />
               </q-item-section>
             </q-item>
@@ -697,7 +700,9 @@ export default {
       accessType: "Premium",
       accessOptions: ["Public", "Premium"],
       premiumDuration: 3, //hours
-      premiumDurationOptions: [3, 6, 12, 24],
+      weekInMs: 7*24*60*60*1000,
+      votingTimeOptions: ["1 Week", '2 Weeks'],
+      premiumDurationOptions: [1, 3, 6, 12, 24],
       vesting: false,
       lockup_fraction: 0.5,
       lockup_period: 30
