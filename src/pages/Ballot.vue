@@ -49,7 +49,7 @@
               >
                 <div class="q-mr-md">Voting ends in:</div>
                 <status-countdown
-                  :deadline="pool.pool_open"
+                  :deadline="pool.ballot_close"
                   :poolID="poolID"
                   @countdown-finished="getPoolInfo"
                 />
