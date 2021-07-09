@@ -237,7 +237,7 @@
               </q-item>
               <q-item>
                 <q-item-section>
-                  <q-select
+                  <!-- <q-select
                     outlined
                     v-model="ballot_close"
                     :options="votingTimeOptions"
@@ -246,13 +246,13 @@
                       pool.status !== 'draft' &&
                         this.$route.params.id != undefined
                     "
-                  />
+                  /> -->
                   <!-- Keep for dev purposed -->
-                  <!-- <datetime-field
+                  <datetime-field
                     :value.sync="ballot_close"
                     :pool="pool"
                     label="Voting close time (UTC) *"
-                  /> -->
+                  />
                 </q-item-section>
               </q-item>
 
