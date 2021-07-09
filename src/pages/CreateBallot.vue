@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <section class="header-bg row content-center justify-center">
-      <h2 class="text-white">List Project</h2>
+      <h2 class="text-white q-pt-xl">List Project</h2>
     </section>
 
     <section class="body-container">
@@ -628,8 +628,11 @@
       </q-dialog>
 
       <!-- Under process dialog -->
-      <q-dialog v-model="explainProcessDialog" >
-        <q-card style="max-width: 100%;width:100rem" class="col-shrink slim-scrollbar">
+      <q-dialog v-model="explainProcessDialog">
+        <q-card
+          style="max-width: 100%;width:100rem"
+          class="col-shrink slim-scrollbar"
+        >
           <q-card-section class="row items-center justify-center">
             <div class="text-h6">Project Listing Process</div>
           </q-card-section>
@@ -640,7 +643,6 @@
               spinner-color="white"
               style="max-width: 99rem"
             /> -->
-            
           </q-card-section>
 
           <q-card-actions align="center">
@@ -675,9 +677,13 @@ export default {
         date: this.toDateString(Date.now() + 2 * 7 * 24 * 60 * 60 * 1000),
         category: "2"
       },
-      pool_open: { date: this.toDateString(Date.now() + 2 * 8 * 24 * 60 * 60 * 1000) },
+      pool_open: {
+        date: this.toDateString(Date.now() + 2 * 8 * 24 * 60 * 60 * 1000)
+      },
       // private_end: { date: this.toDateString(new Date().valueOf()) },
-      public_end: { date: this.toDateString(Date.now() + 3 * 7 * 24 * 60 * 60 * 1000) },
+      public_end: {
+        date: this.toDateString(Date.now() + 3 * 7 * 24 * 60 * 60 * 1000)
+      },
 
       cleanedWebLinks: [],
       // prettier-ignore
@@ -1353,7 +1359,7 @@ export default {
   async mounted() {
     // check if updating or new pool
     if (this.$route.params.id === undefined) {
-      this.explainProcessDialog = true
+      this.explainProcessDialog = true;
     }
 
     this.settings = await this.getPoolsSettings();
@@ -1399,7 +1405,7 @@ export default {
 
 <style lang="scss" scoped>
 .header-bg {
-  height: 250px;
+  height: 200px;
   margin-bottom: -50px;
 }
 .weblink-container {
