@@ -34,10 +34,8 @@ that you may prove what is that good and acceptable and perfect will of God. - R
               class="hover-accent"
               color="secondary"
               outline
-              type="a"
-              target="_blank"
-              href="https://docs.google.com/forms/d/e/1FAIpQLSeQE7zDFlxxWmAN-pKDfik6OcgtReJ8oiviIpCUkOAGk6Ez7Q/viewform"
-              label="List project"
+              label="List Project"
+              :to="{ name: 'createballot' }"
             />
           </div>
         </div>

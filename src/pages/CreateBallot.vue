@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <section class="header-bg row content-center justify-center">
-      <h2 class="text-white">Create Pool</h2>
+      <h2 class="text-white">List Project</h2>
     </section>
 
     <section class="body-container">
@@ -598,7 +598,7 @@
         </q-card>
       </q-dialog>
 
-      <!-- Confirm stake dialog -->
+      <!-- Confirm ballot cancel dialog -->
       <q-dialog v-model="dialog_cancel_ballot">
         <q-card>
           <q-card-section class="row items-center">
@@ -627,38 +627,27 @@
         </q-card>
       </q-dialog>
 
-      <!-- Close ballot dialog -->
-      <!-- <q-dialog v-model="dialog_close_ballot" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-avatar
-            icon="fas fa-money-bill-alt"
-            color="primary"
-            text-color="white"
-          />
-          <span class="q-ml-sm">
-            Send tokens to participants?
-          </span>
-        </q-card-section>
+      <!-- Under process dialog -->
+      <q-dialog v-model="explainProcessDialog" >
+        <q-card style="max-width: 100%;width:100rem" class="col-shrink slim-scrollbar">
+          <q-card-section class="row items-center justify-center">
+            <div class="text-h6">Project Listing Process</div>
+          </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn
-            flat
-            label="No"
-            color="primary"
-            @click="tryClosePool(false)"
-            v-close-popup
-          />
-          <q-btn
-            flat
-            label="Yes"
-            color="primary"
-            @click="tryClosePool(true)"
-            v-close-popup
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog> -->
+          <q-card-section>
+            <!-- <q-img
+              src="~assets/process/Applying.png"
+              spinner-color="white"
+              style="max-width: 99rem"
+            /> -->
+            
+          </q-card-section>
+
+          <q-card-actions align="center">
+            <q-btn flat label="I Understand" color="primary" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </section>
   </q-page>
 </template>
@@ -673,6 +662,7 @@ export default {
   data() {
     return {
       TermsandConditionsURL: "",
+      explainProcessDialog: false,
       confirm_fee: false,
       haveWhitelist: false,
       customDate: "",
@@ -681,13 +671,13 @@ export default {
       settings: {},
       weekInMs: 7 * 24 * 60 * 60 * 1000,
       ballot_close: {
-          label: "2 Weeks",
-          date: this.toDateString(Date.now() + 2 * 7 * 24 * 60 * 60 * 1000),
-          category: "2"
-        },
-      pool_open: { date: this.toDateString(new Date().valueOf()) },
+        label: "2 Weeks",
+        date: this.toDateString(Date.now() + 2 * 7 * 24 * 60 * 60 * 1000),
+        category: "2"
+      },
+      pool_open: { date: this.toDateString(Date.now() + 2 * 8 * 24 * 60 * 60 * 1000) },
       // private_end: { date: this.toDateString(new Date().valueOf()) },
-      public_end: { date: this.toDateString(new Date().valueOf()) },
+      public_end: { date: this.toDateString(Date.now() + 3 * 7 * 24 * 60 * 60 * 1000) },
 
       cleanedWebLinks: [],
       // prettier-ignore
@@ -712,7 +702,7 @@ export default {
       dialog_cancel_ballot: false,
       accessType: "Premium",
       accessOptions: ["Public", "Premium"],
-      premiumDuration: 3, //hours
+      premiumDuration: 1, //hours
       premiumDurationOptions: [1, 3, 6, 12, 24],
       vesting: false,
       lockup_fraction: 0.5,
@@ -1361,6 +1351,11 @@ export default {
   },
 
   async mounted() {
+    // check if updating or new pool
+    if (this.$route.params.id === undefined) {
+      this.explainProcessDialog = true
+    }
+
     this.settings = await this.getPoolsSettings();
     this.ballotConfig = await this.getBallotConfig();
 

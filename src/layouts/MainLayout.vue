@@ -170,9 +170,8 @@
               color="accent"
               style="margin-left: -10px"
               flat
-              type="a"
-              href="https://docs.google.com/forms/d/e/1FAIpQLSeQE7zDFlxxWmAN-pKDfik6OcgtReJ8oiviIpCUkOAGk6Ez7Q/viewform"
-              label="List project"
+              label="List Project"
+              :to="{ name: 'createballot' }"
               no-caps
               padding="5px 10px"
             />

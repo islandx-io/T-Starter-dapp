@@ -51,7 +51,7 @@
           <q-btn
             class="hover-accent"
             color="primary"
-            label="Create Ballot"
+            label="List Project"
             :to="{ name: 'createballot' }"
           />
         </div>
