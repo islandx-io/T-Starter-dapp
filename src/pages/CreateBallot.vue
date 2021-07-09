@@ -205,6 +205,7 @@
                 <q-item-section>
                   <q-select
                     outlined
+                    class="q-pb-md"
                     v-model="accessType"
                     :options="accessOptions"
                     label="Access Type"
@@ -221,6 +222,7 @@
                 <q-item-section v-if="accessType === 'Premium'">
                   <q-select
                     outlined
+                    class="q-pb-md"
                     v-model="premiumDuration"
                     :options="premiumDurationOptions"
                     label="Premium duration (Hours)"
@@ -239,6 +241,7 @@
                 <q-item-section>
                   <!-- <q-select
                     outlined
+                    class="q-pb-md"
                     v-model="ballot_close"
                     :options="votingTimeOptions"
                     label="Voting duration"
@@ -249,9 +252,10 @@
                   /> -->
                   <!-- Keep for dev purposed -->
                   <datetime-field
+                    class="q-pb-md"
                     :value.sync="ballot_close"
                     :pool="pool"
-                    label="Voting close time (UTC) *"
+                    :label="`Voting closing time (GMT${localTimeZone}) *`"
                   />
                 </q-item-section>
               </q-item>
@@ -259,16 +263,20 @@
               <q-item>
                 <q-item-section>
                   <datetime-field
+                    class="q-pb-md"
                     :value.sync="pool_open"
                     :pool="pool"
-                    label="Opening time (UTC) *"
+                    :label="`Pool opening time (GMT${localTimeZone}) *`"
                   />
                 </q-item-section>
+              </q-item>
+              <q-item>
                 <q-item-section>
                   <datetime-field
+                    class="q-pb-md"
                     :value.sync="public_end"
                     :pool="pool"
-                    label="End time (UTC) *"
+                    :label="`Pool ending time (GMT${localTimeZone}) *`"
                   />
                 </q-item-section>
               </q-item>
@@ -658,6 +666,7 @@
 import datetimeField from "src/components/poolcreation/datetime-field.vue";
 import { mapGetters, mapActions } from "vuex";
 import statusBadge from "src/components/poolinfo/status-badge";
+import { date } from "quasar";
 
 export default {
   components: { datetimeField, statusBadge },
@@ -674,15 +683,15 @@ export default {
       weekInMs: 7 * 24 * 60 * 60 * 1000,
       ballot_close: {
         label: "2 Weeks",
-        date: this.toDateString(Date.now() + 2 * 7 * 24 * 60 * 60 * 1000),
+        date: this.toDateStringLocal(Date.now() + 2 * 7 * 24 * 60 * 60 * 1000),
         category: "2"
       },
       pool_open: {
-        date: this.toDateString(Date.now() + 2 * 8 * 24 * 60 * 60 * 1000)
+        date: this.toDateStringLocal(Date.now() + 2 * 8 * 24 * 60 * 60 * 1000)
       },
-      // private_end: { date: this.toDateString(new Date().valueOf()) },
+      // private_end: { date: this.toDateStringLocal(new Date().valueOf()) },
       public_end: {
-        date: this.toDateString(Date.now() + 3 * 7 * 24 * 60 * 60 * 1000)
+        date: this.toDateStringLocal(Date.now() + 3 * 7 * 24 * 60 * 60 * 1000)
       },
 
       cleanedWebLinks: [],
@@ -725,12 +734,12 @@ export default {
       return [
         {
           label: "1 Week",
-          date: this.toDateString(Date.now() + 1 * this.weekInMs),
+          date: this.toDateStringLocal(Date.now() + 1 * this.weekInMs),
           category: "1"
         },
         {
           label: "2 Weeks",
-          date: this.toDateString(Date.now() + 2 * this.weekInMs),
+          date: this.toDateStringLocal(Date.now() + 2 * this.weekInMs),
           category: "2"
         }
       ];
@@ -739,8 +748,8 @@ export default {
     private_end() {
       if (this.accessType === "Premium") {
         return {
-          date: this.toDateString(
-            this.toUnixTimestamp(this.pool_open.date) +
+          date: this.toDateStringLocal(
+            new Date(this.pool_open.date).valueOf() +
               this.premiumDuration * 1000 * 60 * 60
           )
         };
@@ -788,6 +797,9 @@ export default {
       else if (status === "fail") return "Pool cancelled";
       else if (status === "success") return "Pool succeeded";
       else return "Draft";
+    },
+    localTimeZone() {
+      return date.formatDate(new Date(), "Z");
     }
   },
 
@@ -810,16 +822,16 @@ export default {
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
-    toUnixTimestamp(timeStamp) {
-      return new Date(timeStamp + " UTC").valueOf();
-    },
-    toDateString(timestamp) {
+    toDateStringUTC(timestamp) {
       if (timestamp <= 0) timestamp = new Date().valueOf();
       return new Date(timestamp)
         .toISOString()
         .slice(0, 16)
         .replace("T", " ");
-      // return date.formatDate(new Date(timestamp), "YYYY-MM-DD HH:mm");
+    },
+    toDateStringLocal(timestamp) {
+      if (timestamp <= 0) timestamp = new Date().valueOf();
+      return date.formatDate(timestamp, "YYYY-MM-DD HH:mm");
     },
 
     formatWhitelist() {
@@ -956,10 +968,11 @@ export default {
           this.populateWebLinks();
           this.BaseTokenSymFromChain();
 
-          this.ballot_close.date = this.toDateString(this.pool.ballot_close);
-          this.pool_open.date = this.toDateString(this.pool.pool_open);
-          this.private_end.date = this.toDateString(this.pool.private_end);
-          this.public_end.date = this.toDateString(this.pool.public_end);
+          // prettier-ignore
+          this.ballot_close.date = this.toDateStringLocal(this.pool.ballot_close);
+          this.pool_open.date = this.toDateStringLocal(this.pool.pool_open);
+          this.private_end.date = this.toDateStringLocal(this.pool.private_end);
+          this.public_end.date = this.toDateStringLocal(this.pool.public_end);
 
           if (this.pool.whitelist.length > 0) {
             this.haveWhitelist = true;
@@ -1020,10 +1033,11 @@ export default {
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            ballot_close: this.pool.ballot_close,
-            pool_open: this.pool.pool_open,
-            private_end: this.pool.private_end,
-            public_end: this.pool.public_end,
+            // prettier-ignore
+            ballot_close: this.toDateStringUTC(new Date(this.pool.ballot_close)),
+            pool_open: this.toDateStringUTC(new Date(this.pool.pool_open)),
+            private_end: this.toDateStringUTC(new Date(this.pool.private_end)),
+            public_end: this.toDateStringUTC(new Date(this.pool.public_end)),
             whitelist: this.pool.whitelist,
             web_links: this.cleanedWebLinks
           }
@@ -1108,10 +1122,12 @@ export default {
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            ballot_close: this.pool.ballot_close,
-            pool_open: this.pool.pool_open,
-            private_end: this.pool.private_end,
-            public_end: this.pool.public_end,
+            ballot_close: this.toDateStringUTC(
+              new Date(this.pool.ballot_close)
+            ),
+            pool_open: this.toDateStringUTC(new Date(this.pool.pool_open)),
+            private_end: this.toDateStringUTC(new Date(this.pool.private_end)),
+            public_end: this.toDateStringUTC(new Date(this.pool.public_end)),
             whitelist: this.pool.whitelist,
             web_links: this.cleanedWebLinks
           }
