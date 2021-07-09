@@ -104,6 +104,7 @@
               :props="props"
               :key="props.row.id"
               @click="onRowClick(props.row)"
+              class="cursor-pointer"
             >
               <!-- {{props}} -->
               <!-- Avatar -->
