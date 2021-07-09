@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <section class="header-bg row content-center justify-center">
-      <h2 class="text-white">Update Pool</h2>
+      <h2 class="text-white q-pt-xl">Update Pool</h2>
     </section>
 
     <section class="body-container">
@@ -154,6 +154,7 @@
                 <q-item-section>
                   <q-select
                     outlined
+                    class="q-pb-md"
                     v-model="accessType"
                     :options="accessOptions"
                     label="Access Type"
@@ -164,6 +165,7 @@
                 <q-item-section v-if="accessType === 'Premium'">
                   <q-select
                     outlined
+                    class="q-pb-md"
                     v-model="premiumDuration"
                     :options="premiumDurationOptions"
                     label="Premium duration (Hours)"
@@ -175,16 +177,20 @@
               <q-item>
                 <q-item-section>
                   <datetime-field
+                    class="q-pb-md"
                     :value.sync="pool_open"
                     :pool="pool"
-                    label="Opening time (UTC) *"
+                    :label="`Opening time (GMT${localTimeZone}) *`"
                   />
                 </q-item-section>
+              </q-item>
+              <q-item>
                 <q-item-section>
                   <datetime-field
+                    class="q-pb-md"
                     :value.sync="public_end"
                     :pool="pool"
-                    label="End time (UTC) *"
+                    :label="`Ending time (GMT${localTimeZone}) *`"
                   />
                 </q-item-section>
               </q-item>
@@ -499,9 +505,9 @@ export default {
       customDate: "",
       poolID: Number(this.$route.params.id),
       pool: this.$defaultPoolInfo,
-      pool_open: { date: this.toDateString(Date.now()) },
+      pool_open: { date: this.toDateStringLocal(Date.now()) },
       // private_end: { date: "" },
-      public_end: { date: this.toDateString(Date.now()) },
+      public_end: { date: this.toDateStringLocal(Date.now()) },
 
       cleanedWebLinks: [],
       // prettier-ignore
@@ -542,8 +548,8 @@ export default {
     private_end() {
       if (this.accessType === "Premium") {
         return {
-          date: this.toDateString(
-            this.toUnixTimestamp(this.pool_open.date) +
+          date: this.toDateStringLocal(
+            new Date(this.pool_open.date).valueOf() +
               this.premiumDuration * 1000 * 60 * 60
           )
         };
@@ -594,6 +600,9 @@ export default {
       else if (status === "fail") return "Pool cancelled";
       else if (status === "success") return "Pool succeeded";
       else return "";
+    },
+    localTimeZone() {
+      return date.formatDate(new Date(), "Z");
     }
   },
 
@@ -613,7 +622,7 @@ export default {
     toUnixTimestamp(timeStamp) {
       return new Date(timeStamp + " UTC").valueOf();
     },
-    toDateString(timestamp) {
+    toDateStringUTC(timestamp) {
       // console.log(timestamp)
       if (timestamp <= 0) timestamp = new Date().valueOf();
       return new Date(timestamp)
@@ -621,6 +630,10 @@ export default {
         .slice(0, 16)
         .replace("T", " ");
       // return date.formatDate(new Date(timestamp), "YYYY-MM-DD HH:mm");
+    },
+    toDateStringLocal(timestamp) {
+      if (timestamp <= 0) timestamp = new Date().valueOf();
+      return date.formatDate(timestamp, "YYYY-MM-DD HH:mm");
     },
 
     formatWhitelist() {
@@ -712,9 +725,9 @@ export default {
       this.populateWebLinks();
       this.BaseTokenSymFromChain();
 
-      this.pool_open.date = this.toDateString(this.pool.pool_open);
-      this.private_end.date = this.toDateString(this.pool.private_end);
-      this.public_end.date = this.toDateString(this.pool.public_end);
+      this.pool_open.date = this.toDateStringLocal(this.pool.pool_open);
+      this.private_end.date = this.toDateStringLocal(this.pool.private_end);
+      this.public_end.date = this.toDateStringLocal(this.pool.public_end);
 
       if (this.pool.whitelist.length > 0) {
         this.haveWhitelist = true;
@@ -805,9 +818,9 @@ export default {
             this.selected_base_token.decimals,
             this.selected_base_token.sym
           ),
-          pool_open: this.pool.pool_open,
-          private_end: this.pool.private_end,
-          public_end: this.pool.public_end,
+          pool_open: this.toDateStringUTC(new Date(this.pool.pool_open)),
+          private_end: this.toDateStringUTC(new Date(this.pool.private_end)),
+          public_end: this.toDateStringUTC(new Date(this.pool.public_end)),
           whitelist: this.pool.whitelist,
           web_links: this.cleanedWebLinks
         }
@@ -1045,8 +1058,8 @@ export default {
 
 <style lang="scss" scoped>
 .header-bg {
-  height: 230px;
-  margin-bottom: -40px;
+  height: 200px;
+  margin-bottom: -50px;
 }
 .weblink-container {
   display: grid;

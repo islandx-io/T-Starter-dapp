@@ -1122,9 +1122,8 @@ export default {
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            ballot_close: this.toDateStringUTC(
-              new Date(this.pool.ballot_close)
-            ),
+            // prettier-ignore
+            ballot_close: this.toDateStringUTC(new Date(this.pool.ballot_close)),
             pool_open: this.toDateStringUTC(new Date(this.pool.pool_open)),
             private_end: this.toDateStringUTC(new Date(this.pool.private_end)),
             public_end: this.toDateStringUTC(new Date(this.pool.public_end)),
