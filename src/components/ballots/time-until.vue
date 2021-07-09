@@ -6,9 +6,9 @@
     <div v-if="hours > 1 && days < 1">{{ hours }} hours</div>
     <div v-else-if="hours === 1 && days < 1">{{ hours }} hour</div>
 
-    <div v-if="minutes >= 1 && hours < 1">{{ minutes }} min</div>
+    <div v-if="minutes >= 1 && hours < 1 && days < 1">{{ minutes }} min</div>
 
-    <div v-if="seconds >= 1 && minutes < 1">{{ seconds }} s</div>
+    <div v-if="seconds >= 1 && minutes < 1 && hours < 1 && days < 1">{{ seconds }} s</div>
 
     <div v-if="days <= 0 && hours <= 0 && minutes <= 0 && seconds <= 0">
       Closed
