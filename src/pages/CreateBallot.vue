@@ -568,6 +568,24 @@
             <q-spinner-puff size="50px" color="primary" />
           </q-inner-loading>
         </div> -->
+        <q-separator class="q-my-md" />
+        <div class="items-center q-px-md">
+          <div class="text-subtitle1 q-pb-xs">Special requests?</div>
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSeQE7zDFlxxWmAN-pKDfik6OcgtReJ8oiviIpCUkOAGk6Ez7Q/viewform"
+            target="_blank"
+            class="hover-accent "
+            >Apply for a listing</a
+          >
+          <!-- <q-btn
+            flat
+            color="primary"
+            label="Apply for listing"
+            class="hover-accent"
+            no-caps
+          ></q-btn> -->
+          on our Google form.
+        </div>
       </q-card>
 
       <!-- Confirm stake dialog -->
@@ -1374,7 +1392,7 @@ export default {
   async mounted() {
     // check if updating or new pool
     if (this.$route.params.id === undefined) {
-      this.explainProcessDialog = true;
+      this.explainProcessDialog = false;
     }
 
     this.settings = await this.getPoolsSettings();
