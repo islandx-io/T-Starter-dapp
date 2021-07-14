@@ -4,7 +4,7 @@
       <h2 class="text-white q-pt-xl">List Project</h2>
     </section>
 
-    <section class="body-container">
+    <section class="body-container column">
       <q-card>
         <div
           v-if="this.$route.params.id != undefined && accountName != pool.owner"
@@ -482,6 +482,7 @@
             <q-item class="justify-start">
               <q-item-section class="col-auto">
                 <q-btn
+                  class="hover-accent"
                   v-if="this.$route.params.id === undefined"
                   :label="'Create'"
                   @click="confirm_fee = true"
@@ -588,6 +589,21 @@
         </div>
       </q-card>
 
+      <div class="text-center q-pt-md  text-grey-7 ">
+        <q-btn
+          no-caps
+          flat
+          class="hover-accent"
+          size="0.75rem"
+          @click="explainProcessDialog = true"
+        >
+          <div class="text-caption">
+            <q-icon name="fas fa-info-circle" class="q-pr-xs" size="1em" />
+            For more information about the listing process, click here
+          </div>
+        </q-btn>
+      </div>
+
       <!-- Confirm stake dialog -->
       <q-dialog v-model="confirm_fee" persistent>
         <q-card>
@@ -655,24 +671,65 @@
 
       <!-- Under process dialog -->
       <q-dialog v-model="explainProcessDialog">
-        <q-card
-          style="max-width: 100%;width:100rem"
-          class="col-shrink slim-scrollbar"
-        >
+        <q-card class="col-shrink slim-scrollbar" style="max-width: 80ch">
           <q-card-section class="row items-center justify-center">
             <div class="text-h6">Project Listing Process</div>
           </q-card-section>
 
           <q-card-section>
-            <!-- <q-img
-              src="~assets/process/Applying.png"
-              spinner-color="white"
-              style="max-width: 99rem"
-            /> -->
+            <div class="text-subtitle1">Step 1 : Create a ballot</div>
+            <p class="q-pt-sm">
+              A ballot is used to allow the T-Starter community to evaluate your
+              project and decide if it should proceed to sale. Create a ballot
+              as follows:
+            </p>
+            <ul>
+              <li>
+                Complete the ballot creation form detailing your proposed sale.
+              </li>
+              <li>
+                Pay 1000 START ballot fee and save your ballot draft to the
+                blockchain.
+              </li>
+              <li>
+                Review your sale parameters and refine if necessary. Once you
+                are happy with your sale parameters, open your sale to voting as
+                follows.
+              </li>
+              <li>
+                Use the “fund sale” option to move project sale tokens to
+                T-Starter
+              </li>
+              <li>
+                “Publish” the sale to start the voting process. Voting begins
+                immediately after the ballot is published.
+              </li>
+            </ul>
+
+            <div class="text-subtitle1">
+              Step 2 : Close ballot and start the token sale
+            </div>
+            <ul>
+              <li>Voting ends if the voting period is over.</li>
+              <li>
+                If the ballot is successful, a pool is created and published
+                automatically once the ballot closes.
+              </li>
+              <li>
+                If the ballot is unsuccessful, it is removed without creating a
+                pool.
+              </li>
+            </ul>
           </q-card-section>
 
           <q-card-actions align="center">
-            <q-btn flat label="I Understand" color="primary" v-close-popup />
+            <q-btn
+              class="hover-accent"
+              flat
+              label="I Understand"
+              color="primary"
+              v-close-popup
+            />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -1392,7 +1449,7 @@ export default {
   async mounted() {
     // check if updating or new pool
     if (this.$route.params.id === undefined) {
-      this.explainProcessDialog = false;
+      this.explainProcessDialog = true;
     }
 
     this.settings = await this.getPoolsSettings();
