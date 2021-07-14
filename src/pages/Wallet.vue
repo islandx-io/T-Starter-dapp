@@ -189,11 +189,7 @@ export default {
       // prettier-ignore
       stakeColumns: [
         { name: "staked", label: "Unstaking", field: "second", align: "center" },
-        { name: "releaseDate", label: "Release date", field: "first", align: "center", format: val => {
-          let res = date.formatDate(val, 'YYYY-MM-DD'); 
-          if (new Date(res) < new Date()) return res + "*";
-          else return res;
-        }},
+        { name: "releaseDate", label: "Release date", field: "first", align: "center", format: val => date.formatDate(val, 'YYYY-MM-DD')},
       ],
       // prettier-ignore
       stakeData: [],
