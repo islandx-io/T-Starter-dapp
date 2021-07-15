@@ -673,11 +673,25 @@
       <q-dialog v-model="explainProcessDialog">
         <q-card class="col-shrink slim-scrollbar" style="max-width: 80ch">
           <q-card-section class="row items-center justify-center">
-            <div class="text-h6">Project Listing Process</div>
+            <div class="text-h6">
+              Project Listing Process
+              <q-icon
+                name="fas fa-clipboard-list"
+                class="text-green"
+                style="font-size: 1em;"
+              />
+            </div>
           </q-card-section>
 
           <q-card-section>
-            <div class="text-subtitle1">Step 1 : Create a ballot</div>
+            <div class="text-subtitle1">
+              Step 1 : Create a ballot
+              <q-icon
+                name="fas fa-check"
+                class="text-green"
+                style="font-size: 1rem;"
+              />
+            </div>
             <p class="q-pt-sm">
               A ballot is used to allow the T-Starter community to evaluate your
               project and decide if it should proceed to sale. Create a ballot
@@ -708,6 +722,11 @@
 
             <div class="text-subtitle1">
               Step 2 : Close ballot and start the token sale
+              <q-icon
+                name="fas fa-check"
+                class="text-green"
+                style="font-size: 1rem;"
+              />
             </div>
             <ul>
               <li>Voting ends if the voting period is over.</li>
