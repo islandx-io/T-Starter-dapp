@@ -576,8 +576,8 @@
             href="https://docs.google.com/forms/d/e/1FAIpQLSeQE7zDFlxxWmAN-pKDfik6OcgtReJ8oiviIpCUkOAGk6Ez7Q/viewform"
             target="_blank"
             class="hover-accent "
-            >Apply for a listing</a
-          >
+            >Apply for a listing
+          </a>
           <!-- <q-btn
             flat
             color="primary"
@@ -739,17 +739,32 @@
                 pool.
               </li>
             </ul>
+            <div class="row justify-center q-py-sm">
+              <q-btn
+                class="hover-accent"
+                label="Create Ballot"
+                color="primary"
+                v-close-popup
+              />
+            </div>
           </q-card-section>
 
-          <q-card-actions align="center">
-            <q-btn
-              class="hover-accent"
-              flat
-              label="I Understand"
-              color="primary"
-              v-close-popup
-            />
-          </q-card-actions>
+          <q-separator class="" />
+          <q-card-section>
+            <div class="text-subtitle1 q-pb-xs">Special requests?</div>
+            If this self-listing process does not satisfy your project's needs,
+            you can apply for a listing.
+            <div class="row justify-center q-pt-md">
+              <q-btn
+                class="hover-accent"
+                label="Apply for listing"
+                color="primary"
+                href="https://docs.google.com/forms/d/e/1FAIpQLSeQE7zDFlxxWmAN-pKDfik6OcgtReJ8oiviIpCUkOAGk6Ez7Q/viewform"
+                target="_blank"
+                v-close-popup
+              />
+            </div>
+          </q-card-section>
         </q-card>
       </q-dialog>
     </section>
