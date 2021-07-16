@@ -239,7 +239,7 @@
               </q-item>
               <q-item>
                 <q-item-section>
-                  <!-- <q-select
+                  <q-select
                     outlined
                     class="q-pb-md"
                     v-model="ballot_close"
@@ -249,14 +249,14 @@
                       pool.status !== 'draft' &&
                         this.$route.params.id != undefined
                     "
-                  /> -->
+                  />
                   <!-- Keep for dev purposed -->
-                  <datetime-field
+                  <!-- <datetime-field
                     class="q-pb-md"
                     :value.sync="ballot_close"
                     :pool="pool"
                     :label="`Voting closing time (GMT${localTimeZone}) *`"
-                  />
+                  /> -->
                 </q-item-section>
               </q-item>
 
@@ -742,7 +742,7 @@
             <div class="row justify-center q-py-sm">
               <q-btn
                 class="hover-accent"
-                label="Create Ballot"
+                label="Continue"
                 color="primary"
                 v-close-popup
               />
