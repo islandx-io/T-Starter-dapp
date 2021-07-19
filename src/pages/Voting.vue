@@ -59,7 +59,7 @@
         <!-- Table with pools -->
         <q-table
           class="voting-table"
-          :data="getAllBallots"
+          :data="[]"
           :columns="columns"
           row-key="name"
           :pagination.sync="pagination"
@@ -68,6 +68,9 @@
           :filter-method="ballotsFilter"
           dense
         >
+          <template v-slot:no-data>
+            <div class="text-grey-7">No projects listed at the moment</div>
+          </template>
           <!-- :sort-method="customSort"
           binary-state-sort -->
           <template v-slot:header="props">
