@@ -1,10 +1,10 @@
 <template>
   <q-page>
     <section class="header-bg row content-center justify-center">
-      <h2 class="text-white">Create Pool</h2>
+      <h2 class="text-white q-pt-xl">List Project</h2>
     </section>
 
-    <section class="body-container">
+    <section class="body-container column">
       <q-card>
         <div
           v-if="this.$route.params.id != undefined && accountName != pool.owner"
@@ -205,6 +205,7 @@
                 <q-item-section>
                   <q-select
                     outlined
+                    class="q-pb-md"
                     v-model="accessType"
                     :options="accessOptions"
                     label="Access Type"
@@ -221,6 +222,7 @@
                 <q-item-section v-if="accessType === 'Premium'">
                   <q-select
                     outlined
+                    class="q-pb-md"
                     v-model="premiumDuration"
                     :options="premiumDurationOptions"
                     label="Premium duration (Hours)"
@@ -239,6 +241,7 @@
                 <q-item-section>
                   <q-select
                     outlined
+                    class="q-pb-md"
                     v-model="ballot_close"
                     :options="votingTimeOptions"
                     label="Voting duration"
@@ -249,9 +252,10 @@
                   />
                   <!-- Keep for dev purposed -->
                   <!-- <datetime-field
+                    class="q-pb-md"
                     :value.sync="ballot_close"
                     :pool="pool"
-                    label="Voting close time (UTC) *"
+                    :label="`Voting closing time (GMT${localTimeZone}) *`"
                   /> -->
                 </q-item-section>
               </q-item>
@@ -259,16 +263,20 @@
               <q-item>
                 <q-item-section>
                   <datetime-field
+                    class="q-pb-md"
                     :value.sync="pool_open"
                     :pool="pool"
-                    label="Opening time (UTC) *"
+                    :label="`Pool opening time (GMT${localTimeZone}) *`"
                   />
                 </q-item-section>
+              </q-item>
+              <q-item>
                 <q-item-section>
                   <datetime-field
+                    class="q-pb-md"
                     :value.sync="public_end"
                     :pool="pool"
-                    label="End time (UTC) *"
+                    :label="`Pool ending time (GMT${localTimeZone}) *`"
                   />
                 </q-item-section>
               </q-item>
@@ -474,6 +482,7 @@
             <q-item class="justify-start">
               <q-item-section class="col-auto">
                 <q-btn
+                  class="hover-accent"
                   v-if="this.$route.params.id === undefined"
                   :label="'Create'"
                   @click="confirm_fee = true"
@@ -560,7 +569,40 @@
             <q-spinner-puff size="50px" color="primary" />
           </q-inner-loading>
         </div> -->
+        <q-separator class="q-my-md" />
+        <div class="items-center q-px-md">
+          <div class="text-subtitle1 q-pb-xs">Special requests?</div>
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSeQE7zDFlxxWmAN-pKDfik6OcgtReJ8oiviIpCUkOAGk6Ez7Q/viewform"
+            target="_blank"
+            class="hover-accent "
+            >Apply for a listing
+          </a>
+          <!-- <q-btn
+            flat
+            color="primary"
+            label="Apply for listing"
+            class="hover-accent"
+            no-caps
+          ></q-btn> -->
+          on our Google form.
+        </div>
       </q-card>
+
+      <div class="text-center q-pt-md  text-grey-7 ">
+        <q-btn
+          no-caps
+          flat
+          class="hover-accent"
+          size="0.75rem"
+          @click="explainProcessDialog = true"
+        >
+          <div class="text-caption">
+            <q-icon name="fas fa-info-circle" class="q-pr-xs" size="1em" />
+            For more information about the listing process, click here
+          </div>
+        </q-btn>
+      </div>
 
       <!-- Confirm stake dialog -->
       <q-dialog v-model="confirm_fee" persistent>
@@ -598,7 +640,7 @@
         </q-card>
       </q-dialog>
 
-      <!-- Confirm stake dialog -->
+      <!-- Confirm ballot cancel dialog -->
       <q-dialog v-model="dialog_cancel_ballot">
         <q-card>
           <q-card-section class="row items-center">
@@ -627,38 +669,104 @@
         </q-card>
       </q-dialog>
 
-      <!-- Close ballot dialog -->
-      <!-- <q-dialog v-model="dialog_close_ballot" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-avatar
-            icon="fas fa-money-bill-alt"
-            color="primary"
-            text-color="white"
-          />
-          <span class="q-ml-sm">
-            Send tokens to participants?
-          </span>
-        </q-card-section>
+      <!-- Under process dialog -->
+      <q-dialog v-model="explainProcessDialog">
+        <q-card class="col-shrink slim-scrollbar" style="max-width: 80ch">
+          <q-card-section class="row items-center justify-center">
+            <div class="text-h6">
+              Project Listing Process
+              <q-icon
+                name="fas fa-clipboard-list"
+                class="text-green"
+                style="font-size: 1em;"
+              />
+            </div>
+          </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn
-            flat
-            label="No"
-            color="primary"
-            @click="tryClosePool(false)"
-            v-close-popup
-          />
-          <q-btn
-            flat
-            label="Yes"
-            color="primary"
-            @click="tryClosePool(true)"
-            v-close-popup
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog> -->
+          <q-card-section>
+            <div class="text-subtitle1">
+              Step 1 : Create a ballot
+              <q-icon
+                name="fas fa-check"
+                class="text-green"
+                style="font-size: 1rem;"
+              />
+            </div>
+            <p class="q-pt-sm">
+              A ballot is used to allow the T-Starter community to evaluate your
+              project and decide if it should proceed to sale. Create a ballot
+              as follows:
+            </p>
+            <ul>
+              <li>
+                Complete the ballot creation form detailing your proposed sale.
+              </li>
+              <li>
+                Pay 1000 START ballot fee and save your ballot draft to the
+                blockchain.
+              </li>
+              <li>
+                Review your sale parameters and refine if necessary. Once you
+                are happy with your sale parameters, open your sale to voting as
+                follows.
+              </li>
+              <li>
+                Use the “fund sale” option to move project sale tokens to
+                T-Starter
+              </li>
+              <li>
+                “Publish” the sale to start the voting process. Voting begins
+                immediately after the ballot is published.
+              </li>
+            </ul>
+
+            <div class="text-subtitle1">
+              Step 2 : Close ballot and start the token sale
+              <q-icon
+                name="fas fa-check"
+                class="text-green"
+                style="font-size: 1rem;"
+              />
+            </div>
+            <ul>
+              <li>Voting ends if the voting period is over.</li>
+              <li>
+                If the ballot is successful, a pool is created and published
+                automatically once the ballot closes.
+              </li>
+              <li>
+                If the ballot is unsuccessful, it is removed without creating a
+                pool.
+              </li>
+            </ul>
+            <div class="row justify-center q-py-sm">
+              <q-btn
+                class="hover-accent"
+                label="Continue"
+                color="primary"
+                v-close-popup
+              />
+            </div>
+          </q-card-section>
+
+          <q-separator class="" />
+          <q-card-section>
+            <div class="text-subtitle1 q-pb-xs">Special requests?</div>
+            If this self-listing process does not satisfy your project's needs,
+            you can apply for a listing.
+            <div class="row justify-center q-pt-md">
+              <q-btn
+                class="hover-accent"
+                label="Apply for listing"
+                color="primary"
+                href="https://docs.google.com/forms/d/e/1FAIpQLSeQE7zDFlxxWmAN-pKDfik6OcgtReJ8oiviIpCUkOAGk6Ez7Q/viewform"
+                target="_blank"
+                v-close-popup
+              />
+            </div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </section>
   </q-page>
 </template>
@@ -667,12 +775,14 @@
 import datetimeField from "src/components/poolcreation/datetime-field.vue";
 import { mapGetters, mapActions } from "vuex";
 import statusBadge from "src/components/poolinfo/status-badge";
+import { date } from "quasar";
 
 export default {
   components: { datetimeField, statusBadge },
   data() {
     return {
       TermsandConditionsURL: "",
+      explainProcessDialog: false,
       confirm_fee: false,
       haveWhitelist: false,
       customDate: "",
@@ -681,13 +791,17 @@ export default {
       settings: {},
       weekInMs: 7 * 24 * 60 * 60 * 1000,
       ballot_close: {
-          label: "2 Weeks",
-          date: this.toDateString(Date.now() + 2 * 7 * 24 * 60 * 60 * 1000),
-          category: "2"
-        },
-      pool_open: { date: this.toDateString(new Date().valueOf()) },
-      // private_end: { date: this.toDateString(new Date().valueOf()) },
-      public_end: { date: this.toDateString(new Date().valueOf()) },
+        label: "2 Weeks",
+        date: this.toDateStringLocal(Date.now() + 2 * 7 * 24 * 60 * 60 * 1000),
+        category: "2"
+      },
+      pool_open: {
+        date: this.toDateStringLocal(Date.now() + 2 * 8 * 24 * 60 * 60 * 1000)
+      },
+      // private_end: { date: this.toDateStringLocal(new Date().valueOf()) },
+      public_end: {
+        date: this.toDateStringLocal(Date.now() + 3 * 7 * 24 * 60 * 60 * 1000)
+      },
 
       cleanedWebLinks: [],
       // prettier-ignore
@@ -712,7 +826,7 @@ export default {
       dialog_cancel_ballot: false,
       accessType: "Premium",
       accessOptions: ["Public", "Premium"],
-      premiumDuration: 3, //hours
+      premiumDuration: 1, //hours
       premiumDurationOptions: [1, 3, 6, 12, 24],
       vesting: false,
       lockup_fraction: 0.5,
@@ -729,12 +843,12 @@ export default {
       return [
         {
           label: "1 Week",
-          date: this.toDateString(Date.now() + 1 * this.weekInMs),
+          date: this.toDateStringLocal(Date.now() + 1 * this.weekInMs),
           category: "1"
         },
         {
           label: "2 Weeks",
-          date: this.toDateString(Date.now() + 2 * this.weekInMs),
+          date: this.toDateStringLocal(Date.now() + 2 * this.weekInMs),
           category: "2"
         }
       ];
@@ -743,8 +857,8 @@ export default {
     private_end() {
       if (this.accessType === "Premium") {
         return {
-          date: this.toDateString(
-            this.toUnixTimestamp(this.pool_open.date) +
+          date: this.toDateStringLocal(
+            new Date(this.pool_open.date).valueOf() +
               this.premiumDuration * 1000 * 60 * 60
           )
         };
@@ -792,6 +906,9 @@ export default {
       else if (status === "fail") return "Pool cancelled";
       else if (status === "success") return "Pool succeeded";
       else return "Draft";
+    },
+    localTimeZone() {
+      return date.formatDate(new Date(), "Z");
     }
   },
 
@@ -814,16 +931,16 @@ export default {
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
-    toUnixTimestamp(timeStamp) {
-      return new Date(timeStamp + " UTC").valueOf();
-    },
-    toDateString(timestamp) {
+    toDateStringUTC(timestamp) {
       if (timestamp <= 0) timestamp = new Date().valueOf();
       return new Date(timestamp)
         .toISOString()
         .slice(0, 16)
         .replace("T", " ");
-      // return date.formatDate(new Date(timestamp), "YYYY-MM-DD HH:mm");
+    },
+    toDateStringLocal(timestamp) {
+      if (timestamp <= 0) timestamp = new Date().valueOf();
+      return date.formatDate(timestamp, "YYYY-MM-DD HH:mm");
     },
 
     formatWhitelist() {
@@ -960,10 +1077,11 @@ export default {
           this.populateWebLinks();
           this.BaseTokenSymFromChain();
 
-          this.ballot_close.date = this.toDateString(this.pool.ballot_close);
-          this.pool_open.date = this.toDateString(this.pool.pool_open);
-          this.private_end.date = this.toDateString(this.pool.private_end);
-          this.public_end.date = this.toDateString(this.pool.public_end);
+          // prettier-ignore
+          this.ballot_close.date = this.toDateStringLocal(this.pool.ballot_close);
+          this.pool_open.date = this.toDateStringLocal(this.pool.pool_open);
+          this.private_end.date = this.toDateStringLocal(this.pool.private_end);
+          this.public_end.date = this.toDateStringLocal(this.pool.public_end);
 
           if (this.pool.whitelist.length > 0) {
             this.haveWhitelist = true;
@@ -1024,10 +1142,11 @@ export default {
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            ballot_close: this.pool.ballot_close,
-            pool_open: this.pool.pool_open,
-            private_end: this.pool.private_end,
-            public_end: this.pool.public_end,
+            // prettier-ignore
+            ballot_close: this.toDateStringUTC(new Date(this.pool.ballot_close)),
+            pool_open: this.toDateStringUTC(new Date(this.pool.pool_open)),
+            private_end: this.toDateStringUTC(new Date(this.pool.private_end)),
+            public_end: this.toDateStringUTC(new Date(this.pool.public_end)),
             whitelist: this.pool.whitelist,
             web_links: this.cleanedWebLinks
           }
@@ -1112,10 +1231,11 @@ export default {
               this.selected_base_token.decimals,
               this.selected_base_token.sym
             ),
-            ballot_close: this.pool.ballot_close,
-            pool_open: this.pool.pool_open,
-            private_end: this.pool.private_end,
-            public_end: this.pool.public_end,
+            // prettier-ignore
+            ballot_close: this.toDateStringUTC(new Date(this.pool.ballot_close)),
+            pool_open: this.toDateStringUTC(new Date(this.pool.pool_open)),
+            private_end: this.toDateStringUTC(new Date(this.pool.private_end)),
+            public_end: this.toDateStringUTC(new Date(this.pool.public_end)),
             whitelist: this.pool.whitelist,
             web_links: this.cleanedWebLinks
           }
@@ -1361,6 +1481,11 @@ export default {
   },
 
   async mounted() {
+    // check if updating or new pool
+    if (this.$route.params.id === undefined) {
+      this.explainProcessDialog = true;
+    }
+
     this.settings = await this.getPoolsSettings();
     this.ballotConfig = await this.getBallotConfig();
 
@@ -1404,7 +1529,7 @@ export default {
 
 <style lang="scss" scoped>
 .header-bg {
-  height: 250px;
+  height: 200px;
   margin-bottom: -50px;
 }
 .weblink-container {

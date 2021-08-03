@@ -174,21 +174,28 @@
                     icon="arrow_forward"
                     color="primary"
                     text-color="white"
+                    class="q-mr-sm"
                   />
-                  <span class="q-ml-sm">
-                    Transaction sent, click to view in block explorer.
-                  </span>
-                  <q-item
-                    clickable
-                    tag="a"
-                    target="_blank"
-                    :href="`${explorerUrl}/transaction/${transaction}`"
-                    class="q-ml-sm"
-                    >{{ transaction }}</q-item
-                  >
+                  <div class="text-h6 q-pa-sm">
+                    Transaction Sent
+                  </div>
                 </q-card-section>
-                <q-card-actions align="right">
-                  <q-btn flat label="Ok" color="primary" v-close-popup></q-btn>
+                <q-card-section>
+                  Transaction ID:
+                  <a
+                    :href="`${explorerUrl}/transaction/${transaction}`"
+                    target="_blank"
+                    style="word-wrap: break-word;"
+                    >{{ transaction }}
+                  </a>
+                </q-card-section>
+                <q-card-actions align="center">
+                  <q-btn
+                    class="hover-accent"
+                    label="Ok"
+                    color="primary"
+                    v-close-popup
+                  />
                 </q-card-actions>
               </q-card>
             </q-dialog>
@@ -211,7 +218,7 @@ export default {
       to: null,
       amount: null,
       memo: null,
-      showTransaction: null,
+      showTransaction: false,
       transaction: null,
       // explorerUrl: process.env.NETWORK_EXPLORER,
       selectedTokenSym: "START",
@@ -250,7 +257,7 @@ export default {
     networkOptions() {
       if (this.selectedTokenSym.toUpperCase() === "START")
         return ["TELOS", "EOS", "WAX"];
-        // return ["TELOS", "EOS"];
+      // return ["TELOS", "EOS"];
       else return [this.selectedNetwork];
     }
   },

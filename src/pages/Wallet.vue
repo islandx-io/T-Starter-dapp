@@ -117,6 +117,23 @@
                       </q-th>
                     </q-tr>
                   </template>
+                  <template v-slot:body="props">
+                    <q-tr
+                      :props="props"
+                      :class="
+                        new Date(props.cols[1].value) < dateNow
+                          ? `text-bold`
+                          : ''
+                      "
+                    >
+                      <q-td>
+                        {{ props.cols[0].value }}
+                      </q-td>
+                      <q-td class="text-center">
+                        {{ props.cols[1].value }}
+                      </q-td>
+                    </q-tr>
+                  </template>
                 </q-table>
               </div>
             </q-td>
@@ -172,10 +189,11 @@ export default {
       // prettier-ignore
       stakeColumns: [
         { name: "staked", label: "Unstaking", field: "second", align: "center" },
-        { name: "releaseDate", label: "Release date", field: "first", align: "center", format: val => date.formatDate(val, 'YYYY-MM-DD') },
+        { name: "releaseDate", label: "Release date", field: "first", align: "center", format: val => date.formatDate(val, 'YYYY-MM-DD')},
       ],
       // prettier-ignore
-      stakeData: []
+      stakeData: [],
+      dateNow: new Date()
     };
   },
   components: { tokenAvatar, walletActions },
@@ -225,7 +243,7 @@ export default {
     async accountName() {
       await this.reloadWalletInfo();
     }
-  },
+  }
 };
 </script>
 

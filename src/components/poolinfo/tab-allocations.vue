@@ -19,14 +19,14 @@
     </div>
     <div
       class="row justify-between"
-      v-if="hasAllocation && this.pool.token_lockup"
+      v-if="hasAllocation && this.pool.token_lockup && canClaim"
     >
       <h6>To be claimed:</h6>
       <h5>{{ this.$toChainString(available, tokenDecimals, tokenSymbol) }}</h5>
     </div>
     <div
       class="row justify-between"
-      v-if="hasAllocation && this.pool.token_lockup"
+      v-if="hasAllocation && this.pool.token_lockup && canClaim"
     >
       <h6>Claimed:</h6>
       <h5>

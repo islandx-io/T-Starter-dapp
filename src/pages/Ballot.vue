@@ -49,7 +49,7 @@
               >
                 <div class="q-mr-md">Voting ends in:</div>
                 <status-countdown
-                  :deadline="pool.pool_open"
+                  :deadline="pool.ballot_close"
                   :poolID="poolID"
                   @countdown-finished="getPoolInfo"
                 />
@@ -461,8 +461,8 @@ export default {
 
 <style lang="scss" scoped>
 .header-bg {
-  height: 160px;
-  margin-bottom: -50px;
+  height: 200px;
+  margin-bottom: -100px;
   // background-position-y: 50%;
 }
 .join-pane {
