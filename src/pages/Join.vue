@@ -157,6 +157,11 @@
                       !hasHeadstart
                   "
                 />
+                <q-btn
+                  label="Buy with USD"
+                  color="primary"
+                  @click="moonpayDialog = true"
+                />
                 <div
                   v-if="not_enough_start"
                   class="q-pt-sm self-center warning"
@@ -280,7 +285,9 @@
             </q-card-section>
             <q-card-section>
               <span>
-                Confirm staking additional {{ this.$chainStrReformat(this.premium_access_fee) }} tokens for premium access?
+                Confirm staking additional
+                {{ this.$chainStrReformat(this.premium_access_fee) }} tokens for
+                premium access?
               </span>
             </q-card-section>
 
@@ -344,6 +351,29 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
+
+        <!-- Moonpay dialog -->
+        <!-- :src="`https://buy-staging.moonpay.com?apiKey=pk_test_vZSdAOqLpWkbQ9TghK6Fjx9WcaIbdeRP&currencyCode=eos&walletAddress=${this.accountName}&baseCurrencyAmount=${this.amount}&baseCurrencyCode=usd&redirectURL`" -->
+
+        <q-dialog v-model="moonpayDialog" confirm>
+          <div
+            class="bg-white"
+            style="border-radius: 10px; overflow: hidden; text-align:center;"
+          >
+            <iframe
+              allow="accelerometer; autoplay; camera; gyroscope; payment"
+              height="500"
+              width="330"
+              :src="
+                `https://buy-staging.moonpay.com?apiKey=pk_test_vZSdAOqLpWkbQ9TghK6Fjx9WcaIbdeRP&baseCurrencyAmount=${this.amount}&baseCurrencyCode=usd&redirectURL=${currentURL}`
+              "
+              allowfullscreen
+              frameBorder="0"
+            >
+              <p>Your browser does not support iframes.</p>
+            </iframe>
+          </div>
+        </q-dialog>
       </q-card>
     </section>
   </q-page>
@@ -375,14 +405,26 @@ export default {
       // explorerUrl: this.currentChain.NETWORK_EXPLORER,
       accountStakeInfo: {},
       tiersTable: [],
-      joinTooltipOffset: [0, -45]
+      joinTooltipOffset: [0, -45],
+      moonpayDialog: false
     };
   },
   components: { tokenAvatar },
   computed: {
-    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs", "getPoolByIDChain"]),
+    ...mapGetters("pools", [
+      "getAllPools",
+      "getPoolByID",
+      "getAllPoolIDs",
+      "getPoolByIDChain"
+    ]),
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
+
+    currentURL() {
+      let url = new URL(location.href);
+      console.log(url);
+      return url;
+    },
 
     START_info() {
       return this.wallet.find(el => (el.sym = "START"));
@@ -529,7 +571,10 @@ export default {
       else return val;
     },
     getPoolInfo() {
-      this.pool = this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME);
+      this.pool = this.getPoolByIDChain(
+        this.poolID,
+        this.currentChain.NETWORK_NAME
+      );
     },
 
     validateInput(val) {
