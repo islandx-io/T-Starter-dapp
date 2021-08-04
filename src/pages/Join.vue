@@ -182,6 +182,28 @@
                     Get here
                   </a>
                 </div>
+                <!-- Moonpay waiting for TX -->
+                <!-- TODO make this a component -->
+                {{moonpayActive}}
+                {{Object.keys(moonpayTx).length > 0}}
+                <div
+                  v-if="moonpayActive == true && Object.keys(moonpayTx).length > 0"
+                  class="q-pt-sm self-center"
+                >
+                  Awaiting Moonpay transaction.
+                  <div
+                    v-if="moonpayTx.stages.length > 0"
+                    class="q-pt-sm self-center"
+                  >
+                    Tokens ordered
+                  </div>
+                  <div
+                    v-if="moonpayTx.stages[3].status === 'success'"
+                    class="q-pt-sm self-center"
+                  >
+                    Delivery successfull
+                  </div>
+                </div>
               </q-item-section>
               <q-tooltip :offset="joinTooltipOffset" v-if="!isAuthenticated">
                 Connect wallet
@@ -363,7 +385,8 @@
         </q-dialog>
 
         <!-- Moonpay dialog -->
-        <q-dialog v-model="moonpayDialog" confirm>
+        <!--    `https://buy-staging.moonpay.com?apiKey=${process.env.MOONPAY_KEY}&currencyCode=eos&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&walletAddress=${this.accountName}` -->
+        <q-dialog v-model="moonpayDialog">
           <div
             class="bg-white"
             style="border-radius: 10px; overflow: hidden; text-align:center;"
@@ -373,7 +396,7 @@
               height="600"
               width="350"
               :src="
-                `https://buy-staging.moonpay.com?apiKey=pk_test_vZSdAOqLpWkbQ9TghK6Fjx9WcaIbdeRP&currencyCode=eos&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&walletAddress=${this.accountName}`
+                `https://buy-staging.moonpay.com?apiKey=${moonpayKey}&currencyCode=eos&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&redirectURL=${currentURL}`
               "
               allowfullscreen
               frameBorder="0"
@@ -417,7 +440,11 @@ export default {
       tiersTable: [],
       joinTooltipOffset: [0, -45],
       moonpayDialog: false,
-      currentUID: uid()
+      moonpayActive: false,
+      moonpayTx: [],
+      currentUID: uid(),
+      polling: null,
+      moonpayKey: process.env.MOONPAY_KEY
     };
   },
   components: { tokenAvatar },
@@ -782,9 +809,22 @@ export default {
     },
 
     async doUSDPayment(tokenSymbol) {
+      this.moonpayActive = true;
       let req = await this.$store.$moonpay.getUSDofToken(tokenSymbol);
       let usd = req.data.USD;
-      this.amountUSD = usd*this.amount;
+      this.amountUSD = usd * this.amount;
+
+      // Start polling
+      this.polling = setInterval(async () => {
+        // this.moonpayTx = await this.$store.$moonpay.getTransaction(
+        //   this.externalTransactionId
+        // );
+        this.moonpayTx = (await this.$store.$moonpay.getTransaction(
+          'fuzzytestnet-e92d477ef98'
+        )).data[0];
+        
+        console.log(this.moonpayTx);
+      }, 10000);
 
       this.moonpayDialog = true;
     }
@@ -814,6 +854,10 @@ export default {
       );
       this.tiersTable = await this.getChainTiersTable();
     }
+  },
+
+  beforeDestroy() {
+    clearInterval(this.polling);
   }
 };
 </script>

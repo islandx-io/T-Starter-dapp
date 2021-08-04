@@ -16,7 +16,7 @@ const getUSDofToken = async function(tokenSymbol) {
   }
 };
 
-const getMoonpayTransaction = async function(externalTransactionId) {
+const getTransaction = async function(externalTransactionId) {
     try {
       const response = await moonpay.get(`/v1/transactions/ext/${externalTransactionId}`, {
         params: {
@@ -38,7 +38,7 @@ export default async ({ app, store }) => {
 
     store["$moonpay"] = {
       getUSDofToken: getUSDofToken.bind(store),
-      getMoonpayTransaction: getMoonpayTransaction.bind(store)
+      getTransaction: getTransaction.bind(store)
     };
 };
 
