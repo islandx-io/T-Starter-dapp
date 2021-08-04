@@ -38,6 +38,7 @@
     "ual-ledger": "^0.3.0",
     "ual-scatter": "^0.3.0",
     "ual-wombat": "^0.3.3",
+    "uid": "^2.0.0",
     "universal-authenticator-library": "^0.3.0"
   },
   "devDependencies": {

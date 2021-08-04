@@ -160,7 +160,17 @@
                 <q-btn
                   label="Buy with USD"
                   color="primary"
-                  @click="moonpayDialog = true"
+                  @click="doUSDPayment('eos')"
+                  :disable="
+                    (!isAuthenticated ||
+                      balance <= $chainToQty(pool.minimum_swap) ||
+                      pool.pool_status !== `open` ||
+                      not_enough_start ||
+                      joining ||
+                      !isWhitelisted ||
+                      allocationReached) &&
+                      !hasHeadstart
+                  "
                 />
                 <div
                   v-if="not_enough_start"
@@ -353,8 +363,6 @@
         </q-dialog>
 
         <!-- Moonpay dialog -->
-        <!-- :src="`https://buy-staging.moonpay.com?apiKey=pk_test_vZSdAOqLpWkbQ9TghK6Fjx9WcaIbdeRP&currencyCode=eos&walletAddress=${this.accountName}&baseCurrencyAmount=${this.amount}&baseCurrencyCode=usd&redirectURL`" -->
-
         <q-dialog v-model="moonpayDialog" confirm>
           <div
             class="bg-white"
@@ -362,10 +370,10 @@
           >
             <iframe
               allow="accelerometer; autoplay; camera; gyroscope; payment"
-              height="500"
-              width="330"
+              height="600"
+              width="350"
               :src="
-                `https://buy-staging.moonpay.com?apiKey=pk_test_vZSdAOqLpWkbQ9TghK6Fjx9WcaIbdeRP&baseCurrencyAmount=${this.amount}&baseCurrencyCode=usd&redirectURL=${currentURL}`
+                `https://buy-staging.moonpay.com?apiKey=pk_test_vZSdAOqLpWkbQ9TghK6Fjx9WcaIbdeRP&currencyCode=eos&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&walletAddress=${this.accountName}`
               "
               allowfullscreen
               frameBorder="0"
@@ -382,6 +390,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
+import { uid } from "uid";
 
 export default {
   data() {
@@ -390,6 +399,7 @@ export default {
       pool: this.$defaultPoolInfo,
       balance: 0,
       amount: "",
+      amountUSD: 0,
       allocation: 0,
       alreadyStaked: false,
       confirm_stake: false,
@@ -406,7 +416,8 @@ export default {
       accountStakeInfo: {},
       tiersTable: [],
       joinTooltipOffset: [0, -45],
-      moonpayDialog: false
+      moonpayDialog: false,
+      currentUID: uid()
     };
   },
   components: { tokenAvatar },
@@ -419,6 +430,10 @@ export default {
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
+
+    externalTransactionId() {
+      return this.accountName + "-" + this.currentUID;
+    },
 
     currentURL() {
       let url = new URL(location.href);
@@ -764,6 +779,14 @@ export default {
         this.stake_warning = false;
         this.not_enough_start = false;
       }
+    },
+
+    async doUSDPayment(tokenSymbol) {
+      let req = await this.$store.$moonpay.getUSDofToken(tokenSymbol);
+      let usd = req.data.USD;
+      this.amountUSD = usd*this.amount;
+
+      this.moonpayDialog = true;
     }
   },
 
