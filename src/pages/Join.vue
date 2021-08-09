@@ -183,27 +183,7 @@
                   </a>
                 </div>
                 <!-- Moonpay waiting for TX -->
-                <!-- TODO make this a component -->
-                {{moonpayActive}}
-                {{Object.keys(moonpayTx).length > 0}}
-                <div
-                  v-if="moonpayActive == true && Object.keys(moonpayTx).length > 0"
-                  class="q-pt-sm self-center"
-                >
-                  Awaiting Moonpay transaction.
-                  <div
-                    v-if="moonpayTx.stages.length > 0"
-                    class="q-pt-sm self-center"
-                  >
-                    Tokens ordered
-                  </div>
-                  <div
-                    v-if="moonpayTx.stages[3].status === 'success'"
-                    class="q-pt-sm self-center"
-                  >
-                    Delivery successfull
-                  </div>
-                </div>
+                <moonpay-processing :moonpayTx="moonpayTx" :moonpayActive="moonpayActive"  />
               </q-item-section>
               <q-tooltip :offset="joinTooltipOffset" v-if="!isAuthenticated">
                 Connect wallet
@@ -396,7 +376,7 @@
               height="600"
               width="350"
               :src="
-                `https://buy-staging.moonpay.com?apiKey=${moonpayKey}&currencyCode=eos&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&redirectURL=${currentURL}`
+                `https://buy-staging.moonpay.com?apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&redirectURL=${currentURL}`
               "
               allowfullscreen
               frameBorder="0"
@@ -414,6 +394,7 @@
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
 import { uid } from "uid";
+import MoonpayProcessing from "src/components/MoonpayProcessing.vue";
 
 export default {
   data() {
@@ -441,13 +422,13 @@ export default {
       joinTooltipOffset: [0, -45],
       moonpayDialog: false,
       moonpayActive: false,
-      moonpayTx: [],
+      moonpayTx: {},
       currentUID: uid(),
       polling: null,
       moonpayKey: process.env.MOONPAY_KEY
     };
   },
-  components: { tokenAvatar },
+  components: { tokenAvatar, MoonpayProcessing },
   computed: {
     ...mapGetters("pools", [
       "getAllPools",
@@ -819,10 +800,10 @@ export default {
         // this.moonpayTx = await this.$store.$moonpay.getTransaction(
         //   this.externalTransactionId
         // );
-        this.moonpayTx = (await this.$store.$moonpay.getTransaction(
-          'fuzzytestnet-e92d477ef98'
-        )).data[0];
-        
+        this.moonpayTx = (
+          await this.$store.$moonpay.getTransaction("fuzzytestnet-e92d477ef98")
+        ).data[0];
+
         console.log(this.moonpayTx);
       }, 10000);
 
