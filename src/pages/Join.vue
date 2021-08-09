@@ -379,7 +379,7 @@
               height="600"
               width="350"
               :src="
-                `https://buy-staging.moonpay.com?apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&redirectURL=${currentURL}`
+                `https://buy-staging.moonpay.com?apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}`
               "
               allowfullscreen
               frameBorder="0"
@@ -815,6 +815,11 @@ export default {
           this.moonpayTx = {};
         }
         console.log(this.moonpayTx);
+        await this.checkBalances();
+
+        if (this.moonpayTx.status === "completed") {
+          this.tryTransaction();
+        }
       }, 10000);
 
       this.moonpayDialog = true;
