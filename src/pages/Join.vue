@@ -183,7 +183,10 @@
                   </a>
                 </div>
                 <!-- Moonpay waiting for TX -->
-                <moonpay-processing :moonpayTx="moonpayTx" :moonpayActive="moonpayActive"  />
+                <moonpay-processing
+                  :moonpayTx="moonpayTx"
+                  :moonpayActive="moonpayActive"
+                />
               </q-item-section>
               <q-tooltip :offset="joinTooltipOffset" v-if="!isAuthenticated">
                 Connect wallet
@@ -797,14 +800,23 @@ export default {
 
       // Start polling
       this.polling = setInterval(async () => {
-        // this.moonpayTx = await this.$store.$moonpay.getTransaction(
-        //   this.externalTransactionId
-        // );
-        this.moonpayTx = (
-          await this.$store.$moonpay.getTransaction("fuzzytestnet-e92d477ef98")
-        ).data[0];
+        try {
+          this.moonpayTx = (
+            await this.$store.$moonpay.getTransaction(
+              this.externalTransactionId
+            )
+          ).data[0];
+          // this.moonpayTx = (
+          //   await this.$store.$moonpay.getTransaction(
+          //     "fuzzytestnet-e92d477ef98"
+          //   )
+          // ).data[0];
+          console.log(this.moonpayTx);
+        } catch (error) {
+          this.moonpayTx = {};
+        }
 
-        console.log(this.moonpayTx);
+        // console.log(this.moonpayTx);
       }, 10000);
 
       this.moonpayDialog = true;

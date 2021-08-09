@@ -12,7 +12,8 @@ const getUSDofToken = async function(tokenSymbol) {
     });
     return response;
   } catch (error) {
-    console.error(error);
+    // console.error(error);
+    return {}
   }
 };
 
@@ -25,7 +26,8 @@ const getTransaction = async function(externalTransactionId) {
       });
       return response;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
+      return {}
     }
   };
 
