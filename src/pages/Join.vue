@@ -811,12 +811,10 @@ export default {
           //     "fuzzytestnet-e92d477ef98"
           //   )
           // ).data[0];
-          console.log(this.moonpayTx);
         } catch (error) {
           this.moonpayTx = {};
         }
-
-        // console.log(this.moonpayTx);
+        console.log(this.moonpayTx);
       }, 10000);
 
       this.moonpayDialog = true;

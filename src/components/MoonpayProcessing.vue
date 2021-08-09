@@ -5,6 +5,9 @@
     <h3>Transaction status:</h3>
     <!-- TODO Loading icon -->
     <div>{{ status }}</div>
+    <q-inner-loading :showing="status !== 'Completed'">
+      <q-spinner-gears size="50px" color="primary" />
+    </q-inner-loading>
   </div>
 </template>
 
