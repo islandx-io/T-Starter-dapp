@@ -157,10 +157,18 @@
                       !hasHeadstart
                   "
                 />
+                <div
+                  v-if="canBuyWithUSD"
+                  style="text-align: center;"
+                  class="q-py-xs"
+                >
+                  OR
+                </div>
                 <q-btn
+                  v-if="canBuyWithUSD"
                   label="Buy with USD"
                   color="primary"
-                  @click="doUSDPayment('eos')"
+                  @click="doUSDPayment(moonpayCurrencyCode)"
                   :disable="
                     (!isAuthenticated ||
                       balance <= $chainToQty(pool.minimum_swap) ||
@@ -368,7 +376,7 @@
         </q-dialog>
 
         <!-- Moonpay dialog -->
-        <!--    `https://buy-staging.moonpay.com?apiKey=${process.env.MOONPAY_KEY}&currencyCode=eos&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&walletAddress=${this.accountName}` -->
+        <!--    `https://buy-staging.moonpay.com?apiKey=${process.env.MOONPAY_KEY}&currencyCode=${moonpayCurrencyCode}&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&walletAddress=${this.accountName}` -->
         <q-dialog v-model="moonpayDialog">
           <div
             class="bg-white"
@@ -379,7 +387,7 @@
               height="600"
               width="350"
               :src="
-                `https://buy-staging.moonpay.com?apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}`
+                `https://buy-staging.moonpay.com?apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&currencyCode=${moonpayCurrencyCode}&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}`
               "
               allowfullscreen
               frameBorder="0"
@@ -564,6 +572,24 @@ export default {
         }
       } else {
         return this.maxAllocation;
+      }
+    },
+
+    moonpayCurrencyCode() {
+      if (this.currentChain.NETWORK_NAME === "EOS") {
+        return "eos";
+      } else if (this.currentChain.NETWORK_NAME === "WAX") {
+        return "waxp";
+      } else {
+        return "tlos";
+      }
+    },
+
+    canBuyWithUSD() {
+      if (this.moonpayCurrencyCode === "tlos") {
+        return false;
+      } else {
+        return true;
       }
     }
   },
@@ -818,6 +844,7 @@ export default {
         await this.checkBalances();
 
         if (this.moonpayTx.status === "completed") {
+          clearInterval(this.polling);
           this.tryTransaction();
         }
       }, 10000);
