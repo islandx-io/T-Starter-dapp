@@ -27,7 +27,7 @@
         >
           <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px;" />
         </q-btn>
-        <q-form @submit="onSubmit">
+        <q-form @submit="onSubmit" ref="joinForm">
           <div>
             <div class="row justify-center">
               <h2 style="line-height: 45px; text-align: center">
@@ -166,7 +166,7 @@
                 </div>
                 <q-btn
                   v-if="canBuyWithUSD"
-                  label="Buy with USD"
+                  label="Join with Moonpay"
                   color="primary"
                   @click="doUSDPayment(moonpayCurrencyCode)"
                   :disable="
@@ -180,6 +180,11 @@
                       !hasHeadstart
                   "
                 />
+                <!-- Moonpay waiting for TX -->
+                <moonpay-processing
+                  :moonpayTx="moonpayTx"
+                  :moonpayActive="moonpayActive"
+                />
                 <div
                   v-if="not_enough_start"
                   class="q-pt-sm self-center warning"
@@ -190,11 +195,6 @@
                     Get here
                   </a>
                 </div>
-                <!-- Moonpay waiting for TX -->
-                <moonpay-processing
-                  :moonpayTx="moonpayTx"
-                  :moonpayActive="moonpayActive"
-                />
               </q-item-section>
               <q-tooltip :offset="joinTooltipOffset" v-if="!isAuthenticated">
                 Connect wallet
@@ -376,7 +376,7 @@
         </q-dialog>
 
         <!-- Moonpay dialog -->
-        <!--    `https://buy-staging.moonpay.com?apiKey=${process.env.MOONPAY_KEY}&currencyCode=${moonpayCurrencyCode}&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&walletAddress=${this.accountName}` -->
+        <!--    `https://buy-staging.moonpay.com?apiKey=${process.env.MOONPAY_KEY}&currencyCode=${moonpayCurrencyCode}&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&walletAddress=${this.accountName}&walletAddress=${this.accountName}&currencyCode=${moonpayCurrencyCode}` -->
         <q-dialog v-model="moonpayDialog">
           <div
             class="bg-white"
@@ -387,7 +387,7 @@
               height="600"
               width="350"
               :src="
-                `https://buy-staging.moonpay.com?apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&currencyCode=${moonpayCurrencyCode}&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}`
+                `https://buy-staging.moonpay.com?baseCurrencyCode=usd&apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}`
               "
               allowfullscreen
               frameBorder="0"
@@ -435,7 +435,7 @@ export default {
       moonpayActive: false,
       moonpayTx: {},
       currentUID: uid(),
-      polling: null,
+      pollingMoonpay: null,
       moonpayKey: process.env.MOONPAY_KEY
     };
   },
@@ -756,6 +756,9 @@ export default {
     },
 
     async tryTransaction() {
+      this.joining = true;
+      clearInterval(this.pollingMoonpay);
+      console.log(this.pollingMoonpay);
       try {
         await this.joinPoolTransaction();
         this.$q.notify({
@@ -819,37 +822,41 @@ export default {
     },
 
     async doUSDPayment(tokenSymbol) {
-      this.moonpayActive = true;
-      let req = await this.$store.$moonpay.getUSDofToken(tokenSymbol);
-      let usd = req.data.USD;
-      this.amountUSD = usd * this.amount;
+      if (await this.$refs.joinForm.validate()) {
+        this.moonpayActive = true;
+        let req = await this.$store.$moonpay.getUSDofToken(tokenSymbol);
+        let usd = req.data.USD;
+        this.amountUSD = usd * this.amount;
 
-      // Start polling
-      this.polling = setInterval(async () => {
-        try {
-          this.moonpayTx = (
-            await this.$store.$moonpay.getTransaction(
-              this.externalTransactionId
-            )
-          ).data[0];
-          // this.moonpayTx = (
-          //   await this.$store.$moonpay.getTransaction(
-          //     "fuzzytestnet-e92d477ef98"
-          //   )
-          // ).data[0];
-        } catch (error) {
-          this.moonpayTx = {};
-        }
-        console.log(this.moonpayTx);
-        await this.checkBalances();
+        this.moonpayDialog = true;
 
-        if (this.moonpayTx.status === "completed") {
-          clearInterval(this.polling);
-          this.tryTransaction();
-        }
-      }, 10000);
+        // Start pollingMoonpay
+        this.pollingMoonpay = setInterval(async () => {
+          try {
+            this.moonpayTx = (
+              await this.$store.$moonpay.getTransaction(
+                this.externalTransactionId
+              )
+            ).data[0];
+            // this.moonpayTx = (
+            //   await this.$store.$moonpay.getTransaction(
+            //     "fuzzytestnet-e92d477ef98"
+            //   )
+            // ).data[0];
+          } catch (error) {
+            this.moonpayTx = {};
+          }
+          console.log(this.moonpayTx);
+          await this.checkBalances();
 
-      this.moonpayDialog = true;
+          if (this.moonpayTx.status === "completed") {
+            console.log(this.joining);
+            if (!this.joining) {
+              this.tryTransaction();
+            }
+          }
+        }, 10000);
+      }
     }
   },
 
@@ -880,7 +887,7 @@ export default {
   },
 
   beforeDestroy() {
-    clearInterval(this.polling);
+    clearInterval(this.pollingMoonpay);
   }
 };
 </script>

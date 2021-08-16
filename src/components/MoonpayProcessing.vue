@@ -1,13 +1,15 @@
 <template>
-  <div v-if="moonpayActive === true && Object.keys(moonpayTx).length > 0">
+  <div
+    v-if="moonpayActive === true && Object.keys(moonpayTx).length > 0"
+    class="row justify-start items-center content-center"
+  >
     <!-- {{ moonpayActive }}
     {{ Object.keys(moonpayTx).length > 0 }} -->
-    <h3>Transaction status:</h3>
-    <!-- TODO Loading icon -->
-    <div>{{ status }}</div>
-    <q-inner-loading :showing="status !== 'Completed'">
-      <q-spinner-gears size="50px" color="primary" />
-    </q-inner-loading>
+    <!-- <div class="text-weight-bold">Transaction status:</div> -->
+    <div class="q-pt-md col-auto ">
+      <q-spinner-gears size="30px" color="primary" />
+    </div>
+    <div class="q-pt-md q-pl-sm col-auto">{{ status }}</div>
   </div>
 </template>
 
