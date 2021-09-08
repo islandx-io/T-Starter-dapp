@@ -217,7 +217,7 @@ export default {
     return {
       to: null,
       amount: null,
-      memo: null,
+      memo: "",
       showTransaction: false,
       transaction: null,
       // explorerUrl: process.env.NETWORK_EXPLORER,
@@ -255,7 +255,7 @@ export default {
     },
 
     networkOptions() {
-      if (this.selectedTokenSym.toUpperCase() === "START")
+      if (["START", "ZPTC"].includes(this.selectedTokenSym.toUpperCase()))
         return ["TELOS", "EOS", "WAX"];
       // return ["TELOS", "EOS"];
       else return [this.selectedNetwork];
@@ -332,12 +332,8 @@ export default {
           this.showTransaction = true;
           this.transaction = transaction.transactionId;
         }
-      }
-
-      // If different network, send to bridge
-      if (
-        this.selectedNetwork.toUpperCase() !== this.currentChain.NETWORK_NAME
-      ) {
+      } else {
+        // If different network, send to bridge
         const actions = [
           {
             account: this.token_contract,
