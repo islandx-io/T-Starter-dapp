@@ -112,6 +112,7 @@ export default function() {
         BUY_START_URL:
           "https://wax.alcor.exchange/swap?output=START-token.start&input=WAX-eosio.token"
       }
-    ]
+    ],
+    bridgeTokens: []
   };
 }

@@ -227,7 +227,11 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    ...mapGetters("blockchains", ["currentChain", "getNetworkByName"]),
+    ...mapGetters("blockchains", [
+      "currentChain",
+      "getNetworkByName",
+      "getBridgeTokens"
+    ]),
 
     explorerUrl() {
       return this.currentChain.NETWORK_EXPLORER;
@@ -255,15 +259,24 @@ export default {
     },
 
     networkOptions() {
-      if (["START", "ZPTC"].includes(this.selectedTokenSym.toUpperCase()))
-        return ["TELOS", "EOS", "WAX"];
-      // return ["TELOS", "EOS"];
-      else return [this.selectedNetwork];
+      const bridgeTokens = this.getBridgeTokens;
+      if (bridgeTokens && this.selectedToken !== undefined) {
+        console.log({ bridgeTokens });
+        let supportedChains = [this.currentChain.NETWORK_NAME];
+        for (let token of bridgeTokens) {
+          if (token.token_info.contract === this.token_contract) {
+            supportedChains.push(token.channel.toUpperCase());
+          }
+        }
+        // console.log({ supportedChains });
+        return supportedChains;
+      } else return [];
     }
   },
   methods: {
     ...mapActions("account", ["accountExists"]),
     ...mapActions("pools", ["getBalanceFromChain"]),
+    ...mapActions("blockchains", ["setBridgeTokens"]),
 
     restrictDecimal() {
       this.amount = this.$toFixedDown(
@@ -377,6 +390,7 @@ export default {
       this.selectedTokenSym = this.$route.query.token_sym;
     if (!this.isCrossChainToken)
       this.selectedNetwork = this.currentChain.NETWORK_NAME;
+    this.setBridgeTokens();
   }
 };
 </script>
