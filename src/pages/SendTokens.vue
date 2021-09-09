@@ -153,6 +153,7 @@
                 label="Send"
                 style="width: 50%"
                 type="submit"
+                :disabled="selectedToken === undefined"
               />
             </div>
             <div
@@ -164,6 +165,13 @@
             >
               <q-icon name="fas fa-info-circle" class="q-pr-xs" /> Sending
               tokens across chains can take up to several minutes.
+            </div>
+            <div
+              class="text-center text-caption q-pt-md text-grey-7"
+              v-if="selectedToken === undefined"
+            >
+              <q-icon name="fas fa-exclamation-triangle" class="q-pr-xs" />
+              Token not found in wallet. Refresh or check your wallet balance.
             </div>
 
             <!-- Transaction sent dialog -->
@@ -243,19 +251,19 @@ export default {
     },
 
     token_contract() {
-      return this.selectedToken.token_contract;
+      return this.selectedToken ? this.selectedToken.token_contract : null;
     },
 
     token_decimals() {
-      return this.selectedToken.decimals;
+      return this.selectedToken ? this.selectedToken.decimals : null;
     },
 
     avatar() {
-      return this.selectedToken.avatar;
+      return this.selectedToken ? this.selectedToken.avatar : "";
     },
 
     balance() {
-      return this.selectedToken.balance;
+      return this.selectedToken ? this.selectedToken.balance : 0;
     },
 
     networkOptions() {
@@ -274,7 +282,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions("account", ["accountExists", "setWalletBalances"]),
+    ...mapActions("account", [
+      "accountExists",
+      "setWalletBalances",
+      "reloadWallet"
+    ]),
     ...mapActions("pools", ["getBalanceFromChain"]),
     ...mapActions("blockchains", ["setBridgeTokens"]),
 
@@ -394,6 +406,13 @@ export default {
     if (!this.isCrossChainToken)
       this.selectedNetwork = this.currentChain.NETWORK_NAME;
     this.setBridgeTokens();
+    this.reloadWallet(this.accountName);
+  },
+
+  watch: {
+    async accountName() {
+      this.reloadWallet(this.accountName);
+    }
   }
 };
 </script>
