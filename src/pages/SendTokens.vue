@@ -274,7 +274,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("account", ["accountExists"]),
+    ...mapActions("account", ["accountExists", "setWalletBalances"]),
     ...mapActions("pools", ["getBalanceFromChain"]),
     ...mapActions("blockchains", ["setBridgeTokens"]),
 
@@ -370,6 +370,7 @@ export default {
         this.memo = "";
         this.$refs.sendForm.reset();
         this.$refs.sendForm.resetValidation();
+        this.setWalletBalances(this.accountName);
       }
     },
 
