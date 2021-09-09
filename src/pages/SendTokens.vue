@@ -11,7 +11,7 @@
       </q-card>
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
-      <q-form @submit="trySend">
+      <q-form @submit="trySend" ref="sendForm">
         <q-card class="authenticated">
           <q-btn
             :to="{ name: 'wallet', params: { accountName: accountName } }"
@@ -264,7 +264,7 @@ export default {
         console.log({ bridgeTokens });
         let supportedChains = [this.currentChain.NETWORK_NAME];
         for (let token of bridgeTokens) {
-          if (token.token_info.contract === this.token_contract) {
+          if (token.token_info.sym.includes(this.selectedTokenSym)) {
             supportedChains.push(token.channel.toUpperCase());
           }
         }
@@ -323,6 +323,7 @@ export default {
       }
 
       // if same network, do normal transaction
+      let transaction;
       if (
         this.selectedNetwork.toUpperCase() === this.currentChain.NETWORK_NAME
       ) {
@@ -340,11 +341,7 @@ export default {
             }
           }
         ];
-        const transaction = await this.$store.$api.signTransaction(actions);
-        if (transaction) {
-          this.showTransaction = true;
-          this.transaction = transaction.transactionId;
-        }
+        transaction = await this.$store.$api.signTransaction(actions);
       } else {
         // If different network, send to bridge
         const actions = [
@@ -363,11 +360,16 @@ export default {
             }
           }
         ];
-        const transaction = await this.$store.$api.signTransaction(actions);
-        if (transaction) {
-          this.showTransaction = true;
-          this.transaction = transaction.transactionId;
-        }
+        transaction = await this.$store.$api.signTransaction(actions);
+      }
+      if (transaction) {
+        this.showTransaction = true;
+        this.transaction = transaction.transactionId;
+        this.to = null;
+        this.amount = null;
+        this.memo = "";
+        this.$refs.sendForm.reset();
+        this.$refs.sendForm.resetValidation();
       }
     },
 

@@ -295,7 +295,7 @@ export const getPoolTokens = async function({ commit, dispatch }) {
     });
 
     // const poolTable = tableResults.rows[tableResults.rows.length - 1];
-    // console.log(tableResults.rows)
+    console.log("pooltokens:", tableResults.rows);
     return tableResults.rows;
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
