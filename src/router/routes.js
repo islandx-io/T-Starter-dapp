@@ -1,22 +1,39 @@
 const routes = [
   {
     path: "/",
-    redirect: {name: "home", params: {chain: 'telos'}},
+    redirect: { name: "home", params: { chain: "telos" } },
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "/:chain", name: "home", component: () => import("pages/Index.vue") }]
+    children: [
+      {
+        path: "/:chain",
+        name: "home",
+        component: () => import("pages/Index.vue")
+      }
+    ]
   },
   {
     path: "/pools",
-    redirect: {name: "home", params: {chain: 'telos'}},
+    redirect: { name: "home", params: { chain: "telos" } },
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "/:chain", name: "home", component: () => import("pages/Index.vue") }]
+    children: [
+      {
+        path: "/:chain",
+        name: "home",
+        component: () => import("pages/Index.vue")
+      }
+    ]
+  },
+  {
+    path: "/:chain/temp",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      { path: "", name: "temp", component: () => import("pages/Temp.vue") }
+    ]
   },
   {
     path: "/:chain",
     component: () => import("layouts/MainLayout.vue"),
-    children: [
-      { path: "",  component: () => import("pages/Index.vue") }
-    ]
+    children: [{ path: "", component: () => import("pages/Index.vue") }]
   },
   {
     path: "/:chain/wallet/:accountName",
@@ -111,7 +128,7 @@ const routes = [
         path: "",
         name: "ballotdetails",
         component: () => import("pages/Ballot.vue")
-      },
+      }
     ]
   },
   {
@@ -127,7 +144,7 @@ const routes = [
         path: ":id",
         name: "updateballot",
         component: () => import("pages/CreateBallot.vue")
-      },
+      }
     ]
   },
   // {
