@@ -523,6 +523,16 @@ export const resetWallet = async function({ commit, getters, dispatch }) {
   commit("resetWalletState");
 };
 
+// reload all wallet info
+export const reloadWallet = async function({ dispatch }, account) {
+  // console.log({ account });
+  await dispatch("setWalletBaseTokens");
+  await dispatch("getChainWalletTable", account);
+  await dispatch("getChainSTART", account);
+  await dispatch("setWalletBalances", account);
+  await dispatch("setWalletPoolTokens", account);
+};
+
 // reset liquid
 export const resetLiquid = async function({ commit, getters, dispatch }) {
   commit("clearLiquid");
@@ -562,8 +572,11 @@ export const getChainAccountStakeInfo = async function(
 };
 
 // get account stake informations. (Outputs: id (key) threshold	members	weight	discount)
-export const getChainTiersTable = async function(
-  { commit, getters, dispatch }) {
+export const getChainTiersTable = async function({
+  commit,
+  getters,
+  dispatch
+}) {
   try {
     const tiersTable = await this.$api.getTableRows({
       code: process.env.STAKE_ADDRESS, // Contract that we target
@@ -573,7 +586,7 @@ export const getChainTiersTable = async function(
       reverse: false,
       show_payer: false
     });
-    
+
     if (tiersTable.rows.length > 0) {
       // console.log(tiersTable.rows);
       return tiersTable.rows;

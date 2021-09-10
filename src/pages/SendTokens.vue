@@ -11,7 +11,7 @@
       </q-card>
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
-      <q-form @submit="trySend">
+      <q-form @submit="trySend" ref="sendForm">
         <q-card class="authenticated">
           <q-btn
             :to="{ name: 'wallet', params: { accountName: accountName } }"
@@ -153,6 +153,7 @@
                 label="Send"
                 style="width: 50%"
                 type="submit"
+                :disabled="selectedToken === undefined"
               />
             </div>
             <div
@@ -164,6 +165,13 @@
             >
               <q-icon name="fas fa-info-circle" class="q-pr-xs" /> Sending
               tokens across chains can take up to several minutes.
+            </div>
+            <div
+              class="text-center text-caption q-pt-md text-grey-7"
+              v-if="selectedToken === undefined"
+            >
+              <q-icon name="fas fa-exclamation-triangle" class="q-pr-xs" />
+              Token not found in wallet. Refresh or check your wallet balance.
             </div>
 
             <!-- Transaction sent dialog -->
@@ -217,7 +225,7 @@ export default {
     return {
       to: null,
       amount: null,
-      memo: null,
+      memo: "",
       showTransaction: false,
       transaction: null,
       // explorerUrl: process.env.NETWORK_EXPLORER,
@@ -227,7 +235,11 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    ...mapGetters("blockchains", ["currentChain", "getNetworkByName"]),
+    ...mapGetters("blockchains", [
+      "currentChain",
+      "getNetworkByName",
+      "getBridgeTokens"
+    ]),
 
     explorerUrl() {
       return this.currentChain.NETWORK_EXPLORER;
@@ -239,31 +251,44 @@ export default {
     },
 
     token_contract() {
-      return this.selectedToken.token_contract;
+      return this.selectedToken ? this.selectedToken.token_contract : null;
     },
 
     token_decimals() {
-      return this.selectedToken.decimals;
+      return this.selectedToken ? this.selectedToken.decimals : null;
     },
 
     avatar() {
-      return this.selectedToken.avatar;
+      return this.selectedToken ? this.selectedToken.avatar : "";
     },
 
     balance() {
-      return this.selectedToken.balance;
+      return this.selectedToken ? this.selectedToken.balance : 0;
     },
 
     networkOptions() {
-      if (this.selectedTokenSym.toUpperCase() === "START")
-        return ["TELOS", "EOS", "WAX"];
-      // return ["TELOS", "EOS"];
-      else return [this.selectedNetwork];
+      const bridgeTokens = this.getBridgeTokens;
+      if (bridgeTokens && this.selectedToken !== undefined) {
+        console.log({ bridgeTokens });
+        let supportedChains = [this.currentChain.NETWORK_NAME];
+        for (let token of bridgeTokens) {
+          if (token.token_info.sym.includes(this.selectedTokenSym)) {
+            supportedChains.push(token.channel.toUpperCase());
+          }
+        }
+        // console.log({ supportedChains });
+        return supportedChains;
+      } else return [];
     }
   },
   methods: {
-    ...mapActions("account", ["accountExists"]),
+    ...mapActions("account", [
+      "accountExists",
+      "setWalletBalances",
+      "reloadWallet"
+    ]),
     ...mapActions("pools", ["getBalanceFromChain"]),
+    ...mapActions("blockchains", ["setBridgeTokens"]),
 
     restrictDecimal() {
       this.amount = this.$toFixedDown(
@@ -310,6 +335,7 @@ export default {
       }
 
       // if same network, do normal transaction
+      let transaction;
       if (
         this.selectedNetwork.toUpperCase() === this.currentChain.NETWORK_NAME
       ) {
@@ -327,17 +353,9 @@ export default {
             }
           }
         ];
-        const transaction = await this.$store.$api.signTransaction(actions);
-        if (transaction) {
-          this.showTransaction = true;
-          this.transaction = transaction.transactionId;
-        }
-      }
-
-      // If different network, send to bridge
-      if (
-        this.selectedNetwork.toUpperCase() !== this.currentChain.NETWORK_NAME
-      ) {
+        transaction = await this.$store.$api.signTransaction(actions);
+      } else {
+        // If different network, send to bridge
         const actions = [
           {
             account: this.token_contract,
@@ -354,11 +372,17 @@ export default {
             }
           }
         ];
-        const transaction = await this.$store.$api.signTransaction(actions);
-        if (transaction) {
-          this.showTransaction = true;
-          this.transaction = transaction.transactionId;
-        }
+        transaction = await this.$store.$api.signTransaction(actions);
+      }
+      if (transaction) {
+        this.showTransaction = true;
+        this.transaction = transaction.transactionId;
+        this.to = null;
+        this.amount = null;
+        this.memo = "";
+        this.$refs.sendForm.reset();
+        this.$refs.sendForm.resetValidation();
+        this.setWalletBalances(this.accountName);
       }
     },
 
@@ -381,6 +405,14 @@ export default {
       this.selectedTokenSym = this.$route.query.token_sym;
     if (!this.isCrossChainToken)
       this.selectedNetwork = this.currentChain.NETWORK_NAME;
+    this.setBridgeTokens();
+    this.reloadWallet(this.accountName);
+  },
+
+  watch: {
+    async accountName() {
+      this.reloadWallet(this.accountName);
+    }
   }
 };
 </script>

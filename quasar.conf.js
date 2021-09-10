@@ -23,7 +23,15 @@ module.exports = function(/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
-    boot: ["ual", "hyperion", "api", "poolinfo","ballotinfo", "helpers", "moonpay"],
+    boot: [
+      "ual",
+      "hyperion",
+      "api",
+      "poolinfo",
+      "ballotinfo",
+      "helpers",
+      "moonpay"
+    ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: ["app.scss"],
@@ -62,6 +70,7 @@ module.exports = function(/* ctx */) {
         SITE_VERSION: siteVersion,
         BALLOT_ADDRESS: process.env.BALLOT_ADDRESS,
         MOONPAY_KEY: process.env.MOONPAY_KEY,
+        BRIDGE_ADDRESS: process.env.BRIDGE_ADDRESS
       },
 
       // transpile: false,

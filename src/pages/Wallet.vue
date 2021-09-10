@@ -204,24 +204,12 @@ export default {
 
   methods: {
     ...mapActions("pools", ["getBalanceFromChain", "getBaseTokens"]),
-    ...mapActions("account", [
-      "setWalletBaseTokens",
-      "getChainWalletTable",
-      "setWalletBalances",
-      "getChainSTART",
-      "setWalletPoolTokens",
-      "resetWallet",
-      "resetLiquid",
-      "setVestedTokens"
-    ]),
+    ...mapActions("account", ["resetLiquid", "reloadWallet"]),
 
     async reloadWalletInfo() {
       // await this.resetLiquid();
-      await this.setWalletBaseTokens();
-      await this.getChainWalletTable(this.accountName);
-      await this.getChainSTART(this.accountName);
-      await this.setWalletBalances(this.accountName);
-      await this.setWalletPoolTokens(this.accountName);
+      // console.log("account name: ", this.accountName);
+      await this.reloadWallet(this.accountName);
       // TODO Add loading element for poolTokens
       this.stakeData = this.wallet.find(
         a => a.token_sym === "START"
