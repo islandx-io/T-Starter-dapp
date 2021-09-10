@@ -30,7 +30,8 @@ module.exports = function(/* ctx */) {
       "poolinfo",
       "ballotinfo",
       "helpers",
-      "moonpay"
+      "moonpay",
+      "web3"
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
