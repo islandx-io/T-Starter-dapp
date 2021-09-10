@@ -48,6 +48,7 @@
             <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
               <!-- TO -->
               <q-input
+                v-if="selectedNetwork != 'ETH'"
                 outlined
                 autocapitalize="off"
                 bottom-slots
@@ -111,6 +112,64 @@
                   </q-btn-dropdown>
                 </template>
               </q-input>
+              <div
+                v-if="selectedNetwork === 'ETH'"
+                class="row justify-between q-py-md"
+              >
+                <q-btn
+                  class="hover-accent"
+                  color="primary"
+                  no-shadow
+                  label="Connect Metamask"
+                />
+                <q-btn-dropdown
+                  no-caps
+                  flat
+                  class="bg-secondary"
+                  padding="sm"
+                  style="margin: 0px"
+                  color="black"
+                  outline
+                >
+                  <template v-slot:label>
+                    <div class="flex items-center justify-center wrap">
+                      <div class="row items-center justify-center">
+                        <token-avatar
+                          :token="selectedNetwork"
+                          :avatarSize="23"
+                        />
+                        <div class="text-subtitle1 q-pl-xs">
+                          {{ selectedNetwork }}
+                        </div>
+                      </div>
+                      <q-tooltip anchor="top middle" self="bottom middle">
+                        To Network
+                      </q-tooltip>
+                    </div>
+                  </template>
+                  <q-list class="bg-secondary">
+                    <q-item
+                      clickable
+                      v-close-popup
+                      v-for="network in networkOptions"
+                      :key="network"
+                      @click="selectedNetwork = network"
+                      flat
+                      size="lg"
+                      no-caps
+                    >
+                      <div class="flex items-center justify-center wrap">
+                        <div class="row items-center justify-center">
+                          <token-avatar :token="network" :avatarSize="23" />
+                          <div class="text-subtitle1 q-pl-xs">
+                            {{ network }}
+                          </div>
+                        </div>
+                      </div>
+                    </q-item>
+                  </q-list>
+                </q-btn-dropdown>
+              </div>
               <!-- Amount -->
               <q-input
                 outlined
@@ -134,6 +193,7 @@
               </q-input>
               <!-- Memo -->
               <q-input
+                v-if="selectedNetwork != 'ETH'"
                 outlined
                 bottom-slots
                 v-model="memo"
@@ -143,7 +203,7 @@
               />
             </div>
             <!-- Send -->
-            <div class="text-center self-stretch q-pt-sm">
+            <div class="text-center self-stretch q-pt-sm q-gutter-x-sm">
               <q-btn
                 class="hover-accent"
                 size="lg"
@@ -151,9 +211,11 @@
                 dense
                 no-shadow
                 label="Send"
-                style="width: 50%"
+                style="width: 40%"
                 type="submit"
-                :disabled="selectedToken === undefined"
+                :disabled="
+                  selectedToken === undefined || selectedNetwork === 'ETH'
+                "
               />
             </div>
             <div
@@ -276,7 +338,9 @@ export default {
             supportedChains.push(token.channel.toUpperCase());
           }
         }
-        // console.log({ supportedChains });
+        if (this.selectedTokenSym.toUpperCase() === "START")
+          supportedChains.push("ETH"); // TODO Make this dynamic
+        console.log({ supportedChains });
         return supportedChains;
       } else return [];
     }
