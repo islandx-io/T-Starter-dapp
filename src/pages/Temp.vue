@@ -175,7 +175,7 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    ...mapGetters("evm", [
+    ...mapGetters("tport", [
       "getEVMAccountName",
       "getEVMChainId",
       "getEVMNetworkList",
@@ -215,7 +215,7 @@ export default {
       "reloadWallet"
     ]),
     ...mapActions("pools", ["getBalanceFromChain"]),
-    ...mapActions("evm", ["setTPortTokens"]),
+    ...mapActions("tport", ["setTPortTokens"]),
     // ...mapActions("blockchains", ["setBridgeTokens"]),
 
     restrictDecimal() {
@@ -279,20 +279,20 @@ export default {
 
       if (injectedWeb3) {
         const a = await web3.eth.getAccounts();
-        this.$store.commit("evm/setAccountName", { accountName: a[0] });
+        this.$store.commit("tport/setAccountName", { accountName: a[0] });
         this.evmAccount = a[0];
         const chainId = await web3.eth.getChainId();
-        this.$store.commit("evm/setChainId", { chainId });
+        this.$store.commit("tport/setChainId", { chainId });
 
         this.updateEVMState();
 
         window.ethereum.on("accountsChanged", a => {
-          this.$store.commit("evm/setAccountName", { accountName: a[0] });
+          this.$store.commit("tport/setAccountName", { accountName: a[0] });
           this.evmAccount = a[0];
           this.updateEVMState();
         });
         window.ethereum.on("chainChanged", chainId => {
-          this.$store.commit("evm/setChainId", { chainId });
+          this.$store.commit("tport/setChainId", { chainId });
           this.updateEVMState();
         });
       } else {
