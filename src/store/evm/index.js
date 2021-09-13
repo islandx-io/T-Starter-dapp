@@ -1,13 +1,15 @@
-import state from './state'
-import * as getters from './getters'
-import * as mutations from './mutations'
-import * as actions from './actions'
-import VuexPersistence from 'vuex-persist'
+import state from "./state";
+import * as getters from "./getters";
+import * as mutations from "./mutations";
+import * as actions from "./actions";
+import VuexPersistence from "vuex-persist";
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
-  filter: (mutation) => { console.log('mutation', mutation) }
-})
+  filter: mutation => {
+    console.log("mutation", mutation);
+  }
+});
 
 export default {
   namespaced: true,
@@ -16,4 +18,4 @@ export default {
   actions,
   state,
   plugins: [vuexLocal.plugin]
-}
+};

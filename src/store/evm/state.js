@@ -1,34 +1,36 @@
 export default {
-  showLoginModal: false,
-  signingOverlay: {
-    show: false,
-    status: '', // 0=wait for sig, 1=success, 2=error
-    msg: '',
-    isShowCloseButton: true
-  },
   activeAuthenticator: {},
   authenticatorUser: {},
   currentNetwork: null,
   UAL: {},
-  accountName: {
-    wax: null,
-    ethereum: null
-  },
-  chainId: {
-    wax: null,
-    ethereum: null
-  },
+  accountName: null,
+  chainId: null,
   SESSION: {
-    wax: {
-      accountName: null,
-      authenticatorName: null,
-      timestamp: null
-    },
-    ethereum: {
-      accountName: null,
-      authenticatorName: null,
-      timestamp: null
-    }
+    accountName: null,
+    authenticatorName: null,
+    timestamp: null
   },
-  paymentInfo: null
-}
+  paymentInfo: null,
+  networkList: {
+    "3": {
+      name: "Ropsten Testnet",
+      destinationChainId: 1,
+      className: "ethereum"
+    },
+    "97": {
+      name: "BSC Testnet",
+      destinationChainId: 2,
+      className: "binance"
+    },
+    "41": {
+      name: "Telos Testnet",
+      destinationChainId: 3,
+      className: "telos"
+    },
+    "80001": {
+      name: "Matic Testnet",
+      destinationChainId: 4,
+      className: "matic"
+    }
+  }
+};
