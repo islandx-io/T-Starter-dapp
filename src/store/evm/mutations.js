@@ -39,9 +39,7 @@ export function setChainId(state, payload) {
   if (chainId.substr(0, 2) === "0x") {
     chainId = parseInt(chainId.substr(2), 16);
   }
-  const existing = JSON.parse(JSON.stringify(state.chainId));
-  existing[payload.network] = chainId;
-  state.chainId = existing;
+  state.chainId = chainId;
 }
 
 export function setPaymentInfo(state, payload) {

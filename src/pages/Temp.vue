@@ -270,18 +270,18 @@ export default {
         const a = await web3.eth.getAccounts();
         this.$store.commit("evm/setAccountName", { accountName: a[0] });
         this.evmAccount = a[0];
-        // const chainId = await web3.eth.getChainId()
-        // this.$store.commit('ual/setChainId', {network: 'ethereum', chainId})
+        const chainId = await web3.eth.getChainId();
+        this.$store.commit("evm/setChainId", { chainId });
 
         // this.updateBalances()
 
         window.ethereum.on("accountsChanged", a => {
-          // this.$store.commit('ual/setAccountName', {network: 'ethereum', accountName: a[0]})
+          this.$store.commit("evm/setAccountName", { accountName: a[0] });
           this.evmAccount = a[0];
         });
-        // window.ethereum.on('chainChanged', (chainId) => {
-        //     this.$store.commit('ual/setChainId', {network: 'ethereum', chainId})
-        // })
+        window.ethereum.on("chainChanged", chainId => {
+          this.$store.commit("evm/setChainId", { chainId });
+        });
       } else {
         console.error("Could not get injected web3");
       }
