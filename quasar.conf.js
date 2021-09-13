@@ -31,7 +31,8 @@ module.exports = function(/* ctx */) {
       "ballotinfo",
       "helpers",
       "moonpay",
-      "web3"
+      "web3",
+      "erc20"
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -71,7 +72,8 @@ module.exports = function(/* ctx */) {
         SITE_VERSION: siteVersion,
         BALLOT_ADDRESS: process.env.BALLOT_ADDRESS,
         MOONPAY_KEY: process.env.MOONPAY_KEY,
-        BRIDGE_ADDRESS: process.env.BRIDGE_ADDRESS
+        BRIDGE_ADDRESS: process.env.BRIDGE_ADDRESS,
+        TPORT_ADDRESS: process.env.TPORT_ADDRESS
       },
 
       // transpile: false,
