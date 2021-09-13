@@ -52,9 +52,16 @@
                   class="hover-accent"
                   color="primary"
                   no-shadow
-                  label="Connect Metamask"
-                  @click="connectMetamask(selectedNetwork)"
-                />
+                  no-caps
+                  @click="connectWeb3(selectedNetwork)"
+                >
+                  <div class="ellipsis" v-if="evmAccount === ''">
+                    Connect Metamask
+                  </div>
+                  <div class="ellipsis" style="max-width: 100px" v-else>
+                    {{ evmAccount }}
+                  </div>
+                </q-btn>
                 <div class="row items-center justify-center q-px-md">
                   <token-avatar :token="selectedNetwork" :avatarSize="23" />
                   <div class="text-subtitle1 q-pl-xs">
@@ -62,7 +69,6 @@
                   </div>
                 </div>
               </div>
-              <div>ETH Account: {{ ethAccount }}</div>
               <!-- Amount -->
               <q-input
                 outlined
@@ -156,7 +162,7 @@ export default {
       transaction: null,
       selectedTokenSym: "START",
       selectedNetwork: "Ropsten",
-      ethAccount: ""
+      evmAccount: ""
     };
   },
   computed: {
@@ -256,31 +262,29 @@ export default {
       }
     },
 
-    async connectMetamask(network) {
-      if (network === "ETH") {
-        const { injectedWeb3, web3 } = await this.$web3();
-        console.log(injectedWeb3, web3);
+    async connectWeb3(network) {
+      const { injectedWeb3, web3 } = await this.$web3();
+      console.log(injectedWeb3, web3);
 
-        if (injectedWeb3) {
-          const ethAccount = await web3.eth.getAccounts();
-          // this.$store.commit('ual/setAccountName', {network: 'ethereum', accountName: ethAccount[0]})
-          this.ethAccount = ethAccount;
-          // const chainId = await web3.eth.getChainId()
-          // this.$store.commit('ual/setChainId', {network: 'ethereum', chainId})
+      if (injectedWeb3) {
+        const a = await web3.eth.getAccounts();
+        this.$store.commit("evm/setAccountName", { accountName: a[0] });
+        this.evmAccount = a[0];
+        // const chainId = await web3.eth.getChainId()
+        // this.$store.commit('ual/setChainId', {network: 'ethereum', chainId})
 
-          // this.updateBalances()
+        // this.updateBalances()
 
-          window.ethereum.on("accountsChanged", a => {
-            // this.$store.commit('ual/setAccountName', {network: 'ethereum', accountName: a[0]})
-            this.ethAccount = a[0];
-          });
-          // window.ethereum.on('chainChanged', (chainId) => {
-          //     this.$store.commit('ual/setChainId', {network: 'ethereum', chainId})
-          // })
-        } else {
-          console.error("Could not get injected web3");
-        }
-      } else console.log("Network not ETH");
+        window.ethereum.on("accountsChanged", a => {
+          // this.$store.commit('ual/setAccountName', {network: 'ethereum', accountName: a[0]})
+          this.evmAccount = a[0];
+        });
+        // window.ethereum.on('chainChanged', (chainId) => {
+        //     this.$store.commit('ual/setChainId', {network: 'ethereum', chainId})
+        // })
+      } else {
+        console.error("Could not get injected web3");
+      }
     }
   },
   mounted() {

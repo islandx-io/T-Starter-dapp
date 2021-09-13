@@ -31,9 +31,7 @@ export function setSESSION(state, payload) {
 }
 
 export function setAccountName(state, payload) {
-  const existing = JSON.parse(JSON.stringify(state.accountName));
-  existing[payload.network] = payload.accountName;
-  state.accountName = existing;
+  state.accountName = payload.accountName;
 }
 
 export function setChainId(state, payload) {

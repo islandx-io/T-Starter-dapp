@@ -6,6 +6,7 @@ import general from "./general";
 import pools from "./pools";
 import blockchains from "./blockchains";
 import ballots from "./ballots";
+import evm from "./evm";
 
 Vue.use(Vuex);
 
@@ -16,7 +17,8 @@ export default function() {
       account,
       pools,
       blockchains,
-      ballots
+      ballots,
+      evm
     },
 
     strict: process.env.DEV
