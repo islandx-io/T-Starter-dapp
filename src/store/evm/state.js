@@ -1,16 +1,7 @@
 export default {
-  activeAuthenticator: {},
-  authenticatorUser: {},
-  currentNetwork: null,
-  UAL: {},
   accountName: null,
   chainId: null,
-  SESSION: {
-    accountName: null,
-    authenticatorName: null,
-    timestamp: null
-  },
-  paymentInfo: null,
+  tportTokens: [],
   networkList: {
     "3": {
       name: "Ropsten Testnet",

@@ -2,9 +2,9 @@ export function setShouldRenderLoginModal(state, payload) {
   state.showLoginModal = payload;
 }
 
-export function setCurrentNetwork(state, payload) {
-  state.currentNetwork = payload;
-}
+// export function setCurrentNetwork(state, payload) {
+//   state.currentNetwork = payload;
+// }
 
 export function setSigningOverlay(state, payload) {
   state.signingOverlay = Object.assign(state.signingOverlay, payload);
@@ -44,4 +44,8 @@ export function setChainId(state, payload) {
 
 export function setPaymentInfo(state, payload) {
   state.paymentInfo = payload;
+}
+
+export function updateTPortTokens(state, { tokens }) {
+  state.tportTokens = tokens;
 }

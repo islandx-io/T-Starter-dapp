@@ -45,6 +45,12 @@
               </div>
               <div>{{ balance }} {{ selectedTokenSym }}</div>
             </div>
+            <div class="networks row justify-center q-pb-sm">
+              <div class="text-weight-light text-subtitle2  col-12 text-center">
+                EVM Balance
+              </div>
+              <div>{{ ethStartBalance }} {{ selectedTokenSym }}</div>
+            </div>
             <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
               <!-- TO -->
               <div class="row justify-center q-py-md ">
@@ -162,16 +168,20 @@ export default {
       transaction: null,
       selectedTokenSym: "START",
       selectedNetwork: "Ropsten",
-      evmAccount: ""
+      evmAccount: "",
+      unsupportedEVMChain: false,
+      ethStartBalance: 0
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    ...mapGetters("blockchains", [
-      "currentChain",
-      "getNetworkByName",
-      "getBridgeTokens"
+    ...mapGetters("evm", [
+      "getEVMAccountName",
+      "getEVMChainId",
+      "getEVMNetworkList",
+      "getTPortTokensBySym"
     ]),
+    ...mapGetters("blockchains", ["currentChain", "getNetworkByName"]),
 
     explorerUrl() {
       return this.currentChain.NETWORK_EXPLORER;
@@ -205,7 +215,8 @@ export default {
       "reloadWallet"
     ]),
     ...mapActions("pools", ["getBalanceFromChain"]),
-    ...mapActions("blockchains", ["setBridgeTokens"]),
+    ...mapActions("evm", ["setTPortTokens"]),
+    // ...mapActions("blockchains", ["setBridgeTokens"]),
 
     restrictDecimal() {
       this.amount = this.$toFixedDown(
@@ -273,22 +284,67 @@ export default {
         const chainId = await web3.eth.getChainId();
         this.$store.commit("evm/setChainId", { chainId });
 
-        // this.updateBalances()
+        this.updateEVMState();
 
         window.ethereum.on("accountsChanged", a => {
           this.$store.commit("evm/setAccountName", { accountName: a[0] });
           this.evmAccount = a[0];
+          this.updateEVMState();
         });
         window.ethereum.on("chainChanged", chainId => {
           this.$store.commit("evm/setChainId", { chainId });
+          this.updateEVMState();
         });
       } else {
         console.error("Could not get injected web3");
+      }
+    },
+    async updateEVMState() {
+      if (this.getEVMChainId && this.getEVMAccountName) {
+        const { injectedWeb3, web3 } = await this.$web3();
+
+        if (injectedWeb3) {
+          console.log(
+            "Reloading EVM balances. Chain ID: ",
+            this.getEVMChainId,
+            "; Network list:",
+            this.getEVMNetworkList
+          );
+          const chainData = this.getEVMNetworkList[this.getEVMChainId];
+          if (typeof chainData === "undefined") {
+            this.unsupportedEVMChain = true;
+          } else {
+            this.unsupportedEVMChain = false;
+            console.log("ERC20 ABI:", this.$erc20Abi, "Chain data:", chainData);
+            this.networkName = chainData.name;
+            const token = this.getTPortTokensBySym(this.selectedTokenSym);
+            console.log("TPort token:", token);
+            if (typeof token === "undefined") {
+              console.error("TPort Token not found");
+            } else {
+              const remoteContract = token.remote_contracts.find(
+                el => el.key === chainData.destinationChainId
+              ).value;
+              console.log("remoteContract:", remoteContract);
+              const remoteInstance = new web3.eth.Contract(
+                this.$erc20Abi,
+                remoteContract
+              );
+              console.log("remoteInstance:", remoteInstance);
+              const balance = await remoteInstance.methods
+                .balanceOf(this.getEVMAccountName)
+                .call();
+              console.log(`Balance is ${balance}`, balance);
+              this.ethStartBalance = Number(balance / 10000).toLocaleString();
+            }
+          }
+        }
       }
     }
   },
   mounted() {
     this.reloadWallet(this.accountName);
+    this.setTPortTokens();
   },
 
   watch: {
