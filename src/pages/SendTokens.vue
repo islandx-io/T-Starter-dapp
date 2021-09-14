@@ -48,7 +48,7 @@
             <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
               <!-- TO -->
               <q-input
-                v-if="selectedNetwork != 'ETH'"
+                v-if="!supportedEvmChains.includes(selectedNetwork)"
                 outlined
                 autocapitalize="off"
                 bottom-slots
@@ -112,10 +112,7 @@
                   </q-btn-dropdown>
                 </template>
               </q-input>
-              <div
-                v-if="selectedNetwork === 'ETH'"
-                class="row justify-between q-py-md"
-              >
+              <div v-else class="row justify-between q-py-md">
                 <q-btn
                   class="hover-accent"
                   color="primary"
@@ -193,7 +190,7 @@
               </q-input>
               <!-- Memo -->
               <q-input
-                v-if="selectedNetwork != 'ETH'"
+                v-if="!supportedEvmChains.includes(selectedNetwork)"
                 outlined
                 bottom-slots
                 v-model="memo"
@@ -213,9 +210,7 @@
                 label="Send"
                 style="width: 40%"
                 type="submit"
-                :disabled="
-                  selectedToken === undefined || selectedNetwork === 'ETH'
-                "
+                :disabled="selectedToken === undefined"
               />
             </div>
             <div
@@ -292,7 +287,7 @@ export default {
       transaction: null,
       // explorerUrl: process.env.NETWORK_EXPLORER,
       selectedTokenSym: "START",
-      selectedNetwork: "TELOS"
+      selectedNetwork: "ETHEREUM"
     };
   },
   computed: {
@@ -366,21 +361,6 @@ export default {
         }
         return res;
       } else return [];
-      // if (bridgeTokens && this.selectedToken !== undefined) {
-      //   console.log({ bridgeTokens });
-      //   let res = [this.currentChain.NETWORK_NAME];
-      //   for (let token of bridgeTokens) {
-      //     if (
-      //       this.$getSymFromAsset(token.token_info) === this.selectedTokenSym
-      //     ) {
-      //       res.push(token.channel.toUpperCase());
-      //     }
-      //   }
-      //   // if (this.selectedTokenSym.toUpperCase() === "START")
-      //   //   supportedEosChains.push("ETH"); // TODO Make this dynamic
-      //   console.log("Supported EOS Chains:", res);
-      //   return res;
-      // } else return [];
     },
 
     networkOptions() {
@@ -510,8 +490,7 @@ export default {
   mounted() {
     if (this.$route.query.token_sym !== undefined)
       this.selectedTokenSym = this.$route.query.token_sym;
-    if (!this.isCrossChainToken)
-      this.selectedNetwork = this.currentChain.NETWORK_NAME;
+    // this.selectedNetwork = this.currentChain.NETWORK_NAME;
     this.setBridgeTokens();
     this.reloadWallet(this.accountName);
     this.setTPortTokens();
