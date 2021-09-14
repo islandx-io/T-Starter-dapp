@@ -169,16 +169,16 @@ export default {
       selectedTokenSym: "START",
       selectedNetwork: "Ropsten",
       evmAccount: "",
-      unsupportedEVMChain: false,
+      unsupportedEvmChain: false,
       ethStartBalance: 0
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("tport", [
-      "getEVMAccountName",
-      "getEVMChainId",
-      "getEVMNetworkList",
+      "getEvmAccountName",
+      "getEvmChainId",
+      "getEvmNetworkList",
       "getTPortTokensBySym"
     ]),
     ...mapGetters("blockchains", ["currentChain", "getNetworkByName"]),
@@ -284,37 +284,37 @@ export default {
         const chainId = await web3.eth.getChainId();
         this.$store.commit("tport/setChainId", { chainId });
 
-        this.updateEVMState();
+        this.updateEvmState();
 
         window.ethereum.on("accountsChanged", a => {
           this.$store.commit("tport/setAccountName", { accountName: a[0] });
           this.evmAccount = a[0];
-          this.updateEVMState();
+          this.updateEvmState();
         });
         window.ethereum.on("chainChanged", chainId => {
           this.$store.commit("tport/setChainId", { chainId });
-          this.updateEVMState();
+          this.updateEvmState();
         });
       } else {
         console.error("Could not get injected web3");
       }
     },
-    async updateEVMState() {
-      if (this.getEVMChainId && this.getEVMAccountName) {
+    async updateEvmState() {
+      if (this.getEvmChainId && this.getEvmAccountName) {
         const { injectedWeb3, web3 } = await this.$web3();
 
         if (injectedWeb3) {
           console.log(
-            "Reloading EVM balances. Chain ID: ",
-            this.getEVMChainId,
+            "Reloading Evm balances. Chain ID: ",
+            this.getEvmChainId,
             "; Network list:",
-            this.getEVMNetworkList
+            this.getEvmNetworkList
           );
-          const chainData = this.getEVMNetworkList[this.getEVMChainId];
+          const chainData = this.getEvmNetworkList[this.getEvmChainId];
           if (typeof chainData === "undefined") {
-            this.unsupportedEVMChain = true;
+            this.unsupportedEvmChain = true;
           } else {
-            this.unsupportedEVMChain = false;
+            this.unsupportedEvmChain = false;
             console.log("ERC20 ABI:", this.$erc20Abi, "Chain data:", chainData);
             this.networkName = chainData.name;
             const token = this.getTPortTokensBySym(this.selectedTokenSym);
@@ -332,7 +332,7 @@ export default {
               );
               console.log("remoteInstance:", remoteInstance);
               const balance = await remoteInstance.methods
-                .balanceOf(this.getEVMAccountName)
+                .balanceOf(this.getEvmAccountName)
                 .call();
               console.log(`Balance is ${balance}`, balance);
               this.ethStartBalance = Number(balance / 10000).toLocaleString();

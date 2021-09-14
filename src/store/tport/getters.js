@@ -1,12 +1,12 @@
-export function getEVMAccountName(state) {
+export function getEvmAccountName(state) {
   return state.accountName;
 }
 
-export function getEVMChainId(state) {
+export function getEvmChainId(state) {
   return state.chainId;
 }
 
-export function getEVMNetworkList(state) {
+export function getEvmNetworkList(state) {
   return state.networkList;
 }
 

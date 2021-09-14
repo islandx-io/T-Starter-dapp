@@ -298,9 +298,9 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("tport", [
-      "getEVMAccountName",
-      "getEVMChainId",
-      "getEVMNetworkList",
+      "getEvmAccountName",
+      "getEvmChainId",
+      "getEvmNetworkList",
       "getTPortTokensBySym"
     ]),
     ...mapGetters("blockchains", [
@@ -359,7 +359,7 @@ export default {
         console.log({ token });
         let res = [];
         for (let r of token.remote_contracts) {
-          const network = this.getEVMNetworkList.find(
+          const network = this.getEvmNetworkList.find(
             el => el.remoteId === r.key
           );
           if (network) res.push(network.name.toUpperCase());
