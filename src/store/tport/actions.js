@@ -19,7 +19,7 @@ export const setTPortTokens = async function({ commit, getters }) {
       };
       tokens.push(asset);
     }
-    console.log("TPort Tokens:", tokens);
+    // console.log("TPort Tokens:", tokens);
     commit("updateTPortTokens", { tokens });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });

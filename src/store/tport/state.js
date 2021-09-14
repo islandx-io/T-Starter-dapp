@@ -5,31 +5,35 @@ export default {
   networkList: [
     {
       name: "Ethereum", // Ropsten
-      chainId: 3,
+      isTestNet: true,
       remoteId: 1,
-      className: "ethereum",
-      isTestNet: true
+      chainId: 3
     },
     {
       name: "BSC",
-      chainId: 97,
+      isTestNet: true,
       remoteId: 2,
-      className: "binance",
-      isTestNet: true
+      chainName: "Binance Smart Chain Testnet",
+      chainId: 97,
+      rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+      nativeCurrency: {
+        name: "BINANCE COIN",
+        symbol: "tBNB",
+        decimals: 18
+      },
+      blockExplorerUrls: ["https://testnet.bscscan.com"]
     },
     {
       name: "Telos EVM",
-      chainId: 41,
+      isTestNet: true,
       remoteId: 3,
-      className: "telos",
-      isTestNet: true
+      chainId: 41
     },
     {
-      name: "Matic",
-      chainId: 8001,
+      name: "Matic Testnet",
+      isTestNet: true,
       remoteId: 4,
-      className: "matic",
-      isTestNet: true
+      chainId: 8001
     }
   ]
 };
