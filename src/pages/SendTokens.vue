@@ -297,6 +297,12 @@ export default {
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
+    ...mapGetters("tport", [
+      "getEVMAccountName",
+      "getEVMChainId",
+      "getEVMNetworkList",
+      "getTPortTokensBySym"
+    ]),
     ...mapGetters("blockchains", [
       "currentChain",
       "getNetworkByName",
@@ -328,21 +334,57 @@ export default {
       return this.selectedToken ? this.selectedToken.balance : 0;
     },
 
-    networkOptions() {
+    supportedEosChains() {
       const bridgeTokens = this.getBridgeTokens;
       if (bridgeTokens && this.selectedToken !== undefined) {
         console.log({ bridgeTokens });
-        let supportedChains = [this.currentChain.NETWORK_NAME];
+        let res = [this.currentChain.NETWORK_NAME];
         for (let token of bridgeTokens) {
-          if (token.token_info.sym.includes(this.selectedTokenSym)) {
-            supportedChains.push(token.channel.toUpperCase());
+          if (
+            this.$getSymFromAsset(token.token_info) === this.selectedTokenSym
+          ) {
+            res.push(token.channel.toUpperCase());
           }
         }
-        if (this.selectedTokenSym.toUpperCase() === "START")
-          supportedChains.push("ETH"); // TODO Make this dynamic
-        console.log({ supportedChains });
-        return supportedChains;
+        // if (this.selectedTokenSym.toUpperCase() === "START")
+        //   supportedEosChains.push("ETH"); // TODO Make this dynamic
+        console.log("Supported EOS Chains:", res);
+        return res;
       } else return [];
+    },
+
+    supportedEvmChains() {
+      const token = this.getTPortTokensBySym(this.selectedTokenSym);
+      if (token) {
+        console.log({ token });
+        let res = [];
+        for (let r of token.remote_contracts) {
+          const network = this.getEVMNetworkList.find(
+            el => el.remoteId === r.key
+          );
+          if (network) res.push(network.name.toUpperCase());
+        }
+        return res;
+      } else return [];
+      // if (bridgeTokens && this.selectedToken !== undefined) {
+      //   console.log({ bridgeTokens });
+      //   let res = [this.currentChain.NETWORK_NAME];
+      //   for (let token of bridgeTokens) {
+      //     if (
+      //       this.$getSymFromAsset(token.token_info) === this.selectedTokenSym
+      //     ) {
+      //       res.push(token.channel.toUpperCase());
+      //     }
+      //   }
+      //   // if (this.selectedTokenSym.toUpperCase() === "START")
+      //   //   supportedEosChains.push("ETH"); // TODO Make this dynamic
+      //   console.log("Supported EOS Chains:", res);
+      //   return res;
+      // } else return [];
+    },
+
+    networkOptions() {
+      return [...this.supportedEosChains, ...this.supportedEvmChains];
     }
   },
   methods: {
@@ -353,6 +395,7 @@ export default {
     ]),
     ...mapActions("pools", ["getBalanceFromChain"]),
     ...mapActions("blockchains", ["setBridgeTokens"]),
+    ...mapActions("tport", ["setTPortTokens"]),
 
     restrictDecimal() {
       this.amount = this.$toFixedDown(
@@ -471,6 +514,7 @@ export default {
       this.selectedNetwork = this.currentChain.NETWORK_NAME;
     this.setBridgeTokens();
     this.reloadWallet(this.accountName);
+    this.setTPortTokens();
   },
 
   watch: {

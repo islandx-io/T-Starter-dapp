@@ -2,26 +2,34 @@ export default {
   accountName: null,
   chainId: null,
   tportTokens: [],
-  networkList: {
-    "3": {
-      name: "Ropsten Testnet",
-      destinationChainId: 1,
-      className: "ethereum"
+  networkList: [
+    {
+      name: "Ethereum", // Ropsten
+      chainId: 3,
+      remoteId: 1,
+      className: "ethereum",
+      isTestNet: true
     },
-    "97": {
-      name: "BSC Testnet",
-      destinationChainId: 2,
-      className: "binance"
+    {
+      name: "BSC",
+      chainId: 97,
+      remoteId: 2,
+      className: "binance",
+      isTestNet: true
     },
-    "41": {
-      name: "Telos Testnet",
-      destinationChainId: 3,
-      className: "telos"
+    {
+      name: "Telos EVM",
+      chainId: 41,
+      remoteId: 3,
+      className: "telos",
+      isTestNet: true
     },
-    "80001": {
-      name: "Matic Testnet",
-      destinationChainId: 4,
-      className: "matic"
+    {
+      name: "Matic",
+      chainId: 8001,
+      remoteId: 4,
+      className: "matic",
+      isTestNet: true
     }
-  }
+  ]
 };
