@@ -688,6 +688,7 @@ export default {
   watch: {
     async accountName() {
       this.reloadWallet(this.accountName);
+      this.$store.dispatch("tport/setTeleports", this.accountName);
     },
     async selectedNetwork() {
       if (this.supportedEvmChains.includes(this.selectedNetwork))

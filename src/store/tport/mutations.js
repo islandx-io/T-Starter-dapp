@@ -2,7 +2,7 @@ export function setAccountName(state, payload) {
   state.accountName = payload.accountName;
 }
 
-export function setRemoteId(state, {remoteId}) {
+export function setRemoteId(state, { remoteId }) {
   state.remoteId = remoteId;
 }
 
@@ -16,4 +16,8 @@ export function setChainId(state, payload) {
 
 export function updateTPortTokens(state, { tokens }) {
   state.tportTokens = tokens;
+}
+
+export function updateTeleports(state, { teleports }) {
+  state.teleports = teleports;
 }

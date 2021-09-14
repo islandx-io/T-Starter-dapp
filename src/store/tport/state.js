@@ -3,6 +3,7 @@ export default {
   chainId: null,
   remoteId: null,
   tportTokens: [],
+  teleports: [],
   networkList: [
     {
       name: "Ethereum", // Ropsten
