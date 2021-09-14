@@ -321,6 +321,7 @@ export default {
     ...mapGetters("tport", [
       "getEvmAccountName",
       "getEvmChainId",
+      "getEvmRemoteId",
       "getEvmNetworkList",
       "getTPortTokensBySym"
     ]),
@@ -415,6 +416,9 @@ export default {
     },
 
     async accountExistsOnChain(account) {
+      // ignore check for teleports
+      if (this.supportedEvmChains.includes(this.selectedNetwork)) return true;
+
       // get current selected chain
       let blockchains = this.getNetworkByName(
         this.selectedNetwork.toUpperCase()
@@ -467,8 +471,8 @@ export default {
           }
         ];
         transaction = await this.$store.$api.signTransaction(actions);
-      } else {
-        // If different network, send to bridge
+      } else if (this.supportedEosChains.includes(this.selectedNetwork)) {
+        // If different EOS network, send to bridge
         const actions = [
           {
             account: this.token_contract,
@@ -486,6 +490,50 @@ export default {
           }
         ];
         transaction = await this.$store.$api.signTransaction(actions);
+      } else {
+        // If EVM network, teleport
+        const actions = [
+          {
+            account: process.env.TOKEN_ADDRESS,
+            name: "transfer",
+            authorization: [
+              {
+                actor: this.accountName,
+                permission: "active"
+              }
+            ],
+            data: {
+              from: this.accountName,
+              to: process.env.TPORT_ADDRESS,
+              quantity: `${parseFloat(this.amount).toFixed(
+                this.token_decimals
+              )} ${this.selectedTokenSym}`,
+              memo: "Teleport"
+            }
+          },
+          {
+            account: process.env.TPORT_ADDRESS,
+            name: "teleport",
+            authorization: [
+              {
+                actor: this.accountName,
+                permission: "active"
+              }
+            ],
+            data: {
+              from: this.accountName,
+              quantity: `${parseFloat(this.amount).toFixed(
+                this.token_decimals
+              )} ${this.selectedTokenSym}`,
+              chain_id: this.getEvmRemoteId,
+              eth_address:
+                this.evmAccount.replace("0x", "") + "000000000000000000000000"
+            }
+          }
+        ];
+        console.log("Actions: ", actions);
+
+        // transaction = await this.$store.$api.signTransaction(actions);
       }
       if (transaction) {
         this.showTransaction = true;
@@ -524,6 +572,10 @@ export default {
         this.evmAccount = a[0];
         const chainId = await web3.eth.getChainId();
         this.$store.commit("tport/setChainId", { chainId });
+        const remoteId = this.getEvmNetworkList.find(
+          el => el.chainId === chainId
+        ).remoteId;
+        this.$store.commit("tport/setRemoteId", { remoteId });
 
         this.updateTportState();
 
@@ -533,6 +585,10 @@ export default {
         });
         window.ethereum.on("chainChanged", chainId => {
           this.$store.commit("tport/setChainId", { chainId });
+          const remoteId = this.getEvmNetworkList.find(
+            el => el.chainId === chainId
+          ).remoteId;
+          this.$store.commit("tport/setRemoteId", { remoteId });
         });
       } else {
         console.error("Could not get injected web3");

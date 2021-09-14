@@ -1,6 +1,7 @@
 export default {
   accountName: null,
   chainId: null,
+  remoteId: null,
   tportTokens: [],
   networkList: [
     {

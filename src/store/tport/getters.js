@@ -6,6 +6,10 @@ export function getEvmChainId(state) {
   return state.chainId;
 }
 
+export function getEvmRemoteId(state) {
+  return state.remoteId;
+}
+
 export function getEvmNetworkList(state) {
   return state.networkList;
 }
