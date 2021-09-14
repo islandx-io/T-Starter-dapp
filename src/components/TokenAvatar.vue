@@ -69,6 +69,8 @@ export default {
           else if (token === "TELOS") result = "/tokens/tlos.png";
           else if (token === "EOS") result = "/tokens/eos.png";
           else if (token === "WAX") result = "/tokens/wax.png";
+          else if (token === "BSC") result = "/tokens/bnb.svg";
+          else if (token === "TELOS EVM") result = "/tokens/tlos.png";
           else if (["ETH", "ETHEREUM", "ROPSTEN"].includes(token.toUpperCase()))
             result = "/tokens/eth.svg";
           else if (token === "PUSDC")
