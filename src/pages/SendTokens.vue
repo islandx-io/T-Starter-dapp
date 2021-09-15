@@ -62,6 +62,7 @@
             </div>
             <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
               <!-- TO -->
+              <!-- <teleport /> -->
               <q-input
                 v-if="!supportedEvmChains.includes(selectedNetwork)"
                 outlined
@@ -78,53 +79,11 @@
                 no-error-icon
               >
                 <template v-slot:append>
-                  <q-btn-dropdown
-                    no-caps
-                    flat
-                    class="bg-secondary"
-                    padding="sm"
-                    style="margin: 0px"
-                    color="black"
-                    outline
-                  >
-                    <template v-slot:label>
-                      <div class="flex items-center justify-center wrap">
-                        <div class="row items-center justify-center">
-                          <token-avatar
-                            :token="selectedNetwork"
-                            :avatarSize="23"
-                          />
-                          <div class="text-subtitle1 q-pl-xs">
-                            {{ selectedNetwork }}
-                          </div>
-                        </div>
-                        <q-tooltip anchor="top middle" self="bottom middle">
-                          To Network
-                        </q-tooltip>
-                      </div>
-                    </template>
-                    <q-list class="bg-secondary">
-                      <q-item
-                        clickable
-                        v-close-popup
-                        v-for="network in networkOptions"
-                        :key="network"
-                        @click="selectedNetwork = network"
-                        flat
-                        size="lg"
-                        no-caps
-                      >
-                        <div class="flex items-center justify-center wrap">
-                          <div class="row items-center justify-center">
-                            <token-avatar :token="network" :avatarSize="23" />
-                            <div class="text-subtitle1 q-pl-xs">
-                              {{ network }}
-                            </div>
-                          </div>
-                        </div>
-                      </q-item>
-                    </q-list>
-                  </q-btn-dropdown>
+                  <net-selector
+                    :selectedNetwork="selectedNetwork"
+                    :networkOptions="networkOptions"
+                    @changeNetwork="selectedNetwork = $event"
+                  />
                 </template>
               </q-input>
               <div v-else class="row justify-between q-py-md">
@@ -142,53 +101,11 @@
                     {{ evmAccount }}
                   </div>
                 </q-btn>
-                <q-btn-dropdown
-                  no-caps
-                  flat
-                  class="bg-secondary"
-                  padding="sm"
-                  style="margin: 0px"
-                  color="black"
-                  outline
-                >
-                  <template v-slot:label>
-                    <div class="flex items-center justify-center wrap">
-                      <div class="row items-center justify-center">
-                        <token-avatar
-                          :token="selectedNetwork"
-                          :avatarSize="23"
-                        />
-                        <div class="text-subtitle1 q-pl-xs">
-                          {{ selectedNetwork }}
-                        </div>
-                      </div>
-                      <q-tooltip anchor="top middle" self="bottom middle">
-                        To Network
-                      </q-tooltip>
-                    </div>
-                  </template>
-                  <q-list class="bg-secondary">
-                    <q-item
-                      clickable
-                      v-close-popup
-                      v-for="network in networkOptions"
-                      :key="network"
-                      @click="selectedNetwork = network"
-                      flat
-                      size="lg"
-                      no-caps
-                    >
-                      <div class="flex items-center justify-center wrap">
-                        <div class="row items-center justify-center">
-                          <token-avatar :token="network" :avatarSize="23" />
-                          <div class="text-subtitle1 q-pl-xs">
-                            {{ network }}
-                          </div>
-                        </div>
-                      </div>
-                    </q-item>
-                  </q-list>
-                </q-btn-dropdown>
+                <net-selector
+                  :selectedNetwork="selectedNetwork"
+                  :networkOptions="networkOptions"
+                  @changeNetwork="selectedNetwork = $event"
+                />
               </div>
               <!-- Amount -->
               <q-input
@@ -302,11 +219,13 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
+// import teleport from "src/components/send/Teleport";
 import teleportDash from "src/components/send/TeleportDash";
+import netSelector from "src/components/send/NetSelector";
 import { Api, JsonRpc, Serialize } from "eosjs";
 
 export default {
-  components: { tokenAvatar, teleportDash },
+  components: { tokenAvatar, teleportDash, netSelector },
   data() {
     return {
       to: null,
