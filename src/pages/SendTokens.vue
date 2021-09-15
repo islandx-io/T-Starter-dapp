@@ -289,7 +289,7 @@
             </q-dialog>
           </div>
         </q-card>
-        <teleports
+        <teleport-dash
           v-if="getTeleports.length > 0"
           :selectedNetwork="selectedNetwork"
           :selectedTokenSym="selectedTokenSym"
@@ -302,11 +302,11 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
-import teleports from "src/components/send/Teleports";
+import teleportDash from "src/components/send/TeleportDash";
 import { Api, JsonRpc, Serialize } from "eosjs";
 
 export default {
-  components: { tokenAvatar, teleports },
+  components: { tokenAvatar, teleportDash },
   data() {
     return {
       to: null,
