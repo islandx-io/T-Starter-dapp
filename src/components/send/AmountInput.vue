@@ -1,0 +1,40 @@
+<template>
+  <q-input
+    outlined
+    bottom-slots
+    :suffix="selectedTokenSym"
+    :value="amount"
+    @input="updateAmount($event)"
+    label="Amount"
+    maxlength="12"
+    class="col"
+    :rules="[validateInputAmount]"
+    no-error-icon
+  >
+    <template v-slot:append>
+      <q-btn
+        label="Max"
+        color="positive"
+        outline
+        @click="updateAmount(balance)"
+      />
+    </template>
+  </q-input>
+</template>
+
+<script>
+export default {
+  props: ["selectedToken", "selectedTokenSym", "amount", "balance"],
+  data() {
+    return {};
+  },
+  methods: {
+    validateInputAmount(val) {
+      return (val <= this.balance) & (val > 0) || "Incorrect amount";
+    },
+    updateAmount(val) {
+      this.$emit("update:amount", val); // TODO Check type: max btn is number and input is string
+    }
+  }
+};
+</script>

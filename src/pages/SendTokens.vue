@@ -108,26 +108,12 @@
                 />
               </div>
               <!-- Amount -->
-              <q-input
-                outlined
-                bottom-slots
-                :suffix="selectedTokenSym"
-                v-model="amount"
-                label="Amount"
-                maxlength="12"
-                class="col"
-                :rules="[validateInputAmount]"
-                no-error-icon
-              >
-                <template v-slot:append>
-                  <q-btn
-                    label="Max"
-                    color="positive"
-                    outline
-                    @click="amount = balance"
-                  />
-                </template>
-              </q-input>
+              <amount-input
+                :selectedTokenSym="selectedTokenSym"
+                :selectedToken="selectedToken"
+                :amount.sync="amount"
+                :balance="balance"
+              />
               <!-- Memo -->
               <q-input
                 v-if="!supportedEvmChains.includes(selectedNetwork)"
@@ -222,10 +208,11 @@ import tokenAvatar from "src/components/TokenAvatar";
 // import teleport from "src/components/send/Teleport";
 import teleportDash from "src/components/send/TeleportDash";
 import netSelector from "src/components/send/NetSelector";
+import amountInput from "src/components/send/AmountInput";
 import { Api, JsonRpc, Serialize } from "eosjs";
 
 export default {
-  components: { tokenAvatar, teleportDash, netSelector },
+  components: { tokenAvatar, teleportDash, netSelector, amountInput },
   data() {
     return {
       to: null,
@@ -330,16 +317,12 @@ export default {
     ...mapActions("blockchains", ["setBridgeTokens"]),
     ...mapActions("tport", ["setTPortTokens"]),
 
-    restrictDecimal() {
-      this.amount = this.$toFixedDown(
-        this.amount,
-        this.$getDecimalFromAsset(this.selectedTokenSym)
-      );
-    },
-
-    validateInputAmount(val) {
-      return (val <= this.balance) & (val > 0) || "Incorrect amount";
-    },
+    // restrictDecimal() {
+    //   this.amount = this.$toFixedDown(
+    //     this.amount,
+    //     this.$getDecimalFromAsset(this.selectedTokenSym)
+    //   );
+    // },
 
     async accountExistsOnChain(account) {
       // ignore check for teleports
