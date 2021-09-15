@@ -61,21 +61,37 @@ export const setTeleports = async function({ commit }, account) {
       // }
       teleports.push(r);
     });
-    res = await this.$api.getTableRows({
-      code: process.env.TPORT_ADDRESS,
-      scope: process.env.TPORT_ADDRESS,
-      table: "receipts",
-      index_position: 3,
-      key_type: "i64",
-      lower_bound: account,
-      upper_bound: account,
-      reverse: true
-    });
-    console.log("resEth", res);
-    res.rows.forEach(r => {
-      r.class = "fromevm";
-      teleports.push(r);
-    });
+    // res = await this.$api.getTableRows({
+    //   code: process.env.TPORT_ADDRESS,
+    //   scope: process.env.TPORT_ADDRESS,
+    //   table: "receipts",
+    //   index_position: 3,
+    //   key_type: "i64",
+    //   lower_bound: account,
+    //   upper_bound: account,
+    //   reverse: true
+    // });
+    // console.log("resEth", res);
+    // res.rows.forEach(r => {
+    //   r.class = "fromevm";
+    //   teleports.push(r);
+    // });
+
+    /*
+    {
+    "code": 3040007,
+    "name": "invalid_ref_block_exception",
+    "what": "Invalid Reference Block",
+    "details": [
+        {
+            "message": "Transaction's reference block did not match. Is this transaction from a different fork?",
+            "file": "controller.cpp",
+            "line_number": 3167,
+            "method": "validate_tapos"
+        }
+      ]
+    }
+    */
 
     teleports = teleports
       .map(t => {
