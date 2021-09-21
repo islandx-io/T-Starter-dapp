@@ -23,65 +23,7 @@
         </q-btn>
         <!-- Select token dropdown -->
         <div class="column items-center">
-          <q-btn-dropdown
-            no-caps
-            flat
-            class="q-ml-md bg-secondary"
-            padding="xs"
-            style="margin: 8px"
-          >
-            <template v-slot:label>
-              <div class="flex items-center justify-center wrap q-pa-sm">
-                <h2>
-                  Receive
-                </h2>
-                <div class="row items-center justify-center">
-                  <token-avatar :token="selectedToken" :avatarSize="55" />
-                  <h2>
-                    {{ selectedToken }}
-                  </h2>
-                </div>
-              </div>
-            </template>
-            <q-list class="bg-secondary">
-              <q-item
-                clickable
-                v-close-popup
-                v-for="token in tokens"
-                :key="token"
-                @click="
-                  selectedToken = token;
-                  selectedNetwork = currentChain.NETWORK_NAME.toLowerCase();
-                "
-                flat
-                size="lg"
-                no-caps
-                padding="xs"
-              >
-                <q-item-section avatar>
-                  <token-avatar :token="token" :avatarSize="40" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label style="font-weight: 500">
-                    {{ token }}
-                  </q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-btn
-                    icon="fas fa-external-link-alt"
-                    class="hover-accent"
-                    type="a"
-                    target="_blank"
-                    :href="pTokenBridgeLink(token)"
-                    size="12px"
-                    round
-                    flat
-                  />
-                  <q-tooltip>pTokens dapp</q-tooltip>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <receive-token-selector :selectedToken.sync="selectedToken" />
           <!-- Network selection -->
           <div class="text-subtitle1 q-pb-sm">From network</div>
           <div class="networks row justify-center">
@@ -113,7 +55,11 @@
               :href="pTokenBridgeLink('PBTC')" -->
             <q-btn
               label="Ethereum"
-              v-if="['PETH', 'TLOS', 'PUSDC', 'PUSDT', 'EOS'].includes(selectedToken.toUpperCase())"
+              v-if="
+                ['PETH', 'TLOS', 'PUSDC', 'PUSDT', 'EOS'].includes(
+                  selectedToken.toUpperCase()
+                )
+              "
               @click="selectedNetwork = 'ethereum'"
               :class="selectedNetwork === 'ethereum' ? 'selected-network' : ''"
               flat
@@ -315,7 +261,6 @@ import { mapGetters, mapActions } from "vuex";
 import QRCodeStyling from "qr-code-styling";
 import QRCode from "qrcode";
 import { copyToClipboard } from "quasar";
-import tokenAvatar from "src/components/TokenAvatar";
 import { PBTC } from "ptokens-pbtc";
 import { pERC20 } from "ptokens-perc20";
 import { pEosioToken } from "ptokens-peosio-token";
@@ -325,6 +270,8 @@ import Web3 from "web3";
 import MetaMaskOnboarding from "@metamask/onboarding";
 import { BigNumber } from "bignumber.js";
 import { constants, eth } from "ptokens-utils";
+import receiveTokenSelector from "src/components/receive/ReceiveTokenSelector";
+import pTokensBridge from "src/components/receive/PTokensBridge";
 
 const qrStyling = {
   data: "",
@@ -369,7 +316,8 @@ const qrStyling = {
 };
 
 export default {
-  components: { tokenAvatar },
+  components: { receiveTokenSelector },
+  mixins: [pTokensBridge],
   data() {
     return {
       // devMode: Boolean(process.env.DEVELOPMENT),
@@ -393,16 +341,6 @@ export default {
     ...mapGetters("blockchains", ["currentChain"]),
     onTestnet() {
       return process.env.TESTNET;
-    },
-
-    tokens() {
-      if (this.currentChain.NETWORK_NAME === "TELOS") {
-        return ["PBTC", "PETH", "TLOS", "PUSDC", 'PUSDT'];
-      } else if (this.currentChain.NETWORK_NAME === "EOS") {
-        return ["PBTC", "PETH", 'EOS'];
-      } else {
-        return ["PBTC", "PETH", "TLOS"]
-      }
     },
 
     depositTokenStr() {
@@ -444,34 +382,6 @@ export default {
   },
 
   methods: {
-    pTokenBridgeLink(sym) {
-      sym = sym.toUpperCase();
-      // if telos chain
-      if (this.currentChain.NETWORK_NAME === "TELOS") {
-        if (sym === "TLOS") {
-          return "https://dapp.ptokens.io/swap?asset=tlos&from=eth&to=telos";
-        } else if (sym === "PBTC") {
-          return "https://dapp.ptokens.io/swap?asset=btc&from=btc&to=telos";
-        } else if (sym === "PETH") {
-          return "https://dapp.ptokens.io/swap?asset=eth&from=eth&to=telos";
-        } else if (sym === "PUSDC") {
-          return "https://dapp.ptokens.io/swap?asset=usdc&from=eth&to=telos";
-        } else if (sym === "PUSDT") {
-          return "https://dapp.ptokens.io/swap?asset=usdt&from=eth&to=telos";
-        }
-      } else if (this.currentChain.NETWORK_NAME === "EOS") {
-        if (sym === "PBTC") {
-          return "https://dapp.ptokens.io/swap?asset=btc&from=btc&to=eos";
-        } else if (sym === "PETH") {
-          return "https://dapp.ptokens.io/swap?asset=eth&from=eth&to=eos";
-        } else if (sym === "EOS") {
-          return "https://dapp.ptokens.io/swap?asset=eos&from=eth&to=eos";
-        }
-      } else if (this.currentChain.NETWORK_NAME === "WAX") {
-        
-      }
-    },
-
     copyAddress(adress) {
       copyToClipboard(adress).then(() => {
         this.$q.notify({
@@ -513,7 +423,7 @@ export default {
       //   }`
       // );
       // this.btcAddress = pbridge_api.data.nativeDepositAddress || [];
-      // this.qrCodes.btc.update({ data: this.btcAddress });      
+      // this.qrCodes.btc.update({ data: this.btcAddress });
       // this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     },
 
