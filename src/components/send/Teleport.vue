@@ -23,17 +23,24 @@
           no-caps
           @click="connectWeb3()"
         >
-          <div class="ellipsis" v-if="evmAccount === ''">
-            Connect Metamask
+          <div v-if="getEvmAccountName === ''">
+            Connect wallet
           </div>
-          <div class="ellipsis" style="max-width: 100px" v-else>
-            {{ evmAccount }}
+          <div
+            class="ellipsis"
+            style="max-width: 100px"
+            v-else-if="!wrongNetwork"
+          >
+            {{ getEvmAccountName }}
+          </div>
+          <div v-else>
+            Wrong Network
           </div>
         </q-btn>
         <net-selector
           :selectedNetwork="selectedNetwork"
           :networkOptions="networkOptions"
-          @changeNetwork="$emit('update:selectedNetwork', $event)"
+          @changeNetwork="changeNetwork($event)"
         />
       </div>
       <amount-input
@@ -53,7 +60,7 @@
         label="Send"
         style="width: 40%"
         type="submit"
-        :disabled="selectedToken === undefined"
+        :disabled="selectedToken === undefined || wrongNetwork"
       />
     </div>
     <send-warnings
@@ -62,6 +69,7 @@
           currentChain.NETWORK_NAME.toUpperCase()
       "
       :tokenNotFound="selectedToken === undefined"
+      :wrongNetwork="wrongNetwork"
     />
 
     <send-tx-dialog
@@ -80,14 +88,17 @@ import sendWarnings from "src/components/send/SendWarnings";
 
 export default {
   components: { netSelector, amountInput, sendTxDialog, sendWarnings },
-  props: ["selectedTokenSym", "selectedNetwork", "networkOptions"],
+  props: [
+    "selectedTokenSym",
+    "selectedNetwork",
+    "networkOptions",
+    "supportedEvmChains"
+  ],
   data() {
     return {
       amount: null,
       showTransaction: false,
       transaction: null,
-      evmAccount: "",
-      unsupportedEvmChain: false,
       remoteBalance: 0
     };
   },
@@ -95,10 +106,12 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("tport", [
       "getEvmAccountName",
+      "getEvmNetwork",
       "getEvmChainId",
       "getEvmRemoteId",
       "getEvmNetworkList",
       "getTPortTokensBySym",
+      "getEvmNetworkByName",
       "getTeleports"
     ]),
     ...mapGetters("blockchains", [
@@ -120,102 +133,84 @@ export default {
 
     balance() {
       return this.selectedToken ? this.selectedToken.balance : 0;
+    },
+
+    wrongNetwork() {
+      if (this.getEvmNetwork) {
+        return (
+          this.getEvmNetwork.name.toUpperCase() !==
+          this.selectedNetwork.toUpperCase()
+        );
+      } else return true;
     }
   },
   methods: {
     ...mapActions("account", ["setWalletBalances"]),
-    async connectWeb3() {
-      const { injectedWeb3, web3 } = await this.$web3();
-      // console.log(injectedWeb3, web3);
 
+    changeNetwork(network) {
+      this.$emit("update:selectedNetwork", network);
+    },
+
+    async connectWeb3() {
+      // TODO Add metamask onboarding
+      // TODO Add metamask connected check
+      // TODO Add metamask disconnect refresh
+      const { injectedWeb3, web3 } = await this.$web3();
       if (injectedWeb3) {
-        await this.switchTportNetwork();
         const a = await web3.eth.getAccounts();
         this.$store.commit("tport/setAccountName", { accountName: a[0] });
-        this.evmAccount = a[0];
         const chainId = await web3.eth.getChainId();
         this.$store.commit("tport/setChainId", { chainId });
-        // console.log(
-        //   "Current network:",
-        //   this.getEvmNetworkList.find(el => el.chainId === chainId)
-        // );
-        const remoteId = this.getEvmNetworkList.find(
-          el => el.chainId === chainId
-        ).remoteId;
-        this.$store.commit("tport/setRemoteId", { remoteId });
-
-        this.updateTportState();
 
         window.ethereum.on("accountsChanged", a => {
           this.$store.commit("tport/setAccountName", { accountName: a[0] });
-          this.evmAccount = a[0];
+          this.updateBalance();
         });
         window.ethereum.on("chainChanged", chainId => {
           this.$store.commit("tport/setChainId", { chainId });
-          const remoteId = this.getEvmNetworkList.find(
-            el => el.chainId === this.getEvmChainId
-          ).remoteId;
-          this.$store.commit("tport/setRemoteId", { remoteId });
         });
       } else {
         console.error("Could not get injected web3");
       }
     },
 
-    async switchTportNetwork() {
-      // TODO Add catch switch errors
-      // try {
-      const chainData = this.getEvmNetworkList.find(
-        el => el.name.toUpperCase() === this.selectedNetwork
-      );
-      const chainId = "0x" + chainData.chainId.toString(16);
-      // console.log("Chain id:", chainId);
-      /* TODO Refine prompt for user to add chains:
-          https://community.metamask.io/t/prompt-user-to-change-chain/4528/7
-          https://docs.metamask.io/guide/rpc-api.html#other-rpc-methods
-        */
-      if (chainData.rpcUrls) {
+    async switchToSelectedEvm() {
+      let chainId = this.getEvmNetworkByName(this.selectedNetwork).chainId;
+      chainId = "0x" + chainId.toString(16);
+      console.log("switchToSelectedEvm - chainId:", chainId);
+      try {
         await ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: chainId,
-              chainName: chainData.chainName,
-              nativeCurrency: chainData.nativeCurrency,
-              rpcUrls: chainData.rpcUrls
-            }
-          ]
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: chainId }]
         });
+      } catch (err) {
+        const net = this.getEvmNetworkByName(this.selectedNetwork);
+        if (err.code === 4902) {
+          // Unrecognized chain ID
+          if (net.rpcUrls.length > 0) {
+            await ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: chainId,
+                  chainName: net.chainName,
+                  nativeCurrency: net.nativeCurrency,
+                  rpcUrls: net.rpcUrls
+                }
+              ]
+            });
+          }
+        }
       }
-      await ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: chainId }]
-      });
-      // } catch {
-      //   return false;
-      // }
-      // return true;
     },
 
-    async updateTportState() {
+    async updateBalance() {
       if (this.getEvmChainId && this.getEvmAccountName) {
         const { injectedWeb3, web3 } = await this.$web3();
 
         if (injectedWeb3) {
-          // console.log(
-          //   "Reloading Evm balances. Chain ID: ",
-          //   this.getEvmChainId,
-          //   "; Network list:",
-          //   this.getEvmNetworkList
-          // );
-          const chainData = this.getEvmNetworkList.find(
-            el => el.chainId === this.getEvmChainId
-          );
-          // console.log("chain data:", chainData);
-          if (typeof chainData === "undefined") {
-            this.unsupportedEvmChain = true;
-          } else {
-            this.unsupportedEvmChain = false;
+          if (this.wrongNetwork) this.remoteBalance = 0;
+          else {
             // console.log("ERC20 ABI:", this.$erc20Abi, "Chain data:", chainData);
             const token = this.getTPortTokensBySym(this.selectedTokenSym);
             // console.log("TPort token:", token);
@@ -223,7 +218,7 @@ export default {
               console.error("TPort Token not found");
             } else {
               const remoteContractAddress = token.remote_contracts.find(
-                el => el.key === chainData.remoteId
+                el => el.key === this.getEvmRemoteId
               ).value;
               // console.log("remoteContractAddress:", remoteContractAddress);
               const remoteInstance = new web3.eth.Contract(
@@ -295,7 +290,8 @@ export default {
             )} ${this.selectedTokenSym}`,
             chain_id: this.getEvmRemoteId,
             eth_address:
-              this.evmAccount.replace("0x", "") + "000000000000000000000000"
+              this.getEvmAccountName.replace("0x", "") +
+              "000000000000000000000000"
           }
         }
       ];
@@ -314,13 +310,19 @@ export default {
       }
     }
   },
-  mounted() {
-    this.connectWeb3();
+  async mounted() {
+    await this.connectWeb3();
+    await this.switchToSelectedEvm();
   },
   watch: {
     async selectedNetwork() {
-      if (this.supportedEvmChains.includes(this.selectedNetwork))
-        this.connectWeb3();
+      if (this.supportedEvmChains.includes(this.selectedNetwork)) {
+        this.switchToSelectedEvm();
+        this.updateBalance();
+      }
+    },
+    async getEvmChainId() {
+      this.updateBalance();
     }
   }
 };

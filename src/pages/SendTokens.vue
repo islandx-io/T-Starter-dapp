@@ -44,6 +44,7 @@
           :selectedTokenSym="selectedTokenSym"
           :selectedNetwork.sync="selectedNetwork"
           :networkOptions="networkOptions"
+          :supportedEvmChains="supportedEvmChains"
         />
         <send-eos-chains
           v-else

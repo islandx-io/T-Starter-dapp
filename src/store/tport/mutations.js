@@ -2,10 +2,6 @@ export function setAccountName(state, payload) {
   state.accountName = payload.accountName;
 }
 
-export function setRemoteId(state, { remoteId }) {
-  state.remoteId = remoteId;
-}
-
 export function setChainId(state, payload) {
   let chainId = `${payload.chainId}`;
   if (chainId.substr(0, 2) === "0x") {
