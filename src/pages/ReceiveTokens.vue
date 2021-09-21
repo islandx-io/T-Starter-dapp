@@ -25,58 +25,13 @@
         <div class="column items-center">
           <receive-token-selector :selectedToken.sync="selectedToken" />
           <!-- Network selection -->
-          <div class="text-subtitle1 q-pb-sm">From network</div>
-          <div class="networks row justify-center">
-            <q-btn
-              :label="currentChain.NETWORK_DISPLAY_NAME"
-              @click="selectedNetwork = currentChain.NETWORK_NAME.toLowerCase()"
-              :class="
-                selectedNetwork === currentChain.NETWORK_NAME.toLowerCase()
-                  ? 'selected-network'
-                  : ''
-              "
-              flat
-              size="lg"
-              no-caps
-              padding="xs"
+          <div class="row items-center q-pb-sm">
+            <div class="text-subtitle1 q-pr-sm">From network</div>
+            <net-selector
+              :selectedNetwork.sync="selectedNetwork"
+              :networkOptions="networkOptions"
+              @changeNetwork="selectedNetwork = $event"
             />
-            <q-btn
-              label="Bitcoin"
-              v-if="selectedToken.toUpperCase() === 'PBTC'"
-              @click="selectedNetwork = 'bitcoin'"
-              :class="selectedNetwork === 'bitcoin' ? 'selected-network' : ''"
-              flat
-              size="lg"
-              no-caps
-              padding="xs"
-            />
-            <!-- type="a"
-              target="_blank"
-              :href="pTokenBridgeLink('PBTC')" -->
-            <q-btn
-              label="Ethereum"
-              v-if="
-                ['PETH', 'TLOS', 'PUSDC', 'PUSDT', 'EOS'].includes(
-                  selectedToken.toUpperCase()
-                )
-              "
-              @click="selectedNetwork = 'ethereum'"
-              :class="selectedNetwork === 'ethereum' ? 'selected-network' : ''"
-              flat
-              size="lg"
-              no-caps
-              padding="xs"
-            >
-              <!-- 
-              type="a"
-              target="_blank"
-                :href="
-                selectedToken.toUpperCase() === 'PETH'
-                  ? pTokenBridgeLink('PETH')
-                  : pTokenBridgeLink('TLOS')
-              " -->
-              <q-tooltip>pTokens dapp</q-tooltip>
-            </q-btn>
           </div>
 
           <!-- """""""""""""""""""""""""""""" -->
@@ -272,6 +227,7 @@ import { BigNumber } from "bignumber.js";
 import { constants, eth } from "ptokens-utils";
 import receiveTokenSelector from "src/components/receive/ReceiveTokenSelector";
 import pTokensBridge from "src/components/receive/PTokensBridge";
+import netSelector from "src/components/NetSelector";
 
 const qrStyling = {
   data: "",
@@ -316,7 +272,7 @@ const qrStyling = {
 };
 
 export default {
-  components: { receiveTokenSelector },
+  components: { receiveTokenSelector, netSelector },
   mixins: [pTokensBridge],
   data() {
     return {
@@ -339,19 +295,31 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
+
+    networkOptions() {
+      let options = [this.currentChain.NETWORK_DISPLAY_NAME];
+      const token = this.selectedToken.toUpperCase();
+      if (token === "PBTC") options.push("Bitcoin");
+      if (["PETH", "TLOS", "PUSDC", "PUSDT", "EOS"].includes(token))
+        options.push("Ethereum");
+      return options;
+    },
+
     onTestnet() {
       return process.env.TESTNET;
     },
 
     depositTokenStr() {
-      if (this.selectedToken.toUpperCase() === "PETH") {
-        if (this.selectedNetwork === "telos") return "PETH";
+      const token = this.selectedToken.toUpperCase();
+      const net = this.selectedNetwork.toUpperCase();
+      if (token === "PETH") {
+        if (net === "TELOS") return "PETH";
         else return "ETH";
-      } else if (this.selectedToken.toUpperCase() === "TLOS") {
-        if (this.selectedNetwork === "telos") return "TLOS";
+      } else if (token === "TLOS") {
+        if (net === "TELOS") return "TLOS";
         else return "TLOS (ERC20)";
       } else {
-        if (this.selectedNetwork === "telos") return "PBTC";
+        if (net === "TELOS") return "PBTC";
         else return "BTC";
       }
     },
