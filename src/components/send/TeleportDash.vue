@@ -2,28 +2,73 @@
   <q-card>
     <div class="text-h6 text-center">Teleports</div>
     <q-list>
-      <q-item v-for="t in getTeleports" :key="t.id">
+      <q-item v-for="t in getUnclaimedTeleports" :key="t.id">
         <q-item-section class="col-3">
           {{ t.quantity }}
         </q-item-section>
         <q-item-section class="col-1">
           <q-icon class="fas fa-arrow-right"></q-icon>
         </q-item-section>
-        <q-item-section>{{ t.chain_id }}</q-item-section>
+        <q-item-section>{{ ethAddress(t.eth_address) }}</q-item-section>
+        <q-item-section>
+          <token-avatar
+            :token="evmNetworkNameById(t.chain_id)"
+            :avatarSize="25"
+          />
+        </q-item-section>
         <q-item-section side>
           <q-btn v-if="t.claimable" color="primary" @click="claimEvm(t)">
             Claim
           </q-btn>
-          <div v-else-if="t.claimed" class="text-emphasis">Claimed</div>
         </q-item-section>
       </q-item>
     </q-list>
+    <q-card-actions class="row justify-center">
+      <div>{{ expanded ? "Hide" : "Show" }} Claimed</div>
+      <q-btn
+        color="grey"
+        round
+        flat
+        dense
+        :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+        @click="expanded = !expanded"
+      />
+    </q-card-actions>
+
+    <q-slide-transition>
+      <div v-show="expanded">
+        <q-separator />
+        <q-card-section class="text-subitle2">
+          <q-list>
+            <q-item v-for="t in getClaimedTeleports" :key="t.id">
+              <q-item-section class="col-3">
+                {{ t.quantity }}
+              </q-item-section>
+              <q-item-section class="col-1">
+                <q-icon class="fas fa-arrow-right"></q-icon>
+              </q-item-section>
+              <q-item-section>{{ ethAddress(t.eth_address) }}</q-item-section>
+              <q-item-section>
+                <token-avatar
+                  :token="evmNetworkNameById(t.chain_id)"
+                  :avatarSize="25"
+                />
+              </q-item-section>
+              <q-item-section side>
+                <div v-if="t.claimed" class="text-emphasis">Claimed</div>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card-section>
+      </div>
+    </q-slide-transition>
   </q-card>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { Api, JsonRpc, Serialize } from "eosjs";
+import tokenAvatar from "src/components/TokenAvatar";
 
 const fromHexString = hexString =>
   new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
@@ -33,8 +78,13 @@ const toHexString = bytes =>
 
 export default {
   props: { selectedNetwork: String, selectedTokenSym: String },
+  components: {
+    tokenAvatar
+  },
   data() {
-    return {};
+    return {
+      expanded: false
+    };
   },
   computed: {
     ...mapGetters("account", ["accountName"]),
@@ -44,10 +94,20 @@ export default {
       "getEvmRemoteId",
       "getEvmNetworkList",
       "getTPortTokensBySym",
-      "getTeleports"
+      "getTeleports",
+      "getClaimedTeleports",
+      "getUnclaimedTeleports"
     ])
   },
   methods: {
+    ethAddress(val) {
+      return "0x" + val.substr(0, 4) + "..." + val.substr(36, 4);
+    },
+    evmNetworkNameById(remoteId) {
+      const net = this.getEvmNetworkList.find(el => el.remoteId === remoteId);
+      if (net) return net.name;
+      else return "";
+    },
     async getSignData(teleportId) {
       const res = await this.$store.$api.getTableRows({
         code: process.env.TPORT_ADDRESS,

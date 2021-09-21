@@ -22,6 +22,14 @@ export function getTeleports(state) {
   return state.teleports;
 }
 
+export function getUnclaimedTeleports(state) {
+  return state.teleports.filter(a => a.claimable);
+}
+
+export function getClaimedTeleports(state) {
+  return state.teleports.filter(a => a.claimed);
+}
+
 export const getTPortTokensBySym = ({ tportTokens }) => sym => {
   return tportTokens.find(el => el.token.sym === sym);
 };
