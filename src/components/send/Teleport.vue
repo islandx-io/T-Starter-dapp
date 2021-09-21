@@ -1,5 +1,5 @@
 <template>
-  <q-form @submit="send" ref="sendForm">
+  <q-form @submit="trySend" ref="sendForm">
     <div class="row">
       <div class="networks row justify-center q-pb-sm">
         <div class="text-weight-light text-subtitle2  col-12 text-center">
@@ -114,6 +114,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions("account", ["setWalletBalances"]),
     async connectWeb3() {
       const { injectedWeb3, web3 } = await this.$web3();
       // console.log(injectedWeb3, web3);
@@ -231,6 +232,21 @@ export default {
         }
       }
     },
+
+    async trySend() {
+      try {
+        await this.send();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Sent"
+        });
+      } catch (error) {
+        this.$errorNotification(error);
+      }
+    },
+
     async send() {
       if (!(await this.accountExistsOnChain(this.to))) {
         this.$q.notify({
@@ -239,71 +255,60 @@ export default {
         });
         return;
       }
-
-      try {
-        // if same network, do normal transaction
-        let transaction;
-        // If EVM network, teleport
-        const actions = [
-          {
-            account: process.env.TOKEN_ADDRESS,
-            name: "transfer",
-            authorization: [
-              {
-                actor: this.accountName,
-                permission: "active"
-              }
-            ],
-            data: {
-              from: this.accountName,
-              to: process.env.TPORT_ADDRESS,
-              quantity: `${parseFloat(this.amount).toFixed(
-                this.token_decimals
-              )} ${this.selectedTokenSym}`,
-              memo: "Teleport"
+      // if same network, do normal transaction
+      let transaction;
+      // If EVM network, teleport
+      const actions = [
+        {
+          account: process.env.TOKEN_ADDRESS,
+          name: "transfer",
+          authorization: [
+            {
+              actor: this.accountName,
+              permission: "active"
             }
-          },
-          {
-            account: process.env.TPORT_ADDRESS,
-            name: "teleport",
-            authorization: [
-              {
-                actor: this.accountName,
-                permission: "active"
-              }
-            ],
-            data: {
-              from: this.accountName,
-              quantity: `${parseFloat(this.amount).toFixed(
-                this.token_decimals
-              )} ${this.selectedTokenSym}`,
-              chain_id: this.getEvmRemoteId,
-              eth_address:
-                this.evmAccount.replace("0x", "") + "000000000000000000000000"
-            }
+          ],
+          data: {
+            from: this.accountName,
+            to: process.env.TPORT_ADDRESS,
+            quantity: `${parseFloat(this.amount).toFixed(
+              this.token_decimals
+            )} ${this.selectedTokenSym}`,
+            memo: "Teleport"
           }
-        ];
-        console.log("Actions: ", actions);
-
-        transaction = await this.$store.$api.signTransaction(actions);
-        if (transaction) {
-          this.showTransaction = true;
-          this.transaction = transaction.transactionId;
-          this.to = null;
-          this.amount = null;
-          this.memo = "";
-          this.$refs.sendForm.reset();
-          this.$refs.sendForm.resetValidation();
-          this.setWalletBalances(this.accountName);
-          this.$q.notify({
-            color: "green-4",
-            textColor: "white",
-            icon: "cloud_done",
-            message: "Sent"
-          });
+        },
+        {
+          account: process.env.TPORT_ADDRESS,
+          name: "teleport",
+          authorization: [
+            {
+              actor: this.accountName,
+              permission: "active"
+            }
+          ],
+          data: {
+            from: this.accountName,
+            quantity: `${parseFloat(this.amount).toFixed(
+              this.token_decimals
+            )} ${this.selectedTokenSym}`,
+            chain_id: this.getEvmRemoteId,
+            eth_address:
+              this.evmAccount.replace("0x", "") + "000000000000000000000000"
+          }
         }
-      } catch (error) {
-        this.$errorNotification(error);
+      ];
+      console.log("Actions: ", actions);
+
+      transaction = await this.$store.$api.signTransaction(actions);
+      if (transaction) {
+        this.showTransaction = true;
+        this.transaction = transaction.transactionId;
+        this.to = null;
+        this.amount = null;
+        this.memo = "";
+        this.$refs.sendForm.reset();
+        this.$refs.sendForm.resetValidation();
+        this.setWalletBalances(this.accountName);
       }
     }
   },

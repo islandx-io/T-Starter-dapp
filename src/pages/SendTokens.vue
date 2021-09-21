@@ -138,7 +138,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("account", ["reloadWallet"]),
+    ...mapActions("account", ["reloadWallet", "setWalletBalances"]),
     ...mapActions("blockchains", ["setBridgeTokens"]),
     ...mapActions("tport", ["setTPortTokens"])
   },

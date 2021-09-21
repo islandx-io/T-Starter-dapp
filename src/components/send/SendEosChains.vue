@@ -135,6 +135,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions("account", ["setWalletBalances"]),
     async accountExistsOnChain(account) {
       // get current selected chain
       let blockchains = this.getNetworkByName(
@@ -157,6 +158,20 @@ export default {
       //check if account exists on chain
       let exists = await rpc.get_account(account);
       return exists;
+    },
+
+    async trySend() {
+      try {
+        await this.send();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Sent"
+        });
+      } catch (error) {
+        this.$errorNotification(error);
+      }
     },
 
     async send() {
@@ -217,20 +232,6 @@ export default {
         this.$refs.sendForm.reset();
         this.$refs.sendForm.resetValidation();
         this.setWalletBalances(this.accountName);
-      }
-    },
-
-    async trySend() {
-      try {
-        await this.send();
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Sent"
-        });
-      } catch (error) {
-        this.$errorNotification(error);
       }
     }
   }
