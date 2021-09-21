@@ -109,6 +109,15 @@ export default {
     selectedToken() {
       return this.wallet.find(a => a.token_sym === this.selectedTokenSym);
     },
+
+    token_contract() {
+      return this.selectedToken ? this.selectedToken.token_contract : null;
+    },
+
+    token_decimals() {
+      return this.selectedToken ? this.selectedToken.decimals : null;
+    },
+
     balance() {
       return this.selectedToken ? this.selectedToken.balance : 0;
     }
@@ -248,19 +257,12 @@ export default {
     },
 
     async send() {
-      if (!(await this.accountExistsOnChain(this.to))) {
-        this.$q.notify({
-          type: "negative",
-          message: `Account ${this.to} does not exist`
-        });
-        return;
-      }
       // if same network, do normal transaction
       let transaction;
       // If EVM network, teleport
       const actions = [
         {
-          account: process.env.TOKEN_ADDRESS,
+          account: this.token_contract,
           name: "transfer",
           authorization: [
             {
