@@ -64,6 +64,8 @@ export default {
         } else {
           if (token === "PETH") result = "/tokens/peth.png";
           else if (token === "PBTC") result = "/tokens/pbtc.png";
+          else if (["BTC", "BITCOIN"].includes(token.toUpperCase()))
+            result = "/tokens/bitcoin.svg";
           else if (token === "START") result = "/tokens/start.png";
           else if (token === "TLOS") result = "/tokens/tlos.png";
           else if (token === "TELOS") result = "/tokens/tlos.png";
