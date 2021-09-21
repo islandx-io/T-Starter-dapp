@@ -74,38 +74,10 @@
       Token not found in wallet. Refresh or check your wallet balance.
     </div>
 
-    <q-dialog v-model="showTransaction" confirm>
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-avatar
-            icon="arrow_forward"
-            color="primary"
-            text-color="white"
-            class="q-mr-sm"
-          />
-          <div class="text-h6 q-pa-sm">
-            Transaction Sent
-          </div>
-        </q-card-section>
-        <q-card-section>
-          Transaction ID:
-          <a
-            :href="`${explorerUrl}/transaction/${transaction}`"
-            target="_blank"
-            style="word-wrap: break-word;"
-            >{{ transaction }}
-          </a>
-        </q-card-section>
-        <q-card-actions align="center">
-          <q-btn
-            class="hover-accent"
-            label="Ok"
-            color="primary"
-            v-close-popup
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+    <send-tx-dialog
+      :transaction="transaction"
+      :showTransaction.sync="showTransaction"
+    />
   </q-form>
 </template>
 
@@ -113,16 +85,16 @@
 import { mapGetters, mapActions } from "vuex";
 import netSelector from "src/components/send/NetSelector";
 import amountInput from "src/components/send/AmountInput";
-import teleport from "src/components/send/Teleport";
+import sendTxDialog from "src/components/send/SendTxDialog";
+
 export default {
-  components: { netSelector, amountInput },
+  components: { netSelector, amountInput, sendTxDialog },
   props: ["selectedTokenSym", "networkOptions"],
   data() {
     return {
       amount: null,
       showTransaction: false,
-      transaction: null,
-      // explorerUrl: process.env.NETWORK_EXPLORER,
+      transaction: "asdfasdf",
       selectedNetwork: "ETHEREUM",
       evmAccount: "",
       unsupportedEvmChain: false,
@@ -144,9 +116,6 @@ export default {
       "getNetworkByName",
       "getBridgeTokens"
     ]),
-    explorerUrl() {
-      return this.currentChain.NETWORK_EXPLORER;
-    },
     selectedToken() {
       return this.wallet.find(a => a.token_sym === this.selectedTokenSym);
     },

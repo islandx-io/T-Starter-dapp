@@ -11,7 +11,7 @@
       </q-card>
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
-      <q-card class="authenticated">
+      <q-card class="authenticated q-mb-lg">
         <q-btn
           :to="{ name: 'wallet', params: { accountName: accountName } }"
           flat
@@ -65,7 +65,6 @@ import tokenAvatar from "src/components/TokenAvatar";
 import teleport from "src/components/send/Teleport";
 import teleportDash from "src/components/send/TeleportDash";
 import sendEosChains from "src/components/send/SendEosChains";
-import { Api, JsonRpc, Serialize } from "eosjs";
 
 export default {
   components: {
@@ -76,25 +75,13 @@ export default {
   },
   data() {
     return {
-      to: null,
-      amount: null,
-      memo: "",
-      showTransaction: false,
-      transaction: null,
-      // explorerUrl: process.env.NETWORK_EXPLORER,
       selectedTokenSym: "START",
-      selectedNetwork: "ETHEREUM",
-      evmAccount: "",
-      unsupportedEvmChain: false,
-      remoteBalance: 0
+      selectedNetwork: "ETHEREUM"
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("tport", [
-      "getEvmAccountName",
-      "getEvmChainId",
-      "getEvmRemoteId",
       "getEvmNetworkList",
       "getTPortTokensBySym",
       "getTeleports"
@@ -105,29 +92,12 @@ export default {
       "getBridgeTokens"
     ]),
 
-    explorerUrl() {
-      return this.currentChain.NETWORK_EXPLORER;
-    },
-
-    //TODO get this info from chain?
     selectedToken() {
       return this.wallet.find(a => a.token_sym === this.selectedTokenSym);
     },
 
-    token_contract() {
-      return this.selectedToken ? this.selectedToken.token_contract : null;
-    },
-
-    token_decimals() {
-      return this.selectedToken ? this.selectedToken.decimals : null;
-    },
-
     avatar() {
       return this.selectedToken ? this.selectedToken.avatar : "";
-    },
-
-    balance() {
-      return this.selectedToken ? this.selectedToken.balance : 0;
     },
 
     supportedEosChains() {
@@ -142,9 +112,6 @@ export default {
             res.push(token.channel.toUpperCase());
           }
         }
-        // if (this.selectedTokenSym.toUpperCase() === "START")
-        //   supportedEosChains.push("ETH"); // TODO Make this dynamic
-        // console.log("Supported EOS Chains:", res);
         return res;
       } else return [];
     },
@@ -169,19 +136,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions("account", [
-      "accountExists",
-      "setWalletBalances",
-      "reloadWallet"
-    ]),
-    ...mapActions("pools", ["getBalanceFromChain"]),
+    ...mapActions("account", ["reloadWallet"]),
     ...mapActions("blockchains", ["setBridgeTokens"]),
     ...mapActions("tport", ["setTPortTokens"])
   },
   mounted() {
     if (this.$route.query.token_sym !== undefined)
       this.selectedTokenSym = this.$route.query.token_sym;
-    // this.selectedNetwork = this.currentChain.NETWORK_NAME;
+    // this.selectedNetwork = this.currentChain.NETWORK_NAME;  // TODO Uncomment
     this.setBridgeTokens();
     this.reloadWallet(this.accountName);
     this.setTPortTokens();
@@ -192,22 +154,6 @@ export default {
       this.reloadWallet(this.accountName);
       this.$store.dispatch("tport/setTeleports", this.accountName);
     }
-    /* TODO Add watch for metamask changes
-    getAccountName(accountName) {
-      if (accountName) {
-        // console.log('Account name changed')
-        this.updateBalances();
-        this.loadTeleports();
-      }
-    },
-    getChainId(chainId) {
-      if (chainId) {
-        // console.log('Chain changed')
-        this.updateBalances();
-        this.loadTeleports();
-      }
-    }
-    */
   }
 };
 </script>
