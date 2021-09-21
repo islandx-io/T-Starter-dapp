@@ -24,13 +24,6 @@ const routes = [
     ]
   },
   {
-    path: "/:chain/temp",
-    component: () => import("layouts/MainLayout.vue"),
-    children: [
-      { path: "", name: "temp", component: () => import("pages/Temp.vue") }
-    ]
-  },
-  {
     path: "/:chain",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/Index.vue") }]
