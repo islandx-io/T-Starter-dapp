@@ -42,11 +42,13 @@
         <teleport
           v-if="supportedEvmChains.includes(selectedNetwork)"
           :selectedTokenSym="selectedTokenSym"
+          :selectedNetwork.sync="selectedNetwork"
           :networkOptions="networkOptions"
         />
         <send-eos-chains
           v-else
           :selectedTokenSym="selectedTokenSym"
+          :selectedNetwork.sync="selectedNetwork"
           :networkOptions="networkOptions"
         />
       </q-card>

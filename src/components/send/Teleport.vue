@@ -33,7 +33,7 @@
         <net-selector
           :selectedNetwork="selectedNetwork"
           :networkOptions="networkOptions"
-          @changeNetwork="selectedNetwork = $event"
+          @changeNetwork="$emit('update:selectedNetwork', $event)"
         />
       </div>
       <amount-input
@@ -56,23 +56,13 @@
         :disabled="selectedToken === undefined"
       />
     </div>
-    <div
-      class="text-center text-caption q-pt-md text-grey-7"
-      v-if="
+    <send-warnings
+      :crossChain="
         selectedNetwork.toUpperCase() !==
           currentChain.NETWORK_NAME.toUpperCase()
       "
-    >
-      <q-icon name="fas fa-info-circle" class="q-pr-xs" /> Sending tokens across
-      chains can take up to several minutes.
-    </div>
-    <div
-      class="text-center text-caption q-pt-md text-grey-7"
-      v-if="selectedToken === undefined"
-    >
-      <q-icon name="fas fa-exclamation-triangle" class="q-pr-xs" />
-      Token not found in wallet. Refresh or check your wallet balance.
-    </div>
+      :tokenNotFound="selectedToken === undefined"
+    />
 
     <send-tx-dialog
       :transaction="transaction"
@@ -86,16 +76,16 @@ import { mapGetters, mapActions } from "vuex";
 import netSelector from "src/components/send/NetSelector";
 import amountInput from "src/components/send/AmountInput";
 import sendTxDialog from "src/components/send/SendTxDialog";
+import sendWarnings from "src/components/send/SendWarnings";
 
 export default {
-  components: { netSelector, amountInput, sendTxDialog },
-  props: ["selectedTokenSym", "networkOptions"],
+  components: { netSelector, amountInput, sendTxDialog, sendWarnings },
+  props: ["selectedTokenSym", "selectedNetwork", "networkOptions"],
   data() {
     return {
       amount: null,
       showTransaction: false,
-      transaction: "asdfasdf",
-      selectedNetwork: "ETHEREUM",
+      transaction: null,
       evmAccount: "",
       unsupportedEvmChain: false,
       remoteBalance: 0
