@@ -21,10 +21,15 @@
         >
           <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
         </q-btn>
-        <!-- Select token dropdown -->
         <div class="column items-center">
-          <receive-token-selector :selectedToken.sync="selectedToken" />
-          <!-- Network selection -->
+          <!-- Token selector -->
+          <receive-token-selector
+            :selectedToken.sync="selectedToken"
+            @update:selectedToken="
+              selectedNetwork = currentChain.NETWORK_DISPLAY_NAME
+            "
+          />
+          <!-- Network selector -->
           <div class="row items-center q-pb-sm">
             <div class="text-subtitle1 q-pr-sm">From network</div>
             <net-selector
@@ -34,21 +39,16 @@
             />
           </div>
 
-          <!-- """""""""""""""""""""""""""""" -->
-          <!-- Current chain network selected -->
-          <!-- """""""""""""""""""""""""""""" -->
           <div
             class=" column items-center"
-            v-show="selectedNetwork === currentChain.NETWORK_NAME.toLowerCase()"
+            v-show="selectedNetwork.toUpperCase() === currentChain.NETWORK_NAME"
           >
             <div class="text-subtitle1 q-py-md text-center">
               Deposit {{ depositTokenStr }} to the following address
             </div>
             <!-- telos qr code-->
-            <div></div>
-            <div id="tlos-qr-canvas" />
+            <receive-qr />
 
-            <!-- <div id="btc-qr-canvas" v-show="selectedNetwork === 'bitcoin'" /> -->
             <!-- Address info -->
             <div class="col text-subtitle1 row q-gutter-x-sm q-mx-md">
               <div
@@ -111,67 +111,18 @@
 <script>
 import axios from "axios";
 import { mapGetters, mapActions } from "vuex";
-import QRCodeStyling from "qr-code-styling";
-import QRCode from "qrcode";
 import { copyToClipboard } from "quasar";
 import receiveTokenSelector from "src/components/receive/ReceiveTokenSelector";
 import pTokensBridge from "src/components/receive/PTokensBridge";
 import netSelector from "src/components/NetSelector";
-
-const qrStyling = {
-  data: "",
-  qrOptions: {
-    typeNumber: "0",
-    mode: "Byte",
-    errorCorrectionLevel: "Q"
-  },
-  dotsOptions: {
-    type: "rounded",
-    color: "black"
-  },
-  cornersSquareOptions: { type: "extra-rounded", color: "black" },
-  cornersSquareOptionsHelper: {
-    colorType: { single: true, gradient: false },
-    gradient: {
-      linear: true,
-      radial: false,
-      color1: "black",
-      color2: "black",
-      rotation: "0"
-    }
-  },
-  cornersDotOptions: { type: "", color: "black" },
-  cornersDotOptionsHelper: {
-    colorType: { single: true, gradient: false },
-    gradient: {
-      linear: true,
-      radial: false,
-      color1: "black",
-      color2: "black",
-      rotation: "0"
-    }
-  },
-  backgroundOptions: {
-    color: "#f9fbfe"
-  },
-  imageOptions: {
-    crossOrigin: "anonymous",
-    margin: 20
-  }
-};
+import receiveQr from "src/components/receive/ReceiveQr";
 
 export default {
-  components: { receiveTokenSelector, netSelector },
+  components: { receiveTokenSelector, netSelector, receiveQr },
   mixins: [pTokensBridge],
   data() {
     return {
-      // devMode: Boolean(process.env.DEVELOPMENT),
-      devMode: false,
       receiveLink: "",
-      qrCodes: {
-        tlos: new QRCodeStyling({ width: 180, height: 180, ...qrStyling }),
-        btc: new QRCodeStyling({ width: 270, height: 270, ...qrStyling })
-      },
       btcAddress: "",
       selectedNetwork: "Telos",
       selectedToken: "PBTC",
@@ -225,36 +176,11 @@ export default {
           timeout: 1000
         });
       });
-    },
-
-    async generateQR(text) {
-      try {
-        return await QRCode.toDataURL(text);
-      } catch (err) {
-        console.error(err);
-      }
-    },
-
-    async setAddresses() {
-      // current chain QR code
-      this.qrCodes.tlos.update({ data: this.accountName });
-      this.qrCodes.tlos.append(document.getElementById("tlos-qr-canvas"));
-
-      // bitcoin qr code
-      // const pbridge_api = await axios.get(
-      //   `https://pbtcon${this.currentChain.NETWORK_NAME.toLowerCase()}-node-1a.ngrok.io/pbtc-on-${this.currentChain.NETWORK_NAME.toLowerCase()}/get-native-deposit-address/${
-      //     this.accountName
-      //   }`
-      // );
-      // this.btcAddress = pbridge_api.data.nativeDepositAddress || [];
-      // this.qrCodes.btc.update({ data: this.btcAddress });
-      // this.qrCodes.btc.append(document.getElementById("btc-qr-canvas"));
     }
   },
 
   mounted() {
     this.selectedNetwork = this.currentChain.NETWORK_DISPLAY_NAME; // sets network to current chain
-    this.setAddresses(); // makes qr codes
     if (this.$route.query.token_sym !== undefined)
       this.selectedToken = this.$route.query.token_sym;
   }
@@ -320,6 +246,4 @@ h2 {
   width: 100%;
   height: 100%;
 }
-// .resp-container {
-// }
 </style>

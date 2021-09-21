@@ -1,27 +1,27 @@
 <template>
   <div>
     <!-- Generate address button -->
-    <q-btn
+    <!-- <q-btn
       class="q-mt-md"
       v-if="selectedNetwork === 'bitcoin'"
       @click="setAddresses"
       color="primary"
       label="Generate new address"
-    />
+    /> -->
     <!-- Ethereum receive  -->
-    <div
+    <!-- <div
       v-if="selectedNetwork === 'ethereum'"
       class="column items-center q-pt-md q-gutter-y-sm"
-    >
-      <!-- If metamask isn't installed start onboarding process -->
-      <q-btn
+    > -->
+    <!-- If metamask isn't installed start onboarding process -->
+    <!-- <q-btn
         v-if="isMetaMaskInstalled && !metamaskConnected"
         color="primary"
         label="Connect Metamask"
         @click="ethereumConnect()"
-      />
-      <!-- Else login with metamask -->
-      <div v-if="!isMetaMaskInstalled">
+      /> -->
+    <!-- Else login with metamask -->
+    <!-- <div v-if="!isMetaMaskInstalled">
         Install or enable metamask first.
       </div>
       <q-btn
@@ -29,9 +29,9 @@
         color="primary"
         label="Install metamask"
         @click="metamaskOnboarding()"
-      />
-      <!-- Input amount of eth to peth -->
-      <div
+      /> -->
+    <!-- Input amount of eth to peth -->
+    <!-- <div
         v-if="
           selectedToken.toUpperCase() === 'PETH' &&
             isMetaMaskInstalled &&
@@ -55,9 +55,9 @@
           @click="tryPegIn()"
           :disable="devMode || txnPending === true"
         />
-      </div>
-      <!-- Input amount of tlos erc20 to tlos -->
-      <div
+      </div> -->
+    <!-- Input amount of tlos erc20 to tlos -->
+    <!-- <div
         v-if="
           selectedToken.toUpperCase() === 'TLOS' &&
             isMetaMaskInstalled &&
@@ -82,9 +82,9 @@
           :disable="devMode || txnPending === true"
         />
       </div>
-    </div>
+    </div> -->
     <!-- TODO make this pretty -->
-    <q-linear-progress
+    <!-- <q-linear-progress
       indeterminate
       size="25px"
       color="primary"
@@ -100,7 +100,7 @@
           :label="txStatusMessage"
         />
       </div>
-    </q-linear-progress>
+    </q-linear-progress> -->
   </div>
 </template>
 
@@ -120,6 +120,11 @@ import { BigNumber } from "bignumber.js";
 import { constants, eth } from "ptokens-utils";
 
 export default {
+  data() {
+    return {
+      devMode: false
+    };
+  },
   computed: {
     selectedEthAccount() {
       return window.ethereum.selectedAddress;
