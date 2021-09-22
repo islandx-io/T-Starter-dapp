@@ -1,6 +1,17 @@
 <template>
   <q-card>
-    <div class="text-h6 text-center">Teleports</div>
+    <div class="row justify-center">
+      <div class="text-h6 text-center q-pr-sm">Teleports</div>
+      <q-btn
+        padding="sm"
+        class="hover-accent"
+        color="black"
+        icon="fas fa-sync-alt"
+        flat
+        size="sm"
+        @click="refreshTeleports()"
+      />
+    </div>
     <q-list>
       <q-item v-for="t in getUnclaimedTeleports" :key="t.id">
         <q-item-section class="col-3">
@@ -17,7 +28,12 @@
           />
         </q-item-section>
         <q-item-section side>
-          <q-btn v-if="t.claimable" color="primary" @click="claimEvm(t)">
+          <q-btn
+            class="hover-accent"
+            v-if="t.claimable"
+            color="primary"
+            @click="claimEvm(t)"
+          >
             Claim
           </q-btn>
         </q-item-section>
@@ -164,6 +180,7 @@ export default {
           this.$erc20Abi,
           remoteContractAddress
         ); // TODO Add check to validate abi
+        // TODO Add try catch
         const resp = await remoteInstance.methods
           .claim(signData.data, signData.signatures)
           .send({ from: this.getEvmAccountName });
@@ -177,6 +194,9 @@ export default {
         // this.loadTeleports();
         // TODO Do a proper refresh
       }
+    },
+    async refreshTeleports() {
+      this.$store.dispatch("tport/setTeleports", this.accountName);
     }
   }
 };

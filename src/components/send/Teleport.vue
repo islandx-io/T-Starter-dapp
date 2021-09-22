@@ -43,11 +43,15 @@
           @changeNetwork="changeNetwork($event)"
         />
       </div>
+      <div class="text-right">
+        Minimum: {{ minSend }} {{ selectedTokenSym }}
+      </div>
       <amount-input
         :selectedTokenSym="selectedTokenSym"
         :selectedToken="selectedToken"
         :amount.sync="amount"
         :balance="balance"
+        :min="minSend"
       />
     </div>
     <div class="text-center self-stretch q-pt-sm q-gutter-x-sm">
@@ -133,6 +137,12 @@ export default {
 
     balance() {
       return this.selectedToken ? this.selectedToken.balance : 0;
+    },
+
+    minSend() {
+      const token = this.getTPortTokensBySym(this.selectedTokenSym);
+      if (typeof token === "undefined") return 0;
+      else return this.$chainToQty(token.min_quantity);
     },
 
     wrongNetwork() {

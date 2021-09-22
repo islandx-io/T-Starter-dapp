@@ -28,7 +28,8 @@
                   resetLiquid();
                   reloadWalletInfo();
                 "
-            /></q-th>
+              />
+            </q-th>
             <q-th
               v-for="col in props.cols"
               :key="col.name"

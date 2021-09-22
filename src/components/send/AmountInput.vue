@@ -24,13 +24,16 @@
 
 <script>
 export default {
-  props: ["selectedToken", "selectedTokenSym", "amount", "balance"],
+  props: ["selectedToken", "selectedTokenSym", "amount", "balance", "min"],
   data() {
     return {};
   },
   methods: {
     validateInputAmount(val) {
-      return (val <= this.balance) & (val > 0) || "Incorrect amount";
+      return (
+        (val <= this.balance) & (val > 0) & (val > this.min) ||
+        "Incorrect amount"
+      );
     },
     updateAmount(val) {
       this.$emit("update:amount", val); // TODO Check type: max btn is number and input is string
