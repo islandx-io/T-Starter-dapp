@@ -89,9 +89,11 @@ import netSelector from "src/components/NetSelector";
 import amountInput from "src/components/send/AmountInput";
 import sendTxDialog from "src/components/send/SendTxDialog";
 import sendWarnings from "src/components/send/SendWarnings";
+import metamask from "src/components/Metamask";
 
 export default {
   components: { netSelector, amountInput, sendTxDialog, sendWarnings },
+  mixins: [metamask],
   props: [
     "selectedTokenSym",
     "selectedNetwork",
@@ -159,59 +161,6 @@ export default {
 
     changeNetwork(network) {
       this.$emit("update:selectedNetwork", network);
-    },
-
-    async connectWeb3() {
-      // TODO Add metamask onboarding
-      // TODO Add metamask connected check
-      // TODO Add metamask disconnect refresh
-      const { injectedWeb3, web3 } = await this.$web3();
-      if (injectedWeb3) {
-        const a = await web3.eth.getAccounts();
-        this.$store.commit("tport/setAccountName", { accountName: a[0] });
-        const chainId = await web3.eth.getChainId();
-        this.$store.commit("tport/setChainId", { chainId });
-
-        window.ethereum.on("accountsChanged", a => {
-          this.$store.commit("tport/setAccountName", { accountName: a[0] });
-          this.updateBalance();
-        });
-        window.ethereum.on("chainChanged", chainId => {
-          this.$store.commit("tport/setChainId", { chainId });
-        });
-      } else {
-        console.error("Could not get injected web3");
-      }
-    },
-
-    async switchToSelectedEvm() {
-      let chainId = this.getEvmNetworkByName(this.selectedNetwork).chainId;
-      chainId = "0x" + chainId.toString(16);
-      console.log("switchToSelectedEvm - chainId:", chainId);
-      try {
-        await ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: chainId }]
-        });
-      } catch (err) {
-        const net = this.getEvmNetworkByName(this.selectedNetwork);
-        if (err.code === 4902) {
-          // Unrecognized chain ID
-          if (net.rpcUrls.length > 0) {
-            await ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId: chainId,
-                  chainName: net.chainName,
-                  nativeCurrency: net.nativeCurrency,
-                  rpcUrls: net.rpcUrls
-                }
-              ]
-            });
-          }
-        }
-      }
     },
 
     async updateBalance() {
@@ -322,16 +271,19 @@ export default {
   },
   async mounted() {
     await this.connectWeb3();
-    await this.switchToSelectedEvm();
+    await this.switchMetamaskNetwork(this.selectedNetwork);
   },
   watch: {
     async selectedNetwork() {
       if (this.supportedEvmChains.includes(this.selectedNetwork)) {
-        this.switchToSelectedEvm();
+        this.switchMetamaskNetwork(this.selectedNetwork);
         this.updateBalance();
       }
     },
     async getEvmChainId() {
+      this.updateBalance();
+    },
+    async getEvmAccountName() {
       this.updateBalance();
     }
   }

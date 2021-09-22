@@ -20,7 +20,9 @@
         <q-item-section class="col-1">
           <q-icon class="fas fa-arrow-right"></q-icon>
         </q-item-section>
-        <q-item-section>{{ ethAddress(t.eth_address) }}</q-item-section>
+        <q-item-section class="col-2 q-mr-md">{{
+          ethAddressShort(t.eth_address)
+        }}</q-item-section>
         <q-item-section>
           <token-avatar
             :token="evmNetworkNameById(t.chain_id)"
@@ -30,11 +32,31 @@
         <q-item-section side>
           <q-btn
             class="hover-accent"
-            v-if="t.claimable"
-            color="primary"
+            v-if="
+              t.claimable &&
+                correctNetwork(t.chain_id) &&
+                correctAccount(t.eth_address)
+            "
+            color="positive"
             @click="claimEvm(t)"
           >
             Claim
+          </q-btn>
+          <q-btn
+            class="hover-accent"
+            v-else-if="t.claimable && !correctNetwork(t.chain_id)"
+            color="primary"
+            @click="switchMetamaskNetwork(networkNameFromId(t.chain_id))"
+          >
+            Switch Chain
+          </q-btn>
+          <q-btn
+            class="hover-accent"
+            v-else-if="t.claimable && !correctAccount(t.eth_address)"
+            color="grey"
+            @click="$q.notify({ color: 'green-4', message: 'TODO' })"
+          >
+            Switch Account
           </q-btn>
         </q-item-section>
       </q-item>
@@ -63,7 +85,9 @@
               <q-item-section class="col-1">
                 <q-icon class="fas fa-arrow-right"></q-icon>
               </q-item-section>
-              <q-item-section>{{ ethAddress(t.eth_address) }}</q-item-section>
+              <q-item-section>{{
+                ethAddressShort(t.eth_address)
+              }}</q-item-section>
               <q-item-section>
                 <token-avatar
                   :token="evmNetworkNameById(t.chain_id)"
@@ -85,6 +109,7 @@
 import { mapGetters, mapActions } from "vuex";
 import { Api, JsonRpc, Serialize } from "eosjs";
 import tokenAvatar from "src/components/TokenAvatar";
+import metamask from "src/components/Metamask";
 
 const fromHexString = hexString =>
   new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
@@ -97,6 +122,7 @@ export default {
   components: {
     tokenAvatar
   },
+  mixins: [metamask],
   data() {
     return {
       expanded: false
@@ -106,6 +132,7 @@ export default {
     ...mapGetters("account", ["accountName"]),
     ...mapGetters("tport", [
       "getEvmAccountName",
+      "getEvmNetwork",
       "getEvmChainId",
       "getEvmRemoteId",
       "getEvmNetworkList",
@@ -116,8 +143,26 @@ export default {
     ])
   },
   methods: {
-    ethAddress(val) {
+    correctNetwork(remoteId) {
+      if (this.getEvmNetwork) {
+        return this.getEvmNetwork.remoteId === remoteId;
+      } else return false;
+    },
+    correctAccount(account) {
+      return (
+        this.getEvmAccountName.toUpperCase() ===
+        this.ethAddressFull(account).toUpperCase()
+      );
+    },
+    networkNameFromId(remoteId) {
+      const net = this.getEvmNetworkList.find(el => el.remoteId === remoteId);
+      return net ? net.name : "";
+    },
+    ethAddressShort(val) {
       return "0x" + val.substr(0, 4) + "..." + val.substr(36, 4);
+    },
+    ethAddressFull(val) {
+      return "0x" + val.substr(0, 40);
     },
     evmNetworkNameById(remoteId) {
       const net = this.getEvmNetworkList.find(el => el.remoteId === remoteId);
@@ -198,6 +243,9 @@ export default {
     async refreshTeleports() {
       this.$store.dispatch("tport/setTeleports", this.accountName);
     }
+  },
+  mounted() {
+    this.connectWeb3();
   }
 };
 </script>
