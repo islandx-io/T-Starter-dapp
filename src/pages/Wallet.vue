@@ -225,6 +225,7 @@ export default {
 
   async mounted() {
     await this.reloadWalletInfo();
+    this.$store.dispatch("tport/setTPortTokens");
   },
 
   watch: {

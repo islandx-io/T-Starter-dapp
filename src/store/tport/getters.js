@@ -30,6 +30,8 @@ export function getClaimedTeleports(state) {
   return state.teleports.filter(a => a.claimed);
 }
 
+export const getTPortTokens = ({ tportTokens }) => tportTokens;
+
 export const getTPortTokensBySym = ({ tportTokens }) => sym => {
   return tportTokens.find(el => el.token.sym === sym);
 };
