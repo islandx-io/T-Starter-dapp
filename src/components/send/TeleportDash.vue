@@ -118,7 +118,7 @@ const toHexString = bytes =>
   bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
 
 export default {
-  props: { selectedNetwork: String, selectedTokenSym: String },
+  props: { selectedNetwork: String },
   components: {
     tokenAvatar
   },
@@ -217,7 +217,9 @@ export default {
         const chainData = this.getEvmNetworkList.find(
           el => el.name.toUpperCase() === this.selectedNetwork
         );
-        const token = this.getTPortTokensBySym(this.selectedTokenSym);
+        const token = this.getTPortTokensBySym(
+          this.$chainToSym(teleport.quantity)
+        );
         const remoteContractAddress = token.remote_contracts.find(
           el => el.key === chainData.remoteId
         ).value;

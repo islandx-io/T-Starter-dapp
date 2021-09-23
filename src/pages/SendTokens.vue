@@ -56,7 +56,6 @@
       <teleport-dash
         v-if="getTeleports.length > 0"
         :selectedNetwork="selectedNetwork"
-        :selectedTokenSym="selectedTokenSym"
       />
     </section>
   </q-page>
