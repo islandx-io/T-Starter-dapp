@@ -13,7 +13,7 @@
       />
     </div>
     <q-list>
-      <q-item v-for="t in getUnclaimedTeleports" :key="t.id">
+      <q-item v-for="t in unclaimedTeleports" :key="t.id">
         <q-item-section class="col-3">
           {{ t.quantity }}
         </q-item-section>
@@ -30,10 +30,13 @@
           />
         </q-item-section>
         <q-item-section side>
+          <q-btn class="hover-accent" v-if="t.processing" color="grey">
+            Processing
+          </q-btn>
           <q-btn
             class="hover-accent"
-            v-if="
-              t.claimable &&
+            v-else-if="
+              !t.claimed &&
                 correctNetwork(t.chain_id) &&
                 correctAccount(t.eth_address)
             "
@@ -44,7 +47,7 @@
           </q-btn>
           <q-btn
             class="hover-accent"
-            v-else-if="t.claimable && !correctNetwork(t.chain_id)"
+            v-else-if="!t.claimed && !correctNetwork(t.chain_id)"
             color="primary"
             @click="switchMetamaskNetwork(networkNameFromId(t.chain_id))"
           >
@@ -52,7 +55,7 @@
           </q-btn>
           <q-btn
             class="hover-accent"
-            v-else-if="t.claimable && !correctAccount(t.eth_address)"
+            v-else-if="!t.claimed && !correctAccount(t.eth_address)"
             color="grey"
             @click="$q.notify({ color: 'green-4', message: 'TODO' })"
           >
@@ -78,7 +81,7 @@
         <q-separator />
         <q-card-section class="text-subitle2">
           <q-list>
-            <q-item v-for="t in getClaimedTeleports" :key="t.id">
+            <q-item v-for="t in claimedTeleports" :key="t.id">
               <q-item-section class="col-3">
                 {{ t.quantity }}
               </q-item-section>
@@ -137,10 +140,14 @@ export default {
       "getEvmRemoteId",
       "getEvmNetworkList",
       "getTPortTokensBySym",
-      "getTeleports",
-      "getClaimedTeleports",
-      "getUnclaimedTeleports"
-    ])
+      "getTeleports"
+    ]),
+    unclaimedTeleports() {
+      return this.getTeleports.filter(el => !el.claimed);
+    },
+    claimedTeleports() {
+      return this.getTeleports.filter(el => el.claimed);
+    }
   },
   methods: {
     correctNetwork(remoteId) {
