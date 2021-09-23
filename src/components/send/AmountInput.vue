@@ -31,7 +31,7 @@ export default {
   methods: {
     validateInputAmount(val) {
       return (
-        (val <= this.balance) & (val > 0) & (val > this.min) ||
+        (val <= this.balance) & (val > 0) & (val >= this.min) ||
         "Incorrect amount"
       );
     },
