@@ -157,9 +157,8 @@ export const setWalletPoolTokens = async function(
   try {
     if (account != null) {
       // Get tokens on platform
-      let pooltokens = await dispatch("pools/getPoolTokens", "", {
-        root: true
-      });
+      await dispatch("pools/setPoolTokens", "", { root: true });
+      let pooltokens = rootGetters["pools/getPoolTokens"];
       const getDecimalFromAsset = this.$getDecimalFromAsset;
       const getSymFromAsset = this.$getSymFromAsset;
       const chainToDecimals = this.$chainToDecimals;
