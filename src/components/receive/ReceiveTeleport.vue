@@ -201,61 +201,35 @@ export default {
     },
 
     async send() {
-      // if same network, do normal transaction
-      let transaction;
-      // If EVM network, teleport
-      const actions = [
-        {
-          account: this.token_contract,
-          name: "transfer",
-          authorization: [
-            {
-              actor: this.accountName,
-              permission: "active"
+      if (this.getEvmChainId && this.getEvmAccountName) {
+        const { injectedWeb3, web3 } = await this.$web3();
+
+        if (injectedWeb3) {
+          const token = this.getTPortTokensBySym(this.selectedTokenSym);
+          if (typeof token === "undefined") {
+            console.error("TPort Token not found");
+          } else {
+            const remoteContractAddress = token.remote_contracts.find(
+              el => el.key === this.getEvmRemoteId
+            ).value;
+            const remoteInstance = new web3.eth.Contract(
+              this.$erc20Abi,
+              remoteContractAddress
+            );
+            try {
+              const resp = await remoteInstance.methods
+                .teleport(this.accountName, this.amount * 10000, 0)
+                .send({ from: this.getEvmAccountName });
+              // console.log(resp);
+              this.amount = null;
+              this.$refs.sendForm.reset();
+              this.$refs.sendForm.resetValidation();
+              this.setWalletBalances(this.accountName);
+            } catch (error) {
+              this.$errorNotification(error);
             }
-          ],
-          data: {
-            from: this.accountName,
-            to: process.env.TPORT_ADDRESS,
-            quantity: `${parseFloat(this.amount).toFixed(
-              this.token_decimals
-            )} ${this.selectedTokenSym}`,
-            memo: "Teleport"
-          }
-        },
-        {
-          account: process.env.TPORT_ADDRESS,
-          name: "teleport",
-          authorization: [
-            {
-              actor: this.accountName,
-              permission: "active"
-            }
-          ],
-          data: {
-            from: this.accountName,
-            quantity: `${parseFloat(this.amount).toFixed(
-              this.token_decimals
-            )} ${this.selectedTokenSym}`,
-            chain_id: this.getEvmRemoteId,
-            eth_address:
-              this.getEvmAccountName.replace("0x", "") +
-              "000000000000000000000000"
           }
         }
-      ];
-      console.log("Actions: ", actions);
-
-      transaction = await this.$store.$api.signTransaction(actions);
-      if (transaction) {
-        this.showTransaction = true;
-        this.transaction = transaction.transactionId;
-        this.to = null;
-        this.amount = null;
-        this.memo = "";
-        this.$refs.sendForm.reset();
-        this.$refs.sendForm.resetValidation();
-        this.setWalletBalances(this.accountName);
       }
     }
   },
