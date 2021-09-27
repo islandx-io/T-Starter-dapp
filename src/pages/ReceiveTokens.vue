@@ -24,7 +24,7 @@
         <div class="column items-center">
           <!-- Token selector -->
           <receive-token-selector
-            :selectedToken.sync="selectedToken"
+            :selectedToken.sync="selectedTokenSym"
             @update:selectedToken="
               selectedNetwork = currentChain.NETWORK_DISPLAY_NAME
             "
@@ -86,7 +86,7 @@
           <iframe
             height="720"
             width="100%"
-            :src="pTokenBridgeLink(selectedToken)"
+            :src="pTokenBridgeLink(selectedTokenSym)"
             allowfullscreen
             frameBorder="0"
           >
@@ -125,7 +125,7 @@ export default {
       receiveLink: "",
       btcAddress: "",
       selectedNetwork: "Telos",
-      selectedToken: "PBTC",
+      selectedTokenSym: "PBTC",
       ethAccounts: [],
       amount: 0,
       txnPending: false,
@@ -136,9 +136,13 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
 
+    selectedToken() {
+      return this.wallet.find(a => a.token_sym === this.selectedTokenSym);
+    },
+
     networkOptions() {
       let options = [this.currentChain.NETWORK_DISPLAY_NAME];
-      const token = this.selectedToken.toUpperCase();
+      const token = this.selectedTokenSym.toUpperCase();
       if (token === "PBTC") options.push("Bitcoin");
       if (["PETH", "TLOS", "PUSDC", "PUSDT", "EOS"].includes(token))
         options.push("Ethereum");
@@ -146,7 +150,7 @@ export default {
     },
 
     depositTokenStr() {
-      const token = this.selectedToken.toUpperCase();
+      const token = this.selectedTokenSym.toUpperCase();
       const net = this.selectedNetwork.toUpperCase();
       if (token === "PETH") {
         if (net === "TELOS") return "PETH";
@@ -167,6 +171,7 @@ export default {
   },
 
   methods: {
+    ...mapActions("account", ["reloadWallet", "setWalletBalances"]),
     copyAddress(adress) {
       copyToClipboard(adress).then(() => {
         this.$q.notify({
@@ -182,7 +187,13 @@ export default {
   mounted() {
     this.selectedNetwork = this.currentChain.NETWORK_DISPLAY_NAME; // sets network to current chain
     if (this.$route.query.token_sym !== undefined)
-      this.selectedToken = this.$route.query.token_sym;
+      this.selectedTokenSym = this.$route.query.token_sym;
+    this.reloadWallet(this.accountName);
+  },
+  watch: {
+    async accountName() {
+      this.reloadWallet(this.accountName);
+    }
   }
 };
 </script>

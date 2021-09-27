@@ -39,7 +39,7 @@
             {{ token }}
           </q-item-label>
         </q-item-section>
-        <q-item-section side>
+        <q-item-section side v-if="baseTokens.includes(token)">
           <q-btn
             icon="fas fa-external-link-alt"
             class="hover-accent"
@@ -68,15 +68,26 @@ export default {
   mixins: [pTokensBridge],
   computed: {
     ...mapGetters("blockchains", ["currentChain"]),
+    ...mapGetters("tport", ["getTPortTokens"]),
 
-    tokens() {
+    baseTokens() {
       if (this.currentChain.NETWORK_NAME === "TELOS") {
         return ["PBTC", "PETH", "TLOS", "PUSDC", "PUSDT"];
       } else if (this.currentChain.NETWORK_NAME === "EOS") {
         return ["PBTC", "PETH", "EOS"];
       } else {
-        return ["PBTC", "PETH", "TLOS"];
+        return ["PBTC", "PETH", "WAX"];
       }
+    },
+
+    tportTokens() {
+      if (this.getTPortTokens.length > 0) {
+        return this.getTPortTokens.map(el => el.token.sym);
+      } else return [];
+    },
+
+    tokens() {
+      return [...this.baseTokens, ...this.tportTokens];
     }
   }
 };

@@ -24,6 +24,8 @@
 
 <script>
 import { toSvg } from "jdenticon";
+import { mapGetters } from "vuex";
+
 export default {
   props: {
     token: {
@@ -43,6 +45,8 @@ export default {
     }
   },
   computed: {
+    // TODO Use getPoolTokens to search for avatar instead of passing it as a prop
+    ...mapGetters("pools", ["getPoolTokens"]),
     identicon() {
       let val = this.avatar;
       if (val === "") val = this.token;
