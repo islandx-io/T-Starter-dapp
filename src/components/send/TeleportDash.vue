@@ -121,6 +121,7 @@ const toHexString = bytes =>
   bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
 
 export default {
+  props: ["selectedTokenSym"],
   components: {
     tokenAvatar
   },
@@ -142,10 +143,16 @@ export default {
       "getTeleports"
     ]),
     unclaimedTeleports() {
-      return this.getTeleports.filter(el => !el.claimed);
+      return this.getTeleports.filter(
+        el =>
+          !el.claimed && this.$chainToSym(el.quantity) === this.selectedTokenSym
+      );
     },
     claimedTeleports() {
-      return this.getTeleports.filter(el => el.claimed);
+      return this.getTeleports.filter(
+        el =>
+          el.claimed && this.$chainToSym(el.quantity) === this.selectedTokenSym
+      );
     }
   },
   methods: {

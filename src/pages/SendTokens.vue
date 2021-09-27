@@ -53,7 +53,10 @@
           :networkOptions="networkOptions"
         />
       </q-card>
-      <teleport-dash v-if="getTeleports.length > 0" />
+      <teleport-dash
+        v-if="getTeleports.length > 0"
+        :selectedTokenSym="selectedTokenSym"
+      />
     </section>
   </q-page>
 </template>
