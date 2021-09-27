@@ -121,7 +121,6 @@ const toHexString = bytes =>
   bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
 
 export default {
-  props: { selectedNetwork: String },
   components: {
     tokenAvatar
   },
@@ -221,14 +220,11 @@ export default {
         const signData = await this.getSignData(teleport.id);
         console.log(JSON.stringify(signData));
 
-        const chainData = this.getEvmNetworkList.find(
-          el => el.name.toUpperCase() === this.selectedNetwork
-        );
         const token = this.getTPortTokensBySym(
           this.$chainToSym(teleport.quantity)
         );
         const remoteContractAddress = token.remote_contracts.find(
-          el => el.key === chainData.remoteId
+          el => el.key === this.getEvmRemoteId
         ).value;
         const remoteInstance = new web3.eth.Contract(
           this.$erc20Abi,

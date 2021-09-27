@@ -53,10 +53,7 @@
           :networkOptions="networkOptions"
         />
       </q-card>
-      <teleport-dash
-        v-if="getTeleports.length > 0"
-        :selectedNetwork="selectedNetwork"
-      />
+      <teleport-dash v-if="getTeleports.length > 0" />
     </section>
   </q-page>
 </template>
