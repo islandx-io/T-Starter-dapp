@@ -39,10 +39,7 @@
             />
           </div>
 
-          <div
-            class=" column items-center"
-            v-show="selectedNetwork.toUpperCase() === currentChain.NETWORK_NAME"
-          >
+          <div class=" column items-center" v-show="isNativeChain">
             <div class="text-subtitle1 q-py-md text-center">
               Deposit {{ selectedTokenSym }} to the following address
             </div>
@@ -72,29 +69,12 @@
               </div>
             </div>
           </div>
-          <div
-            v-if="selectedNetwork.toUpperCase() != currentChain.NETWORK_NAME"
-          >
-            <div class="text-subtitle1 text-center">Using bridge</div>
-            <q-btn
-              label="Teleport"
-              @click="usePTokensBridge = false"
-              :class="`bridge-btn ${!usePTokensBridge ? 'selected' : ''}`"
-              flat
-              size="lg"
-              no-caps
-              padding="xs"
-            />
-            <q-btn
-              label="pTokens"
-              @click="usePTokensBridge = true"
-              :class="`bridge-btn ${usePTokensBridge ? 'selected' : ''}`"
-              flat
-              size="lg"
-              no-caps
-              padding="xs"
-            />
-          </div>
+          <receive-teleport
+            v-if="!isNativeChain && isTPortToken"
+            :selectedTokenSym="selectedTokenSym"
+            :selectedNetwork="selectedNetwork"
+            :supportedEvmChains="supportedEvmChains"
+          />
         </div>
       </q-card>
 
@@ -103,7 +83,7 @@
       <div
         class="q-mt-md q-card bg-white"
         style="padding: 0 0 20px 0"
-        v-if="usePTokensBridge"
+        v-if="!isNativeChain && !isTPortToken"
       >
         <div style="border-radius: 10px; overflow: hidden;">
           <iframe
@@ -139,9 +119,10 @@ import receiveTokenSelector from "src/components/receive/ReceiveTokenSelector";
 import pTokensBridge from "src/components/receive/PTokensBridge";
 import netSelector from "src/components/NetSelector";
 import receiveQr from "src/components/receive/ReceiveQr";
+import receiveTeleport from "src/components/receive/ReceiveTeleport";
 
 export default {
-  components: { receiveTokenSelector, netSelector, receiveQr },
+  components: { receiveTokenSelector, netSelector, receiveQr, receiveTeleport },
   mixins: [pTokensBridge],
   data() {
     return {
@@ -149,7 +130,6 @@ export default {
       btcAddress: "",
       selectedNetwork: "Telos",
       selectedTokenSym: "PBTC",
-      usePTokensBridge: false,
       ethAccounts: [],
       amount: 0,
       txnPending: false,
@@ -164,6 +144,16 @@ export default {
       "getTPortTokensBySym",
       "getTeleports"
     ]),
+
+    isTPortToken() {
+      return this.getTPortTokensBySym(this.selectedTokenSym);
+    },
+
+    isNativeChain() {
+      return (
+        this.selectedNetwork.toUpperCase() === this.currentChain.NETWORK_NAME
+      );
+    },
 
     selectedToken() {
       return this.wallet.find(a => a.token_sym === this.selectedTokenSym);
@@ -237,6 +227,10 @@ export default {
           timeout: 1000
         });
       });
+    },
+
+    isPToken(sym) {
+      return ["PETH", "TLOS", "PUSDC", "PUSDT", "EOS"].includes(sym);
     }
   },
 
