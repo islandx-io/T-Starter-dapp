@@ -72,6 +72,29 @@
               </div>
             </div>
           </div>
+          <div
+            v-if="selectedNetwork.toUpperCase() != currentChain.NETWORK_NAME"
+          >
+            <div class="text-subtitle1 text-center">Using bridge</div>
+            <q-btn
+              label="Teleport"
+              @click="usePTokensBridge = false"
+              :class="`bridge-btn ${!usePTokensBridge ? 'selected' : ''}`"
+              flat
+              size="lg"
+              no-caps
+              padding="xs"
+            />
+            <q-btn
+              label="pTokens"
+              @click="usePTokensBridge = true"
+              :class="`bridge-btn ${usePTokensBridge ? 'selected' : ''}`"
+              flat
+              size="lg"
+              no-caps
+              padding="xs"
+            />
+          </div>
         </div>
       </q-card>
 
@@ -80,7 +103,7 @@
       <div
         class="q-mt-md q-card bg-white"
         style="padding: 0 0 20px 0"
-        v-if="selectedNetwork.toUpperCase() != currentChain.NETWORK_NAME"
+        v-if="usePTokensBridge"
       >
         <div style="border-radius: 10px; overflow: hidden;">
           <iframe
@@ -126,6 +149,7 @@ export default {
       btcAddress: "",
       selectedNetwork: "Telos",
       selectedTokenSym: "PBTC",
+      usePTokensBridge: false,
       ethAccounts: [],
       amount: 0,
       txnPending: false,
@@ -217,7 +241,8 @@ export default {
   },
 
   mounted() {
-    this.selectedNetwork = this.currentChain.NETWORK_DISPLAY_NAME; // sets network to current chain
+    this.selectedNetwork = "Ethereum";
+    // this.selectedNetwork = this.currentChain.NETWORK_DISPLAY_NAME; // sets network to current chain
     if (this.$route.query.token_sym !== undefined)
       this.selectedTokenSym = this.$route.query.token_sym;
     this.reloadWallet(this.accountName);
@@ -289,5 +314,19 @@ h2 {
   right: 0;
   width: 100%;
   height: 100%;
+}
+
+.bridge-btn {
+  background-color: silver;
+  color: $secondary;
+  width: 120px;
+  align-items: center;
+  margin: 5px 10px;
+  @media only screen and (max-width: 375px) {
+    width: 100px;
+  }
+  &.selected {
+    background-color: $space;
+  }
 }
 </style>
