@@ -236,6 +236,7 @@ export default {
   async mounted() {
     await this.connectWeb3();
     await this.switchMetamaskNetwork(this.selectedNetwork);
+    this.updateBalance();
   },
   watch: {
     async selectedNetwork() {
