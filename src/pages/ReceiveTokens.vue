@@ -128,7 +128,7 @@ export default {
     return {
       receiveLink: "",
       btcAddress: "",
-      selectedNetwork: "Telos",
+      selectedNetwork: "TELOS",
       selectedTokenSym: "PBTC",
       ethAccounts: [],
       amount: 0,
@@ -235,8 +235,8 @@ export default {
   },
 
   mounted() {
-    this.selectedNetwork = "Ethereum";
-    // this.selectedNetwork = this.currentChain.NETWORK_DISPLAY_NAME; // sets network to current chain
+    // this.selectedNetwork = "ETHEREUM";
+    this.selectedNetwork = this.currentChain.NETWORK_DISPLAY_NAME.toUpperCase(); // sets network to current chain
     if (this.$route.query.token_sym !== undefined)
       this.selectedTokenSym = this.$route.query.token_sym;
     this.reloadWallet(this.accountName);
