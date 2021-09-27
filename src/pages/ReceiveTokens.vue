@@ -44,7 +44,7 @@
             v-show="selectedNetwork.toUpperCase() === currentChain.NETWORK_NAME"
           >
             <div class="text-subtitle1 q-py-md text-center">
-              Deposit {{ depositTokenStr }} to the following address
+              Deposit {{ selectedTokenSym }} to the following address
             </div>
             <!-- telos qr code-->
             <receive-qr />
@@ -135,34 +135,65 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
+    ...mapGetters("tport", [
+      "getEvmNetworkList",
+      "getTPortTokensBySym",
+      "getTeleports"
+    ]),
 
     selectedToken() {
       return this.wallet.find(a => a.token_sym === this.selectedTokenSym);
     },
 
-    networkOptions() {
-      let options = [this.currentChain.NETWORK_DISPLAY_NAME];
-      const token = this.selectedTokenSym.toUpperCase();
-      if (token === "PBTC") options.push("Bitcoin");
-      if (["PETH", "TLOS", "PUSDC", "PUSDT", "EOS"].includes(token))
-        options.push("Ethereum");
-      return options;
+    supportedEvmChains() {
+      const token = this.getTPortTokensBySym(this.selectedTokenSym);
+      if (token) {
+        // console.log({ token });
+        let res = [];
+        for (let r of token.remote_contracts) {
+          const network = this.getEvmNetworkList.find(
+            el => el.remoteId === r.key
+          );
+          if (network) res.push(network.name.toUpperCase());
+        }
+        return res;
+      } else return [];
     },
 
-    depositTokenStr() {
+    networkOptions() {
       const token = this.selectedTokenSym.toUpperCase();
-      const net = this.selectedNetwork.toUpperCase();
-      if (token === "PETH") {
-        if (net === "TELOS") return "PETH";
-        else return "ETH";
-      } else if (token === "TLOS") {
-        if (net === "TELOS") return "TLOS";
-        else return "TLOS (ERC20)";
-      } else {
-        if (net === "TELOS") return "PBTC";
-        else return "BTC";
-      }
+
+      // Current chain
+      let networks = [this.currentChain.NETWORK_DISPLAY_NAME];
+
+      // pNetwork: Bitcoin
+      if (token === "PBTC") networks.push("Bitcoin");
+
+      // pNetwork: Ethereum
+      if (["PETH", "TLOS", "PUSDC", "PUSDT", "EOS"].includes(token))
+        networks.push("Ethereum");
+
+      // Extend with teleport chains
+      return [...networks, ...this.supportedEvmChains];
     },
+
+    // depositTokenStr() {
+    //   const token = this.selectedTokenSym.toUpperCase();
+    //   const net = this.selectedNetwork.toUpperCase();
+    //   switch (token) {
+    //     case "PBTC":
+    //       if (net === "TELOS") return "PBTC";
+    //       else return "BTC";
+    //     case "PETH":
+    //       if (net === "TELOS") return "PETH";
+    //       else return "ETH";
+    //     case "TLOS":
+    //       if (net === "TELOS") return "TLOS";
+    //       else return "TLOS (ERC20)";
+    //     default:
+    //       return this.selectedTokenSym;
+    //   }
+    // },
     selectedAddress() {
       if (this.selectedNetwork === this.currentChain.NETWORK_DISPLAY_NAME)
         return this.accountName;
@@ -172,6 +203,7 @@ export default {
 
   methods: {
     ...mapActions("account", ["reloadWallet", "setWalletBalances"]),
+    ...mapActions("tport", ["setTPortTokens"]),
     copyAddress(adress) {
       copyToClipboard(adress).then(() => {
         this.$q.notify({
@@ -189,6 +221,7 @@ export default {
     if (this.$route.query.token_sym !== undefined)
       this.selectedTokenSym = this.$route.query.token_sym;
     this.reloadWallet(this.accountName);
+    this.setTPortTokens();
   },
   watch: {
     async accountName() {
