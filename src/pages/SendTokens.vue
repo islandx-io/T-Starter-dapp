@@ -145,10 +145,11 @@ export default {
   mounted() {
     if (this.$route.query.token_sym !== undefined)
       this.selectedTokenSym = this.$route.query.token_sym;
-    // this.selectedNetwork = this.currentChain.NETWORK_NAME;  // TODO Uncomment
+    this.selectedNetwork = this.currentChain.NETWORK_NAME;
     this.setBridgeTokens();
     this.reloadWallet(this.accountName);
     this.setTPortTokens();
+    this.$store.dispatch("tport/setTeleports", this.accountName);
   },
 
   watch: {

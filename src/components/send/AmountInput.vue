@@ -24,7 +24,13 @@
 
 <script>
 export default {
-  props: ["selectedToken", "selectedTokenSym", "amount", "balance", "min"],
+  props: {
+    selectedToken: Object,
+    selectedTokenSym: String,
+    amount: Number,
+    balance: Number,
+    min: { type: Number, default: 0 }
+  },
   data() {
     return {};
   },
