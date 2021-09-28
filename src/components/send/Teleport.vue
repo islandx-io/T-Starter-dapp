@@ -266,6 +266,7 @@ export default {
         this.$refs.sendForm.reset();
         this.$refs.sendForm.resetValidation();
         this.setWalletBalances(this.accountName);
+        this.$store.dispatch("tport/setTeleports", this.accountName);
       }
     }
   },

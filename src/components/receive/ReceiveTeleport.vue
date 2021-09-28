@@ -45,7 +45,7 @@
         :selectedTokenSym="selectedTokenSym"
         :selectedToken="selectedToken"
         :amount.sync="amount"
-        :balance="balance"
+        :balance="remoteBalance"
         :min="minSend"
       />
     </div>
@@ -56,7 +56,7 @@
         color="primary"
         dense
         no-shadow
-        label="Send"
+        label="Receive"
         style="width: 40%"
         type="submit"
         :disabled="selectedToken === undefined || wrongNetwork"
@@ -225,6 +225,7 @@ export default {
               this.$refs.sendForm.reset();
               this.$refs.sendForm.resetValidation();
               this.setWalletBalances(this.accountName);
+              this.updateBalance();
             } catch (error) {
               this.$errorNotification(error);
             }
