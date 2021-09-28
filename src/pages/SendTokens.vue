@@ -54,7 +54,7 @@
         />
       </q-card>
       <teleport-dash
-        v-if="getTeleports.length > 0"
+        v-if="getTeleports.length > 0 && tportTokens.includes(selectedTokenSym)"
         :selectedTokenSym="selectedTokenSym"
       />
     </section>
@@ -86,6 +86,7 @@ export default {
     ...mapGetters("tport", [
       "getEvmNetworkList",
       "getTPortTokensBySym",
+      "getTPortTokens",
       "getTeleports"
     ]),
     ...mapGetters("blockchains", [
@@ -135,6 +136,16 @@ export default {
 
     networkOptions() {
       return [...this.supportedEosChains, ...this.supportedEvmChains];
+    },
+
+    tportTokens() {
+      // let tportTokens = [];
+      // if (this.getTPortTokens.length > 0) {
+      //   tportTokens = this.getTPortTokens.map(el => el.token.sym);
+      // }
+      // return tportTokens
+      if (this.getTPortTokens.length === 0) return [];
+      else return this.getTPortTokens.map(el => el.token.sym);
     }
   },
   methods: {
