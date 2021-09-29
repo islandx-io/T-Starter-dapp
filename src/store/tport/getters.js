@@ -11,7 +11,8 @@ export function getEvmChainId(state) {
 }
 
 export function getEvmRemoteId(state) {
-  return state.networkList.find(el => el.chainId === state.chainId).remoteId;
+  const chain = state.networkList.find(el => el.chainId === state.chainId);
+  return chain ? chain.remoteId : null;
 }
 
 export function getEvmNetworkList(state) {
