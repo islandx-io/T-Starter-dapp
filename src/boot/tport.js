@@ -70,6 +70,6 @@ const testnetList = [
 ];
 
 export default async ({ store }) => {
-  const networkList = process.env.TESTNET ? testnetList : mainnetList;
+  const networkList = process.env.TESTNET == "true" ? testnetList : mainnetList;
   store.commit("tport/setNetworkList", { networkList });
 };
