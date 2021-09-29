@@ -129,7 +129,7 @@
                     :token="props.row.chain"
                     :avatarSize="20"
                     class="q-mb-xs"
-                    :svg="true"
+                    grayscale
                   />
                   <div>{{ props.cols[1].value }}</div>
                 </div>

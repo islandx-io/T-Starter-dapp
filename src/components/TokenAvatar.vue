@@ -1,16 +1,11 @@
 <template>
   <q-avatar :size="`${avatarSize}px`">
     <q-spinner-puff
-      v-if="src(avatar) === 'Loading'"
+      v-if="src === 'Loading'"
       :style="avatarStyle"
       color="primary"
     />
-    <q-img
-      v-else-if="src(avatar)"
-      :src="src(avatar)"
-      alt="Avatar"
-      :style="avatarStyle"
-    >
+    <q-img v-else-if="src" :src="src" alt="Avatar" :style="avatarStyle">
       <template v-slot:error>
         <div class="transparent" style="padding: 0" v-html="identicon" />
       </template>
@@ -40,7 +35,8 @@ export default {
       type: Number,
       default: 60
     },
-    svg: {
+    grayscale: {
+      type: Boolean,
       default: false
     }
   },
@@ -54,14 +50,12 @@ export default {
     },
     avatarStyle() {
       return `width:${this.avatarSize}px; height:${this.avatarSize}px`;
-    }
-  },
-  methods: {
-    src(avatar) {
-      let result = avatar;
+    },
+    src() {
+      let result = this.avatar;
       if (result === "" || result === undefined) {
         let token = this.token.toUpperCase();
-        if (this.svg) {
+        if (this.grayscale) {
           if (token === "TELOS") result = "/tokens/tlos.svg";
           else if (token === "EOS") result = "/tokens/eos.svg";
           else if (token === "WAX") result = "/tokens/wax.svg";
@@ -95,7 +89,7 @@ export default {
 </script>
 
 <style lang="scss">
-.greyscale {
+.grayscale {
   filter: grayscale(100%);
 }
 </style>
