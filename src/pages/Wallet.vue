@@ -66,8 +66,9 @@
             <q-td :props="props" :key="props.cols[0].name">
               <div class="row justify-start items-center">
                 <token-avatar
-                  :token="props.row.token_sym"
-                  :avatar="props.row.avatar"
+                  :token="
+                    props.row.avatar ? props.row.avatar : props.row.token_sym
+                  "
                   :avatarSize="35"
                   class="q-mr-sm"
                 />

@@ -28,8 +28,7 @@
           <h2>Send</h2>
           <div class="row items-center justify-center">
             <token-avatar
-              :token="selectedTokenSym"
-              :avatar="avatar"
+              :token="avatar ? avatar : selectedTokenSym"
               :avatarSize="55"
             />
             <h2>

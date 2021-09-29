@@ -114,7 +114,7 @@
               <q-td :props="props" :key="props.cols[0].name">
                 <div class="row justify-start items-center">
                   <token-avatar
-                    :avatar="props.row.avatar"
+                    :token="props.row.avatar"
                     :avatarSize="35"
                     class="q-mr-sm"
                   />
