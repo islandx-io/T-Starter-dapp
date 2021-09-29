@@ -64,7 +64,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
-import teleport from "src/components/send/Teleport";
+import teleport from "src/components/send/SendTeleport";
 import teleportDash from "src/components/send/TeleportDash";
 import sendEosChains from "src/components/send/SendEosChains";
 

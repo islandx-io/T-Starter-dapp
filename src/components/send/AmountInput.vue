@@ -37,12 +37,13 @@ export default {
   methods: {
     validateInputAmount(val) {
       return (
-        (val <= this.balance) & (val > 0) & (val >= this.min) ||
+        (val <= this.balance) & (val > 0) & (val >= this.min) & !isNaN(val) ||
         "Incorrect amount"
       );
     },
     updateAmount(val) {
-      this.$emit("update:amount", val); // TODO Check type: max btn is number and input is string
+      const res = isNaN(val) ? null : Number(val);
+      this.$emit("update:amount", res);
     }
   }
 };

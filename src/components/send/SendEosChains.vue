@@ -97,9 +97,8 @@ export default {
       amount: null,
       memo: "",
       showTransaction: false,
-      transaction: null,
+      transaction: null
       // explorerUrl: process.env.NETWORK_EXPLORER,
-      remoteBalance: 0
     };
   },
   computed: {

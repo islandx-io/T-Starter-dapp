@@ -179,7 +179,7 @@ export default {
                 .balanceOf(this.getEvmAccountName)
                 .call();
               // console.log("Balance is:", balance);
-              this.remoteBalance = Number(balance / 10000).toLocaleString();
+              this.remoteBalance = Number(balance / 10000);
             }
           }
         }
