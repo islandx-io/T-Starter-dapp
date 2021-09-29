@@ -10,6 +10,10 @@ export function setChainId(state, payload) {
   state.chainId = chainId;
 }
 
+export function setNetworkList(state, { networkList }) {
+  state.networkList = networkList;
+}
+
 export function updateTPortTokens(state, { tokens }) {
   state.tportTokens = tokens;
 }

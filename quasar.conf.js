@@ -31,6 +31,7 @@ module.exports = function(/* ctx */) {
       "ballotinfo",
       "helpers",
       "moonpay",
+      "tport",
       "web3",
       "erc20"
     ],
