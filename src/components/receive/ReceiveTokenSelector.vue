@@ -89,6 +89,9 @@ export default {
     tokens() {
       return [...this.baseTokens, ...this.tportTokens];
     }
+  },
+  mounted() {
+    this.$store.dispatch("pools/setPoolTokens");
   }
 };
 </script>

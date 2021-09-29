@@ -75,9 +75,24 @@ export default {
             case "TELOS EVM" : return "/tokens/tlos.png";
             case "BTC": case "BITCOIN" : return "/tokens/bitcoin.svg";
             case "ETH": case "ETHEREUM": case "ROPSTEN" : return "/tokens/eth.svg";
-            default: return "";
+            default: 
+              // Search for the avatar link on the pools.start/pooltokens table
+              // Assumes the pools/setPoolTokens state action is called.
+              if (this.chainSrc[token]) return this.chainSrc[token]
+              else return ""
           }
         }
+      }
+    },
+    chainSrc() {
+      if (this.getPoolTokens.length === 0) return [];
+      else {
+        let res = {};
+        this.getPoolTokens.forEach(el => {
+          const sym = this.$getSymFromAsset(el.token_info);
+          res[sym] = el.avatar;
+        });
+        return res;
       }
     }
   }
