@@ -46,7 +46,8 @@ h6 {
   border-color: $secondary;
   background-color: $secondary;
   .wallet-table {
-    box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
+    padding: 10px 0px;
+    // box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
   }
 }
 .q-table__container.wallet-inner-table {

@@ -158,7 +158,10 @@ export const setWalletPoolTokens = async function(
     if (account != null) {
       // Get tokens on platform
       await dispatch("pools/setPoolTokens", "", { root: true });
-      let pooltokens = rootGetters["pools/getPoolTokens"];
+      await dispatch("tport/setTPortTokens", "", { root: true });
+      const pooltokens = rootGetters["pools/getPoolTokens"];
+      const tportTokens = rootGetters["tport/getTPortTokens"];
+      const tportTokenSyms = tportTokens.map(el => el.token.sym);
       const getDecimalFromAsset = this.$getDecimalFromAsset;
       const getSymFromAsset = this.$getSymFromAsset;
       const chainToDecimals = this.$chainToDecimals;
@@ -171,6 +174,7 @@ export const setWalletPoolTokens = async function(
           let sym = getSymFromAsset(pooltoken.token_info);
           let contract = pooltoken.token_info.contract;
           let avatar = pooltoken.avatar;
+          const isTportToken = tportTokenSyms.includes(sym);
 
           // get balance
           let balance = chainToQty(
@@ -187,7 +191,7 @@ export const setWalletPoolTokens = async function(
 
           // if has balance, update store
           // Update wallet store
-          if (balance > 0) {
+          if (balance > 0 || isTportToken) {
             commit("setWalletToken", {
               token_sym: sym,
               token_contract: contract
