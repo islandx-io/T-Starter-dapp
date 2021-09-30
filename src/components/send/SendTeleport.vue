@@ -270,10 +270,10 @@ export default {
       }
     }
   },
-  async mounted() {
-    await this.connectWeb3();
-    await this.switchMetamaskNetwork(this.selectedNetwork);
-  },
+  // async mounted() {
+  //   await this.connectWeb3();
+  //   await this.switchMetamaskNetwork(this.selectedNetwork);
+  // },
   watch: {
     async selectedNetwork() {
       if (this.supportedEvmChains.includes(this.selectedNetwork)) {
