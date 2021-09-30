@@ -245,9 +245,14 @@ export default {
   async mounted() {
     await this.reloadWalletInfo();
     this.$store.dispatch("tport/setTPortTokens");
+    this.showZeroBalance =
+      localStorage.getItem("walletShowZeroBalance") === "true";
   },
 
   watch: {
+    showZeroBalance() {
+      localStorage.setItem("walletShowZeroBalance", this.showZeroBalance);
+    },
     async accountName() {
       await this.reloadWalletInfo();
     }
