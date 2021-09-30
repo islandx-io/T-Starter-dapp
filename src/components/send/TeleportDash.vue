@@ -255,9 +255,9 @@ export default {
     async refreshTeleports() {
       this.$store.dispatch("tport/setTeleports", this.accountName);
     }
+  },
+  mounted() {
+    this.connectWeb3();
   }
-  // mounted() {
-  //   this.connectWeb3();
-  // }
 };
 </script>
