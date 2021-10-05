@@ -12,24 +12,25 @@
         @click="refreshTeleports()"
       />
     </div>
-    <q-list>
-      <q-item v-for="t in unclaimedTeleports" :key="t.id">
-        <q-item-section class="col-3">
+    <div class="column">
+      <div
+        class="row justify-center items-center q-py-xs"
+        v-for="t in unclaimedTeleports"
+        :key="t.id"
+      >
+        <div class="col-4 text-right">
           {{ t.quantity }}
-        </q-item-section>
-        <q-item-section class="col-1">
-          <q-icon class="fas fa-arrow-right"></q-icon>
-        </q-item-section>
-        <q-item-section class="col-2 q-mr-md">{{
-          ethAddressShort(t.eth_address)
-        }}</q-item-section>
-        <q-item-section>
+        </div>
+        <q-icon class="q-mx-sm fas fa-arrow-right"></q-icon>
+        <div class="col-sm row items-center justify-start">
+          <div>{{ ethAddressShort(t.eth_address) }}</div>
           <token-avatar
+            class="q-mx-sm"
             :token="evmNetworkNameById(t.chain_id)"
             :avatarSize="25"
           />
-        </q-item-section>
-        <q-item-section side>
+        </div>
+        <div side>
           <q-btn class="hover-accent" v-if="t.processing" color="grey">
             Processing
           </q-btn>
@@ -61,9 +62,9 @@
           >
             Switch Account
           </q-btn>
-        </q-item-section>
-      </q-item>
-    </q-list>
+        </div>
+      </div>
+    </div>
     <q-card-actions class="row justify-center">
       <div>{{ expanded ? "Hide" : "Show" }} Claimed</div>
       <q-btn
@@ -79,30 +80,31 @@
     <q-slide-transition>
       <div v-show="expanded">
         <q-separator />
-        <q-card-section class="text-subitle2">
-          <q-list>
-            <q-item v-for="t in claimedTeleports" :key="t.id">
-              <q-item-section class="col-3">
+        <div class="text-subitle2">
+          <div class="column">
+            <div
+              class="row justify-center items-center q-py-xs"
+              v-for="t in claimedTeleports"
+              :key="t.id"
+            >
+              <div class="col text-right">
                 {{ t.quantity }}
-              </q-item-section>
-              <q-item-section class="col-1">
-                <q-icon class="fas fa-arrow-right"></q-icon>
-              </q-item-section>
-              <q-item-section>{{
-                ethAddressShort(t.eth_address)
-              }}</q-item-section>
-              <q-item-section>
+              </div>
+              <q-icon class="q-mx-sm fas fa-arrow-right"></q-icon>
+              <div class="col row items-center justify-start">
+                <div>{{ ethAddressShort(t.eth_address) }}</div>
                 <token-avatar
+                  class="q-mx-sm"
                   :token="evmNetworkNameById(t.chain_id)"
                   :avatarSize="25"
                 />
-              </q-item-section>
-              <q-item-section side>
+              </div>
+              <!-- <div side>
                 <div v-if="t.claimed" class="text-emphasis">Claimed</div>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
+              </div> -->
+            </div>
+          </div>
+        </div>
       </div>
     </q-slide-transition>
   </q-card>

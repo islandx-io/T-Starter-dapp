@@ -496,9 +496,5 @@ a {
   .q-card {
     padding: 5px;
   }
-  .body-container {
-    padding-left: 8px;
-    padding-right: 8px;
-  }
 }
 </style>

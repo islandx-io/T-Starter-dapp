@@ -70,6 +70,13 @@ h6 {
   padding: 10px 20px;
 }
 
+.body-container {
+  @media only screen and (max-width: 512px) {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
 // ----------------------------------------------
 // Header & Footer
 // ----------------------------------------------

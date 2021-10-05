@@ -1,12 +1,12 @@
 <template>
   <q-form @submit="trySend" ref="sendForm" class="q-gutter-y-lg">
     <div class="column items-center">
-      <div class="networks row justify-center q-pb-sm">
+      <!-- <div class="networks row justify-center q-pb-sm">
         <div class="text-weight-light text-subtitle2  col-12 text-center">
           {{ currentChain.NETWORK_NAME }} Balance
         </div>
         <div>{{ balance }} {{ selectedTokenSym }}</div>
-      </div>
+      </div> -->
       <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
         <!-- TO -->
         <q-input

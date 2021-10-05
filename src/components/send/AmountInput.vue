@@ -15,6 +15,7 @@
       <q-btn
         label="Max"
         color="positive"
+        class="hover-accent"
         outline
         @click="updateAmount(balance)"
       />
