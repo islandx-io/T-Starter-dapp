@@ -30,7 +30,7 @@
             "
           />
           <!-- Network selector -->
-          <div class="row items-center q-pb-sm">
+          <div class="row items-center justify-center q-pb-sm">
             <div class="text-subtitle1 q-pr-sm">From network</div>
             <net-selector
               :selectedNetwork.sync="selectedNetwork"

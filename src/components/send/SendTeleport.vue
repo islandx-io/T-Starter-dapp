@@ -41,8 +41,12 @@
           @changeNetwork="$emit('update:selectedNetwork', $event)"
         />
       </div>
-      <div class="text-right">
-        Minimum: {{ minSend }} {{ selectedTokenSym }}
+      <div class="row justify-between q-px-sm q-gutter-x-sm">
+        <div>
+          {{ selectedNetwork }} balance: {{ remoteBalance }}
+          {{ selectedTokenSym }}
+        </div>
+        <div>Minimum: {{ minSend }} {{ selectedTokenSym }}</div>
       </div>
       <amount-input
         :selectedTokenSym="selectedTokenSym"
@@ -351,11 +355,6 @@ export default {
   &:hover {
     color: $accent;
   }
-}
-.input-outline {
-  border: 1px solid rgb(194, 194, 194);
-  border-radius: 10px;
-  padding: 8px 12px;
 }
 .evm-account {
   &:hover {
