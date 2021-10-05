@@ -271,12 +271,13 @@ export default {
     }
   },
   async mounted() {
-    await this.connectWeb3();
-    await this.switchMetamaskNetwork(this.selectedNetwork);
+    // await this.connectWeb3();
+    // await this.switchMetamaskNetwork(this.selectedNetwork);
   },
   watch: {
     async selectedNetwork() {
       if (this.supportedEvmChains.includes(this.selectedNetwork)) {
+        this.connectWeb3();
         this.switchMetamaskNetwork(this.selectedNetwork);
         this.updateBalance();
       }

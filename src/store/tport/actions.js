@@ -87,7 +87,7 @@ export const setTeleports = async function({ commit }, account) {
       })
       .sort((a, b) => (a.time < b.time ? 1 : -1));
 
-    console.log("Teleports:", teleports);
+    // console.log("Teleports:", teleports);
     commit("updateTeleports", { teleports });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });

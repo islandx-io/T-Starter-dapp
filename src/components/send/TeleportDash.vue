@@ -128,7 +128,8 @@ export default {
   mixins: [metamask],
   data() {
     return {
-      expanded: false
+      expanded: false,
+      pollTeleport: null
     };
   },
   computed: {
@@ -145,13 +146,13 @@ export default {
     unclaimedTeleports() {
       return this.getTeleports.filter(
         el =>
-          !el.claimed && this.$chainToSym(el.quantity) === this.selectedTokenSym
+          !el.claimed && this.$chainToSym(el.quantity) === this.selectedTokenSym && this.correctAccount(el.eth_address)
       );
     },
     claimedTeleports() {
       return this.getTeleports.filter(
         el =>
-          el.claimed && this.$chainToSym(el.quantity) === this.selectedTokenSym
+          el.claimed && this.$chainToSym(el.quantity) === this.selectedTokenSym && this.correctAccount(el.eth_address)
       );
     }
   },
@@ -257,7 +258,15 @@ export default {
     }
   },
   mounted() {
-    this.connectWeb3();
+
+    // Poll teleports
+    this.pollTeleport = setInterval(async () => {
+      this.refreshTeleports();
+    }, 10000);
+
+  },
+  destroyed() {
+    clearInterval(this.pollTeleport);
   }
 };
 </script>
