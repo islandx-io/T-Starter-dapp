@@ -1,6 +1,6 @@
 <template>
   <q-form @submit="trySend" ref="sendForm">
-    <div class="row">
+    <!--     <div class="row">
       <div class="networks row justify-center q-pb-sm">
         <div class="text-weight-light text-subtitle2  col-12 text-center">
           {{ currentChain.NETWORK_NAME }} Balance
@@ -12,35 +12,32 @@
           {{ selectedNetwork }} Balance
         </div>
         <div>{{ remoteBalance }} {{ selectedTokenSym }}</div>
-      </div>
-    </div>
+      </div> 
+    </div>-->
     <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
-      <div class="row justify-between q-py-md">
+      <div class="input-outline row justify-between items-center">
         <q-btn
+          v-if="getEvmAccountName === ''"
+          label="CONNECT"
+          @click="connectWeb3()"
           class="hover-accent"
-          color="primary"
+          color="positive"
+          outline
           no-shadow
           no-caps
-          @click="connectWeb3()"
+        />
+        <div
+          class="evm-account col ellipsis cursor-pointer"
+          style="max-width: 200px"
+          v-else
+          @click="copyEvmAccount"
         >
-          <div v-if="getEvmAccountName === ''">
-            Connect wallet
-          </div>
-          <div
-            class="ellipsis"
-            style="max-width: 100px"
-            v-else-if="!wrongNetwork"
-          >
-            {{ getEvmAccountName }}
-          </div>
-          <div v-else>
-            Wrong Network
-          </div>
-        </q-btn>
+          {{ getEvmAccountName }}
+        </div>
         <net-selector
           :selectedNetwork="selectedNetwork"
           :networkOptions="networkOptions"
-          @changeNetwork="changeNetwork($event)"
+          @changeNetwork="$emit('update:selectedNetwork', $event)"
         />
       </div>
       <div class="text-right">
@@ -90,6 +87,7 @@ import amountInput from "src/components/send/AmountInput";
 import sendTxDialog from "src/components/send/SendTxDialog";
 import sendWarnings from "src/components/send/SendWarnings";
 import metamask from "src/components/Metamask";
+import { copyToClipboard } from "quasar";
 
 export default {
   components: { netSelector, amountInput, sendTxDialog, sendWarnings },
@@ -155,6 +153,13 @@ export default {
         );
       } else return true;
     }
+
+    // shortEvmAccount() {
+    //   const address = this.getEvmAccountName;
+    //   if (address.length > 0) {
+    //     return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    //   } else return "";
+    // }
   },
   methods: {
     ...mapActions("account", ["setWalletBalances"]),
@@ -268,6 +273,16 @@ export default {
         this.setWalletBalances(this.accountName);
         this.$store.dispatch("tport/setTeleports", this.accountName);
       }
+    },
+    copyEvmAccount() {
+      copyToClipboard(this.getEvmAccountName).then(() => {
+        this.$q.notify({
+          color: "green-4",
+          textColor: "secondary",
+          message: "Copied address to clipboard",
+          timeout: 1000
+        });
+      });
     }
   },
   async mounted() {
@@ -290,3 +305,16 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.input-outline {
+  border: 1px solid rgb(194, 194, 194);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+.evm-account {
+  &:hover {
+    color: $positive;
+  }
+}
+</style>

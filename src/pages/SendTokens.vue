@@ -12,6 +12,7 @@
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
       <q-card class="authenticated q-mb-lg">
+
         <q-btn
           :to="{ name: 'wallet', params: { accountName: accountName } }"
           flat
@@ -38,19 +39,27 @@
         </div>
         <div />
         <div />
-        <teleport
-          v-if="supportedEvmChains.includes(selectedNetwork)"
-          :selectedTokenSym="selectedTokenSym"
-          :selectedNetwork.sync="selectedNetwork"
-          :networkOptions="networkOptions"
-          :supportedEvmChains="supportedEvmChains"
-        />
-        <send-eos-chains
-          v-else
-          :selectedTokenSym="selectedTokenSym"
-          :selectedNetwork.sync="selectedNetwork"
-          :networkOptions="networkOptions"
-        />
+      <div>
+        <div class="networks row justify-center q-pb-sm">
+          <div class="text-weight-light text-subtitle2  col-12 text-center">
+            {{ currentChain.NETWORK_NAME }} Balance
+          </div>
+          <div>{{ balance }} {{ selectedTokenSym }}</div>
+        </div>
+          <teleport
+            v-if="supportedEvmChains.includes(selectedNetwork)"
+            :selectedTokenSym="selectedTokenSym"
+            :selectedNetwork.sync="selectedNetwork"
+            :networkOptions="networkOptions"
+            :supportedEvmChains="supportedEvmChains"
+          />
+          <send-eos-chains
+            v-else
+            :selectedTokenSym="selectedTokenSym"
+            :selectedNetwork.sync="selectedNetwork"
+            :networkOptions="networkOptions"
+          />
+      </div>
       </q-card>
       <teleport-dash
         v-if="getTeleports.length > 0 && tportTokens.includes(selectedTokenSym)"
@@ -100,6 +109,10 @@ export default {
 
     avatar() {
       return this.selectedToken ? this.selectedToken.avatar : "";
+    },
+
+    balance() {
+      return this.selectedToken ? this.selectedToken.balance : 0;
     },
 
     supportedEosChains() {
