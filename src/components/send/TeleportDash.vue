@@ -18,7 +18,7 @@
         v-for="t in unclaimedTeleports"
         :key="t.id"
       >
-        <div class="col-sm text-right">
+        <div class="col-4 text-right">
           {{ t.quantity }}
         </div>
         <q-icon class="q-mx-sm fas fa-arrow-right"></q-icon>
