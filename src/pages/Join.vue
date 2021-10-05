@@ -940,10 +940,6 @@ a {
     grid-column-start: 1;
     grid-column-end: 4;
   }
-  .body-container {
-    padding-left: 8px;
-    padding-right: 8px;
-  }
 }
 @media only screen and (max-width: 425px) {
   .card-container {

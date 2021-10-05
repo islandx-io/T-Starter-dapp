@@ -1545,9 +1545,5 @@ export default {
     padding-left: 10px;
     padding-right: 10px;
   }
-  .body-container {
-    padding-left: 8px;
-    padding-right: 8px;
-  }
 }
 </style>
