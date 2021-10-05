@@ -11,7 +11,17 @@
         <div class="text-weight-light text-subtitle2  col-12 text-center">
           {{ selectedNetwork }} Balance
         </div>
-        <div>{{ remoteBalance }} {{ selectedTokenSym }}</div>
+        <div>
+          {{ remoteBalance }} {{ selectedTokenSym }}
+          <q-icon
+            size="16px"
+            name="fas fa-external-link-alt"
+            class="addtoken"
+            @click="addTokenToMetamask()"
+          >
+            <q-tooltip>Add Token To Metamask</q-tooltip>
+          </q-icon>
+        </div>
       </div>
     </div>
     <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
@@ -268,6 +278,39 @@ export default {
         this.setWalletBalances(this.accountName);
         this.$store.dispatch("tport/setTeleports", this.accountName);
       }
+    },
+
+    async addTokenToMetamask() {
+      const token = this.getTPortTokensBySym(this.selectedTokenSym);
+      let tokenAddress = null;
+      // console.log("TPort token:", token);
+      if (typeof token === "undefined") {
+        console.error("TPort Token not found");
+      } else {
+        tokenAddress = token.remote_contracts.find(
+          el => el.key === this.getEvmRemoteId
+        ).value;
+      }
+      const tokenSymbol = this.selectedTokenSym;
+      const tokenDecimals = this.token_decimals;
+
+      try {
+        // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+        const wasAdded = await ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20", // Initially only supports ERC20, but eventually more!
+            options: {
+              address: tokenAddress, // The address that the token is at.
+              symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
+              decimals: tokenDecimals // The number of decimals in the token
+              // image: tokenImage // A string url of the token logo
+            }
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
   },
   async mounted() {
@@ -291,3 +334,15 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.addtoken {
+  // padding: 5px 20px 10px 0;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+  color: $primary;
+  &:hover {
+    color: $accent;
+  }
+}
+</style>
