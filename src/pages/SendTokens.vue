@@ -75,6 +75,7 @@ import tokenAvatar from "src/components/TokenAvatar";
 import teleport from "src/components/send/SendTeleport";
 import teleportDash from "src/components/send/TeleportDash";
 import sendEosChains from "src/components/send/SendEosChains";
+import metamask from "src/components/Metamask";
 
 export default {
   components: {
@@ -83,6 +84,7 @@ export default {
     teleportDash,
     sendEosChains
   },
+  mixins: [metamask],
   data() {
     return {
       selectedTokenSym: "START",
@@ -179,7 +181,13 @@ export default {
     async accountName() {
       this.reloadWallet(this.accountName);
       this.$store.dispatch("tport/setTeleports", this.accountName);
-    }
+    },
+    async selectedNetwork() {
+      if (this.supportedEvmChains.includes(this.selectedNetwork)) {
+        this.connectWeb3();
+        this.switchMetamaskNetwork(this.selectedNetwork);
+      }
+    },
   }
 };
 </script>

@@ -146,16 +146,28 @@ export default {
       "getTeleports"
     ]),
     unclaimedTeleports() {
-      return this.getTeleports.filter(
-        el =>
-          !el.claimed && this.$chainToSym(el.quantity) === this.selectedTokenSym && this.correctAccount(el.eth_address)
-      );
+      if (this.getEvmAccountName !== undefined) {
+        return this.getTeleports.filter(
+          el =>
+            !el.claimed &&
+            this.$chainToSym(el.quantity) === this.selectedTokenSym &&
+            this.correctAccount(el.eth_address)
+        );
+      } else {
+        return [];
+      }
     },
     claimedTeleports() {
-      return this.getTeleports.filter(
-        el =>
-          el.claimed && this.$chainToSym(el.quantity) === this.selectedTokenSym && this.correctAccount(el.eth_address)
-      );
+      if (this.getEvmAccountName !== undefined) {
+        return this.getTeleports.filter(
+          el =>
+            el.claimed &&
+            this.$chainToSym(el.quantity) === this.selectedTokenSym &&
+            this.correctAccount(el.eth_address)
+        );
+      } else {
+        return [];
+      }
     }
   },
   methods: {
@@ -260,12 +272,10 @@ export default {
     }
   },
   mounted() {
-
     // Poll teleports
     this.pollTeleport = setInterval(async () => {
       this.refreshTeleports();
     }, 10000);
-
   },
   destroyed() {
     clearInterval(this.pollTeleport);
