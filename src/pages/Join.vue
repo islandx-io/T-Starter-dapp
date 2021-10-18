@@ -164,7 +164,8 @@
                 >
                   OR
                 </div>
-                <q-btn
+                <!-- Moonpay button -->
+                <!-- <q-btn
                   v-if="canBuyWithUSD"
                   label="Join with Moonpay"
                   color="primary"
@@ -179,12 +180,12 @@
                       allocationReached) &&
                       !hasHeadstart
                   "
-                />
+                /> -->
                 <!-- Moonpay waiting for TX -->
-                <moonpay-processing
+                <!-- <moonpay-processing
                   :moonpayTx="moonpayTx"
                   :moonpayActive="moonpayActive"
-                />
+                /> -->
                 <div
                   v-if="not_enough_start"
                   class="q-pt-sm self-center warning"
@@ -439,7 +440,7 @@ export default {
       moonpayKey: process.env.MOONPAY_KEY
     };
   },
-  components: { tokenAvatar, MoonpayProcessing },
+  components: { tokenAvatar },
   computed: {
     ...mapGetters("pools", [
       "getAllPools",
