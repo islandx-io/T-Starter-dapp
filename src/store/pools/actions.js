@@ -283,20 +283,19 @@ export const getReceivedPoolTokenTxns = async function({ getters }, account) {
 };
 
 // Get tokens from pooltokens table
-export const getPoolTokens = async function({ commit, dispatch }) {
+export const setPoolTokens = async function({ commit, dispatch }) {
   try {
-    const tableResults = await this.$api.getTableRows({
-      code: process.env.CONTRACT_ADDRESS, // Contract that we target
-      scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-      table: "pooltokens", // Table name
-      limit: 10000, // Maximum number of rows that we want to get
-      reverse: false, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
+    const res = await this.$api.getTableRows({
+      code: process.env.CONTRACT_ADDRESS,
+      scope: process.env.CONTRACT_ADDRESS,
+      table: "pooltokens",
+      limit: 10000,
+      reverse: false,
+      show_payer: false
     });
 
-    // const poolTable = tableResults.rows[tableResults.rows.length - 1];
-    console.log("pooltokens:", tableResults.rows);
-    return tableResults.rows;
+    // console.log("setPooltokens table rows:", res.rows);
+    commit("updatePoolTokens", { poolTokens: res.rows });
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }

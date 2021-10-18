@@ -1,16 +1,11 @@
 <template>
   <q-avatar :size="`${avatarSize}px`">
     <q-spinner-puff
-      v-if="src(avatar) === 'Loading'"
+      v-if="src === 'Loading'"
       :style="avatarStyle"
       color="primary"
     />
-    <q-img
-      v-else-if="src(avatar)"
-      :src="src(avatar)"
-      alt="Avatar"
-      :style="avatarStyle"
-    >
+    <q-img v-else-if="src" :src="src" alt="Avatar" :style="avatarStyle">
       <template v-slot:error>
         <div class="transparent" style="padding: 0" v-html="identicon" />
       </template>
@@ -24,13 +19,11 @@
 
 <script>
 import { toSvg } from "jdenticon";
+import { mapGetters } from "vuex";
+
 export default {
   props: {
     token: {
-      type: String,
-      default: ""
-    },
-    avatar: {
       type: String,
       default: ""
     },
@@ -38,54 +31,76 @@ export default {
       type: Number,
       default: 60
     },
-    svg: {
+    grayscale: {
+      type: Boolean,
       default: false
     }
   },
   computed: {
+    // TODO Use getPoolTokens to search for avatar instead of passing it as a prop
+    ...mapGetters("pools", ["getPoolTokens"]),
     identicon() {
-      let val = this.avatar;
-      if (val === "") val = this.token;
-      return toSvg(val, this.avatarSize);
+      return toSvg(this.token, this.avatarSize);
     },
     avatarStyle() {
       return `width:${this.avatarSize}px; height:${this.avatarSize}px`;
-    }
-  },
-  methods: {
-    src(avatar) {
-      let result = avatar;
-      if (result === "" || result === undefined) {
-        let token = this.token.toUpperCase();
-        if (this.svg) {
-          if (token === "TELOS") result = "/tokens/tlos.svg";
-          else if (token === "EOS") result = "/tokens/eos.svg";
-          else if (token === "WAX") result = "/tokens/wax.svg";
+    },
+    src() {
+      // prettier-ignore
+      if (this.token === "" || this.token === undefined) return ""
+      else if (this.token.includes("/")) return this.token; // If link provided
+      // TODO Check link
+      else { 
+        // If no link provided
+        const token = this.token.toUpperCase();
+        if (this.grayscale) {
+          switch (token) {
+            case "TELOS": return "/tokens/tlos.svg";
+            case "EOS"  : return "/tokens/eos.svg";
+            case "WAX"  : return "/tokens/wax.svg";
+            default: return ""
+          }
         } else {
-          if (token === "PETH") result = "/tokens/peth.png";
-          else if (token === "PBTC") result = "/tokens/pbtc.png";
-          else if (token === "START") result = "/tokens/start.png";
-          else if (token === "TLOS") result = "/tokens/tlos.png";
-          else if (token === "TELOS") result = "/tokens/tlos.png";
-          else if (token === "EOS") result = "/tokens/eos.png";
-          else if (token === "WAX") result = "/tokens/wax.png";
-          else if (token === "PUSDC")
-            result =
-              "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/pUSDC.png";
-          else if (token === "PUSDT")
-            result =
-              "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/pUSDT.png";
+          switch (token) {
+            case "PETH"  : return "/tokens/peth.png"
+            case "PBTC"  : return "/tokens/pbtc.png";
+            case "PUSDT" : return "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/pUSDT.png";
+            case "PUSDC" : return "https://raw.githubusercontent.com/T-Starter/T-Starter-images/master/icons/pUSDC.png";
+            case "START" : return "/tokens/start.png";
+            case "TLOS"  : return "/tokens/tlos.png";
+            case "TELOS" : return "/tokens/tlos.png";
+            case "EOS"   : return "/tokens/eos.png";
+            case "WAX"   : return "/tokens/wax.png";
+            case "BSC"   : return "/tokens/bnb.svg";
+            case "TELOS EVM" : return "/tokens/tlos.png";
+            case "BTC": case "BITCOIN" : return "/tokens/bitcoin.svg";
+            case "ETH": case "ETHEREUM": case "ROPSTEN" : return "/tokens/eth.svg";
+            default: 
+              // Search for the avatar link on the pools.start/pooltokens table
+              // Assumes the pools/setPoolTokens state action is called.
+              if (this.chainSrc[token]) return this.chainSrc[token]
+              else return ""
+          }
         }
       }
-
-      return result;
+    },
+    chainSrc() {
+      if (this.getPoolTokens.length === 0) return [];
+      else {
+        let res = {};
+        this.getPoolTokens.forEach(el => {
+          const sym = this.$getSymFromAsset(el.token_info);
+          res[sym] = el.avatar;
+        });
+        return res;
+      }
     }
   }
 };
 </script>
 
 <style lang="scss">
-.greyscale {
+.grayscale {
   filter: grayscale(100%);
 }
 </style>

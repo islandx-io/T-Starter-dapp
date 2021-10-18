@@ -46,7 +46,8 @@ h6 {
   border-color: $secondary;
   background-color: $secondary;
   .wallet-table {
-    box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
+    padding: 10px 0px;
+    // box-shadow: 0 0 35px 0 rgba(0, 0, 0, 0.08);
   }
 }
 .q-table__container.wallet-inner-table {
@@ -67,6 +68,13 @@ h6 {
   max-width: 1080px;
   margin: 0 auto;
   padding: 10px 20px;
+}
+
+.body-container {
+  @media only screen and (max-width: 512px) {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }
 
 // ----------------------------------------------
@@ -194,4 +202,10 @@ h6 {
   #notify-banner {
     background-image: $header-bg-wax;
   }
+}
+
+.input-outline {
+  border: 1px solid rgb(194, 194, 194);
+  border-radius: 10px;
+  padding: 8px 12px;
 }

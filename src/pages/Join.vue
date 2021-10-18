@@ -118,7 +118,7 @@
                 </div>
                 <div class="column items-end justify-between content-end">
                   <div class="row q-gutter-x-sm content-end">
-                    <token-avatar :avatar="pool.avatar" :avatarSize="40" />
+                    <token-avatar :token="pool.avatar" :avatarSize="40" />
                     <div class="text-h4">{{ TokenSymbol }}</div>
                   </div>
                 </div>
@@ -940,10 +940,6 @@ a {
   .q-form {
     grid-column-start: 1;
     grid-column-end: 4;
-  }
-  .body-container {
-    padding-left: 8px;
-    padding-right: 8px;
   }
 }
 @media only screen and (max-width: 425px) {

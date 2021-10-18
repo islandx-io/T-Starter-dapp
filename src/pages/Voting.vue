@@ -114,7 +114,7 @@
               <q-td :props="props" :key="props.cols[0].name">
                 <div class="row justify-start items-center">
                   <token-avatar
-                    :avatar="props.row.avatar"
+                    :token="props.row.avatar"
                     :avatarSize="35"
                     class="q-mr-sm"
                   />
@@ -129,7 +129,7 @@
                     :token="props.row.chain"
                     :avatarSize="20"
                     class="q-mb-xs"
-                    :svg="true"
+                    grayscale
                   />
                   <div>{{ props.cols[1].value }}</div>
                 </div>
