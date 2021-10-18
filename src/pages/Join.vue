@@ -27,7 +27,7 @@
         >
           <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px;" />
         </q-btn>
-        <q-form @submit="onSubmit">
+        <q-form @submit="onSubmit" ref="joinForm">
           <div>
             <div class="row justify-center">
               <h2 style="line-height: 45px; text-align: center">
@@ -118,7 +118,7 @@
                 </div>
                 <div class="column items-end justify-between content-end">
                   <div class="row q-gutter-x-sm content-end">
-                    <token-avatar :avatar="pool.avatar" :avatarSize="40" />
+                    <token-avatar :token="pool.avatar" :avatarSize="40" />
                     <div class="text-h4">{{ TokenSymbol }}</div>
                   </div>
                 </div>
@@ -157,6 +157,35 @@
                       !hasHeadstart
                   "
                 />
+                <div
+                  v-if="canBuyWithUSD"
+                  style="text-align: center;"
+                  class="q-py-xs"
+                >
+                  OR
+                </div>
+                <!-- Moonpay button -->
+                <!-- <q-btn
+                  v-if="canBuyWithUSD"
+                  label="Join with Moonpay"
+                  color="primary"
+                  @click="doUSDPayment(moonpayCurrencyCode)"
+                  :disable="
+                    (!isAuthenticated ||
+                      balance <= $chainToQty(pool.minimum_swap) ||
+                      pool.pool_status !== `open` ||
+                      not_enough_start ||
+                      joining ||
+                      !isWhitelisted ||
+                      allocationReached) &&
+                      !hasHeadstart
+                  "
+                /> -->
+                <!-- Moonpay waiting for TX -->
+                <!-- <moonpay-processing
+                  :moonpayTx="moonpayTx"
+                  :moonpayActive="moonpayActive"
+                /> -->
                 <div
                   v-if="not_enough_start"
                   class="q-pt-sm self-center warning"
@@ -280,7 +309,9 @@
             </q-card-section>
             <q-card-section>
               <span>
-                Confirm staking additional {{ this.$chainStrReformat(this.premium_access_fee) }} tokens for premium access?
+                Confirm staking additional
+                {{ this.$chainStrReformat(this.premium_access_fee) }} tokens for
+                premium access?
               </span>
             </q-card-section>
 
@@ -344,6 +375,28 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
+
+        <!-- Moonpay dialog -->
+        <!--    `https://buy-staging.moonpay.com?apiKey=${process.env.MOONPAY_KEY}&currencyCode=${moonpayCurrencyCode}&baseCurrencyAmount=${this.amountUSD}&baseCurrencyCode=usd&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}&walletAddress=${this.accountName}&walletAddress=${this.accountName}&currencyCode=${moonpayCurrencyCode}` -->
+        <q-dialog v-model="moonpayDialog">
+          <div
+            class="bg-white"
+            style="border-radius: 10px; overflow: hidden; text-align:center;"
+          >
+            <iframe
+              allow="accelerometer; autoplay; camera; gyroscope; payment"
+              height="600"
+              width="350"
+              :src="
+                `https://buy-staging.moonpay.com?baseCurrencyCode=usd&apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}`
+              "
+              allowfullscreen
+              frameBorder="0"
+            >
+              <p>Your browser does not support iframes.</p>
+            </iframe>
+          </div>
+        </q-dialog>
       </q-card>
     </section>
   </q-page>
@@ -352,6 +405,8 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
+import { uid } from "uid";
+import MoonpayProcessing from "src/components/MoonpayProcessing.vue";
 
 export default {
   data() {
@@ -360,6 +415,7 @@ export default {
       pool: this.$defaultPoolInfo,
       balance: 0,
       amount: "",
+      amountUSD: 0,
       allocation: 0,
       alreadyStaked: false,
       confirm_stake: false,
@@ -375,14 +431,35 @@ export default {
       // explorerUrl: this.currentChain.NETWORK_EXPLORER,
       accountStakeInfo: {},
       tiersTable: [],
-      joinTooltipOffset: [0, -45]
+      joinTooltipOffset: [0, -45],
+      moonpayDialog: false,
+      moonpayActive: false,
+      moonpayTx: {},
+      currentUID: uid(),
+      pollingMoonpay: null,
+      moonpayKey: process.env.MOONPAY_KEY
     };
   },
   components: { tokenAvatar },
   computed: {
-    ...mapGetters("pools", ["getAllPools", "getPoolByID", "getAllPoolIDs", "getPoolByIDChain"]),
+    ...mapGetters("pools", [
+      "getAllPools",
+      "getPoolByID",
+      "getAllPoolIDs",
+      "getPoolByIDChain"
+    ]),
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
+
+    externalTransactionId() {
+      return this.accountName + "-" + this.currentUID;
+    },
+
+    currentURL() {
+      let url = new URL(location.href);
+      console.log(url);
+      return url;
+    },
 
     START_info() {
       return this.wallet.find(el => (el.sym = "START"));
@@ -497,6 +574,24 @@ export default {
       } else {
         return this.maxAllocation;
       }
+    },
+
+    moonpayCurrencyCode() {
+      if (this.currentChain.NETWORK_NAME === "EOS") {
+        return "eos";
+      } else if (this.currentChain.NETWORK_NAME === "WAX") {
+        return "waxp";
+      } else {
+        return "tlos";
+      }
+    },
+
+    canBuyWithUSD() {
+      if (this.moonpayCurrencyCode === "tlos") {
+        return false;
+      } else {
+        return true;
+      }
     }
   },
 
@@ -529,7 +624,10 @@ export default {
       else return val;
     },
     getPoolInfo() {
-      this.pool = this.getPoolByIDChain(this.poolID, this.currentChain.NETWORK_NAME);
+      this.pool = this.getPoolByIDChain(
+        this.poolID,
+        this.currentChain.NETWORK_NAME
+      );
     },
 
     validateInput(val) {
@@ -659,6 +757,9 @@ export default {
     },
 
     async tryTransaction() {
+      this.joining = true;
+      clearInterval(this.pollingMoonpay);
+      console.log(this.pollingMoonpay);
       try {
         await this.joinPoolTransaction();
         this.$q.notify({
@@ -719,6 +820,44 @@ export default {
         this.stake_warning = false;
         this.not_enough_start = false;
       }
+    },
+
+    async doUSDPayment(tokenSymbol) {
+      if (await this.$refs.joinForm.validate()) {
+        this.moonpayActive = true;
+        let req = await this.$store.$moonpay.getUSDofToken(tokenSymbol);
+        let usd = req.data.USD;
+        this.amountUSD = usd * this.amount;
+
+        this.moonpayDialog = true;
+
+        // Start pollingMoonpay
+        this.pollingMoonpay = setInterval(async () => {
+          try {
+            this.moonpayTx = (
+              await this.$store.$moonpay.getTransaction(
+                this.externalTransactionId
+              )
+            ).data[0];
+            // this.moonpayTx = (
+            //   await this.$store.$moonpay.getTransaction(
+            //     "fuzzytestnet-e92d477ef98"
+            //   )
+            // ).data[0];
+          } catch (error) {
+            this.moonpayTx = {};
+          }
+          console.log(this.moonpayTx);
+          await this.checkBalances();
+
+          if (this.moonpayTx.status === "completed") {
+            console.log(this.joining);
+            if (!this.joining) {
+              this.tryTransaction();
+            }
+          }
+        }, 10000);
+      }
     }
   },
 
@@ -746,6 +885,10 @@ export default {
       );
       this.tiersTable = await this.getChainTiersTable();
     }
+  },
+
+  beforeDestroy() {
+    clearInterval(this.pollingMoonpay);
   }
 };
 </script>
@@ -797,10 +940,6 @@ a {
   .q-form {
     grid-column-start: 1;
     grid-column-end: 4;
-  }
-  .body-container {
-    padding-left: 8px;
-    padding-right: 8px;
   }
 }
 @media only screen and (max-width: 425px) {

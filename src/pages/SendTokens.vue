@@ -11,197 +11,60 @@
       </q-card>
     </section>
     <section class="body-container" style="max-width: 580px" v-else>
-      <q-form @submit="trySend">
-        <q-card class="authenticated">
-          <q-btn
-            :to="{ name: 'wallet', params: { accountName: accountName } }"
-            flat
-            round
-            class="self-start"
-          >
-            <q-icon
-              class="hover-accent"
-              name="fas fa-chevron-circle-left"
-              style="font-size: 50px"
-            />
-          </q-btn>
-          <div class="column items-center">
-            <div class="row items-center justify-center q-pa-sm q-pb-md">
-              <h2>Send</h2>
-              <div class="row items-center justify-center">
-                <token-avatar
-                  :token="selectedTokenSym"
-                  :avatar="avatar"
-                  :avatarSize="55"
-                />
-                <h2>
-                  {{ selectedTokenSym }}
-                </h2>
-              </div>
-            </div>
-            <div class="networks row justify-center q-pb-sm">
-              <div class="text-weight-light text-subtitle2  col-12 text-center">
-                Balance
-              </div>
-              <div>{{ balance }} {{ selectedTokenSym }}</div>
-            </div>
-            <div v-if="isAuthenticated" class="q-gutter-y-sm self-stretch">
-              <!-- TO -->
-              <q-input
-                outlined
-                autocapitalize="off"
-                bottom-slots
-                v-model="to"
-                label="To"
-                counter
-                maxlength="12"
-                :rules="[accountExistsOnChain]"
-                error-message="Account does not exist"
-                lazy-rules
-                debounce="1000"
-                no-error-icon
-              >
-                <template v-slot:append>
-                  <q-btn-dropdown
-                    no-caps
-                    flat
-                    class="bg-secondary"
-                    padding="sm"
-                    style="margin: 0px"
-                    color="black"
-                    outline
-                  >
-                    <template v-slot:label>
-                      <div class="flex items-center justify-center wrap">
-                        <div class="row items-center justify-center">
-                          <token-avatar
-                            :token="selectedNetwork"
-                            :avatarSize="23"
-                          />
-                          <div class="text-subtitle1 q-pl-xs">
-                            {{ selectedNetwork }}
-                          </div>
-                        </div>
-                        <q-tooltip anchor="top middle" self="bottom middle">
-                          To Network
-                        </q-tooltip>
-                      </div>
-                    </template>
-                    <q-list class="bg-secondary">
-                      <q-item
-                        clickable
-                        v-close-popup
-                        v-for="network in networkOptions"
-                        :key="network"
-                        @click="selectedNetwork = network"
-                        flat
-                        size="lg"
-                        no-caps
-                      >
-                        <div class="flex items-center justify-center wrap">
-                          <div class="row items-center justify-center">
-                            <token-avatar :token="network" :avatarSize="23" />
-                            <div class="text-subtitle1 q-pl-xs">
-                              {{ network }}
-                            </div>
-                          </div>
-                        </div>
-                      </q-item>
-                    </q-list>
-                  </q-btn-dropdown>
-                </template>
-              </q-input>
-              <!-- Amount -->
-              <q-input
-                outlined
-                bottom-slots
-                :suffix="selectedTokenSym"
-                v-model="amount"
-                label="Amount"
-                maxlength="12"
-                class="col"
-                :rules="[validateInputAmount]"
-                no-error-icon
-              >
-                <template v-slot:append>
-                  <q-btn
-                    label="Max"
-                    color="positive"
-                    outline
-                    @click="amount = balance"
-                  />
-                </template>
-              </q-input>
-              <!-- Memo -->
-              <q-input
-                outlined
-                bottom-slots
-                v-model="memo"
-                label="Memo"
-                counter
-                maxlength="200"
-              />
-            </div>
-            <!-- Send -->
-            <div class="text-center self-stretch q-pt-sm">
-              <q-btn
-                class="hover-accent"
-                size="lg"
-                color="primary"
-                dense
-                no-shadow
-                label="Send"
-                style="width: 50%"
-                type="submit"
-              />
-            </div>
-            <div
-              class="text-center text-caption q-pt-md text-grey-7"
-              v-if="
-                selectedNetwork.toUpperCase() !==
-                  currentChain.NETWORK_NAME.toUpperCase()
-              "
-            >
-              <q-icon name="fas fa-info-circle" class="q-pr-xs" /> Sending
-              tokens across chains can take up to several minutes.
-            </div>
+      <q-card class="authenticated q-mb-lg">
 
-            <!-- Transaction sent dialog -->
-            <q-dialog v-model="showTransaction" confirm>
-              <q-card>
-                <q-card-section class="row items-center">
-                  <q-avatar
-                    icon="arrow_forward"
-                    color="primary"
-                    text-color="white"
-                    class="q-mr-sm"
-                  />
-                  <div class="text-h6 q-pa-sm">
-                    Transaction Sent
-                  </div>
-                </q-card-section>
-                <q-card-section>
-                  Transaction ID:
-                  <a
-                    :href="`${explorerUrl}/transaction/${transaction}`"
-                    target="_blank"
-                    style="word-wrap: break-word;"
-                    >{{ transaction }}
-                  </a>
-                </q-card-section>
-                <q-card-actions align="center">
-                  <q-btn
-                    class="hover-accent"
-                    label="Ok"
-                    color="primary"
-                    v-close-popup
-                  />
-                </q-card-actions>
-              </q-card>
-            </q-dialog>
+        <q-btn
+          :to="{ name: 'wallet', params: { accountName: accountName } }"
+          flat
+          round
+          class="self-start"
+        >
+          <q-icon
+            class="hover-accent"
+            name="fas fa-chevron-circle-left"
+            style="font-size: 50px"
+          />
+        </q-btn>
+        <div class="row items-center justify-center q-pa-sm q-pb-md">
+          <h2>Send</h2>
+          <div class="row items-center justify-center">
+            <token-avatar
+              :token="avatar ? avatar : selectedTokenSym"
+              :avatarSize="55"
+            />
+            <h2>
+              {{ selectedTokenSym }}
+            </h2>
           </div>
-        </q-card>
-      </q-form>
+        </div>
+        <div />
+        <div />
+      <div>
+        <div class="networks row justify-center q-pb-sm">
+          <div class="text-weight-light text-subtitle2  col-12 text-center">
+            {{ currentChain.NETWORK_NAME }} Balance
+          </div>
+          <div>{{ balance }} {{ selectedTokenSym }}</div>
+        </div>
+          <teleport
+            v-if="supportedEvmChains.includes(selectedNetwork)"
+            :selectedTokenSym="selectedTokenSym"
+            :selectedNetwork.sync="selectedNetwork"
+            :networkOptions="networkOptions"
+            :supportedEvmChains="supportedEvmChains"
+          />
+          <send-eos-chains
+            v-else
+            :selectedTokenSym="selectedTokenSym"
+            :selectedNetwork.sync="selectedNetwork"
+            :networkOptions="networkOptions"
+          />
+      </div>
+      </q-card>
+      <teleport-dash
+        v-if="getTeleports.length > 0 && tportTokens.includes(selectedTokenSym)"
+        :selectedTokenSym="selectedTokenSym"
+      />
     </section>
   </q-page>
 </template>
@@ -209,178 +72,122 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
-import { Api, JsonRpc } from "eosjs";
+import teleport from "src/components/send/SendTeleport";
+import teleportDash from "src/components/send/TeleportDash";
+import sendEosChains from "src/components/send/SendEosChains";
+import metamask from "src/components/Metamask";
 
 export default {
-  components: { tokenAvatar },
+  components: {
+    tokenAvatar,
+    teleport,
+    teleportDash,
+    sendEosChains
+  },
+  mixins: [metamask],
   data() {
     return {
-      to: null,
-      amount: null,
-      memo: null,
-      showTransaction: false,
-      transaction: null,
-      // explorerUrl: process.env.NETWORK_EXPLORER,
       selectedTokenSym: "START",
-      selectedNetwork: "TELOS"
+      selectedNetwork: "ETHEREUM"
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    ...mapGetters("blockchains", ["currentChain", "getNetworkByName"]),
+    ...mapGetters("tport", [
+      "getEvmNetworkList",
+      "getTPortTokensBySym",
+      "getTPortTokens",
+      "getTeleports"
+    ]),
+    ...mapGetters("blockchains", [
+      "currentChain",
+      "getNetworkByName",
+      "getBridgeTokens"
+    ]),
 
-    explorerUrl() {
-      return this.currentChain.NETWORK_EXPLORER;
-    },
-
-    //TODO get this info from chain?
     selectedToken() {
       return this.wallet.find(a => a.token_sym === this.selectedTokenSym);
     },
 
-    token_contract() {
-      return this.selectedToken.token_contract;
-    },
-
-    token_decimals() {
-      return this.selectedToken.decimals;
-    },
-
     avatar() {
-      return this.selectedToken.avatar;
+      return this.selectedToken ? this.selectedToken.avatar : "";
     },
 
     balance() {
-      return this.selectedToken.balance;
+      return this.selectedToken ? this.selectedToken.balance : 0;
+    },
+
+    supportedEosChains() {
+      const bridgeTokens = this.getBridgeTokens;
+      if (bridgeTokens && this.selectedToken !== undefined) {
+        // console.log({ bridgeTokens });
+        let res = [this.currentChain.NETWORK_NAME];
+        for (let token of bridgeTokens) {
+          if (
+            this.$getSymFromAsset(token.token_info) === this.selectedTokenSym
+          ) {
+            res.push(token.channel.toUpperCase());
+          }
+        }
+        return res;
+      } else return [];
+    },
+
+    supportedEvmChains() {
+      const token = this.getTPortTokensBySym(this.selectedTokenSym);
+      if (token) {
+        // console.log({ token });
+        let res = [];
+        for (let r of token.remote_contracts) {
+          const network = this.getEvmNetworkList.find(
+            el => el.remoteId === r.key
+          );
+          if (network) res.push(network.name.toUpperCase());
+        }
+        return res;
+      } else return [];
     },
 
     networkOptions() {
-      if (this.selectedTokenSym.toUpperCase() === "START")
-        return ["TELOS", "EOS", "WAX"];
-      // return ["TELOS", "EOS"];
-      else return [this.selectedNetwork];
+      return [...this.supportedEosChains, ...this.supportedEvmChains];
+    },
+
+    tportTokens() {
+      // let tportTokens = [];
+      // if (this.getTPortTokens.length > 0) {
+      //   tportTokens = this.getTPortTokens.map(el => el.token.sym);
+      // }
+      // return tportTokens
+      if (this.getTPortTokens.length === 0) return [];
+      else return this.getTPortTokens.map(el => el.token.sym);
     }
   },
   methods: {
-    ...mapActions("account", ["accountExists"]),
-    ...mapActions("pools", ["getBalanceFromChain"]),
-
-    restrictDecimal() {
-      this.amount = this.$toFixedDown(
-        this.amount,
-        this.$getDecimalFromAsset(this.selectedTokenSym)
-      );
-    },
-
-    validateInputAmount(val) {
-      return (val <= this.balance) & (val > 0) || "Incorrect amount";
-    },
-
-    async accountExistsOnChain(account) {
-      // get current selected chain
-      let blockchains = this.getNetworkByName(
-        this.selectedNetwork.toUpperCase()
-      );
-      let newChain = {};
-
-      // check if testnet or not
-      if (process.env.TESTNET == "true") {
-        newChain = blockchains.find(el => el.TEST_NETWORK === true);
-      } else {
-        newChain = blockchains.find(el => el.TEST_NETWORK === false);
-      }
-      // console.log(newChain)
-
-      //set rpc
-      const rpc = new JsonRpc(
-        `${newChain.NETWORK_PROTOCOL}://${newChain.NETWORK_HOST}:${newChain.NETWORK_PORT}`
-      );
-      //check if account exists on chain
-      let exists = await rpc.get_account(account);
-      return exists;
-    },
-
-    async send() {
-      if (!(await this.accountExistsOnChain(this.to))) {
-        this.$q.notify({
-          type: "negative",
-          message: `Account ${this.to} does not exist`
-        });
-        return;
-      }
-
-      // if same network, do normal transaction
-      if (
-        this.selectedNetwork.toUpperCase() === this.currentChain.NETWORK_NAME
-      ) {
-        const actions = [
-          {
-            account: this.token_contract,
-            name: "transfer",
-            data: {
-              from: this.accountName.toLowerCase(),
-              to: this.to,
-              quantity: `${parseFloat(this.amount).toFixed(
-                this.token_decimals
-              )} ${this.selectedTokenSym}`,
-              memo: this.memo
-            }
-          }
-        ];
-        const transaction = await this.$store.$api.signTransaction(actions);
-        if (transaction) {
-          this.showTransaction = true;
-          this.transaction = transaction.transactionId;
-        }
-      }
-
-      // If different network, send to bridge
-      if (
-        this.selectedNetwork.toUpperCase() !== this.currentChain.NETWORK_NAME
-      ) {
-        const actions = [
-          {
-            account: this.token_contract,
-            name: "transfer",
-            data: {
-              from: this.accountName.toLowerCase(),
-              to: "bridge.start",
-              quantity: `${parseFloat(this.amount).toFixed(
-                this.token_decimals
-              )} ${this.selectedTokenSym}`,
-              memo: `${this.to}@${this.selectedNetwork.toLowerCase()}|${
-                this.memo
-              }`
-            }
-          }
-        ];
-        const transaction = await this.$store.$api.signTransaction(actions);
-        if (transaction) {
-          this.showTransaction = true;
-          this.transaction = transaction.transactionId;
-        }
-      }
-    },
-
-    async trySend() {
-      try {
-        await this.send();
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Sent"
-        });
-      } catch (error) {
-        this.$errorNotification(error);
-      }
-    }
+    ...mapActions("account", ["reloadWallet", "setWalletBalances"]),
+    ...mapActions("blockchains", ["setBridgeTokens"]),
+    ...mapActions("tport", ["setTPortTokens"])
   },
   mounted() {
     if (this.$route.query.token_sym !== undefined)
       this.selectedTokenSym = this.$route.query.token_sym;
-    if (!this.isCrossChainToken)
-      this.selectedNetwork = this.currentChain.NETWORK_NAME;
+    this.selectedNetwork = this.currentChain.NETWORK_NAME;
+    this.setBridgeTokens();
+    this.reloadWallet(this.accountName);
+    this.setTPortTokens();
+    this.$store.dispatch("tport/setTeleports", this.accountName);
+  },
+
+  watch: {
+    async accountName() {
+      this.reloadWallet(this.accountName);
+      this.$store.dispatch("tport/setTeleports", this.accountName);
+    },
+    async selectedNetwork() {
+      if (this.supportedEvmChains.includes(this.selectedNetwork)) {
+        this.connectWeb3();
+        this.switchMetamaskNetwork(this.selectedNetwork);
+      }
+    },
   }
 };
 </script>

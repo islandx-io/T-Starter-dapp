@@ -7,7 +7,7 @@
         <div class="join-pane col-xs-12 col-sm-7 ">
           <q-item>
             <q-item-section top class="col-shrink">
-              <token-avatar :avatar="pool.avatar" :avatarSize="80" />
+              <token-avatar :token="pool.avatar" :avatarSize="80" />
             </q-item-section>
             <q-item-section top class="q-pl-sm">
               <div class="row justify-between content-start items-start ">
@@ -578,10 +578,6 @@ a {
 @media only screen and (max-width: 375px) {
   .q-card {
     padding: 5px;
-  }
-  .body-container {
-    padding-left: 8px;
-    padding-right: 8px;
   }
 }
 </style>

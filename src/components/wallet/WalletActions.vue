@@ -27,34 +27,6 @@
       >
         <q-tooltip>Withdraw</q-tooltip>
       </q-btn>
-      <!-- receive token -->
-      <q-btn
-        outline
-        flat
-        :padding="actionButtonPadding"
-        icon="fas fa-sign-in-alt"
-        :to="{
-          name: 'receive',
-          query: { token_sym: props.row.token_sym }
-        }"
-        v-if="baseTokenSymbols.includes(props.row.token_sym)"
-        class="hover-accent"
-        @click.stop
-      >
-        <!-- <q-btn
-        outline
-        flat
-        :padding="actionButtonPadding"
-        icon="fas fa-sign-in-alt"
-        target="_blank"
-        type="a"
-        :href="pTokenBridgeLink(props.row.token_sym)"
-        v-if="baseTokenSymbols.includes(props.row.token_sym)"
-        class="hover-accent"
-        @click.stop
-      > -->
-        <q-tooltip>Receive</q-tooltip>
-      </q-btn>
       <!-- buy telos -->
       <q-btn
         outline
@@ -124,6 +96,34 @@
       >
         <q-tooltip>Send</q-tooltip>
       </q-btn>
+      <!-- receive token -->
+      <q-btn
+        outline
+        flat
+        :padding="actionButtonPadding"
+        icon="fas fa-sign-in-alt"
+        :to="{
+          name: 'receive',
+          query: { token_sym: props.row.token_sym }
+        }"
+        v-if="receiveTokens.includes(props.row.token_sym)"
+        class="hover-accent"
+        @click.stop
+      >
+        <!-- <q-btn
+        outline
+        flat
+        :padding="actionButtonPadding"
+        icon="fas fa-sign-in-alt"
+        target="_blank"
+        type="a"
+        :href="pTokenBridgeLink(props.row.token_sym)"
+        v-if="baseTokenSymbols.includes(props.row.token_sym)"
+        class="hover-accent"
+        @click.stop
+      > -->
+        <q-tooltip>Receive</q-tooltip>
+      </q-btn>
     </div>
     <!-- more button -->
     <q-btn
@@ -165,6 +165,7 @@ export default {
   computed: {
     // TODO If staked tokens can be released. i.e. past release date
     ...mapGetters("blockchains", ["currentChain"]),
+    ...mapGetters("tport", ["getTPortTokens"]),
     canRelease() {
       let now = new Date().valueOf();
       let can_release = false;
@@ -178,6 +179,13 @@ export default {
       } else {
         return false;
       }
+    },
+    receiveTokens() {
+      let tportTokens = [];
+      if (this.getTPortTokens.length > 0) {
+        tportTokens = this.getTPortTokens.map(el => el.token.sym);
+      }
+      return [...this.baseTokenSymbols, ...tportTokens];
     }
   },
 
@@ -325,7 +333,8 @@ export default {
         this.$errorNotification(error);
       }
     }
-  }
+  },
+  mounted() {}
 };
 </script>
 

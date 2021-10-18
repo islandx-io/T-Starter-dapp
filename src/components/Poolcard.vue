@@ -16,7 +16,7 @@
     >
       <q-item>
         <q-item-section top>
-          <token-avatar :avatar="pool.avatar" :avatarSize="60" />
+          <token-avatar :token="pool.avatar" :avatarSize="60" />
         </q-item-section>
         <!-- chain avatar -->
         <q-item-section top side>
