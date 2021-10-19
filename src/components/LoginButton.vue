@@ -366,7 +366,7 @@ export default {
   },
 
   async mounted() {
-    await this.autoLogin(this.$route.query.returnUrl); // FIXME this causes telos sign to pop up, not good on prod
+    // await this.autoLogin(this.$route.query.returnUrl); // FIXME this causes telos sign to pop up, not good on prod
     await this.getBalance();
 
     // Start polling every 30 seconds for any updates
