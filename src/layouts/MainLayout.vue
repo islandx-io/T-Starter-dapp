@@ -217,6 +217,7 @@ export default {
         {name: "medium", icon: "fab fa-medium-m", link: "https://medium.com/@t-starter"},
         {name: "twitter", icon: "fab fa-twitter", link: "https://twitter.com/T_StarterToken"},
         {name: "github", icon: "fab fa-github", link: "https://github.com/T-Starter"},
+        {name: "docs", icon: "fa fa-book", link: "https://docs.tstarter.io/"},
       ],
       showMenu: false,
       siteVersion: process.env.SITE_VERSION
