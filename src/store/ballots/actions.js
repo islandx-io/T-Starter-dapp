@@ -96,15 +96,20 @@ export const getAllChainBallots = async function({ commit, dispatch }) {
     // console.log(rpcs);
 
     for (const [index, api] of rpcs.apis.entries()) {
-      const tableResults = await api.get_table_rows({
-        json: true,
-        code: process.env.BALLOT_ADDRESS, // Contract that we target
-        scope: process.env.BALLOT_ADDRESS, // Account that owns the data
-        table: "ballots", // Table name
-        limit: 10000, // Maximum number of rows that we want to get
-        reverse: false, // Optional: Get reversed data
-        show_payer: false // Optional: Show ram payer
-      });
+      let tableResults;
+      try {
+        tableResults = await api.get_table_rows({
+          json: true,
+          code: process.env.BALLOT_ADDRESS, // Contract that we target
+          scope: process.env.BALLOT_ADDRESS, // Account that owns the data
+          table: "ballots", // Table name
+          limit: 10000, // Maximum number of rows that we want to get
+          reverse: false, // Optional: Get reversed data
+          show_payer: false // Optional: Show ram payer
+        });
+      } catch (error) {
+        continue;
+      }
 
       // sort according to nearest ballot close date
       tableResults.rows.sort(function(a, b) {
