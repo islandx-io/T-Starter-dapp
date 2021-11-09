@@ -33,7 +33,7 @@ export const getChainBallotByID = async function({ commit, dispatch }, id) {
       chain: ballotTable.chain
     });
   } catch (error) {
-    console.error("getChainBallotByID")
+    console.error("getChainBallotByID");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };
@@ -64,7 +64,9 @@ export const getChainBallotByIDChain = async function(
     // console.log(ballotTable);
 
     //check dates are unix
-    ballotTable.ballot_close = new Date(ballotTable.ballot_close + "Z").valueOf();
+    ballotTable.ballot_close = new Date(
+      ballotTable.ballot_close + "Z"
+    ).valueOf();
     ballotTable.pool_open = new Date(ballotTable.pool_open + "Z").valueOf();
     ballotTable.private_end = new Date(ballotTable.private_end + "Z").valueOf();
     ballotTable.public_end = new Date(ballotTable.public_end + "Z").valueOf();
@@ -77,7 +79,10 @@ export const getChainBallotByIDChain = async function(
       ].NETWORK_NAME;
 
     commit("updateBallotOnState", { ballotTable });
-    await dispatch("updateBallotSettings", { id: payload.id, chain: ballotTable.chain });
+    await dispatch("updateBallotSettings", {
+      id: payload.id,
+      chain: ballotTable.chain
+    });
     dispatch("updateBallotVotesTable", {
       id: payload.id,
       chain: ballotTable.chain,
@@ -97,26 +102,36 @@ export const getAllChainBallots = async function({ commit, dispatch }) {
 
     for (const [index, api] of rpcs.apis.entries()) {
       let tableResults;
-      try {
-        tableResults = await api.get_table_rows({
-          json: true,
-          code: process.env.BALLOT_ADDRESS, // Contract that we target
-          scope: process.env.BALLOT_ADDRESS, // Account that owns the data
-          table: "ballots", // Table name
-          limit: 10000, // Maximum number of rows that we want to get
-          reverse: false, // Optional: Get reversed data
-          show_payer: false // Optional: Show ram payer
-        });
-      } catch (error) {
+      let timeout;
+      const timeoutPromise = new Promise((resolve, reject) => {
+        timeout = setTimeout(() => {
+          resolve({rows: [{}]});
+        }, 2000);
+      });
+      const response = await Promise.race([api.get_table_rows({
+        json: true,
+        code: process.env.BALLOT_ADDRESS, // Contract that we target
+        scope: process.env.BALLOT_ADDRESS, // Account that owns the data
+        table: "ballots", // Table name
+        limit: 10000, // Maximum number of rows that we want to get
+        reverse: false, // Optional: Get reversed data
+        show_payer: false // Optional: Show ram payer
+      }), timeoutPromise]);
+      console.log(response)
+      if (timeout) {
+        //the code works without this but let's be safe and clean up the timeout
+        clearTimeout(timeout);
+      }
+      if (response.rows.length <= 0) {
         continue;
       }
 
       // sort according to nearest ballot close date
-      tableResults.rows.sort(function(a, b) {
+      response.rows.sort(function(a, b) {
         return new Date(a.ballot_close) - new Date(b.ballot_close);
       });
 
-      for (const pool of tableResults.rows) {
+      for (const pool of response.rows) {
         // console.log(pool);
         let id = pool.id;
 
@@ -344,19 +359,33 @@ export const getBallotConfigAllChains = async function({ commit, dispatch }) {
     for (let i = 0; i < rpcs.apis.length; i++) {
       let api = rpcs.apis[i];
       let chain = rpcs.chains[i];
-      const tableResults = await api.get_table_rows({
-        json: true,
-        code: process.env.BALLOT_ADDRESS,
-        scope: process.env.BALLOT_ADDRESS,
-        table: "config",
-        limit: 1000,
-        index_position: 1,
-        key_type: "i64",
-        reverse: false,
-        show_payer: false
+      let timeout;
+      const timeoutPromise = new Promise((resolve, reject) => {
+        timeout = setTimeout(() => {
+          resolve({ rows: [{}] });
+        }, 2000);
       });
+      const response = await Promise.race([
+        api.get_table_rows({
+          json: true,
+          code: process.env.BALLOT_ADDRESS,
+          scope: process.env.BALLOT_ADDRESS,
+          table: "config",
+          limit: 1000,
+          index_position: 1,
+          key_type: "i64",
+          reverse: false,
+          show_payer: false
+        }),
+        timeoutPromise
+      ]);
+      console.log(response);
+      if (timeout) {
+        //the code works without this but let's be safe and clean up the timeout
+        clearTimeout(timeout);
+      }
       // console.log(api, chain, tableResults.rows[0]);
-      result[chain.NETWORK_NAME] = tableResults.rows[0];
+      result[chain.NETWORK_NAME] = response.rows[0];
     }
     // console.log(result);
     return result;

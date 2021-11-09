@@ -383,9 +383,12 @@ export default {
     }
   },
   async mounted() {
+    console.log("oi")
     await this.getAllChainBallots();
     this.ballotConfig = await this.getBallotConfigAllChains();
+    console.log(this.ballotConfig)
     this.poolSettingsAllChains = await this.getPoolsSettingsAllChains();
+    console.log(this.poolSettingsAllChains)
     for (const [networkName, poolSettings] of Object.entries(
       this.poolSettingsAllChains
     )) {

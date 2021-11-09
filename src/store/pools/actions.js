@@ -737,19 +737,33 @@ export const getPoolsSettingsAllChains = async function({ commit, dispatch }) {
     for (let i = 0; i < rpcs.apis.length; i++) {
       let api = rpcs.apis[i];
       let chain = rpcs.chains[i];
-      const tableResults = await api.get_table_rows({
-        json: true,
-        code: process.env.CONTRACT_ADDRESS, // Contract that we target
-        scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
-        table: "settings", // Table name
-        limit: 1000,
-        index_position: 1,
-        key_type: "i64",
-        reverse: false, // Optional: Get reversed data
-        show_payer: false // Optional: Show ram payer
+      let timeout;
+      const timeoutPromise = new Promise((resolve, reject) => {
+        timeout = setTimeout(() => {
+          resolve({rows: [{}]});
+        }, 2000);
       });
+      const response = await Promise.race([
+        (api.get_table_rows({
+          json: true,
+          code: process.env.CONTRACT_ADDRESS, // Contract that we target
+          scope: process.env.CONTRACT_ADDRESS, // Account that owns the data
+          table: "settings", // Table name
+          limit: 1000,
+          index_position: 1,
+          key_type: "i64",
+          reverse: false, // Optional: Get reversed data
+          show_payer: false // Optional: Show ram payer
+        })),
+        timeoutPromise
+      ]);
+      if (timeout) {
+        //the code works without this but let's be safe and clean up the timeout
+        clearTimeout(timeout);
+      }
+
       // console.log(api, chain, tableResults.rows[0]);
-      result[chain.NETWORK_NAME] = tableResults.rows[0];
+      result[chain.NETWORK_NAME] = response.rows[0];
     }
     // console.log(result);
     return result;
