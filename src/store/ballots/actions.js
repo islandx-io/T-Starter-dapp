@@ -117,7 +117,6 @@ export const getAllChainBallots = async function({ commit, dispatch }) {
         reverse: false, // Optional: Get reversed data
         show_payer: false // Optional: Show ram payer
       }), timeoutPromise]);
-      console.log(response)
       if (timeout) {
         //the code works without this but let's be safe and clean up the timeout
         clearTimeout(timeout);
@@ -379,7 +378,6 @@ export const getBallotConfigAllChains = async function({ commit, dispatch }) {
         }),
         timeoutPromise
       ]);
-      console.log(response);
       if (timeout) {
         //the code works without this but let's be safe and clean up the timeout
         clearTimeout(timeout);
