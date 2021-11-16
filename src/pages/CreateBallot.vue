@@ -239,7 +239,7 @@
               </q-item> -->
               <q-item>
                 <q-item-section>
-                  <q-select
+                  <!-- <q-select
                     outlined
                     class="q-pb-md"
                     v-model="ballot_close"
@@ -249,14 +249,14 @@
                       pool.status !== 'draft' &&
                         this.$route.params.id != undefined
                     "
-                  />
+                  /> -->
                   <!-- Keep for dev purposed -->
-                  <!-- <datetime-field
+                  <datetime-field
                     class="q-pb-md"
                     :value.sync="ballot_close"
                     :pool="pool"
                     :label="`Voting closing time (GMT${localTimeZone}) *`"
-                  /> -->
+                  />
                 </q-item-section>
               </q-item>
 
@@ -790,13 +790,14 @@ export default {
       pool: this.$defaultBallotInfo,
       settings: {},
       weekInMs: 7 * 24 * 60 * 60 * 1000,
+      guaranteedDuration:  3 * 60 * 60 * 1000,
       ballot_close: {
         label: "2 Weeks",
         date: this.toDateStringLocal(Date.now() + 2 * 7 * 24 * 60 * 60 * 1000),
         category: "2"
       },
       pool_open: {
-        date: this.toDateStringLocal(Date.now() + 2 * 8 * 24 * 60 * 60 * 1000)
+        date: this.toDateStringLocal(Date.now() + 2 * 7 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000)
       },
       // private_end: { date: this.toDateStringLocal(new Date().valueOf()) },
       public_end: {
@@ -981,14 +982,7 @@ export default {
     },
 
     validURL(str) {
-      var pattern = new RegExp(
-        "^(https?:\\/\\/)?" + // protocol
-        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-          "(\\#[-a-z\\d_]*)?$",
-        "i"
+      var pattern = new RegExp("((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)"
       ); // fragment locator
       if (str.length === 0) {
         return;
