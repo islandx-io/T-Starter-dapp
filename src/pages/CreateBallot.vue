@@ -201,7 +201,7 @@
                 </q-item-section>
               </q-item>
               <!-- Dates -->
-              <!-- <q-item>
+              <q-item>
                 <q-item-section>
                   <q-select
                     outlined
@@ -236,7 +236,7 @@
                     "
                   />
                 </q-item-section>
-              </q-item> -->
+              </q-item>
               <q-item>
                 <q-item-section>
                   <!-- <q-select
@@ -388,9 +388,9 @@
                     outlined
                     v-model="link.value"
                     :label="capitalize(link.key)"
-                    :rules="[validURL]"
                   />
                 </div>
+                    <!-- :rules="[validURL]" -->
               </q-item>
               <!-- <q-item v-for="link in webLinks" :key="link.key">
                 <q-item-section>
@@ -827,7 +827,7 @@ export default {
       dialog_cancel_ballot: false,
       accessType: "Premium",
       accessOptions: ["Public", "Premium"],
-      premiumDuration: 1, //hours
+      premiumDuration: 3, //hours
       premiumDurationOptions: [1, 3, 6, 12, 24],
       vesting: false,
       lockup_fraction: 0.5,
@@ -856,17 +856,17 @@ export default {
     },
 
     private_end() {
-      // if (this.accessType === "Premium") {
-      //   return {
-      //     date: this.toDateStringLocal(
-      //       new Date(this.pool_open.date).valueOf() +
-      //         this.premiumDuration * 1000 * 60 * 60
-      //     )
-      //   };
-      // } else {
-      //   return this.public_end;
-      // }
-      return this.public_end;
+      if (this.accessType === "Premium") {
+        return {
+          date: this.toDateStringLocal(
+            new Date(this.pool_open.date).valueOf() +
+              this.premiumDuration * 1000 * 60 * 60
+          )
+        };
+      } else {
+        return this.public_end;
+      }
+      // return this.public_end;
     },
 
     selected_base_token() {
