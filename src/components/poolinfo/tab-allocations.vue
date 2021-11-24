@@ -33,12 +33,22 @@
         {{ this.$toChainString(distributed, tokenDecimals, tokenSymbol) }}
       </h5>
     </div>
-    <div
+    <!-- <div
       v-if="hasAllocation"
       class="text-left q-pt-md text-caption text-grey-7"
     >
       <q-icon name="fas fa-info-circle" class="q-pr-xs" />Your tokens will be
       sent as soon as the pool is closed. In the event that the number of
+      participating accounts become too big for the Telos blockchain to send all
+      tokens in a single transaction, you will be able to claim your allocation
+      from this tab, 24 hours after the pool ends.
+    </div> -->
+    <div
+      v-if="hasAllocation"
+      class="text-left q-pt-md text-caption text-grey-7"
+    >
+      <q-icon name="fas fa-info-circle" class="q-pr-xs" />Your tokens will be
+      distributed as soon as round 4 ends. In the event that the number of
       participating accounts become too big for the Telos blockchain to send all
       tokens in a single transaction, you will be able to claim your allocation
       from this tab, 24 hours after the pool ends.
