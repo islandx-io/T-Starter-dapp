@@ -51,9 +51,9 @@
       distributed as soon as round 4 ends. In the event that the number of
       participating accounts become too big for the Telos blockchain to send all
       tokens in a single transaction, you will be able to claim your allocation
-      from this tab, 24 hours after the pool ends.
+      from this tab, 24 hours after the final pool ends.
     </div>
-    <q-btn
+    <!-- <q-btn
       outline
       color="accent"
       label="Release tokens"
@@ -68,7 +68,7 @@
       class="hover-accent self-end q-mt-md"
       v-if="canClaim"
       @click="tryClaimTokens"
-    />
+    /> -->
     <p class="q-pt-md text-grey-6" v-if="!hasAllocation">
       No allocation to show.
     </p>
