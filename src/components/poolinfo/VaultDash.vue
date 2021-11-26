@@ -36,7 +36,7 @@
         :key="t.id"
       >
         <div class="col-4 text-right">
-          {{ t.quantity }}
+          {{ t.token_amount }}
         </div>
         <q-icon class="q-mx-sm fas fa-arrow-right"></q-icon>
         <div class="col-sm row items-center justify-start">
@@ -105,7 +105,7 @@
               :key="t.id"
             >
               <div class="col text-right">
-                {{ t.quantity }}
+                {{ t.token_amount }}
               </div>
               <q-icon class="q-mx-sm fas fa-arrow-right"></q-icon>
               <div class="col row items-center justify-start">
@@ -211,8 +211,8 @@ export default {
     },
     async getSignData(teleportId) {
       const res = await this.$store.$api.getTableRows({
-        code: process.env.VAULT_ADDRESS,
-        scope: process.env.VAULT_ADDRESS,
+        code: process.env.XCHAIN_ADDRESS,
+        scope: process.env.XCHAIN_ADDRESS,
         table: "teleports",
         lower_bound: teleportId,
         upper_bound: teleportId,
@@ -228,21 +228,24 @@ export default {
       const teleportData = res.rows[0];
       console.log("Teleport Data:", teleportData);
 
-      // logteleport(uint64_t id, uint32_t timestamp, name from, asset quantity, uint8_t chain_id, checksum256 to_address)
+      // logteleport(uint64_t id, uint32_t timestamp, name from, asset token_amount, uint8_t chain_id, checksum256 to_address)
       const sb = new Serialize.SerialBuffer({
         textEncoder: new TextEncoder(),
         textDecoder: new TextDecoder()
       });
       sb.pushNumberAsUint64(teleportData.id);
-      sb.pushUint32(teleportData.time);
+      let ts = new Date(teleportData.time).getTime() / 1000;
+      // console.log(ts);
+      sb.pushUint32(ts);
       sb.pushName(teleportData.account);
-      sb.pushAsset(teleportData.quantity);
+      sb.pushAsset(teleportData.token_amount);
       sb.push(teleportData.chain_id);
       sb.pushArray(fromHexString(teleportData.to_address));
+      sb.pushArray(fromHexString(teleportData.token_address));
 
       return {
         claimAccount: "0x" + teleportData.to_address,
-        data: "0x" + toHexString(sb.array.slice(0, 69)),
+        data: "0x" + toHexString(sb.array.slice(0, 77)),
         signatures: teleportData.signatures
       };
     },
@@ -254,15 +257,12 @@ export default {
         const signData = await this.getSignData(teleport.id);
         console.log(JSON.stringify(signData));
 
-        const token = this.getTPortTokensBySym(
-          this.$chainToSym(teleport.quantity)
-        );
-        const remoteContractAddress = token.remote_contracts.find(
-          el => el.key === this.getEvmRemoteId
-        ).value;
+        // const token = this.getTPortTokensBySym(
+        //   this.$chainToSym(teleport.token_amount)
+        // );
         const remoteInstance = new web3.eth.Contract(
-          this.$erc20Abi,
-          remoteContractAddress
+          this.$vaultAbi,
+          process.env.VAULT_ADDRESS
         ); // TODO Add check to validate abi
         // TODO Add try catch
         const resp = await remoteInstance.methods
