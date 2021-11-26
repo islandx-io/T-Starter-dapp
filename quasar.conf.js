@@ -33,7 +33,8 @@ module.exports = function(/* ctx */) {
       "moonpay",
       "tport",
       "web3",
-      "erc20"
+      "erc20",
+      "vault"
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -75,7 +76,9 @@ module.exports = function(/* ctx */) {
         MOONPAY_KEY: process.env.MOONPAY_KEY,
         BRIDGE_ADDRESS: process.env.BRIDGE_ADDRESS,
         TPORT_ADDRESS: process.env.TPORT_ADDRESS,
-        TOKEN_ADDRESS: process.env.TOKEN_ADDRESS
+        TOKEN_ADDRESS: process.env.TOKEN_ADDRESS,
+        XCHAIN_ADDRESS: process.env.XCHAIN_ADDRESS,
+        VAULT_ADDRESS: process.env.VAULT_ADDRESS
       },
 
       // transpile: false,

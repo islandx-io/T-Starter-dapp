@@ -34,73 +34,173 @@
                 {{ pool.title }}
               </h2>
             </div>
-
-            <!---------->
-            <!-- From -->
-            <!---------->
-            <div
-              class="row justify-between items-end"
-              style="padding: 0px 20px 0px 0px"
-            >
-              <q-item dense class="text-h6">From</q-item>
-              <div style="padding: 0px 0px 2px 15px">
-                Balance: {{ balance }} {{ BaseTokenSymbol }}
-              </div>
+            <!-- TODO select cross chain network -->
+            <div class="row justify-center">
+              <net-selector
+                :selectedNetwork="selectedNetwork"
+                :networkOptions="networkOptions"
+                @changeNetwork="changeNetwork($event)"
+              />
             </div>
-            <q-card flat bordered class="inner-card row ">
-              <div class="row q-gutter-x-md items-center">
-                <q-input
-                  class="col input-amount q-my-sm"
-                  color="primary"
-                  v-model="amount"
-                  :rules="[validateInput]"
-                  borderless
-                  @input="restrictDecimal"
-                  placeholder="0"
-                />
-                <div class="column items-end justify-between q-my-sm">
-                  <div class="row q-gutter-x-sm">
-                    <q-btn
-                      class="col-shrink"
-                      label="Max"
-                      @click="setMax"
-                      color="positive"
-                      outline
-                    />
-                    <token-avatar :token="BaseTokenSymbol" :avatarSize="40" />
-                    <div class="text-h4">{{ BaseTokenSymbol }}</div>
-                  </div>
+
+            <!---------------->
+            <!-- From telos -->
+            <!---------------->
+            <div v-if="selectedNetwork === this.currentChain.NETWORK_NAME">
+              <div
+                class="row justify-between items-end"
+                style="padding: 0px 20px 0px 0px"
+              >
+                <q-item dense class="text-h6">From</q-item>
+                <div style="padding: 0px 0px 2px 15px">
+                  Balance: {{ balance }} {{ BaseTokenSymbol }}
                 </div>
               </div>
-            </q-card>
-            <div
-              class="row justify-between q-gutter-x-md"
-              style="padding: 5px 20px"
-            >
-              <div>
-                Min:
-                {{ zeroNaN($chainToQty(pool.minimum_swap)) }}
-                {{ BaseTokenSymbol }}
+              <q-card flat bordered class="inner-card row ">
+                <div class="row q-gutter-x-md items-center">
+                  <q-input
+                    class="col input-amount q-my-sm"
+                    color="primary"
+                    v-model="amount"
+                    :rules="[validateInput]"
+                    borderless
+                    @input="restrictDecimal"
+                    placeholder="0"
+                  />
+                  <div class="column items-end justify-between q-my-sm">
+                    <div class="row q-gutter-x-sm">
+                      <q-btn
+                        class="col-shrink"
+                        label="Max"
+                        @click="setMax"
+                        color="positive"
+                        outline
+                      />
+                      <token-avatar :token="BaseTokenSymbol" :avatarSize="40" />
+                      <div class="text-h4">{{ BaseTokenSymbol }}</div>
+                    </div>
+                  </div>
+                </div>
+              </q-card>
+              <div
+                class="row justify-between q-gutter-x-md"
+                style="padding: 5px 20px"
+              >
+                <div>
+                  Min:
+                  {{ zeroNaN($chainToQty(pool.minimum_swap)) }}
+                  {{ BaseTokenSymbol }}
+                </div>
+                <div>
+                  Max:
+                  {{
+                    this.$toFixedDown(
+                      maxAllocation,
+                      this.$getDecimalFromAsset(this.pool.base_token)
+                    )
+                  }}
+                  {{ BaseTokenSymbol }}
+                </div>
+                <div>
+                  Buyable:
+                  {{
+                    this.$toFixedDown(
+                      availableBuy,
+                      this.$getDecimalFromAsset(this.pool.base_token)
+                    )
+                  }}
+                  {{ BaseTokenSymbol }}
+                </div>
               </div>
-              <div>
-                Max:
-                {{
-                  this.$toFixedDown(
-                    maxAllocation,
-                    this.$getDecimalFromAsset(this.pool.base_token)
-                  )
-                }}
-                {{ BaseTokenSymbol }}
+            </div>
+
+            <!---------------->
+            <!-- From ETH -->
+            <!---------------->
+            <div v-if="selectedNetwork !== this.currentChain.NETWORK_NAME">
+              <div
+                class="evm-account col ellipsis cursor-pointer"
+                style="max-width: 200px"
+                v-if="getEvmAccountName !== ''"
+                @click="copyEvmAccount"
+              >
+                {{ getEvmAccountName }}
               </div>
-              <div>
-                Buyable:
-                {{
-                  this.$toFixedDown(
-                    availableBuy,
-                    this.$getDecimalFromAsset(this.pool.base_token)
-                  )
-                }}
-                {{ BaseTokenSymbol }}
+              <div
+                class="row justify-between items-end"
+                style="padding: 0px 20px 0px 0px"
+              >
+                <q-item dense class="text-h6">From</q-item>
+                <div style="padding: 0px 0px 2px 15px">
+                  Balance: {{ balance }} {{ BaseTokenSymbol }}
+                </div>
+              </div>
+              <q-card flat bordered class="inner-card row ">
+                <div class="row q-gutter-x-md items-center">
+                  <!-- <q-btn
+                    v-if="getEvmAccountName === ''"
+                    label="CONNECT"
+                    @click="connectWeb3()"
+                    class="hover-accent"
+                    color="positive"
+                    outline
+                    no-shadow
+                    no-caps
+                  /> -->
+
+                  <q-input
+                    class="col input-amount q-my-sm"
+                    color="primary"
+                    v-model="amount"
+                    :rules="[validateInput]"
+                    borderless
+                    @input="restrictDecimal"
+                    placeholder="0"
+                  />
+                  <div class="column items-end justify-between q-my-sm">
+                    <div class="row q-gutter-x-sm">
+                      <q-btn
+                        class="col-shrink"
+                        label="Max"
+                        @click="setMax"
+                        color="positive"
+                        outline
+                      />
+                      <token-avatar :token="BaseTokenSymbol" :avatarSize="40" />
+                      <div class="text-h4">{{ BaseTokenSymbol }}</div>
+                    </div>
+                  </div>
+                </div>
+              </q-card>
+              <div
+                class="row justify-between q-gutter-x-md"
+                style="padding: 5px 20px"
+              >
+                <div>
+                  Min:
+                  {{ zeroNaN($chainToQty(pool.minimum_swap)) }}
+                  {{ BaseTokenSymbol }}
+                </div>
+                <div>
+                  Max:
+                  {{
+                    this.$toFixedDown(
+                      maxAllocation,
+                      this.$getDecimalFromAsset(this.pool.base_token)
+                    )
+                  }}
+                  {{ BaseTokenSymbol }}
+                </div>
+                <div>
+                  Buyable:
+                  {{
+                    this.$toFixedDown(
+                      availableBuy,
+                      this.$getDecimalFromAsset(this.pool.base_token)
+                    )
+                  }}
+                  {{ BaseTokenSymbol }}
+                </div>
               </div>
             </div>
 
@@ -148,7 +248,7 @@
                   color="primary"
                   :disable="
                     (!isAuthenticated ||
-                      balance <= $chainToQty(pool.minimum_swap) ||
+                      
                       pool.pool_status !== `open` ||
                       not_enough_start ||
                       joining ||
@@ -157,6 +257,7 @@
                       !hasHeadstart
                   "
                 />
+                <!-- TODO add back balance <= $chainToQty(pool.minimum_swap) || -->
                 <div
                   v-if="canBuyWithUSD"
                   style="text-align: center;"
@@ -407,8 +508,12 @@ import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
 import { uid } from "uid";
 import MoonpayProcessing from "src/components/MoonpayProcessing.vue";
+import metamask from "src/components/Metamask";
+import { copyToClipboard } from "quasar";
+import netSelector from "src/components/NetSelector";
 
 export default {
+  mixins: [metamask],
   data() {
     return {
       poolID: Number(this.$route.params.id),
@@ -428,7 +533,6 @@ export default {
       base_token_symbol: "",
       showTransaction: false,
       transaction: null,
-      // explorerUrl: this.currentChain.NETWORK_EXPLORER,
       accountStakeInfo: {},
       tiersTable: [],
       joinTooltipOffset: [0, -45],
@@ -437,10 +541,12 @@ export default {
       moonpayTx: {},
       currentUID: uid(),
       pollingMoonpay: null,
-      moonpayKey: process.env.MOONPAY_KEY
+      moonpayKey: process.env.MOONPAY_KEY,
+      networkOptions: ["TELOS", "ETHEREUM", "BSC"],
+      selectedNetwork: "TELOS"
     };
   },
-  components: { tokenAvatar },
+  components: { tokenAvatar, netSelector },
   computed: {
     ...mapGetters("pools", [
       "getAllPools",
@@ -592,6 +698,12 @@ export default {
       } else {
         return true;
       }
+    },
+
+    // xchain things
+    // TODO dynamically get these
+    supportedEvmChains() {
+      return ["ETHEREUM", "BSC"];
     }
   },
 
@@ -761,7 +873,11 @@ export default {
       clearInterval(this.pollingMoonpay);
       console.log(this.pollingMoonpay);
       try {
-        await this.joinPoolTransaction();
+        if (this.selectedNetwork === this.currentChain.NETWORK_NAME) {
+          await this.joinPoolTransaction();
+        } else {
+          await this.joinPoolTransactionOnXchain();
+        }
         this.$q.notify({
           color: "green-4",
           textColor: "white",
@@ -858,6 +974,73 @@ export default {
           }
         }, 10000);
       }
+    },
+
+    copyEvmAccount() {
+      copyToClipboard(this.getEvmAccountName).then(() => {
+        this.$q.notify({
+          color: "green-4",
+          textColor: "secondary",
+          message: "Copied address to clipboard",
+          timeout: 1000
+        });
+      });
+    },
+
+    changeNetwork(network) {
+      console.log(network);
+      this.selectedNetwork = network;
+    },
+
+    async joinPoolTransactionOnXchain() {
+      const { injectedWeb3, web3 } = await this.$web3();
+      // Get remote_token_address from the tokens table
+      const res = await this.$store.$api.getTableRows({
+        code: process.env.XCHAIN_ADDRESS,
+        scope: process.env.XCHAIN_ADDRESS,
+        table: "tokens",
+        limit: 100
+      });
+      let xtokens = res.rows.filter(
+        token => token.enabled === 1
+      );
+      console.log(xtokens);
+      let tokenAddress = "0x2C556ec92cE7985696073Cd95beF06b8737B6b23"
+      let thisChainID = 0;
+      let tokenAmount = this.amount*10**8
+
+      if (injectedWeb3) {
+        // Do approve on erc20
+        console.log("Doing approve");
+        const tokenContract = new web3.eth.Contract(
+          this.$erc20Abi,
+          tokenAddress
+        );
+
+        const approve = await tokenContract.methods
+          .approve(process.env.VAULT_ADDRESS, tokenAmount)
+          .send({ from: this.getEvmAccountName });
+        console.log(approve);
+
+        // Do pegIn ethereum transaction
+        console.log("Doing pegIn");
+        const vaultContract = new web3.eth.Contract(
+          this.$vaultAbi,
+          process.env.VAULT_ADDRESS
+        );
+        const pegIn = await vaultContract.methods
+          .pegIn(tokenAmount, tokenAddress, this.accountName, this.poolID, thisChainID)
+          .send({ from: this.getEvmAccountName });
+        console.log(pegIn);
+
+        // await this.$store.commit("global/setInfo", $t("dialog.tlm_claimed"));
+        // this.showOverlay = true;
+
+        // this.updateTportState();
+        // this.$store.dispatch("tport/setTeleports", this.accountName);
+        // this.loadTeleports();
+        // TODO Do a proper refresh
+      }
     }
   },
 
@@ -871,6 +1054,8 @@ export default {
       this.accountName
     );
     this.tiersTable = await this.getChainTiersTable();
+
+    // TODO get balances if xchain
   },
 
   watch: {
@@ -884,6 +1069,12 @@ export default {
         this.accountName
       );
       this.tiersTable = await this.getChainTiersTable();
+    },
+    async selectedNetwork() {
+      if (this.supportedEvmChains.includes(this.selectedNetwork)) {
+        this.connectWeb3();
+        this.switchMetamaskNetwork(this.selectedNetwork);
+      }
     }
   },
 

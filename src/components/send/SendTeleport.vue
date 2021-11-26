@@ -177,9 +177,9 @@ export default {
   methods: {
     ...mapActions("account", ["setWalletBalances"]),
 
-    changeNetwork(network) {
-      this.$emit("update:selectedNetwork", network);
-    },
+    // changeNetwork(network) {
+    //   this.$emit("update:selectedNetwork", network);
+    // },
 
     async updateBalance() {
       if (this.getEvmChainId && this.getEvmAccountName) {

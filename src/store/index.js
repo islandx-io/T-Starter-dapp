@@ -7,6 +7,7 @@ import pools from "./pools";
 import blockchains from "./blockchains";
 import ballots from "./ballots";
 import tport from "./tport";
+import xchain from "./xchain";
 
 Vue.use(Vuex);
 
@@ -18,7 +19,8 @@ export default function() {
       pools,
       blockchains,
       ballots,
-      tport
+      tport,
+      xchain
     },
 
     strict: process.env.DEV
