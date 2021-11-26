@@ -26,14 +26,18 @@ export default {
       if (injectedWeb3) {
         const a = await web3.eth.getAccounts();
         this.$store.commit("tport/setAccountName", { accountName: a[0] });
+        this.$store.commit("xchain/setAccountName", { accountName: a[0] });
         const chainId = await web3.eth.getChainId();
         this.$store.commit("tport/setChainId", { chainId });
+        this.$store.commit("xchain/setChainId", { chainId });
 
         window.ethereum.on("accountsChanged", a => {
           this.$store.commit("tport/setAccountName", { accountName: a[0] });
+          this.$store.commit("xchain/setAccountName", { accountName: a[0] });
         });
         window.ethereum.on("chainChanged", chainId => {
           this.$store.commit("tport/setChainId", { chainId });
+          this.$store.commit("xchain/setChainId", { chainId });
         });
       } else {
         console.error("Could not get injected web3");

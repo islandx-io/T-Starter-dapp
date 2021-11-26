@@ -72,4 +72,5 @@ const testnetList = [
 export default async ({ store }) => {
   const networkList = process.env.TESTNET == "true" ? testnetList : mainnetList;
   store.commit("tport/setNetworkList", { networkList });
+  store.commit("xchain/setNetworkList", { networkList });
 };

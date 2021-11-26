@@ -1,5 +1,7 @@
-export default function () {
-  return {
-    //
-  }
+export default {
+  accountName: "",
+  chainId: null,
+  tportTokens: [],
+  teleports: [],
+  networkList: []
 }

@@ -243,6 +243,11 @@
           <q-spinner-puff size="50px" color="primary" />
         </q-inner-loading>
       </q-card>
+
+      <vault-dash
+        v-if="tab === 'allocations' && hasAllocations"
+        :selectedTokenSym="$getSymFromAsset(pool.base_token)"
+      />
     </div>
 
     <q-dialog v-model="insufficient_start_show">
@@ -290,6 +295,7 @@ import statusProgress from "src/components/poolinfo/status-progress";
 import tokenAvatar from "src/components/TokenAvatar";
 import { mapGetters, mapActions } from "vuex";
 import { date } from "quasar";
+import VaultDash from "src/components/poolinfo/VaultDash.vue";
 
 export default {
   components: {
@@ -300,7 +306,8 @@ export default {
     statusCountdown,
     statusBadge,
     statusProgress,
-    tokenAvatar
+    tokenAvatar,
+    VaultDash
   },
   data() {
     return {
@@ -311,13 +318,22 @@ export default {
       claimable: false,
       insufficient_start_show: false,
       settings: {},
-      accountStakeInfo: {}
+      accountStakeInfo: {},
+      allocation: {},
     };
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("pools", ["getPoolByID", "getPoolByIDChain"]),
     ...mapGetters("blockchains", ["currentChain"]),
+
+    hasAllocations() {
+      if (this.allocation) {
+        return Object.keys(this.allocation).length > 0;        
+      } else {
+        return false
+      }
+    },
 
     START_info() {
       return this.wallet.find(el => (el.sym = "START"));
@@ -423,15 +439,12 @@ export default {
         this.currentChain.NETWORK_NAME
       );
     },
-    hasAllocations(data) {
-      return Object.keys(data).length > 0;
-    },
 
     async getClaimStatus() {
       let payload = { account: this.accountName, poolID: this.pool.id };
-      let allocation = await this.getAllocationByPool(payload);
+      this.allocation = await this.getAllocationByPool(payload);
       if (
-        this.hasAllocations(allocation) &&
+        this.hasAllocations &&
         (this.pool.pool_status === "completed" ||
           this.pool.pool_status === "filled" ||
           this.pool.pool_status === "cancelled") &&
@@ -537,7 +550,12 @@ export default {
       } else {
         this.tab = "details";
       }
-    }
+    },
+    async tab() {
+      if (this.tab === "allocations") {
+        await this.getClaimStatus();
+      }
+    } 
   }
 };
 </script>

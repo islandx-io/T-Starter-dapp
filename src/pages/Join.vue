@@ -1010,13 +1010,13 @@ export default {
       let tokenAmount = this.amount*10**8
 
       if (injectedWeb3) {
+        // TODO web3.batchrequest?
         // Do approve on erc20
         console.log("Doing approve");
         const tokenContract = new web3.eth.Contract(
           this.$erc20Abi,
           tokenAddress
         );
-
         const approve = await tokenContract.methods
           .approve(process.env.VAULT_ADDRESS, tokenAmount)
           .send({ from: this.getEvmAccountName });
@@ -1033,13 +1033,6 @@ export default {
           .send({ from: this.getEvmAccountName });
         console.log(pegIn);
 
-        // await this.$store.commit("global/setInfo", $t("dialog.tlm_claimed"));
-        // this.showOverlay = true;
-
-        // this.updateTportState();
-        // this.$store.dispatch("tport/setTeleports", this.accountName);
-        // this.loadTeleports();
-        // TODO Do a proper refresh
       }
     }
   },
