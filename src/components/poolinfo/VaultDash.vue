@@ -234,9 +234,7 @@ export default {
         textDecoder: new TextDecoder()
       });
       sb.pushNumberAsUint64(teleportData.id);
-      let ts = new Date(teleportData.time).getTime() / 1000;
-      // console.log(ts);
-      sb.pushUint32(ts);
+      sb.pushUint32(teleportData.time);
       sb.pushName(teleportData.account);
       sb.pushAsset(teleportData.token_amount);
       sb.push(teleportData.chain_id);
@@ -263,7 +261,7 @@ export default {
         const remoteInstance = new web3.eth.Contract(
           this.$vaultAbi,
           process.env.VAULT_ADDRESS
-        ); // TODO Add check to validate abi
+        ); 
         // TODO Add try catch
         const resp = await remoteInstance.methods
           .claim(signData.data, signData.signatures)
