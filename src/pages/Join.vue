@@ -248,7 +248,6 @@
                   color="primary"
                   :disable="
                     (!isAuthenticated ||
-                      
                       pool.pool_status !== `open` ||
                       not_enough_start ||
                       joining ||
@@ -543,7 +542,9 @@ export default {
       pollingMoonpay: null,
       moonpayKey: process.env.MOONPAY_KEY,
       networkOptions: ["TELOS", "ETHEREUM", "BSC"],
-      selectedNetwork: "TELOS"
+      selectedNetwork: "TELOS",
+      xchainToken: "",
+      possiblexchainTokens: []
     };
   },
   components: { tokenAvatar, netSelector },
@@ -556,6 +557,7 @@ export default {
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
+    ...mapGetters("xchain", ["getEvmRemoteId"]),
 
     externalTransactionId() {
       return this.accountName + "-" + this.currentUID;
@@ -994,31 +996,27 @@ export default {
 
     async joinPoolTransactionOnXchain() {
       const { injectedWeb3, web3 } = await this.$web3();
-      // Get remote_token_address from the tokens table
-      const res = await this.$store.$api.getTableRows({
-        code: process.env.XCHAIN_ADDRESS,
-        scope: process.env.XCHAIN_ADDRESS,
-        table: "tokens",
-        limit: 100
-      });
-      let xtokens = res.rows.filter(
-        token => token.enabled === 1
-      );
-      console.log(xtokens);
-      let tokenAddress = "0x2C556ec92cE7985696073Cd95beF06b8737B6b23"
-      let thisChainID = 0;
-      let tokenAmount = this.amount*10**8
+
+      let tokenAddress = "0x" + this.xchainToken.remote_token_address;
+      let thisChainID = 0; //TODO
+      let decimals = this.xchainToken.remote_token_symbol.split(",")[0];
+      let tokenAmount = this.amount * 10 ** decimals;
 
       if (injectedWeb3) {
-        // TODO web3.batchrequest?
         // Do approve on erc20
         console.log("Doing approve");
         const tokenContract = new web3.eth.Contract(
           this.$erc20Abi,
           tokenAddress
         );
+        // Check allowance
+        let allowance = await tokenContract.methods
+          .allowance(this.getEvmAccountName, process.env.VAULT_ADDRESS )
+          .call();
+        console.log("Allowance:", allowance);
+
         const approve = await tokenContract.methods
-          .approve(process.env.VAULT_ADDRESS, tokenAmount)
+          .approve(process.env.VAULT_ADDRESS, "0xFFFFFFFFFFFFFFFF")
           .send({ from: this.getEvmAccountName });
         console.log(approve);
 
@@ -1029,10 +1027,15 @@ export default {
           process.env.VAULT_ADDRESS
         );
         const pegIn = await vaultContract.methods
-          .pegIn(tokenAmount, tokenAddress, this.accountName, this.poolID, thisChainID)
+          .pegIn(
+            tokenAmount,
+            tokenAddress,
+            this.accountName,
+            this.poolID,
+            thisChainID
+          )
           .send({ from: this.getEvmAccountName });
         console.log(pegIn);
-
       }
     }
   },
@@ -1048,7 +1051,7 @@ export default {
     );
     this.tiersTable = await this.getChainTiersTable();
 
-    // TODO get balances if xchain
+    // TODO get balances/allowance if xchain
   },
 
   watch: {
@@ -1067,6 +1070,21 @@ export default {
       if (this.supportedEvmChains.includes(this.selectedNetwork)) {
         this.connectWeb3();
         this.switchMetamaskNetwork(this.selectedNetwork);
+
+        // Get token address from the tokens table
+        const res = await this.$store.$api.getTableRows({
+          code: process.env.XCHAIN_ADDRESS,
+          scope: process.env.XCHAIN_ADDRESS,
+          table: "tokens",
+          limit: 100
+        });
+        this.xchainToken = res.rows.find(
+          token =>
+            token.enabled === 1 &&
+            token.remote_chain_id === this.getEvmRemoteId &&
+            this.$getSymFromAsset(token.token_info) === this.BaseTokenSymbol
+        );
+        console.log(this.xchainToken);
       }
     }
   },
