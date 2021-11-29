@@ -243,6 +243,15 @@
             <q-item class="q-py-lg">
               <q-item-section>
                 <q-btn
+                  :label="`Approve`"
+                  color="primary"
+                  @click="approveToken()"
+                  v-if="
+                    !hasAllowance &&
+                      selectedNetwork !== currentChain.NETWORK_NAME
+                  "
+                />
+                <q-btn
                   label="Join Pool"
                   type="submit"
                   color="primary"
@@ -254,6 +263,16 @@
                       !isWhitelisted ||
                       allocationReached) &&
                       !hasHeadstart
+                  "
+                  v-if="selectedNetwork === currentChain.NETWORK_NAME"
+                />
+                <q-btn
+                  label="Join Pool"
+                  type="submit"
+                  color="primary"
+                  v-if="
+                    selectedNetwork !== currentChain.NETWORK_NAME &&
+                      hasAllowance
                   "
                 />
                 <!-- TODO add back balance <= $chainToQty(pool.minimum_swap) || -->
@@ -544,7 +563,8 @@ export default {
       networkOptions: ["TELOS", "ETHEREUM", "BSC"],
       selectedNetwork: "TELOS",
       xchainToken: "",
-      possiblexchainTokens: []
+      possiblexchainTokens: [],
+      hasAllowance: false
     };
   },
   components: { tokenAvatar, netSelector },
@@ -1003,23 +1023,6 @@ export default {
       let tokenAmount = this.amount * 10 ** decimals;
 
       if (injectedWeb3) {
-        // Do approve on erc20
-        console.log("Doing approve");
-        const tokenContract = new web3.eth.Contract(
-          this.$erc20Abi,
-          tokenAddress
-        );
-        // Check allowance
-        let allowance = await tokenContract.methods
-          .allowance(this.getEvmAccountName, process.env.VAULT_ADDRESS )
-          .call();
-        console.log("Allowance:", allowance);
-
-        const approve = await tokenContract.methods
-          .approve(process.env.VAULT_ADDRESS, "0xFFFFFFFFFFFFFFFF")
-          .send({ from: this.getEvmAccountName });
-        console.log(approve);
-
         // Do pegIn ethereum transaction
         console.log("Doing pegIn");
         const vaultContract = new web3.eth.Contract(
@@ -1037,6 +1040,61 @@ export default {
           .send({ from: this.getEvmAccountName });
         console.log(pegIn);
       }
+    },
+
+    async approveToken() {
+      const { injectedWeb3, web3 } = await this.$web3();
+
+      if (injectedWeb3) {
+        // Do approve on erc20
+        console.log("Doing approve");
+        const tokenContract = new web3.eth.Contract(
+          this.$erc20Abi,
+          "0x" + this.xchainToken.remote_token_address
+        );
+
+        const approve = await tokenContract.methods
+          .approve(process.env.VAULT_ADDRESS, "0xFFFFFFFFFFFFFFFF")
+          .send({ from: this.getEvmAccountName });
+        console.log(approve);
+      }
+    },
+
+    async checkAllowance() {
+      // Check allowance
+      const { injectedWeb3, web3 } = await this.$web3();
+      const tokenContract = new web3.eth.Contract(
+        this.$erc20Abi,
+        "0x" + this.xchainToken.remote_token_address
+      );
+      let allowance = await tokenContract.methods
+        .allowance(this.getEvmAccountName, process.env.VAULT_ADDRESS)
+        .call();
+      console.log("Allowance:", allowance);
+
+      if (allowance >= 0xffffffffffffffff) {
+        this.hasAllowance = true;
+      } else {
+        this.hasAllowance = false;
+      }
+    },
+
+    async updatePossibleXchainTokens() {
+      // Get token address from the tokens table
+      const res = await this.$store.$api.getTableRows({
+        code: process.env.XCHAIN_ADDRESS,
+        scope: process.env.XCHAIN_ADDRESS,
+        table: "tokens",
+        limit: 100
+      });
+      this.possiblexchainTokens = res.rows.filter(
+        token =>
+          token.enabled === 1 &&
+          token.remote_chain_id === this.getEvmRemoteId &&
+          this.$getSymFromAsset(token.token_info) === this.BaseTokenSymbol
+      );
+      this.xchainToken = this.possiblexchainTokens[0]; //TODO selection from dropdown
+      console.log(this.xchainToken);
     }
   },
 
@@ -1070,22 +1128,12 @@ export default {
       if (this.supportedEvmChains.includes(this.selectedNetwork)) {
         this.connectWeb3();
         this.switchMetamaskNetwork(this.selectedNetwork);
-
-        // Get token address from the tokens table
-        const res = await this.$store.$api.getTableRows({
-          code: process.env.XCHAIN_ADDRESS,
-          scope: process.env.XCHAIN_ADDRESS,
-          table: "tokens",
-          limit: 100
-        });
-        this.xchainToken = res.rows.find(
-          token =>
-            token.enabled === 1 &&
-            token.remote_chain_id === this.getEvmRemoteId &&
-            this.$getSymFromAsset(token.token_info) === this.BaseTokenSymbol
-        );
-        console.log(this.xchainToken);
+        this.updatePossibleXchainTokens();
+        // this.checkAllowance();
       }
+    },
+    async getEvmAccountName() {
+      this.checkAllowance();
     }
   },
 

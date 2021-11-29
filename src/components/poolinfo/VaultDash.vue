@@ -10,13 +10,13 @@
       no-shadow
       no-caps
     />
-    <div
+    <!-- <div
       class="evm-account col ellipsis cursor-pointer"
       style="max-width: 200px"
       v-if="getEvmAccountName !== ''"
     >
       {{ getEvmAccountName }}
-    </div>
+    </div> -->
     <div class="row justify-center">
       <div class="text-h6 text-center q-pr-sm">Refunds</div>
       <q-btn
