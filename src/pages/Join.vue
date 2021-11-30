@@ -34,13 +34,16 @@
                 {{ pool.title }}
               </h2>
             </div>
-            <!-- TODO select cross chain network -->
             <div class="row justify-center">
               <net-selector
                 :selectedNetwork="selectedNetwork"
                 :networkOptions="networkOptions"
                 @changeNetwork="changeNetwork($event)"
-              />
+              >
+              </net-selector>
+              <q-tooltip anchor="top middle" self="bottom middle">
+                From Network
+              </q-tooltip>
             </div>
 
             <!---------------->
@@ -166,12 +169,15 @@
                         color="positive"
                         outline
                       />
-                      <token-avatar :token="BaseTokenSymbol" :avatarSize="40" />
-                      <div class="text-h4">{{ BaseTokenSymbol }}</div>
+                      <token-selector
+                        :tokenOptions="possiblexchainTokens"
+                        :xchainToken.sync="xchainToken"
+                      ></token-selector>
                     </div>
                   </div>
                 </div>
               </q-card>
+
               <div
                 class="row justify-between q-gutter-x-md"
                 style="padding: 5px 20px"
@@ -529,6 +535,7 @@ import MoonpayProcessing from "src/components/MoonpayProcessing.vue";
 import metamask from "src/components/Metamask";
 import { copyToClipboard } from "quasar";
 import netSelector from "src/components/NetSelector";
+import TokenSelector from "src/components/TokenSelector.vue";
 
 export default {
   mixins: [metamask],
@@ -562,12 +569,12 @@ export default {
       moonpayKey: process.env.MOONPAY_KEY,
       networkOptions: ["TELOS", "ETHEREUM", "BSC"],
       selectedNetwork: "TELOS",
-      xchainToken: "",
+      xchainToken: {},
       possiblexchainTokens: [],
       hasAllowance: false
     };
   },
-  components: { tokenAvatar, netSelector },
+  components: { tokenAvatar, netSelector, TokenSelector },
   computed: {
     ...mapGetters("pools", [
       "getAllPools",
@@ -1009,9 +1016,14 @@ export default {
       });
     },
 
-    changeNetwork(network) {
-      console.log(network);
+    async changeNetwork(network) {
       this.selectedNetwork = network;
+      if (this.supportedEvmChains.includes(this.selectedNetwork)) {
+        await this.switchMetamaskNetwork(this.selectedNetwork);
+        await this.connectWeb3();
+        this.updatePossibleXchainTokens();
+        this.checkAllowance();
+      }
     },
 
     async joinPoolTransactionOnXchain() {
@@ -1063,19 +1075,21 @@ export default {
     async checkAllowance() {
       // Check allowance
       const { injectedWeb3, web3 } = await this.$web3();
-      const tokenContract = new web3.eth.Contract(
-        this.$erc20Abi,
-        "0x" + this.xchainToken.remote_token_address
-      );
-      let allowance = await tokenContract.methods
-        .allowance(this.getEvmAccountName, process.env.VAULT_ADDRESS)
-        .call();
-      console.log("Allowance:", allowance);
+      if (this.xchainToken) {
+        const tokenContract = new web3.eth.Contract(
+          this.$erc20Abi,
+          "0x" + this.xchainToken.remote_token_address
+        );
+        let allowance = await tokenContract.methods
+          .allowance(this.getEvmAccountName, process.env.VAULT_ADDRESS)
+          .call();
+        console.log("Allowance:", allowance);
 
-      if (allowance >= 0xffffffffffffffff) {
-        this.hasAllowance = true;
-      } else {
-        this.hasAllowance = false;
+        if (allowance >= 0xffffffffffffffff) {
+          this.hasAllowance = true;
+        } else {
+          this.hasAllowance = false;
+        }
       }
     },
 
@@ -1087,12 +1101,15 @@ export default {
         table: "tokens",
         limit: 100
       });
+      console.log(res);
+      console.log(this.getEvmRemoteId);
       this.possiblexchainTokens = res.rows.filter(
         token =>
           token.enabled === 1 &&
           token.remote_chain_id === this.getEvmRemoteId &&
           this.$getSymFromAsset(token.token_info) === this.BaseTokenSymbol
       );
+      console.log(this.possiblexchainTokens);
       this.xchainToken = this.possiblexchainTokens[0]; //TODO selection from dropdown
       console.log(this.xchainToken);
     }
@@ -1124,14 +1141,7 @@ export default {
       );
       this.tiersTable = await this.getChainTiersTable();
     },
-    async selectedNetwork() {
-      if (this.supportedEvmChains.includes(this.selectedNetwork)) {
-        this.connectWeb3();
-        this.switchMetamaskNetwork(this.selectedNetwork);
-        this.updatePossibleXchainTokens();
-        // this.checkAllowance();
-      }
-    },
+    async selectedNetwork() {},
     async getEvmAccountName() {
       this.checkAllowance();
     }

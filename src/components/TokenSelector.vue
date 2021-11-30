@@ -11,32 +11,32 @@
     <template v-slot:label>
       <div class="flex items-center justify-center wrap">
         <div class="row items-center justify-center">
-          <token-avatar :token="selectedNetwork" :avatarSize="23" />
+          <token-avatar :token="getSymbol(xchainToken)" :avatarSize="23" />
           <div class="text-subtitle1 q-pl-xs">
-            {{ selectedNetwork }}
+            {{ getSymbol(xchainToken) }}
           </div>
         </div>
-        <!-- <q-tooltip anchor="top middle" self="bottom middle">
-          To Network
-        </q-tooltip> -->
       </div>
     </template>
     <q-list class="bg-secondary">
       <q-item
         clickable
         v-close-popup
-        v-for="network in networkOptions"
-        :key="network"
+        v-for="token in tokenOptions"
+        :key="token.id"
         flat
         size="lg"
         no-caps
-        @click="$emit('changeNetwork', network)"
+        @click="$emit('update:xchainToken', token)"
       >
         <div class="flex items-center justify-center wrap">
           <div class="row items-center justify-center">
-            <token-avatar :token="network" :avatarSize="23" />
+            <token-avatar
+              :token="getSymbol(token)"
+              :avatarSize="23"
+            />
             <div class="text-subtitle1 q-pl-xs">
-              {{ network }}
+              {{ getSymbol(token) }}
             </div>
           </div>
         </div>
@@ -52,9 +52,18 @@ export default {
   data() {
     return {};
   },
+  methods: {
+    getSymbol(token) {
+      if (token.remote_token_symbol) {
+        return token.remote_token_symbol.split(",")[1];
+      } else {
+        return "";
+      }
+    }
+  },
   props: {
-    selectedNetwork: String,
-    networkOptions: Array
+    xchainToken: Object,
+    tokenOptions: Array
   }
 };
 </script>

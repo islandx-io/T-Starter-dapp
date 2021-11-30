@@ -72,6 +72,9 @@ export default {
             case "EOS"   : return "/tokens/eos.png";
             case "WAX"   : return "/tokens/wax.png";
             case "BSC"   : return "/tokens/bnb.svg";
+            case "USDT"   : return "/tokens/usdt.svg";
+            case "USDC"   : return "/tokens/usdc.svg";
+            case "BUSD"   : return "/tokens/busd.svg";
             case "TELOS EVM" : return "/tokens/tlos.png";
             case "BTC": case "BITCOIN" : return "/tokens/bitcoin.svg";
             case "ETH": case "ETHEREUM": case "ROPSTEN" : return "/tokens/eth.svg";
