@@ -1075,7 +1075,7 @@ export default {
     async checkAllowance() {
       // Check allowance
       const { injectedWeb3, web3 } = await this.$web3();
-      if (this.xchainToken) {
+      if (this.xchainToken.remote_token_address) {
         const tokenContract = new web3.eth.Contract(
           this.$erc20Abi,
           "0x" + this.xchainToken.remote_token_address
@@ -1101,17 +1101,13 @@ export default {
         table: "tokens",
         limit: 100
       });
-      console.log(res);
-      console.log(this.getEvmRemoteId);
       this.possiblexchainTokens = res.rows.filter(
         token =>
           token.enabled === 1 &&
           token.remote_chain_id === this.getEvmRemoteId &&
           this.$getSymFromAsset(token.token_info) === this.BaseTokenSymbol
       );
-      console.log(this.possiblexchainTokens);
-      this.xchainToken = this.possiblexchainTokens[0]; //TODO selection from dropdown
-      console.log(this.xchainToken);
+      this.xchainToken = this.possiblexchainTokens[0]; 
     }
   },
 
@@ -1144,7 +1140,10 @@ export default {
     async selectedNetwork() {},
     async getEvmAccountName() {
       this.checkAllowance();
-    }
+    },
+    async xchainToken() {
+      this.checkAllowance();
+    },
   },
 
   beforeDestroy() {

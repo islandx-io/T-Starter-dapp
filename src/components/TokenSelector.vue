@@ -11,8 +11,8 @@
     <template v-slot:label>
       <div class="flex items-center justify-center wrap">
         <div class="row items-center justify-center">
-          <token-avatar :token="getSymbol(xchainToken)" :avatarSize="23" />
-          <div class="text-subtitle1 q-pl-xs">
+          <token-avatar :token="getSymbol(xchainToken)" :avatarSize="40" />
+          <div class="text-h4 q-pl-xs">
             {{ getSymbol(xchainToken) }}
           </div>
         </div>
@@ -33,9 +33,9 @@
           <div class="row items-center justify-center">
             <token-avatar
               :token="getSymbol(token)"
-              :avatarSize="23"
+              :avatarSize="30"
             />
-            <div class="text-subtitle1 q-pl-xs">
+            <div class="text-h5 q-pl-xs">
               {{ getSymbol(token) }}
             </div>
           </div>
