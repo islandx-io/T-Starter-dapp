@@ -538,6 +538,7 @@ import metamask from "src/components/Metamask";
 import { copyToClipboard } from "quasar";
 import netSelector from "src/components/NetSelector";
 import TokenSelector from "src/components/TokenSelector.vue";
+import BigNumber from "bignumber.js";
 
 export default {
   mixins: [metamask],
@@ -1117,9 +1118,9 @@ export default {
         let allowance = await tokenContract.methods
           .allowance(this.getEvmAccountName, process.env.VAULT_ADDRESS)
           .call();
-        console.log("Allowance:", allowance);
+        console.log("Allowance:", BigNumber(allowance).toString());
 
-        if (allowance >= 0xffffffffffffffff) {
+        if (BigNumber(allowance).gte(BigNumber("0xFFFFFFFFFFFFFFF"))) {
           this.hasAllowance = true;
         } else {
           this.hasAllowance = false;
