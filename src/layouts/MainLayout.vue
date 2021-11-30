@@ -117,14 +117,6 @@
                 :to="{ name: 'voting' }"
               />
               <q-btn
-                v-if="isAuthenticated"
-                color="secondary"
-                text-color="black"
-                outline
-                @click="openStaking()"
-                label="Staking"
-              />
-              <q-btn
                 label="Wallet"
                 v-if="isAuthenticated"
                 color="secondary"
