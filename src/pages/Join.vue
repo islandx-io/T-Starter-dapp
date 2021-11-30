@@ -121,13 +121,15 @@
             <!-- From ETH -->
             <!---------------->
             <div v-if="selectedNetwork !== this.currentChain.NETWORK_NAME">
-              <div
-                class="evm-account col ellipsis cursor-pointer"
-                style="max-width: 200px"
-                v-if="getEvmAccountName !== ''"
-                @click="copyEvmAccount"
-              >
-                {{ getEvmAccountName }}
+              <div class="full-width row  justify-center">
+                <div
+                  class="evm-account col ellipsis cursor-pointer"
+                  style="max-width: 200px"
+                  v-if="getEvmAccountName !== ''"
+                  @click="copyEvmAccount"
+                >
+                  {{ getEvmAccountName }}
+                </div>
               </div>
               <div
                 class="row justify-between items-end"
@@ -135,7 +137,7 @@
               >
                 <q-item dense class="text-h6">From</q-item>
                 <div style="padding: 0px 0px 2px 15px">
-                  Balance: {{ balance }} {{ BaseTokenSymbol }}
+                  Balance: {{ balance }} {{ xchainTokenSymbol }}
                 </div>
               </div>
               <q-card flat bordered class="inner-card row ">
@@ -185,7 +187,7 @@
                 <div>
                   Min:
                   {{ zeroNaN($chainToQty(pool.minimum_swap)) }}
-                  {{ BaseTokenSymbol }}
+                  {{ xchainTokenSymbol }}
                 </div>
                 <div>
                   Max:
@@ -195,7 +197,7 @@
                       this.$getDecimalFromAsset(this.pool.base_token)
                     )
                   }}
-                  {{ BaseTokenSymbol }}
+                  {{ xchainTokenSymbol }}
                 </div>
                 <div>
                   Buyable:
@@ -205,7 +207,7 @@
                       this.$getDecimalFromAsset(this.pool.base_token)
                     )
                   }}
-                  {{ BaseTokenSymbol }}
+                  {{ xchainTokenSymbol }}
                 </div>
               </div>
             </div>
@@ -733,7 +735,15 @@ export default {
     // TODO dynamically get these
     supportedEvmChains() {
       return ["ETHEREUM", "BSC"];
-    }
+    },
+
+    xchainTokenSymbol() {
+      if (this.xchainToken.remote_token_symbol) {
+        return this.xchainToken.remote_token_symbol.split(",")[1];
+      } else {
+        return "";
+      }
+    },
   },
 
   methods: {
@@ -793,13 +803,32 @@ export default {
     },
 
     async getBalance() {
-      let payload = {
-        address: this.pool.base_token.contract,
-        sym: this.BaseTokenSymbol,
-        accountName: this.accountName
-      };
-      // console.log(await this.getBalanceFromChain(payload));
-      this.balance = this.$chainToQty(await this.getBalanceFromChain(payload));
+      // if selected network is current chain, get balance from chain
+      if (this.selectedNetwork !== this.currentChain.NETWORK_NAME) {
+        const { injectedWeb3, web3 } = await this.$web3();
+        if (this.xchainToken.remote_token_address) {
+          const tokenContract = new web3.eth.Contract(
+            this.$erc20Abi,
+            "0x" + this.xchainToken.remote_token_address
+          );
+          let rawBalance = await tokenContract.methods
+            .balanceOf(
+              this.getEvmAccountName
+            )
+            .call();
+          this.balance = Number(rawBalance/10**this.xchainToken.remote_token_symbol.split(",")[0]);
+        }
+      } else {
+        let payload = {
+          address: this.pool.base_token.contract,
+          sym: this.BaseTokenSymbol,
+          accountName: this.accountName
+        };
+        // console.log(await this.getBalanceFromChain(payload));
+        this.balance = this.$chainToQty(
+          await this.getBalanceFromChain(payload)
+        );
+      }
     },
 
     setMax() {
@@ -1016,6 +1045,10 @@ export default {
       });
     },
 
+    // --------------------------------------------------------------
+    // xchain methods
+    // --------------------------------------------------------------
+
     async changeNetwork(network) {
       this.selectedNetwork = network;
       if (this.supportedEvmChains.includes(this.selectedNetwork)) {
@@ -1076,6 +1109,7 @@ export default {
       // Check allowance
       const { injectedWeb3, web3 } = await this.$web3();
       if (this.xchainToken.remote_token_address) {
+        console.log("0x" + this.xchainToken.remote_token_address);
         const tokenContract = new web3.eth.Contract(
           this.$erc20Abi,
           "0x" + this.xchainToken.remote_token_address
@@ -1107,7 +1141,7 @@ export default {
           token.remote_chain_id === this.getEvmRemoteId &&
           this.$getSymFromAsset(token.token_info) === this.BaseTokenSymbol
       );
-      this.xchainToken = this.possiblexchainTokens[0]; 
+      this.xchainToken = this.possiblexchainTokens[0];
     }
   },
 
@@ -1143,7 +1177,8 @@ export default {
     },
     async xchainToken() {
       this.checkAllowance();
-    },
+      await this.getBalance();
+    }
   },
 
   beforeDestroy() {
