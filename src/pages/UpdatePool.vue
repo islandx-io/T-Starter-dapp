@@ -150,7 +150,7 @@
                 </q-item-section>
               </q-item>
               <!-- Dates -->
-              <q-item>
+              <!-- <q-item>
                 <q-item-section>
                   <q-select
                     outlined
@@ -173,7 +173,7 @@
                     :readonly="pool.status !== 'draft'"
                   />
                 </q-item-section>
-              </q-item>
+              </q-item> -->
               <q-item>
                 <q-item-section>
                   <datetime-field
@@ -546,16 +546,17 @@ export default {
     ...mapGetters("blockchains", ["currentChain"]),
 
     private_end() {
-      if (this.accessType === "Premium") {
-        return {
-          date: this.toDateStringLocal(
-            new Date(this.pool_open.date).valueOf() +
-              this.premiumDuration * 1000 * 60 * 60
-          )
-        };
-      } else {
-        return this.pool_open;
-      }
+      // if (this.accessType === "Premium") {
+      //   return {
+      //     date: this.toDateStringLocal(
+      //       new Date(this.pool_open.date).valueOf() +
+      //         this.premiumDuration * 1000 * 60 * 60
+      //     )
+      //   };
+      // } else {
+      //   return this.pool_open;
+      // }
+      return this.public_end;
     },
 
     admin_address() {
