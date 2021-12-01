@@ -1143,9 +1143,9 @@ export default {
       const { injectedWeb3, web3 } = await this.$web3();
 
       let tokenAddress = "0x" + this.xchainToken.remote_token_address;
-      let thisChainID = 0; //TODO
+      let thisChainID = 0; //TODO get dynamically eos,wax
       let decimals = this.xchainToken.remote_token_symbol.split(",")[0];
-      let tokenAmount = this.amount * 10 ** decimals;
+      let tokenAmount = BigNumber(this.amount).times(10 ** decimals);
 
       if (injectedWeb3) {
         // Do pegIn ethereum transaction
@@ -1250,14 +1250,12 @@ export default {
           limit: 1000,
           reverse: true
         });
-        console.log(res);
-        console.log(this.joinPoolTx.transactionHash);
+        // console.log(res);
         let report = res.rows.filter(
           r =>
             r.transfer.transaction_id ===
             this.joinPoolTx.transactionHash.slice(2)
         );
-        console.log(report);
         if (report.length > 0) {
           console.log("Found report");
           if (report[0].executed === 1) {
