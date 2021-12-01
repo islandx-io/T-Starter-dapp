@@ -266,6 +266,7 @@
                   :disable="
                     (!isAuthenticated ||
                       pool.pool_status !== `open` ||
+                      balance <= $chainToQty(pool.minimum_swap) ||
                       not_enough_start ||
                       joining ||
                       !isWhitelisted ||
@@ -283,7 +284,6 @@
                       hasAllowance
                   "
                 />
-                <!-- TODO add back balance <= $chainToQty(pool.minimum_swap) || -->
                 <div
                   v-if="canBuyWithUSD"
                   style="text-align: center;"
@@ -525,6 +525,43 @@
           </div>
         </q-dialog>
       </q-card>
+      <!-- Processing xchain tx -->
+      <q-card
+        v-if="
+          selectedNetwork !== currentChain.NETWORK_NAME &&
+            xchainProgress.submitted
+        "
+        class="q-mt-md fit column wrap content-center"
+      >
+        <div class="text-h6">
+          Transaction Progress
+        </div>
+        <div class="text-center">
+          Transaction submitted
+          <q-icon
+            v-if="xchainProgress.submitted"
+            name="fas fa-check-circle"
+            size="xs"
+            class="q-pr-sm"
+            color="positive"
+          />
+          <q-spinner v-else />
+        </div>
+        <div class="text-center">
+          Transaction confirmed
+          <q-icon
+            v-if="xchainProgress.confirmed"
+            name="fas fa-check-circle"
+            size="xs"
+            class="q-pr-sm"
+            color="positive"
+          />
+          <q-spinner v-else />
+        </div>
+        <div class="text-center">Reporters confirmed <q-spinner /></div>
+        <div class="text-center">Allocation confirmed <q-spinner /></div>
+        <div class="text-center">Done <q-spinner /></div>
+      </q-card>
     </section>
   </q-page>
 </template>
@@ -574,7 +611,14 @@ export default {
       selectedNetwork: "TELOS",
       xchainToken: {},
       possiblexchainTokens: [],
-      hasAllowance: false
+      hasAllowance: false,
+      joinPoolTx: {},
+      xchainProgress: {
+        submitted: false,
+        confirmed: false,
+        reported: false,
+        done: false
+      }
     };
   },
   components: { tokenAvatar, netSelector, TokenSelector },
@@ -703,11 +747,13 @@ export default {
     },
 
     availableBuy() {
-      if (this.$chainToQty(this.allocation.bid) !== undefined) {
-        if (this.$chainToQty(this.allocation.bid) > this.maxAllocation) {
+      if (this.$chainToQty(this.allocation.allocation) !== undefined) {
+        if (this.$chainToQty(this.allocation.allocation) > this.maxAllocation) {
           return 0;
         } else {
-          return this.maxAllocation - this.$chainToQty(this.allocation.bid);
+          return (
+            this.maxAllocation - this.$chainToQty(this.allocation.allocation)
+          );
         }
       } else {
         return this.maxAllocation;
@@ -744,7 +790,7 @@ export default {
       } else {
         return "";
       }
-    },
+    }
   },
 
   methods: {
@@ -793,10 +839,10 @@ export default {
     async getAllocations() {
       let payload = { account: this.accountName, poolID: this.pool.id };
       this.allocation = await this.getAllocationByPool(payload);
-      // console.log("Allocation:");
-      // console.log(this.$chainToQty(this.allocation.bid));
+      console.log("Allocation:");
+      console.log(this.allocation);
       // show disclaimer if user hasn't participated yet
-      if (this.$chainToQty(this.allocation.bid) > 0) {
+      if (this.$chainToQty(this.allocation.allocation) > 0) {
         this.disclaimer_show = false;
       } else {
         this.disclaimer_show = true;
@@ -813,11 +859,12 @@ export default {
             "0x" + this.xchainToken.remote_token_address
           );
           let rawBalance = await tokenContract.methods
-            .balanceOf(
-              this.getEvmAccountName
-            )
+            .balanceOf(this.getEvmAccountName)
             .call();
-          this.balance = Number(rawBalance/10**this.xchainToken.remote_token_symbol.split(",")[0]);
+          this.balance = Number(
+            rawBalance /
+              10 ** this.xchainToken.remote_token_symbol.split(",")[0]
+          );
         }
       } else {
         let payload = {
@@ -1071,10 +1118,12 @@ export default {
       if (injectedWeb3) {
         // Do pegIn ethereum transaction
         console.log("Doing pegIn");
+
         const vaultContract = new web3.eth.Contract(
           this.$vaultAbi,
           process.env.VAULT_ADDRESS
         );
+
         const pegIn = await vaultContract.methods
           .pegIn(
             tokenAmount,
@@ -1083,8 +1132,18 @@ export default {
             this.poolID,
             thisChainID
           )
-          .send({ from: this.getEvmAccountName });
+          .send({ from: this.getEvmAccountName }, (err, txHash) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(txHash);
+              this.xchainProgress.submitted = true;
+            }
+          });
+
         console.log(pegIn);
+        this.joinPoolTx = pegIn;
+        this.xchainProgress.confirmed = true;
       }
     },
 
