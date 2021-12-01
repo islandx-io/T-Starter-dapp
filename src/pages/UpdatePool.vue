@@ -416,6 +416,33 @@
                   Already published
                 </q-tooltip>
               </q-item-section>
+              <q-item-section class="col-auto">
+                <q-btn
+                  label="Reclaim Tokens"
+                  @click="tryReclaimTokens()"
+                  v-if="pool.status === 'success' || pool.status === 'cancelled'"
+                  color="primary"
+                />
+              </q-item-section>
+              <q-item-section class="col-auto">
+                <q-btn
+                  v-if="getEvmAccountName === ''"
+                  label="CONNECT TO METAMASK"
+                  @click="connectWeb3()"
+                  class="hover-accent"
+                  color="positive"
+                  outline
+                  no-shadow
+                  no-caps
+                />
+                <div
+                  class="evm-account col ellipsis cursor-pointer vertical-center"
+                  style="max-width: 200px"
+                  v-if="getEvmAccountName !== ''"
+                >
+                  {{ getEvmAccountName }}
+                </div>
+              </q-item-section>
               <!-- <q-item-section class="col-shrink">
                 <q-btn label="Reset" type="reset" color="primary" flat />
               </q-item-section> -->
@@ -495,9 +522,11 @@ import { date } from "quasar";
 import datetimeField from "src/components/poolcreation/datetime-field.vue";
 import { mapGetters, mapActions } from "vuex";
 import statusBadge from "src/components/poolinfo/status-badge";
+import metamask from "src/components/Metamask";
 
 export default {
   components: { datetimeField, statusBadge },
+  mixins: [metamask],
   data() {
     return {
       TermsandConditionsURL: "",
@@ -544,6 +573,7 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("pools", ["getPoolByID", "getPoolByIDChain"]),
     ...mapGetters("blockchains", ["currentChain"]),
+    ...mapGetters("xchain", ["getEvmAccountName"]),
 
     private_end() {
       if (this.accessType === "Premium") {
@@ -895,6 +925,28 @@ export default {
             pool_id: this.poolID,
             send_tokens: send_tokens
           }
+        },
+        {
+          account: process.env.XCHAIN_ADDRESS,
+          name: "closepool",
+          data: {
+            pool_id: this.poolID,
+            send_tokens: send_tokens
+          }
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+    },
+
+    async reclaimTokens() {
+      const actions = [
+        {
+          account: process.env.XCHAIN_ADDRESS,
+          name: "reclaim",
+          data: {
+            owner: this.accountName,
+            to_address: this.getEvmAccountName.slice(2)
+          }
         }
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
@@ -996,6 +1048,21 @@ export default {
           textColor: "white",
           icon: "cloud_done",
           message: "Pool completed"
+        });
+        this.redirectPoolPage();
+      } catch (error) {
+        this.$errorNotification(error);
+      }
+    },
+
+    async tryReclaimTokens() {
+      try {
+        await this.reclaimTokens();
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Tokens reclaimed"
         });
         this.redirectPoolPage();
       } catch (error) {

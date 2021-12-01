@@ -246,7 +246,7 @@
 
       <vault-dash
         class="q-mt-lg"
-        v-if="tab === 'allocations' && hasAllocations"
+        v-if="tab === 'allocations'"
         :selectedTokenSym="$getSymFromAsset(pool.base_token)"
       />
     </div>
