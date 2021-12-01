@@ -150,7 +150,7 @@
                 </q-item-section>
               </q-item>
               <!-- Dates -->
-              <!-- <q-item>
+              <q-item>
                 <q-item-section>
                   <q-select
                     outlined
@@ -173,7 +173,7 @@
                     :readonly="pool.status !== 'draft'"
                   />
                 </q-item-section>
-              </q-item> -->
+              </q-item>
               <q-item>
                 <q-item-section>
                   <datetime-field
@@ -546,17 +546,17 @@ export default {
     ...mapGetters("blockchains", ["currentChain"]),
 
     private_end() {
-      // if (this.accessType === "Premium") {
-      //   return {
-      //     date: this.toDateStringLocal(
-      //       new Date(this.pool_open.date).valueOf() +
-      //         this.premiumDuration * 1000 * 60 * 60
-      //     )
-      //   };
-      // } else {
-      //   return this.pool_open;
-      // }
-      return this.public_end;
+      if (this.accessType === "Premium") {
+        return {
+          date: this.toDateStringLocal(
+            new Date(this.pool_open.date).valueOf() +
+              this.premiumDuration * 1000 * 60 * 60
+          )
+        };
+      } else {
+        return this.pool_open;
+      }
+      // return this.public_end;
     },
 
     admin_address() {
@@ -729,6 +729,10 @@ export default {
       this.pool_open.date = this.toDateStringLocal(this.pool.pool_open);
       this.private_end.date = this.toDateStringLocal(this.pool.private_end);
       this.public_end.date = this.toDateStringLocal(this.pool.public_end);
+
+      let goal  = Math.abs(this.pool.pool_open - this.pool.private_end) / 36e5;
+      this.premiumDuration = this.premiumDurationOptions.reduce((prev, curr) => Math.abs(curr - goal) < Math.abs(prev - goal) ? curr : prev); // nearest premiumDuration
+
 
       if (this.pool.whitelist.length > 0) {
         this.haveWhitelist = true;

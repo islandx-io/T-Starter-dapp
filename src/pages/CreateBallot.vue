@@ -201,7 +201,7 @@
                 </q-item-section>
               </q-item>
               <!-- Dates -->
-              <!-- <q-item>
+              <q-item>
                 <q-item-section>
                   <q-select
                     outlined
@@ -236,7 +236,7 @@
                     "
                   />
                 </q-item-section>
-              </q-item> -->
+              </q-item>
               <q-item>
                 <q-item-section>
                   <!-- <q-select
@@ -856,17 +856,17 @@ export default {
     },
 
     private_end() {
-      // if (this.accessType === "Premium") {
-      //   return {
-      //     date: this.toDateStringLocal(
-      //       new Date(this.pool_open.date).valueOf() +
-      //         this.premiumDuration * 1000 * 60 * 60
-      //     )
-      //   };
-      // } else {
-      //   return this.public_end;
-      // }
-      return this.public_end;
+      if (this.accessType === "Premium") {
+        return {
+          date: this.toDateStringLocal(
+            new Date(this.pool_open.date).valueOf() +
+              this.premiumDuration * 1000 * 60 * 60
+          )
+        };
+      } else {
+        return this.public_end;
+      }
+      // return this.public_end;
     },
 
     selected_base_token() {
