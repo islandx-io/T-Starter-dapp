@@ -533,9 +533,10 @@
         "
         class="q-mt-md fit column wrap content-center"
       >
-        <div class="text-h6">
+        <div class="text-h6 row">
           Transaction Progress
-        </div>
+          <!-- <div class="col text-overline q-ml-sm"> eta: 2 min</div> -->
+        </div>        
         <div class="text-center">
           Transaction submitted
           <q-icon
@@ -558,9 +559,40 @@
           />
           <q-spinner v-else />
         </div>
-        <div class="text-center">Reporters confirmed <q-spinner /></div>
-        <div class="text-center">Allocation confirmed <q-spinner /></div>
-        <div class="text-center">Done <q-spinner /></div>
+        <div class="text-center">
+          Reporters confirmed
+          <q-icon
+            v-if="xchainProgress.reported"
+            name="fas fa-check-circle"
+            size="xs"
+            class="q-pr-sm"
+            color="positive"
+          />
+          <q-spinner v-else />
+        </div>
+        <!-- <div class="text-center">Allocation confirmed <q-spinner /></div> -->
+        <div v-if="xchainProgress.success === 1" class="text-center">
+          Success
+          <q-icon            
+            name="fas fa-check-circle"
+            size="xs"
+            class="q-pr-sm"
+            color="positive"
+          />
+        </div>
+        <div v-if="xchainProgress.success === -1" class="text-center">
+          Failed
+          <q-icon            
+            name="fas fa-times-circle"
+            size="xs"
+            class="q-pr-sm"
+            color="negative"
+          />
+        </div>
+        <div v-if="xchainProgress.success === -1" style="color: red" >
+          Failed to bridge transaction. Please claim your refund from the pool's
+          allocations tab.
+        </div>
       </q-card>
     </section>
   </q-page>
@@ -617,7 +649,7 @@ export default {
         submitted: false,
         confirmed: false,
         reported: false,
-        done: false
+        success: 0
       }
     };
   },
@@ -1144,6 +1176,9 @@ export default {
         console.log(pegIn);
         this.joinPoolTx = pegIn;
         this.xchainProgress.confirmed = true;
+
+        // Check reporters status
+        this.checkReportersStatus();
       }
     },
 
@@ -1202,6 +1237,41 @@ export default {
           this.$getSymFromAsset(token.token_info) === this.BaseTokenSymbol
       );
       this.xchainToken = this.possiblexchainTokens[0];
+    },
+
+    async checkReportersStatus() {
+      // start polling table
+      let pollingXchain = setInterval(async () => {
+        // Check reporters status
+        const res = await this.$store.$api.getTableRows({
+          code: process.env.XCHAIN_ADDRESS,
+          scope: process.env.XCHAIN_ADDRESS,
+          table: "reports",
+          limit: 1000,
+          reverse: true
+        });
+        console.log(res);
+        console.log(this.joinPoolTx.transactionHash);
+        let report = res.rows.filter(
+          r =>
+            r.transfer.transaction_id ===
+            this.joinPoolTx.transactionHash.slice(2)
+        );
+        console.log(report);
+        if (report.length > 0) {
+          console.log("Found report");
+          if (report[0].executed === 1) {
+            console.log("Report executed");
+            this.xchainProgress.reported = true;
+            this.xchainProgress.success = 1;
+          } else if (report[0].failed === 1) {
+            console.log("Report failed");
+            this.xchainProgress.reported = true;
+            this.xchainProgress.success = -1;
+          }
+          clearInterval(pollingXchain);
+        }
+      }, 10000);
     }
   },
 
