@@ -536,7 +536,7 @@
         <div class="text-h6 row">
           Transaction Progress
           <!-- <div class="col text-overline q-ml-sm"> eta: 2 min</div> -->
-        </div>        
+        </div>
         <div class="text-center">
           Transaction submitted
           <q-icon
@@ -573,7 +573,7 @@
         <!-- <div class="text-center">Allocation confirmed <q-spinner /></div> -->
         <div v-if="xchainProgress.success === 1" class="text-center">
           Success
-          <q-icon            
+          <q-icon
             name="fas fa-check-circle"
             size="xs"
             class="q-pr-sm"
@@ -582,14 +582,14 @@
         </div>
         <div v-if="xchainProgress.success === -1" class="text-center">
           Failed
-          <q-icon            
+          <q-icon
             name="fas fa-times-circle"
             size="xs"
             class="q-pr-sm"
             color="negative"
           />
         </div>
-        <div v-if="xchainProgress.success === -1" style="color: red" >
+        <div v-if="xchainProgress.success === -1" style="color: red">
           Failed to bridge transaction. Please claim your refund from the pool's
           allocations tab.
         </div>
@@ -1173,11 +1173,8 @@ export default {
             }
           });
 
-        console.log(pegIn);
         this.joinPoolTx = pegIn;
         this.xchainProgress.confirmed = true;
-
-        // Check reporters status
         this.checkReportersStatus();
       }
     },
@@ -1262,12 +1259,13 @@ export default {
             console.log("Report executed");
             this.xchainProgress.reported = true;
             this.xchainProgress.success = 1;
+            clearInterval(pollingXchain);
           } else if (report[0].failed === 1) {
             console.log("Report failed");
             this.xchainProgress.reported = true;
             this.xchainProgress.success = -1;
+            clearInterval(pollingXchain);
           }
-          clearInterval(pollingXchain);
         }
       }, 10000);
     }
