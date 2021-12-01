@@ -420,11 +420,16 @@
                 <q-btn
                   label="Reclaim Tokens"
                   @click="tryReclaimTokens()"
-                  v-if="pool.status === 'success' || pool.status === 'cancelled'"
+                  v-if="
+                    pool.status === 'success' || pool.status === 'cancelled'
+                  "
                   color="primary"
                 />
               </q-item-section>
-              <q-item-section class="col-auto">
+              <q-item-section
+                v-if="pool.status === 'success' || pool.status === 'cancelled'"
+                class="col-auto"
+              >
                 <q-btn
                   v-if="getEvmAccountName === ''"
                   label="CONNECT TO METAMASK"
