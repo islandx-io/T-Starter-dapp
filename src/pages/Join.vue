@@ -1245,14 +1245,14 @@ export default {
           scope: process.env.XCHAIN_ADDRESS,
           table: "reports",
           limit: 1000,
-          reverse: true
+          reverse: true,
+          key_type: "sha256",
+          index_position: 6,
+          lower_bound: this.joinPoolTx.transactionHash.slice(2),
+          upper_bound: this.joinPoolTx.transactionHash.slice(2)
         });
         // console.log(res);
-        let report = res.rows.filter(
-          r =>
-            r.transfer.transaction_id ===
-            this.joinPoolTx.transactionHash.slice(2)
-        );
+        let report = res.rows;
         if (report.length > 0) {
           console.log("Found report");
           if (report[0].executed === 1) {
