@@ -116,7 +116,7 @@ import { HttpProvider } from "ptokens-providers";
 import { Node } from "ptokens-node";
 import Web3 from "web3";
 import MetaMaskOnboarding from "@metamask/onboarding";
-import { BigNumber } from "bignumber.js";
+// import { BigNumber } from "bignumber.js";
 import { constants, eth } from "ptokens-utils";
 
 export default {
@@ -180,9 +180,9 @@ export default {
     return gas_wei;
   },
 
-  toWei(number) {
-    return BigNumber(number).multipliedBy(10 ** 18);
-  },
+  // toWei(number) {
+  //   return BigNumber(number).multipliedBy(10 ** 18);
+  // },
 
   metamaskOnboarding() {
     const onboarding = new MetaMaskOnboarding();

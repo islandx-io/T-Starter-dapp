@@ -607,7 +607,6 @@ import metamask from "src/components/Metamask";
 import { copyToClipboard } from "quasar";
 import netSelector from "src/components/NetSelector";
 import TokenSelector from "src/components/TokenSelector.vue";
-import BigNumber from "bignumber.js";
 
 export default {
   mixins: [metamask],
@@ -871,8 +870,8 @@ export default {
     async getAllocations() {
       let payload = { account: this.accountName, poolID: this.pool.id };
       this.allocation = await this.getAllocationByPool(payload);
-      console.log("Allocation:");
-      console.log(this.allocation);
+      // console.log("Allocation:");
+      // console.log(this.allocation);
       // show disclaimer if user hasn't participated yet
       if (this.$chainToQty(this.allocation.allocation) > 0) {
         this.disclaimer_show = false;
@@ -1141,11 +1140,12 @@ export default {
 
     async joinPoolTransactionOnXchain() {
       const { injectedWeb3, web3 } = await this.$web3();
+      const BN = web3.utils.toBN;
 
       let tokenAddress = "0x" + this.xchainToken.remote_token_address;
       let thisChainID = 0; //TODO get dynamically eos,wax
       let decimals = this.xchainToken.remote_token_symbol.split(",")[0];
-      let tokenAmount = BigNumber(this.amount).times(10 ** decimals);
+      let tokenAmount = new BN(this.amount).mul(BN(10).pow(BN(decimals)));
 
       if (injectedWeb3) {
         // Do pegIn ethereum transaction
@@ -1200,6 +1200,7 @@ export default {
     async checkAllowance() {
       // Check allowance
       const { injectedWeb3, web3 } = await this.$web3();
+      const BN = web3.utils.toBN;
       if (this.xchainToken.remote_token_address) {
         console.log("0x" + this.xchainToken.remote_token_address);
         const tokenContract = new web3.eth.Contract(
@@ -1209,9 +1210,9 @@ export default {
         let allowance = await tokenContract.methods
           .allowance(this.getEvmAccountName, process.env.VAULT_ADDRESS)
           .call();
-        console.log("Allowance:", BigNumber(allowance).toString());
+        console.log("Allowance:", BN(allowance).toString());
 
-        if (BigNumber(allowance).gte(BigNumber("0xFFFFFFFFFFFFFFF"))) {
+        if (BN(allowance).gte(BN("0xFFFFFFFFFFFFFFF"))) {
           this.hasAllowance = true;
         } else {
           this.hasAllowance = false;
