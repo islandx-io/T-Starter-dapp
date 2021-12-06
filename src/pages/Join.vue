@@ -1248,7 +1248,7 @@ export default {
           limit: 1000,
           reverse: true,
           key_type: "sha256",
-          index_position: 6,
+          index_position: 2,
           lower_bound: this.joinPoolTx.transactionHash.slice(2),
           upper_bound: this.joinPoolTx.transactionHash.slice(2)
         });
