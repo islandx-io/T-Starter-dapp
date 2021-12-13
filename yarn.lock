@@ -1547,10 +1547,10 @@
   dependencies:
     query-string "^6.5.0"
 
-"@telosnetwork/ual-telos-keycat@1.10.3":
-  version "1.10.3"
-  resolved "https://registry.yarnpkg.com/@telosnetwork/ual-telos-keycat/-/ual-telos-keycat-1.10.3.tgz#8c6eb2977ce725728a4a098073c3a4cfe27dda69"
-  integrity sha512-fBBiCBvHQ7pBNKOyp5e8V9arVbR8LkpLzCT81e3r7+RyP8ioBr+jouc54vWleHR+TvAdMYLyMGBFrG/DlMUmTQ==
+"@telosnetwork/ual-telos-keycat@1.11.1":
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/@telosnetwork/ual-telos-keycat/-/ual-telos-keycat-1.11.1.tgz#d9bff227a9a761c0b205843ebd45e0e081c70ee6"
+  integrity sha512-1ZV878mk9XYZnRHIxRzXVIl+0o2NjEj/6HlaXZppfwHV9jHcLL4khyfjs979jRYsxFeIKWSYBEgH+d8HMCbZzA==
   dependencies:
     "@telosnetwork/telos-keycatjs" "0.12.4"
     eosjs "^20.0.3"
