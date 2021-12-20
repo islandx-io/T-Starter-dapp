@@ -205,7 +205,7 @@
       >
         <h1 class="text-center">Stay Updated</h1>
         <div class="text-h6 text-center" style="max-width: 570px">
-          Subscribe to receive anouncements about new pools and other relevant
+          Subscribe to receive announcements about new pools and other relevant
           events.
         </div>
         <q-btn
@@ -214,7 +214,7 @@
           class="hover-accent"
           type="a"
           target="_blank"
-          href="https://t.me/joinchat/WgQUJEvd0jRmM2Q0"
+          href="https://t.me/tstarter_announcements"
         />
       </q-card>
     </section>
