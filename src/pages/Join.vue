@@ -1241,7 +1241,7 @@ export default {
           .call();
         console.log("Allowance:", BN(allowance).toString());
 
-        if (BN(allowance).gte(BN("0xFFFFFFFFFFFFFFFF"))) {
+        if (BN(allowance).gte(BN("0xFFFFFFFFFFFFFFF"))) {
           this.hasAllowance = true;
         } else {
           this.hasAllowance = false;
