@@ -254,6 +254,7 @@
                   :label="`Approve`"
                   color="primary"
                   @click="approveToken()"
+                  :disable="approvingToken"
                   v-if="
                     !hasAllowance &&
                     selectedNetwork !== currentChain.NETWORK_NAME
@@ -279,6 +280,16 @@
                   label="Join Pool"
                   type="submit"
                   color="primary"
+                  :disable="
+                    (!isAuthenticated ||
+                      pool.pool_status !== `open` ||
+                      balance <= $chainToQty(pool.minimum_swap) ||
+                      not_enough_start ||
+                      joining ||
+                      !isWhitelisted ||
+                      allocationReached) &&
+                    !hasHeadstart
+                  "
                   v-if="
                     selectedNetwork !== currentChain.NETWORK_NAME &&
                     hasAllowance
@@ -586,13 +597,18 @@
             pool's allocations tab.
           </div>
           <div class="q-pt-sm text-center" v-if="xchainProgress.success !== 0">
-            <q-btn              
+            <q-btn
               label="View Allocation"
               color="primary"
               @click="toAllocationsPage()"
             />
           </div>
-          <div class="q-pt-sm text-grey-7 text-center" v-if="xchainProgress.success === 0">Please wait. This could take up to several minutes</div>
+          <div
+            class="q-pt-sm text-grey-7 text-center"
+            v-if="xchainProgress.success === 0"
+          >
+            Please wait. This could take up to several minutes
+          </div>
         </q-card>
       </q-dialog>
     </section>
@@ -651,6 +667,7 @@ export default {
         reported: false,
         success: 0,
       },
+      approvingToken: false,
     };
   },
   components: { tokenAvatar, netSelector, TokenSelector },
@@ -1149,53 +1166,64 @@ export default {
       let tokenAmount = new BN(this.amount).mul(BN(10).pow(BN(decimals)));
 
       if (injectedWeb3) {
-        // Do pegIn ethereum transaction
-        console.log("Doing pegIn");
+        try {
+          // Do pegIn ethereum transaction
+          console.log("Doing pegIn");
 
-        const vaultContract = new web3.eth.Contract(
-          this.$vaultAbi,
-          process.env.VAULT_ADDRESS
-        );
+          const vaultContract = new web3.eth.Contract(
+            this.$vaultAbi,
+            process.env.VAULT_ADDRESS
+          );
 
-        const pegIn = await vaultContract.methods
-          .pegIn(
-            tokenAmount,
-            tokenAddress,
-            this.accountName,
-            this.poolID,
-            thisChainID
-          )
-          .send({ from: this.getEvmAccountName }, (err, txHash) => {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log(txHash);
-              this.xchainProgress.submitted = true;
-            }
-          });
+          const pegIn = await vaultContract.methods
+            .pegIn(
+              tokenAmount,
+              tokenAddress,
+              this.accountName,
+              this.poolID,
+              thisChainID
+            )
+            .send({ from: this.getEvmAccountName }, (err, txHash) => {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log(txHash);
+                this.xchainProgress.submitted = true;
+              }
+            });
 
-        this.joinPoolTx = pegIn;
-        this.xchainProgress.confirmed = true;
-        this.checkReportersStatus();
+          this.joinPoolTx = pegIn;
+          this.xchainProgress.confirmed = true;
+          this.checkReportersStatus();
+        } catch (error) {
+          this.$errorNotification(error);
+        }
       }
     },
 
     async approveToken() {
+      this.approvingToken = true;
       const { injectedWeb3, web3 } = await this.$web3();
 
       if (injectedWeb3) {
-        // Do approve on erc20
-        console.log("Doing approve");
-        const tokenContract = new web3.eth.Contract(
-          this.$erc20Abi,
-          "0x" + this.xchainToken.remote_token_address
-        );
+        try {
+          // Do approve on erc20
+          console.log("Doing approve");
+          const tokenContract = new web3.eth.Contract(
+            this.$erc20Abi,
+            "0x" + this.xchainToken.remote_token_address
+          );
 
-        const approve = await tokenContract.methods
-          .approve(process.env.VAULT_ADDRESS, "0xFFFFFFFFFFFFFFFF")
-          .send({ from: this.getEvmAccountName });
-        console.log(approve);
+          const approve = await tokenContract.methods
+            .approve(process.env.VAULT_ADDRESS, "0xFFFFFFFFFFFFFFFF")
+            .send({ from: this.getEvmAccountName });
+          console.log(approve);
+        } catch (error) {
+          this.$errorNotification(error);
+        }
       }
+      this.approvingToken = false;
+      this.checkAllowance();
     },
 
     async checkAllowance() {
@@ -1213,7 +1241,7 @@ export default {
           .call();
         console.log("Allowance:", BN(allowance).toString());
 
-        if (BN(allowance).gte(BN("0xFFFFFFFFFFFFFFF"))) {
+        if (BN(allowance).gte(BN("0xFFFFFFFFFFFFFFFF"))) {
           this.hasAllowance = true;
         } else {
           this.hasAllowance = false;
