@@ -6,7 +6,7 @@
       <q-card
         v-if="pool.pool_status !== 'open' && !hasHeadstart"
         style="min-height: 100px"
-        class="row justify-center content-center "
+        class="row justify-center content-center"
       >
         <div
           v-if="
@@ -25,7 +25,7 @@
           round
           class="self-start"
         >
-          <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px;" />
+          <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
         </q-btn>
         <q-form @submit="onSubmit" ref="joinForm">
           <div>
@@ -59,7 +59,7 @@
                   Balance: {{ balance }} {{ BaseTokenSymbol }}
                 </div>
               </div>
-              <q-card flat bordered class="inner-card row ">
+              <q-card flat bordered class="inner-card row">
                 <div class="row q-gutter-x-md items-center">
                   <q-input
                     class="col input-amount q-my-sm"
@@ -121,7 +121,7 @@
             <!-- From ETH -->
             <!---------------->
             <div v-if="selectedNetwork !== this.currentChain.NETWORK_NAME">
-              <div class="full-width row  justify-center">
+              <div class="full-width row justify-center">
                 <div
                   class="evm-account col ellipsis cursor-pointer"
                   style="max-width: 200px"
@@ -140,7 +140,7 @@
                   Balance: {{ balance }} {{ xchainTokenSymbol }}
                 </div>
               </div>
-              <q-card flat bordered class="inner-card row ">
+              <q-card flat bordered class="inner-card row">
                 <div class="row q-gutter-x-md items-center">
                   <!-- <q-btn
                     v-if="getEvmAccountName === ''"
@@ -219,8 +219,8 @@
             <!-- To -->
             <!-------->
             <q-item dense class="text-h6">To</q-item>
-            <q-card flat bordered class="inner-card row ">
-              <div class="col row justify-between items-center ">
+            <q-card flat bordered class="inner-card row">
+              <div class="col row justify-between items-center">
                 <div class="col input-amount q-pr-lg">
                   {{ tokenToAmount }}
                 </div>
@@ -256,7 +256,7 @@
                   @click="approveToken()"
                   v-if="
                     !hasAllowance &&
-                      selectedNetwork !== currentChain.NETWORK_NAME
+                    selectedNetwork !== currentChain.NETWORK_NAME
                   "
                 />
                 <q-btn
@@ -271,7 +271,7 @@
                       joining ||
                       !isWhitelisted ||
                       allocationReached) &&
-                      !hasHeadstart
+                    !hasHeadstart
                   "
                   v-if="selectedNetwork === currentChain.NETWORK_NAME"
                 />
@@ -281,12 +281,12 @@
                   color="primary"
                   v-if="
                     selectedNetwork !== currentChain.NETWORK_NAME &&
-                      hasAllowance
+                    hasAllowance
                   "
                 />
                 <div
                   v-if="canBuyWithUSD"
-                  style="text-align: center;"
+                  style="text-align: center"
                   class="q-py-xs"
                 >
                   OR
@@ -472,9 +472,7 @@
                 color="primary"
                 text-color="white"
               />
-              <span class="text-h6">
-                Transaction placed
-              </span>
+              <span class="text-h6"> Transaction placed </span>
             </q-card-section>
             <q-card-section>
               <q-item>
@@ -508,15 +506,13 @@
         <q-dialog v-model="moonpayDialog">
           <div
             class="bg-white"
-            style="border-radius: 10px; overflow: hidden; text-align:center;"
+            style="border-radius: 10px; overflow: hidden; text-align: center"
           >
             <iframe
               allow="accelerometer; autoplay; camera; gyroscope; payment"
               height="600"
               width="350"
-              :src="
-                `https://buy-staging.moonpay.com?baseCurrencyCode=usd&apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}`
-              "
+              :src="`https://buy-staging.moonpay.com?baseCurrencyCode=usd&apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}`"
               allowfullscreen
               frameBorder="0"
             >
@@ -525,75 +521,80 @@
           </div>
         </q-dialog>
       </q-card>
+
       <!-- Processing xchain tx -->
-      <q-card
-        v-if="
-          selectedNetwork !== currentChain.NETWORK_NAME &&
-            xchainProgress.submitted
-        "
-        class="q-mt-md fit column wrap content-center"
-      >
-        <div class="text-h6 row">
-          Transaction Progress
-          <!-- <div class="col text-overline q-ml-sm"> eta: 2 min</div> -->
-        </div>
-        <div class="text-center">
-          Transaction submitted
-          <q-icon
-            v-if="xchainProgress.submitted"
-            name="fas fa-check-circle"
-            size="xs"
-            class="q-pr-sm"
-            color="positive"
-          />
-          <q-spinner v-else />
-        </div>
-        <div class="text-center">
-          Transaction confirmed
-          <q-icon
-            v-if="xchainProgress.confirmed"
-            name="fas fa-check-circle"
-            size="xs"
-            class="q-pr-sm"
-            color="positive"
-          />
-          <q-spinner v-else />
-        </div>
-        <div class="text-center">
-          Reporters confirmed
-          <q-icon
-            v-if="xchainProgress.reported"
-            name="fas fa-check-circle"
-            size="xs"
-            class="q-pr-sm"
-            color="positive"
-          />
-          <q-spinner v-else />
-        </div>
-        <!-- <div class="text-center">Allocation confirmed <q-spinner /></div> -->
-        <div v-if="xchainProgress.success === 1" class="text-center">
-          Success
-          <q-icon
-            name="fas fa-check-circle"
-            size="xs"
-            class="q-pr-sm"
-            color="positive"
-          />
-        </div>
-        <div v-if="xchainProgress.success === -1" class="text-center">
-          Failed
-          <q-icon
-            name="fas fa-times-circle"
-            size="xs"
-            class="q-pr-sm"
-            color="negative"
-          />
-        </div>
-        <div v-if="xchainProgress.success === -1" style="color: red">
-          Failed to bridge transaction. Please claim your refund from the pool's
-          allocations tab.
-        </div>
-      </q-card>
+      <q-dialog persistent v-model="xchainProgress.submitted">
+        <q-card class="column wrap content-center">
+          <div class="text-h6 text-center">
+            Transaction Progress
+            <!-- <div class="col text-overline q-ml-sm"> eta: 2 min</div> -->
+          </div>
+          <div class="text-center">
+            Transaction submitted
+            <q-icon
+              v-if="xchainProgress.submitted"
+              name="fas fa-check-circle"
+              size="xs"
+              class="q-pr-sm"
+              color="positive"
+            />
+            <q-spinner v-else />
+          </div>
+          <div class="text-center">
+            Transaction confirmed
+            <q-icon
+              v-if="xchainProgress.confirmed"
+              name="fas fa-check-circle"
+              size="xs"
+              class="q-pr-sm"
+              color="positive"
+            />
+            <q-spinner v-else />
+          </div>
+          <div class="text-center">
+            Reporters confirmed
+            <q-icon
+              v-if="xchainProgress.reported"
+              name="fas fa-check-circle"
+              size="xs"
+              class="q-pr-sm"
+              color="positive"
+            />
+            <q-spinner v-else />
+          </div>
+          <!-- <div class="text-center">Allocation confirmed <q-spinner /></div> -->
+          <div v-if="xchainProgress.success === 1" class="text-center">
+            Success
+            <q-icon
+              name="fas fa-check-circle"
+              size="xs"
+              class="q-pr-sm"
+              color="positive"
+            />
+          </div>
+          <div v-if="xchainProgress.success === -1" class="text-center">
+            Failed
+            <q-icon
+              name="fas fa-times-circle"
+              size="xs"
+              class="q-pr-sm"
+              color="negative"
+            />
+          </div>
+          <div v-if="xchainProgress.success === -1" style="color: red">
+            Failed to bridge transaction. Please claim your refund from the
+            pool's allocations tab.
+          </div>
+          <div class="q-pt-sm text-center" v-if="xchainProgress.success !== 0">
+            <q-btn              
+              label="View Allocation"
+              color="primary"
+              @click="toAllocationsPage()"
+            />
+          </div>
+          <div class="q-pt-sm text-grey-7 text-center" v-if="xchainProgress.success === 0">Please wait. This could take up to several minutes</div>
+        </q-card>
+      </q-dialog>
     </section>
   </q-page>
 </template>
@@ -648,8 +649,8 @@ export default {
         submitted: false,
         confirmed: false,
         reported: false,
-        success: 0
-      }
+        success: 0,
+      },
     };
   },
   components: { tokenAvatar, netSelector, TokenSelector },
@@ -658,7 +659,7 @@ export default {
       "getAllPools",
       "getPoolByID",
       "getAllPoolIDs",
-      "getPoolByIDChain"
+      "getPoolByIDChain",
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
@@ -675,7 +676,7 @@ export default {
     },
 
     START_info() {
-      return this.wallet.find(el => (el.sym = "START"));
+      return this.wallet.find((el) => (el.sym = "START"));
     },
 
     explorerUrl() {
@@ -821,7 +822,7 @@ export default {
       } else {
         return "";
       }
-    }
+    },
   },
 
   methods: {
@@ -833,12 +834,12 @@ export default {
       "checkStakedChain",
       "getAllocationByPool",
       "getPlatformToken",
-      "getPoolsSettings"
+      "getPoolsSettings",
     ]),
     ...mapActions("account", [
       "getChainSTART",
       "getChainAccountStakeInfo",
-      "getChainTiersTable"
+      "getChainTiersTable",
     ]),
 
     restrictDecimal() {
@@ -901,7 +902,7 @@ export default {
         let payload = {
           address: this.pool.base_token.contract,
           sym: this.BaseTokenSymbol,
-          accountName: this.accountName
+          accountName: this.accountName,
         };
         // console.log(await this.getBalanceFromChain(payload));
         this.balance = this.$chainToQty(
@@ -952,8 +953,8 @@ export default {
               from: this.accountName,
               to: process.env.CONTRACT_ADDRESS,
               quantity: this.premium_access_fee,
-              memo: "Premium Pool Staking"
-            }
+              memo: "Premium Pool Staking",
+            },
           }
         );
       }
@@ -970,8 +971,8 @@ export default {
               this.BaseTokenDecimals,
               this.BaseTokenSymbol
             ),
-            memo: "Join pool"
-          }
+            memo: "Join pool",
+          },
         }
       );
       actions.push(
@@ -986,8 +987,8 @@ export default {
               this.amount,
               this.BaseTokenDecimals,
               this.BaseTokenSymbol
-            )
-          }
+            ),
+          },
         }
       );
       const transaction = await this.$store.$api.signTransaction(actions);
@@ -1001,7 +1002,7 @@ export default {
       this.$router.push({
         name: "pooldetails",
         params: { id: this.poolID },
-        query: { tab: "allocations" }
+        query: { tab: "allocations" },
       });
     },
 
@@ -1019,7 +1020,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Submitted"
+          message: "Submitted",
         });
         this.joining = false;
       } catch (error) {
@@ -1035,7 +1036,7 @@ export default {
           color: "red-5",
           textColor: "white",
           icon: "warning",
-          message: "You need to login first"
+          message: "You need to login first",
         });
       } else {
         // this.checkAllowed();
@@ -1057,7 +1058,7 @@ export default {
       // check stake if premium pool
       this.alreadyStaked = await this.checkStakedChain({
         account: this.accountName,
-        poolID: this.poolID
+        poolID: this.poolID,
       });
 
       // if START balance not enough and is premium pool, show dialog to buy
@@ -1119,7 +1120,7 @@ export default {
           color: "green-4",
           textColor: "secondary",
           message: "Copied address to clipboard",
-          timeout: 1000
+          timeout: 1000,
         });
       });
     },
@@ -1226,10 +1227,10 @@ export default {
         code: process.env.XCHAIN_ADDRESS,
         scope: process.env.XCHAIN_ADDRESS,
         table: "tokens",
-        limit: 100
+        limit: 100,
       });
       this.possiblexchainTokens = res.rows.filter(
-        token =>
+        (token) =>
           token.enabled === 1 &&
           token.remote_chain_id === this.getEvmRemoteId &&
           this.$getSymFromAsset(token.token_info) === this.BaseTokenSymbol
@@ -1250,7 +1251,7 @@ export default {
           key_type: "sha256",
           index_position: 2,
           lower_bound: this.joinPoolTx.transactionHash.slice(2),
-          upper_bound: this.joinPoolTx.transactionHash.slice(2)
+          upper_bound: this.joinPoolTx.transactionHash.slice(2),
         });
         // console.log(res);
         let report = res.rows;
@@ -1269,7 +1270,7 @@ export default {
           }
         }
       }, 10000);
-    }
+    },
   },
 
   async mounted() {
@@ -1305,12 +1306,12 @@ export default {
     async xchainToken() {
       this.checkAllowance();
       await this.getBalance();
-    }
+    },
   },
 
   beforeDestroy() {
     clearInterval(this.pollingMoonpay);
-  }
+  },
 };
 </script>
 
