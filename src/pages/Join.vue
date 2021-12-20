@@ -624,6 +624,7 @@ import metamask from "src/components/Metamask";
 import { copyToClipboard } from "quasar";
 import netSelector from "src/components/NetSelector";
 import TokenSelector from "src/components/TokenSelector.vue";
+import { ethers } from "ethers";
 
 export default {
   mixins: [metamask],
@@ -1158,12 +1159,10 @@ export default {
 
     async joinPoolTransactionOnXchain() {
       const { injectedWeb3, web3 } = await this.$web3();
-      const BN = web3.utils.toBN;
-
       let tokenAddress = "0x" + this.xchainToken.remote_token_address;
       let thisChainID = 0; //TODO get dynamically eos,wax
       let decimals = this.xchainToken.remote_token_symbol.split(",")[0];
-      let tokenAmount = new BN(this.amount).mul(BN(10).pow(BN(decimals)));
+      let tokenAmount = ethers.utils.parseUnits(this.amount, decimals);
 
       if (injectedWeb3) {
         try {
