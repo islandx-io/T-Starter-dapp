@@ -81,12 +81,12 @@ module.exports = function(/* ctx */) {
         VAULT_ADDRESS: process.env.VAULT_ADDRESS
       },
 
-      // transpile: false,
+      transpile: true,
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
       // (from node_modules, which are by default not transpiled).
       // Applies only if "transpile" is set to true.
-      // transpileDependencies: [],
+      transpileDependencies: ["web3modal-vue"],
 
       // rtl: false, // https://quasar.dev/options/rtl-support
       // preloadChunks: true,

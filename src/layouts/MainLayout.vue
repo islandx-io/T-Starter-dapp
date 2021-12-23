@@ -59,6 +59,11 @@
             :to="{ name: 'wallet', params: { accountName: accountName } }"
             label="Wallet"
           />
+          <q-btn class="hover-accent"
+            color="secondary"
+            flat
+            @click="connect()"
+            label="Connect"></q-btn>
           <login-button class="q-pl-sm" />
           <chain-selector class="q-pl-md" />
         </div>
@@ -109,20 +114,12 @@
                 outline
                 class="hover-accent"
               />
-               <q-btn
+              <q-btn
                 label="Voting"
                 color="secondary"
                 text-color="black"
                 outline
                 :to="{ name: 'voting' }"
-              />
-              <q-btn
-                v-if="isAuthenticated"
-                color="secondary"
-                text-color="black"
-                outline
-                @click="openStaking()"
-                label="Staking"
               />
               <q-btn
                 label="Wallet"
@@ -149,7 +146,7 @@
 
     <section class="foot-bg row items-stretch">
       <div class="footer-container row items-end justify-center">
-        <div class="col-12 row justify-between ">
+        <div class="col-12 row justify-between">
           <div class="col-sm-4">
             <router-link to="/" class="router-link q-pb-sm">
               <img
@@ -194,6 +191,12 @@
           Copyright 2021. T-STARTER. All Rights Reserved
         </p>
       </div>
+      <web3-modal-vue
+        ref="web3modal"
+        :theme="theme"
+        :provider-options="providerOptions"
+        cache-provider
+      />
     </section>
   </q-layout>
 </template>
@@ -204,10 +207,14 @@ import ChainSelector from "components/ChainSelector.vue";
 import Staking from "components/Staking.vue";
 import { mapGetters, mapActions } from "vuex";
 import { Dialog } from "quasar";
+import Web3ModalVue from "web3modal-vue";
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import { web3Modal } from "app/src/config/mixins";
 
 export default {
   name: "MainLayout",
-  components: { LoginButton, ChainSelector },
+  components: { LoginButton, ChainSelector, Web3ModalVue },
+  mixins: [web3Modal],
   data() {
     return {
       // prettier-ignore
@@ -220,7 +227,16 @@ export default {
         {name: "docs", icon: "fa fa-book", link: "https://docs.tstarter.io/"},
       ],
       showMenu: false,
-      siteVersion: process.env.SITE_VERSION
+      siteVersion: process.env.SITE_VERSION,
+      theme: "light",
+      providerOptions: {
+        walletconnect: {
+          package: WalletConnectProvider,
+          options: {
+            infuraId: "-",
+          },
+        },
+      },
     };
   },
 
@@ -229,14 +245,14 @@ export default {
     ...mapGetters("blockchains", ["currentChain"]),
     admin_address() {
       return process.env.ADMIN_ADDRESS;
-    }
+    },
   },
   methods: {
     async openStaking() {
       this.$q
         .dialog({
           component: Staking,
-          parent: this
+          parent: this,
         })
         .onOk(() => {
           console.log("OK");
@@ -247,8 +263,22 @@ export default {
         .onDismiss(() => {
           console.log("Called on OK or Cancel");
         });
-    }
-  }
+    },
+    connect() {
+      this.$store.dispatch("web3ModalStore/connect");
+    },
+  },
+  async mounted() {
+    this.$nextTick(async () => {
+      console.log("mounted");
+      const web3modal = this.$refs.web3modal;
+      this.$store.commit("web3ModalStore/setWeb3Modal", web3modal);
+      if (web3modal.cachedProvider) {
+        await this.$store.dispatch("connect");
+        this.subscribeMewBlockHeaders();
+      }
+    });
+  },
 };
 </script>
 

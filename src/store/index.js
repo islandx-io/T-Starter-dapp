@@ -8,6 +8,7 @@ import blockchains from "./blockchains";
 import ballots from "./ballots";
 import tport from "./tport";
 import xchain from "./xchain";
+import web3ModalStore from "./web3ModalStore";
 
 Vue.use(Vuex);
 
@@ -20,7 +21,8 @@ export default function() {
       blockchains,
       ballots,
       tport,
-      xchain
+      xchain,
+      web3ModalStore
     },
 
     strict: process.env.DEV
