@@ -473,9 +473,9 @@
             <q-item>
               <q-checkbox v-model="accept" el="accept">
                 I agree to the
-                <a :href="TermsandConditionsURL" target="_blank" @click.stop
-                  >Terms and Conditions</a
-                >
+                <a :href="$router.resolve({name: 'terms'}).href" target="_blank" @click.stop>
+                  Terms and Conditions
+                </a>
               </q-checkbox>
             </q-item>
 

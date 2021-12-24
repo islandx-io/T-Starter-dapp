@@ -140,6 +140,17 @@ const routes = [
       }
     ]
   },
+  {
+    path: "/:chain/terms",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "",
+        name: "terms",
+        component: () => import("pages/Terms.vue")
+      }
+    ]
+  },
   // {
   //   path: "/:chain/updateballot/:id",
   //   component: () => import("layouts/MainLayout.vue"),
