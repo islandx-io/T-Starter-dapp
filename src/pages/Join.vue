@@ -1329,6 +1329,7 @@ export default {
     async selectedNetwork() {},
     async getEvmAccountName() {
       this.checkAllowance();
+      await this.getBalance();
     },
     async xchainToken() {
       this.checkAllowance();
