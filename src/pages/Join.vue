@@ -1179,7 +1179,7 @@ export default {
       let tokenAddress = "0x" + this.xchainToken.remote_token_address;
       let thisChainID = 0; //TODO get dynamically eos,wax
       let decimals = this.xchainToken.remote_token_symbol.split(",")[0];
-      let tokenAmount = ethers.utils.parseUnits(this.amount, decimals);
+      let tokenAmount = ethers.utils.parseUnits(this.amount.toString(), decimals);
 
       if (injectedWeb3) {
         try {
