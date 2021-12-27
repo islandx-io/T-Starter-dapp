@@ -10,7 +10,8 @@ const mainnetList = [
       symbol: "ETH",
       decimals: 18
     },
-    blockExplorerUrls: ["https://etherscan.io"]
+    blockExplorerUrls: ["https://etherscan.io"],
+    vaultContract: ""
   },
   {
     name: "BSC",
@@ -23,7 +24,8 @@ const mainnetList = [
       symbol: "BNB",
       decimals: 18
     },
-    blockExplorerUrls: ["https://bscscan.com"]
+    blockExplorerUrls: ["https://bscscan.com"],
+    vaultContract: ""
   }
 ];
 
@@ -39,7 +41,8 @@ const testnetList = [
       symbol: "ETH",
       decimals: 18
     },
-    blockExplorerUrls: ["https://ropsten.etherscan.io"]
+    blockExplorerUrls: ["https://ropsten.etherscan.io"],
+    vaultContract: "0xbaF26318fECd5D2A0C6C8A60322cD5346BBA3F2c"
   },
   {
     name: "BSC",
@@ -52,7 +55,8 @@ const testnetList = [
       symbol: "tBNB",
       decimals: 18
     },
-    blockExplorerUrls: ["https://testnet.bscscan.com"]
+    blockExplorerUrls: ["https://testnet.bscscan.com"],
+    vaultContract: ""
   },
   {
     name: "Telos EVM",
@@ -65,7 +69,8 @@ const testnetList = [
       symbol: "TLOS",
       decimals: 18
     },
-    blockExplorerUrls: ["https://testnet.telos.net/v2/explore/evm/"]
+    blockExplorerUrls: ["https://testnet.telos.net/v2/explore/evm/"],
+    vaultContract: ""
   }
 ];
 

@@ -78,7 +78,6 @@ module.exports = function(/* ctx */) {
         TPORT_ADDRESS: process.env.TPORT_ADDRESS,
         TOKEN_ADDRESS: process.env.TOKEN_ADDRESS,
         XCHAIN_ADDRESS: process.env.XCHAIN_ADDRESS,
-        VAULT_ADDRESS: process.env.VAULT_ADDRESS
       },
 
       // transpile: false,

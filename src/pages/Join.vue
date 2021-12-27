@@ -622,7 +622,7 @@
           </div>
           <div
             class="q-pt-sm text-grey-7 text-center"
-            v-if="xchainProgress.success === 0 && xchainProgress.confirmed === 0"
+            v-if="xchainProgress.success === 0 && xchainProgress.confirmed !== 0"
           >
             Please wait. This could take up to several minutes
           </div>
@@ -698,7 +698,7 @@ export default {
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
-    ...mapGetters("xchain", ["getEvmRemoteId"]),
+    ...mapGetters("xchain", ["getEvmRemoteId", "getVaultContractAddr"]),
 
     externalTransactionId() {
       return this.accountName + "-" + this.currentUID;
@@ -1188,7 +1188,7 @@ export default {
 
           const vaultContract = new web3.eth.Contract(
             this.$vaultAbi,
-            process.env.VAULT_ADDRESS
+            this.getVaultContractAddr
           );
 
           const pegIn = await vaultContract.methods
@@ -1232,7 +1232,7 @@ export default {
           );
 
           const approve = await tokenContract.methods
-            .approve(process.env.VAULT_ADDRESS, "0xFFFFFFFFFFFFFFFF")
+            .approve(this.getVaultContractAddr, "0xFFFFFFFFFFFFFFFF")
             .send({ from: this.getEvmAccountName });
           console.log(approve);
         } catch (error) {
@@ -1254,7 +1254,7 @@ export default {
           "0x" + this.xchainToken.remote_token_address
         );
         let allowance = await tokenContract.methods
-          .allowance(this.getEvmAccountName, process.env.VAULT_ADDRESS)
+          .allowance(this.getEvmAccountName, this.getVaultContractAddr)
           .call();
         console.log("Allowance:", BN(allowance).toString());
 
