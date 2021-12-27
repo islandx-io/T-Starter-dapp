@@ -554,11 +554,18 @@
           <div class="text-center">
             Transaction confirmed
             <q-icon
-              v-if="xchainProgress.confirmed"
+              v-if="xchainProgress.confirmed === 1"
               name="fas fa-check-circle"
               size="xs"
               class="q-pr-sm"
               color="positive"
+            />
+            <q-icon
+              v-else-if="xchainProgress.confirmed === -1"
+              name="fas fa-times-circle"
+              size="xs"
+              class="q-pr-sm"
+              color="negative"
             />
             <q-spinner v-else />
           </div>
@@ -596,6 +603,16 @@
             Failed to bridge transaction. Please claim your refund from the
             pool's allocations tab.
           </div>
+          <div v-if="xchainProgress.confirmed === -1" style="color: red">
+            Failed to bridge transaction. Please review the transaction on the explorer
+          </div>
+          <div class="q-pt-sm text-center" v-if="xchainProgress.confirmed === -1">
+            <q-btn
+              label="Close"
+              color="primary"
+              v-close-popup
+            />
+          </div>
           <div class="q-pt-sm text-center" v-if="xchainProgress.success !== 0">
             <q-btn
               label="View Allocation"
@@ -605,7 +622,7 @@
           </div>
           <div
             class="q-pt-sm text-grey-7 text-center"
-            v-if="xchainProgress.success === 0"
+            v-if="xchainProgress.success === 0 && xchainProgress.confirmed === 0"
           >
             Please wait. This could take up to several minutes
           </div>
@@ -664,7 +681,7 @@ export default {
       joinPoolTx: {},
       xchainProgress: {
         submitted: false,
-        confirmed: false,
+        confirmed: 0,
         reported: false,
         success: 0,
       },
@@ -1031,15 +1048,15 @@ export default {
       try {
         if (this.selectedNetwork === this.currentChain.NETWORK_NAME) {
           await this.joinPoolTransaction();
+          this.$q.notify({
+            color: "green-4",
+            textColor: "white",
+            icon: "cloud_done",
+            message: "Submitted",
+          });
         } else {
           await this.joinPoolTransactionOnXchain();
         }
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Submitted",
-        });
         this.joining = false;
       } catch (error) {
         this.$errorNotification(error);
@@ -1192,9 +1209,10 @@ export default {
             });
 
           this.joinPoolTx = pegIn;
-          this.xchainProgress.confirmed = true;
+          this.xchainProgress.confirmed = 1;
           this.checkReportersStatus();
         } catch (error) {
+          this.xchainProgress.confirmed = -1;
           this.$errorNotification(error);
         }
       }
