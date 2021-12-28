@@ -35,16 +35,8 @@
         <q-tab-panels
           v-model="tab"
           animated
-          swipeable
           class="tab-panel-container"
         >
-          <!-- Refund and reclaim tabs -->
-          <q-tab-panel name="refunds" @mousedown.stop>
-            <vault-dash  />
-          </q-tab-panel>
-          <q-tab-panel name="reclaim" @mousedown.stop>
-            <reclaim-dash  />
-          </q-tab-panel>
           <q-tab-panel name="tokens" @mousedown.stop>
             <q-toggle v-model="showZeroBalance" class="self-end">
               Show zero balance
@@ -194,6 +186,13 @@
                 </q-tr>
               </template>
             </q-table>
+          </q-tab-panel>
+          <!-- Refund and reclaim tabs -->
+          <q-tab-panel name="refunds" @mousedown.stop>
+            <vault-dash  />
+          </q-tab-panel>
+          <q-tab-panel name="reclaim" @mousedown.stop>
+            <reclaim-dash  />
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
