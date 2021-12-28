@@ -74,5 +74,5 @@ export const getPublishedPools = ({ pools }) =>
   pools
     .filter((a) => a.status === "published" || a.status === "success")
     .sort((a, b) => {
-      return new Date(a.pool_open) - new Date(b.pool_open);
+      return new Date(a.pool_close) - new Date(b.pool_close);
     });
