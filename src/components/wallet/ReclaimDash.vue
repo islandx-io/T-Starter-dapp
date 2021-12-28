@@ -1,6 +1,14 @@
 <template>
   <div>
     <div v-if="hasClaimable">
+      <q-table
+        class="wallet-table q-pa-md"
+        :data="getReclaimableTokens"
+        row-key="id"
+        hide-pagination
+      >
+      </q-table>
+
       <div class="q-pa-md q-gutter-sm row justify-center">
         <q-btn
           v-if="getEvmAccountName !== ''"
@@ -52,10 +60,10 @@ export default {
     ...mapGetters("xchain", ["getEvmAccountName", "getReclaimableTokens"]),
 
     hasClaimable() {
-      if (this.getReclaimableTokens) {
-        return this.getReclaimableTokens.length > 0;        
+      if (this.getReclaimableTokens !== undefined) {
+        return this.getReclaimableTokens.length > 0;     
       } else {
-        return false;
+        return false;   
       }
     },
   },

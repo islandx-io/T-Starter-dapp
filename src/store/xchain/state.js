@@ -3,5 +3,6 @@ export default {
   chainId: null,
   tportTokens: [],
   teleports: [],
-  networkList: []
+  networkList: [],
+  reclaimableTokens: [],
 }
