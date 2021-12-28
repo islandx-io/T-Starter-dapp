@@ -43,7 +43,9 @@
           <q-tab-panel name="refunds" @mousedown.stop>
             <vault-dash class="q-mb-md" />
           </q-tab-panel>
-          <q-tab-panel name="reclaim" @mousedown.stop> </q-tab-panel>
+          <q-tab-panel name="reclaim" @mousedown.stop>
+            <reclaim-dash class="q-mb-md" />
+          </q-tab-panel>
         </q-tab-panels>
         <q-toggle v-model="showZeroBalance" class="self-end">
           Show zero balance
@@ -220,9 +222,10 @@ import tokenAvatar from "src/components/TokenAvatar";
 import walletActions from "src/components/wallet/WalletActions";
 import { date } from "quasar";
 import VaultDash from "src/components/wallet/VaultDash.vue";
+import ReclaimDash from "src/components/wallet/ReclaimDash.vue";
 
 export default {
-  components: { tokenAvatar, walletActions, VaultDash },
+  components: { tokenAvatar, walletActions, VaultDash, ReclaimDash },
   data() {
     return {
       tab: "tokens",
