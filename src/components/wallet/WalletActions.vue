@@ -88,7 +88,7 @@
         :icon="roundSend"
         :to="{
           name: 'send',
-          query: { token_sym: props.row.token_sym }
+          query: { token_sym: props.row.token_sym },
         }"
         v-if="props.row.balance > 0"
         class="hover-accent"
@@ -104,7 +104,7 @@
         icon="fas fa-sign-in-alt"
         :to="{
           name: 'receive',
-          query: { token_sym: props.row.token_sym }
+          query: { token_sym: props.row.token_sym },
         }"
         v-if="receiveTokens.includes(props.row.token_sym)"
         class="hover-accent"
@@ -149,13 +149,13 @@ export default {
     return {
       baseTokenSymbols: ["TLOS", "PBTC", "PETH", "PUSDC", "PUSDT", "EOS"], // TODO make dynamic
       truncateActions: true,
-      actionButtonPadding: "5px 8px"
+      actionButtonPadding: "5px 8px",
     };
   },
   props: {
     props: {},
     accountName: { require: true },
-    stakeData: {}
+    stakeData: {},
   },
 
   created() {
@@ -166,10 +166,11 @@ export default {
     // TODO If staked tokens can be released. i.e. past release date
     ...mapGetters("blockchains", ["currentChain"]),
     ...mapGetters("tport", ["getTPortTokens"]),
+
     canRelease() {
       let now = new Date().valueOf();
       let can_release = false;
-      this.stakeData.forEach(el => {
+      this.stakeData.forEach((el) => {
         if (now > Date.parse(el.first + "Z")) {
           can_release = true;
         }
@@ -183,10 +184,10 @@ export default {
     receiveTokens() {
       let tportTokens = [];
       if (this.getTPortTokens.length > 0) {
-        tportTokens = this.getTPortTokens.map(el => el.token.sym);
+        tportTokens = this.getTPortTokens.map((el) => el.token.sym);
       }
       return [...this.baseTokenSymbols, ...tportTokens];
-    }
+    },
   },
 
   methods: {
@@ -212,9 +213,9 @@ export default {
           name: "withdraw",
           data: {
             account: this.accountName,
-            quantity: amount_str
-          }
-        }
+            quantity: amount_str,
+          },
+        },
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
@@ -226,9 +227,9 @@ export default {
           name: "reclaimstake",
           data: {
             account: this.accountName,
-            quantity: amount_str
-          }
-        }
+            quantity: amount_str,
+          },
+        },
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
@@ -239,24 +240,26 @@ export default {
           account: process.env.CONTRACT_ADDRESS,
           name: "updatestake",
           data: {
-            account: this.accountName
-          }
-        }
+            account: this.accountName,
+          },
+        },
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
     async claimTokens(row) {
-      const actions = [
-        {
+      let actions = [];
+      for (const pool_id of row.ids) {
+        actions.push({
           account: process.env.CONTRACT_ADDRESS,
           name: "claim",
           data: {
             account: this.accountName,
-            pool_id: row.id
-          }
-        }
-      ];
+            pool_id: pool_id,
+          },
+        });
+      }
+
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
@@ -267,7 +270,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Tokens claimed"
+          message: "Tokens claimed",
         });
         // this.$router.push("/");
         await this.$listeners.reloadWalletInfo();
@@ -290,7 +293,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Tokens claimed"
+          message: "Tokens claimed",
         });
       } catch (error) {
         this.$errorNotification(error);
@@ -311,7 +314,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Tokens claimed"
+          message: "Tokens claimed",
         });
       } catch (error) {
         this.$errorNotification(error);
@@ -327,14 +330,14 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Staked Tokens Updated"
+          message: "Staked Tokens Updated",
         });
       } catch (error) {
         this.$errorNotification(error);
       }
-    }
+    },
   },
-  mounted() {}
+  mounted() {},
 };
 </script>
 

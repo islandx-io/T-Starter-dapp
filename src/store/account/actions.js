@@ -1,4 +1,4 @@
-export const login = async function(
+export const login = async function (
   { commit, dispatch },
   { idx, account, returnUrl }
 ) {
@@ -38,31 +38,31 @@ export const login = async function(
   }
 };
 
-export const autoLogin = async function({ dispatch, commit }, returnUrl) {
+export const autoLogin = async function ({ dispatch, commit }, returnUrl) {
   const { authenticator, idx } = getAuthenticator(this.$ual);
   if (authenticator) {
     commit("setAutoLogin", true);
     await dispatch("login", {
       idx,
       returnUrl,
-      account: localStorage.getItem("account")
+      account: localStorage.getItem("account"),
     });
     commit("setAutoLogin", false);
   }
 };
 
-const getAuthenticator = function(ual, wallet = null) {
+const getAuthenticator = function (ual, wallet = null) {
   wallet = wallet || localStorage.getItem("autoLogin");
   const idx = ual.authenticators.findIndex(
-    auth => auth.constructor.name === wallet
+    (auth) => auth.constructor.name === wallet
   );
   return {
     authenticator: ual.authenticators[idx],
-    idx
+    idx,
   };
 };
 
-export const logout = async function({ commit, rootGetters }) {
+export const logout = async function ({ commit, rootGetters }) {
   const { authenticator } = getAuthenticator(this.$ual);
   try {
     authenticator && (await authenticator.logout());
@@ -75,13 +75,13 @@ export const logout = async function({ commit, rootGetters }) {
 
   if (this.$router.currentRoute.path !== "/") {
     this.$router.push({
-      path: "/" + rootGetters["blockchains/currentChain"].NETWORK_NAME
+      path: "/" + rootGetters["blockchains/currentChain"].NETWORK_NAME,
     });
     this.$router.go();
   }
 };
 
-export const getUserProfile = async function({ commit }, accountName) {
+export const getUserProfile = async function ({ commit }, accountName) {
   try {
     const profileResult = await this.$api.getTableRows({
       code: "profiles",
@@ -91,7 +91,7 @@ export const getUserProfile = async function({ commit }, accountName) {
       index_position: 1,
       key_type: "i64",
       lower_bound: accountName,
-      upper_bound: accountName
+      upper_bound: accountName,
     });
     // console.log(profileResult);
     const profile = profileResult.rows[0];
@@ -102,7 +102,7 @@ export const getUserProfile = async function({ commit }, accountName) {
   }
 };
 
-export const getAccountProfile = async function({ commit, dispatch }) {
+export const getAccountProfile = async function ({ commit, dispatch }) {
   if (!this.state.account.accountName) {
     return;
   }
@@ -110,7 +110,10 @@ export const getAccountProfile = async function({ commit, dispatch }) {
   dispatch("getUserProfile", this.state.account.accountName);
 };
 
-export const accountExists = async function({ commit, dispatch }, accountName) {
+export const accountExists = async function (
+  { commit, dispatch },
+  accountName
+) {
   try {
     const account = await this.$api.getAccount(accountName);
     return !!account;
@@ -119,29 +122,29 @@ export const accountExists = async function({ commit, dispatch }, accountName) {
   }
 };
 
-export const setWalletBaseTokens = async function({ commit, dispatch }) {
+export const setWalletBaseTokens = async function ({ commit, dispatch }) {
   try {
     let base_tokens_raw = [];
     base_tokens_raw = await dispatch("pools/getBaseTokens", true, {
-      root: true
+      root: true,
     });
     for (const asset of base_tokens_raw) {
       let token_reformat = {
         sym: this.$getSymFromAsset(asset.token_info),
         decimals: this.$getDecimalFromAsset(asset.token_info),
-        contract: asset.token_info.contract
+        contract: asset.token_info.contract,
       };
       commit("setWalletToken", {
         token_sym: token_reformat.sym,
-        token_contract: token_reformat.contract
+        token_contract: token_reformat.contract,
       });
       commit("setWalletTokenDecimals", {
         token_sym: token_reformat.sym,
-        amount: token_reformat.decimals
+        amount: token_reformat.decimals,
       });
       commit("setWalletTokenAvatar", {
         token_sym: token_reformat.sym,
-        avatar: asset.avatar
+        avatar: asset.avatar,
       });
     }
   } catch (error) {
@@ -150,7 +153,7 @@ export const setWalletBaseTokens = async function({ commit, dispatch }) {
   }
 };
 
-export const setWalletPoolTokens = async function(
+export const setWalletPoolTokens = async function (
   { commit, dispatch, rootGetters },
   account
 ) {
@@ -161,14 +164,14 @@ export const setWalletPoolTokens = async function(
       await dispatch("tport/setTPortTokens", "", { root: true });
       const pooltokens = rootGetters["pools/getPoolTokens"];
       const tportTokens = rootGetters["tport/getTPortTokens"];
-      const tportTokenSyms = tportTokens.map(el => el.token.sym);
+      const tportTokenSyms = tportTokens.map((el) => el.token.sym);
       const getDecimalFromAsset = this.$getDecimalFromAsset;
       const getSymFromAsset = this.$getSymFromAsset;
       const chainToDecimals = this.$chainToDecimals;
       const chainToQty = this.$chainToQty;
       // console.log(pooltokens);
       for (const pooltoken of pooltokens) {
-        (async function() {
+        (async function () {
           // Get decimal, symbol, contract, avatar
           let decimal = getDecimalFromAsset(pooltoken.token_info);
           let sym = getSymFromAsset(pooltoken.token_info);
@@ -183,7 +186,7 @@ export const setWalletPoolTokens = async function(
               {
                 accountName: account,
                 address: contract,
-                sym: sym
+                sym: sym,
               },
               { root: true }
             )
@@ -194,25 +197,25 @@ export const setWalletPoolTokens = async function(
           if (balance > 0 || isTportToken) {
             commit("setWalletToken", {
               token_sym: sym,
-              token_contract: contract
+              token_contract: contract,
             });
             commit("setWalletTokenDecimals", {
               token_sym: sym,
-              amount: decimal
+              amount: decimal,
             });
             commit("setWalletTokenAvatar", {
               token_sym: sym,
-              avatar: avatar
+              avatar: avatar,
             });
             commit("setWalletTokenBalance", {
               token_sym: sym,
-              amount: balance
+              amount: balance,
             });
           }
           // check vested lockup
           await dispatch("setVestedTokens", {
             account: account,
-            token_sym: sym
+            token_sym: sym,
           });
         })();
       }
@@ -224,7 +227,7 @@ export const setWalletPoolTokens = async function(
 };
 
 // set balances in state of each token in wallet
-export const setWalletBalances = async function(
+export const setWalletBalances = async function (
   { commit, getters, dispatch },
   account
 ) {
@@ -236,23 +239,23 @@ export const setWalletBalances = async function(
         let payload = {
           address: token_info.token_contract,
           sym: token_info.token_sym,
-          accountName: account
+          accountName: account,
         };
         // console.log(payload)
 
         let token_str = await dispatch("pools/getBalanceFromChain", payload, {
-          root: true
+          root: true,
         });
         // console.log(token_str)
         let balance = this.$chainToQty(token_str);
         // console.log(balance)
         commit("setWalletTokenBalance", {
           token_sym: token_info.token_sym,
-          amount: balance
+          amount: balance,
         });
         commit("setWalletTokenDecimals", {
           token_sym: token_info.token_sym,
-          amount: this.$chainToDecimals(token_str)
+          amount: this.$chainToDecimals(token_str),
         });
       }
     }
@@ -263,7 +266,7 @@ export const setWalletBalances = async function(
 };
 
 // get contract wallet table info for user
-export const getChainWalletTable = async function(
+export const getChainWalletTable = async function (
   { commit, getters, dispatch },
   account
 ) {
@@ -274,7 +277,7 @@ export const getChainWalletTable = async function(
       table: "wallets", // Table name
       limit: 10000,
       reverse: false, // Optional: Get reversed data
-      show_payer: false // Optional: Show ram payer
+      show_payer: false, // Optional: Show ram payer
     });
 
     let contractWalletTbl = tableResults.rows;
@@ -288,15 +291,15 @@ export const getChainWalletTable = async function(
 
       commit("setWalletToken", {
         token_sym: token_sym,
-        token_contract: token_contract
+        token_contract: token_contract,
       });
       commit("setWalletTokenLiquid", {
         token_sym: token_sym,
-        amount: token_liquid
+        amount: token_liquid,
       });
       commit("setWalletTokenDecimals", {
         token_sym: token_sym,
-        amount: this.$chainToDecimals(token_info.balance)
+        amount: this.$chainToDecimals(token_info.balance),
       });
     }
   } catch (error) {
@@ -306,7 +309,7 @@ export const getChainWalletTable = async function(
 };
 
 // get contract wallet table info for user
-export const getChainStakeWallet = async function(
+export const getChainStakeWallet = async function (
   { commit, dispatch },
   account
 ) {
@@ -324,7 +327,7 @@ export const getChainStakeWallet = async function(
       lower_bound: account,
       upper_bound: account,
       reverse: false,
-      show_payer: false
+      show_payer: false,
     });
     // console.log({ account });
     // console.log({ accountsResult });
@@ -344,7 +347,7 @@ export const getChainStakeWallet = async function(
         // lower_bound: 1,
         lower_bound: stakeAccount.last_claim_id + 1,
         reverse: false,
-        show_payer: false
+        show_payer: false,
       });
       // console.log({ rewardsResult });
 
@@ -355,7 +358,7 @@ export const getChainStakeWallet = async function(
         table: "wallets", // Table name
         limit: 10000,
         reverse: false, // Optional: Get reversed data
-        show_payer: false // Optional: Show ram payer
+        show_payer: false, // Optional: Show ram payer
       });
       // console.log({ walletsResult });
 
@@ -367,7 +370,7 @@ export const getChainStakeWallet = async function(
           contract: baseToken.token_info.contract,
           avatar: baseToken.avatar,
           balance: 0,
-          lifetime_return: 0
+          lifetime_return: 0,
         };
         for (const reward of rewardsResult.rows) {
           if (
@@ -399,7 +402,7 @@ export const getChainStakeWallet = async function(
 };
 
 // check if tokens already staked
-export const getChainSTART = async function(
+export const getChainSTART = async function (
   { commit, getters, dispatch },
   account
 ) {
@@ -415,7 +418,7 @@ export const getChainSTART = async function(
         lower_bound: account,
         upper_bound: account,
         reverse: false, // Optional: Get reversed data
-        show_payer: false // Optional: Show ram payer
+        show_payer: false, // Optional: Show ram payer
       });
 
       // console.log(stakeBalanceTbl.rows);
@@ -432,38 +435,38 @@ export const getChainSTART = async function(
 
       commit("setWalletTokenLiquid", {
         token_sym: "START",
-        amount: liquid_START
+        amount: liquid_START,
       });
       commit("setWalletTokenStaked", {
         token_sym: "START",
-        amount: staked_START
+        amount: staked_START,
       });
       commit("setWalletTokenUnstaking", {
         token_sym: "START",
-        amount: unstaking_START
+        amount: unstaking_START,
       });
       commit("setWalletTokenLocked", {
         token_sym: "START",
-        amount: unstaking_START + staked_START
+        amount: unstaking_START + staked_START,
       });
       commit("setWalletStakeMaturities", {
-        arr: stake_maturities
+        arr: stake_maturities,
       });
 
       //set balance
       let payload = {
         address: "token.start",
         sym: "START",
-        accountName: account
+        accountName: account,
       };
 
       let token_str = await dispatch("pools/getBalanceFromChain", payload, {
-        root: true
+        root: true,
       });
       let balance = this.$chainToQty(token_str);
       commit("setWalletTokenBalance", {
         token_sym: "START",
-        amount: balance
+        amount: balance,
       });
     }
   } catch (error) {
@@ -473,7 +476,7 @@ export const getChainSTART = async function(
 };
 
 // get personal allocation for pool
-export const setVestedTokens = async function(
+export const setVestedTokens = async function (
   { commit, getters, dispatch },
   payload
 ) {
@@ -489,11 +492,11 @@ export const setVestedTokens = async function(
         lower_bound: payload.account,
         upper_bound: payload.account,
         reverse: false, // Optional: Get reversed data
-        show_payer: false // Optional: Show ram payer
+        show_payer: false, // Optional: Show ram payer
       });
 
       const allocationTable = tableResults.rows.filter(
-        a =>
+        (a) =>
           a.account === payload.account &&
           a.lockup_percent > 0 &&
           this.$chainToSym(a.allocation) === payload.token_sym &&
@@ -502,19 +505,23 @@ export const setVestedTokens = async function(
       // console.log("Allocation:");
       // console.log(allocationTable);
 
+      let locked_total = 0;
+      let pool_ids = [];
       for (const token_info of allocationTable) {
         let locked_amount =
           this.$chainToQty(token_info.allocation) -
           this.$chainToQty(token_info.distributed);
-        commit("setWalletTokenLocked", {
-          token_sym: payload.token_sym,
-          amount: locked_amount
-        });
-        commit("setWalletTokenId", {
-          token_sym: payload.token_sym,
-          id: token_info.pool_id
-        });
+        locked_total += locked_amount;
+        pool_ids.push(token_info.pool_id);
       }
+      commit("setWalletTokenLocked", {
+        token_sym: payload.token_sym,
+        amount: locked_total,
+      });
+      commit("setWalletTokenIds", {
+        token_sym: payload.token_sym,
+        ids: pool_ids,
+      });
     }
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
@@ -522,12 +529,12 @@ export const setVestedTokens = async function(
 };
 
 // reset wallet
-export const resetWallet = async function({ commit, getters, dispatch }) {
+export const resetWallet = async function ({ commit, getters, dispatch }) {
   commit("resetWalletState");
 };
 
 // reload all wallet info
-export const reloadWallet = async function({ dispatch }, account) {
+export const reloadWallet = async function ({ dispatch }, account) {
   // console.log({ account });
   await dispatch("setWalletBaseTokens");
   await dispatch("getChainWalletTable", account);
@@ -537,12 +544,12 @@ export const reloadWallet = async function({ dispatch }, account) {
 };
 
 // reset liquid
-export const resetLiquid = async function({ commit, getters, dispatch }) {
+export const resetLiquid = async function ({ commit, getters, dispatch }) {
   commit("clearLiquid");
 };
 
 // get account stake informations. (Outputs: account, last_claim_id,	stake_balance,	tier,	tier_history)
-export const getChainAccountStakeInfo = async function(
+export const getChainAccountStakeInfo = async function (
   { commit, getters, dispatch },
   account
 ) {
@@ -556,7 +563,7 @@ export const getChainAccountStakeInfo = async function(
         lower_bound: account,
         upper_bound: account,
         reverse: false,
-        show_payer: false
+        show_payer: false,
       });
       // console.log(accountsResult.rows[0]);
 
@@ -575,10 +582,10 @@ export const getChainAccountStakeInfo = async function(
 };
 
 // get account stake informations. (Outputs: id (key) threshold	members	weight	discount)
-export const getChainTiersTable = async function({
+export const getChainTiersTable = async function ({
   commit,
   getters,
-  dispatch
+  dispatch,
 }) {
   try {
     const tiersTable = await this.$api.getTableRows({
@@ -587,7 +594,7 @@ export const getChainTiersTable = async function({
       table: "tiers", // Table name
       limit: 10,
       reverse: false,
-      show_payer: false
+      show_payer: false,
     });
 
     if (tiersTable.rows.length > 0) {

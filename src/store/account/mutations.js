@@ -28,7 +28,7 @@ export const setWalletToken = (state, { token_sym, token_contract }) => {
     unstaking: 0,
     decimals: 0,
     locked: 0,
-    id: -1,
+    ids: [],
     avatar: "",
     stake_maturities: []
   };
@@ -63,9 +63,9 @@ export const setWalletTokenLocked = (state, { token_sym, amount }) => {
   token.locked = amount;
 };
 
-export const setWalletTokenId = (state, { token_sym, id }) => {
+export const setWalletTokenIds = (state, { token_sym, ids }) => {
   let token = state.wallet.find(a => a.token_sym === token_sym);
-  token.id = id;
+  token.ids = ids;
   state.wallet = [...state.wallet]
 };
 
