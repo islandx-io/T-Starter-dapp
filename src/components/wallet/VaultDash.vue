@@ -1,15 +1,5 @@
 <template>
   <q-card>
-    <q-btn
-      v-if="getEvmAccountName === ''"
-      label="CONNECT"
-      @click="connectWeb3()"
-      class="hover-accent"
-      color="positive"
-      outline
-      no-shadow
-      no-caps
-    />
     <!-- <div
       class="evm-account col ellipsis cursor-pointer"
       style="max-width: 200px"
@@ -18,7 +8,7 @@
       {{ getEvmAccountName }}
     </div> -->
     <div class="row justify-center">
-      <div class="text-h6 text-center q-pr-sm">Refunds</div>
+      <div class="text-h6 text-center q-pr-sm">Refunds</div>      
       <q-btn
         padding="sm"
         class="hover-accent"
@@ -29,7 +19,22 @@
         @click="refreshTeleports()"
       />
     </div>
-    <div class="column">
+    
+    <!-- Connect button -->
+    <div class="row justify-center">
+      <q-btn
+        v-if="getEvmAccountName === ''"
+        label="CONNECT"
+        @click="connectWeb3()"
+        class="hover-accent justify-center"
+        color="positive"
+        outline
+        no-shadow
+        no-caps
+      />
+    </div>
+    
+    <div class="column">      
       <div
         class="row justify-center items-center q-py-xs"
         v-for="t in unclaimedTeleports"
@@ -140,7 +145,6 @@ const toHexString = (bytes) =>
   bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
 
 export default {
-  props: ["selectedTokenSym"],
   components: {
     tokenAvatar,
   },
@@ -161,7 +165,7 @@ export default {
       "getEvmNetworkList",
       "getTPortTokensBySym",
       "getTeleports",
-      "getVaultContractAddr"
+      "getVaultContractAddr",
     ]),
     unclaimedTeleports() {
       if (this.getEvmAccountName !== undefined) {
@@ -264,7 +268,7 @@ export default {
             this.$vaultAbi,
             this.getVaultContractAddr
           );
-          
+
           const resp = await remoteInstance.methods
             .claim(signData.data, signData.signatures)
             .send({ from: this.getEvmAccountName });

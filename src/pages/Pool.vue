@@ -243,11 +243,6 @@
           <q-spinner-puff size="50px" color="primary" />
         </q-inner-loading>
       </q-card>
-
-      <vault-dash
-        class="q-mt-lg"
-        :selectedTokenSym="$getSymFromAsset(pool.base_token)"
-      />
     </div>
 
     <q-dialog v-model="insufficient_start_show">
@@ -295,7 +290,6 @@ import statusProgress from "src/components/poolinfo/status-progress";
 import tokenAvatar from "src/components/TokenAvatar";
 import { mapGetters, mapActions } from "vuex";
 import { date } from "quasar";
-import VaultDash from "src/components/poolinfo/VaultDash.vue";
 
 export default {
   components: {
@@ -307,7 +301,7 @@ export default {
     statusBadge,
     statusProgress,
     tokenAvatar,
-    VaultDash
+    
   },
   data() {
     return {

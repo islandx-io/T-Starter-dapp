@@ -8,6 +8,43 @@
         v-if="isAuthenticated"
         class="justify-between content-start q-mb-lg"
       >
+        <q-tabs
+          v-model="tab"
+          dense
+          class="text-grey"
+          active-color="primary"
+          indicator-color="primary"
+          align="left"
+          narrow-indicator
+        >
+          <q-tab name="tokens" label="Tokens" />
+          <q-tab
+            name="refunds"
+            label="Refunds"
+            :alert="hasRefunds ? 'accent' : hasRefunds"
+          />
+          <q-tab
+            name="reclaim"
+            label="Reclaim"
+            :alert="hasReclaims ? 'accent' : hasReclaims"
+          />
+        </q-tabs>
+
+        <q-separator />
+
+        <q-tab-panels
+          v-model="tab"
+          animated
+          swipeable
+          class="tab-panel-container"
+        >
+          <q-tab-panel name="tokens" @mousedown.stop> </q-tab-panel>
+          <!-- Refund and reclaim tabs -->
+          <q-tab-panel name="refunds" @mousedown.stop>
+            <vault-dash class="q-mb-md" />
+          </q-tab-panel>
+          <q-tab-panel name="reclaim" @mousedown.stop> </q-tab-panel>
+        </q-tab-panels>
         <q-toggle v-model="showZeroBalance" class="self-end">
           Show zero balance
         </q-toggle>
@@ -156,7 +193,7 @@
       </q-card>
       <q-card
         v-else
-        class="row justify-center content-center "
+        class="row justify-center content-center"
         style="min-height: 100px"
       >
         <div>Please connect your wallet</div>
@@ -182,10 +219,15 @@ import { mapGetters, mapActions } from "vuex";
 import tokenAvatar from "src/components/TokenAvatar";
 import walletActions from "src/components/wallet/WalletActions";
 import { date } from "quasar";
+import VaultDash from "src/components/wallet/VaultDash.vue";
 
 export default {
+  components: { tokenAvatar, walletActions, VaultDash },
   data() {
     return {
+      tab: "tokens",
+      hasRefunds: false,
+      hasReclaims: false,
       // prettier-ignore
       columns: [
         { name: "token", label: "Token", field: "token_sym", align: "left" },
@@ -208,13 +250,12 @@ export default {
       // prettier-ignore
       stakeData: [],
       dateNow: new Date(),
-      showZeroBalance: false
+      showZeroBalance: false,
     };
   },
-  components: { tokenAvatar, walletActions },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
-    ...mapGetters("blockchains", ["currentChain"])
+    ...mapGetters("blockchains", ["currentChain"]),
   },
 
   methods: {
@@ -227,7 +268,7 @@ export default {
       await this.reloadWallet(this.accountName);
       // TODO Add loading element for poolTokens
       this.stakeData = this.wallet.find(
-        a => a.token_sym === "START"
+        (a) => a.token_sym === "START"
       ).stake_maturities;
     },
 
@@ -238,8 +279,8 @@ export default {
     },
     walletFilter(_, type) {
       if (type === "hideZeroBalance")
-        return this.wallet.filter(row => row.balance > 0);
-    }
+        return this.wallet.filter((row) => row.balance > 0);
+    },
   },
 
   async mounted() {
@@ -255,8 +296,8 @@ export default {
     },
     async accountName() {
       await this.reloadWalletInfo();
-    }
-  }
+    },
+  },
 };
 </script>
 
