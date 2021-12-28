@@ -38,160 +38,164 @@
           swipeable
           class="tab-panel-container"
         >
-          <q-tab-panel name="tokens" @mousedown.stop> </q-tab-panel>
           <!-- Refund and reclaim tabs -->
           <q-tab-panel name="refunds" @mousedown.stop>
-            <vault-dash class="q-mb-md" />
+            <vault-dash  />
           </q-tab-panel>
           <q-tab-panel name="reclaim" @mousedown.stop>
-            <reclaim-dash class="q-mb-md" />
+            <reclaim-dash  />
+          </q-tab-panel>
+          <q-tab-panel name="tokens" @mousedown.stop>
+            <q-toggle v-model="showZeroBalance" class="self-end">
+              Show zero balance
+            </q-toggle>
+            <q-table
+              class="wallet-table q-pa-md"
+              :data="wallet"
+              :columns="columns"
+              :filter="showZeroBalance ? '' : 'hideZeroBalance'"
+              :filter-method="walletFilter"
+              row-key="token_sym"
+              hide-pagination
+              :pagination="{ rowsPerPage: 500 }"
+            >
+              <template v-slot:header="props">
+                <q-tr :props="props">
+                  <q-th auto-width key="expand">
+                    <!-- Refresh table button -->
+                    <q-btn
+                      padding="sm"
+                      class="hover-accent"
+                      color="black"
+                      icon="fas fa-sync-alt"
+                      flat
+                      size="sm"
+                      @click="
+                        resetLiquid();
+                        reloadWalletInfo();
+                      "
+                    />
+                  </q-th>
+                  <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                    style="font-size: 20px; color: gray"
+                  >
+                    {{ col.label }}
+                  </q-th>
+                </q-tr>
+              </template>
+
+              <template v-slot:body="props">
+                <q-tr
+                  :props="props"
+                  :key="props.row.token_sym"
+                  @click="
+                    if (isStart(props.row.token_sym))
+                      props.expand = !props.expand;
+                  "
+                  :class="isStart(props.row.token_sym) ? 'cursor-pointer' : ''"
+                >
+                  <q-td auto-width>
+                    <q-btn
+                      size="sm"
+                      color="accent"
+                      round
+                      dense
+                      outline
+                      :icon="props.expand ? 'remove' : 'add'"
+                      v-if="isStart(props.row.token_sym)"
+                      class="hover-accent"
+                    />
+                  </q-td>
+                  <!-- Avatar -->
+                  <q-td :props="props" :key="props.cols[0].name">
+                    <div class="row justify-start items-center">
+                      <token-avatar
+                        :token="
+                          props.row.avatar
+                            ? props.row.avatar
+                            : props.row.token_sym
+                        "
+                        :avatarSize="35"
+                        class="q-mr-sm"
+                      />
+                      <div>{{ props.cols[0].value }}</div>
+                    </div>
+                  </q-td>
+
+                  <!-- Contract, Balance, Liquid, Staked -->
+                  <q-td
+                    :props="props"
+                    v-for="col in props.cols.slice(1, 4)"
+                    :key="col.name"
+                  >
+                    {{ $formatTableDecimals(col, props) }}
+                  </q-td>
+
+                  <!-- Action -->
+                  <q-td
+                    :props="props"
+                    :key="props.cols[props.cols.length - 1].name"
+                  >
+                    <wallet-actions
+                      :props="props"
+                      :accountName="accountName"
+                      :stakeData="stakeData"
+                      @reloadWalletInfo="reloadWalletInfo"
+                    />
+                  </q-td>
+                </q-tr>
+
+                <!-- START expansion -->
+                <q-tr v-show="props.expand" :props="props">
+                  <q-td colspan="100%" no-hover>
+                    <div class="row justify-center">
+                      <q-table
+                        :data="stakeData"
+                        :columns="stakeColumns"
+                        :hide-pagination="stakeData.length <= 5"
+                        class="wallet-inner-table"
+                        separator="none"
+                      >
+                        <template v-slot:header="props">
+                          <q-tr :props="props">
+                            <q-th
+                              v-for="col in props.cols"
+                              :key="col.name"
+                              :props="props"
+                              style="font-size: 16px; color: gray"
+                            >
+                              {{ col.label }}
+                            </q-th>
+                          </q-tr>
+                        </template>
+                        <template v-slot:body="props">
+                          <q-tr
+                            :props="props"
+                            :class="
+                              new Date(props.cols[1].value) < dateNow
+                                ? `text-bold`
+                                : ''
+                            "
+                          >
+                            <q-td>
+                              {{ props.cols[0].value }}
+                            </q-td>
+                            <q-td class="text-center">
+                              {{ props.cols[1].value }}
+                            </q-td>
+                          </q-tr>
+                        </template>
+                      </q-table>
+                    </div>
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
           </q-tab-panel>
         </q-tab-panels>
-        <q-toggle v-model="showZeroBalance" class="self-end">
-          Show zero balance
-        </q-toggle>
-        <q-table
-          class="wallet-table q-pa-md"
-          :data="wallet"
-          :columns="columns"
-          :filter="showZeroBalance ? '' : 'hideZeroBalance'"
-          :filter-method="walletFilter"
-          row-key="token_sym"
-          hide-pagination
-          :pagination="{ rowsPerPage: 500 }"
-        >
-          <template v-slot:header="props">
-            <q-tr :props="props">
-              <q-th auto-width key="expand">
-                <!-- Refresh table button -->
-                <q-btn
-                  padding="sm"
-                  class="hover-accent"
-                  color="black"
-                  icon="fas fa-sync-alt"
-                  flat
-                  size="sm"
-                  @click="
-                    resetLiquid();
-                    reloadWalletInfo();
-                  "
-                />
-              </q-th>
-              <q-th
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-                style="font-size: 20px; color: gray"
-              >
-                {{ col.label }}
-              </q-th>
-            </q-tr>
-          </template>
-
-          <template v-slot:body="props">
-            <q-tr
-              :props="props"
-              :key="props.row.token_sym"
-              @click="
-                if (isStart(props.row.token_sym)) props.expand = !props.expand;
-              "
-              :class="isStart(props.row.token_sym) ? 'cursor-pointer' : ''"
-            >
-              <q-td auto-width>
-                <q-btn
-                  size="sm"
-                  color="accent"
-                  round
-                  dense
-                  outline
-                  :icon="props.expand ? 'remove' : 'add'"
-                  v-if="isStart(props.row.token_sym)"
-                  class="hover-accent"
-                />
-              </q-td>
-              <!-- Avatar -->
-              <q-td :props="props" :key="props.cols[0].name">
-                <div class="row justify-start items-center">
-                  <token-avatar
-                    :token="
-                      props.row.avatar ? props.row.avatar : props.row.token_sym
-                    "
-                    :avatarSize="35"
-                    class="q-mr-sm"
-                  />
-                  <div>{{ props.cols[0].value }}</div>
-                </div>
-              </q-td>
-
-              <!-- Contract, Balance, Liquid, Staked -->
-              <q-td
-                :props="props"
-                v-for="col in props.cols.slice(1, 4)"
-                :key="col.name"
-              >
-                {{ $formatTableDecimals(col, props) }}
-              </q-td>
-
-              <!-- Action -->
-              <q-td
-                :props="props"
-                :key="props.cols[props.cols.length - 1].name"
-              >
-                <wallet-actions
-                  :props="props"
-                  :accountName="accountName"
-                  :stakeData="stakeData"
-                  @reloadWalletInfo="reloadWalletInfo"
-                />
-              </q-td>
-            </q-tr>
-
-            <!-- START expansion -->
-            <q-tr v-show="props.expand" :props="props">
-              <q-td colspan="100%" no-hover>
-                <div class="row justify-center">
-                  <q-table
-                    :data="stakeData"
-                    :columns="stakeColumns"
-                    :hide-pagination="stakeData.length <= 5"
-                    class="wallet-inner-table"
-                    separator="none"
-                  >
-                    <template v-slot:header="props">
-                      <q-tr :props="props">
-                        <q-th
-                          v-for="col in props.cols"
-                          :key="col.name"
-                          :props="props"
-                          style="font-size: 16px; color: gray"
-                        >
-                          {{ col.label }}
-                        </q-th>
-                      </q-tr>
-                    </template>
-                    <template v-slot:body="props">
-                      <q-tr
-                        :props="props"
-                        :class="
-                          new Date(props.cols[1].value) < dateNow
-                            ? `text-bold`
-                            : ''
-                        "
-                      >
-                        <q-td>
-                          {{ props.cols[0].value }}
-                        </q-td>
-                        <q-td class="text-center">
-                          {{ props.cols[1].value }}
-                        </q-td>
-                      </q-tr>
-                    </template>
-                  </q-table>
-                </div>
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table>
       </q-card>
       <q-card
         v-else

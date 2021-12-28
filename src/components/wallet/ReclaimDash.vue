@@ -1,31 +1,36 @@
 <template>
   <div>
-    <div class="q-pa-md q-gutter-sm row justify-center">
-      <q-btn
-        v-if="getEvmAccountName !== ''"
-        label="Reclaim Tokens"
-        @click="tryReclaimTokens()"
-        color="primary"
-      />
-    </div>
-    <div class="q-pa-md q-gutter-sm row justify-center">
-      <q-btn
-        v-if="getEvmAccountName === ''"
-        label="CONNECT TO METAMASK"
-        @click="connectWeb3()"
-        class="hover-accent"
-        color="positive"
-        outline
-        no-shadow
-        no-caps
-      />
-      <div
-        class="evm-account col ellipsis cursor-pointer vertical-center"
-        style="max-width: 200px"
-        v-if="getEvmAccountName !== ''"
-      >
-        {{ getEvmAccountName }}
+    <div v-if="hasClaimable">
+      <div class="q-pa-md q-gutter-sm row justify-center">
+        <q-btn
+          v-if="getEvmAccountName !== ''"
+          label="Reclaim Tokens"
+          @click="tryReclaimTokens()"
+          color="primary"
+        />
       </div>
+      <div class="q-pa-md q-gutter-sm row justify-center">
+        <q-btn
+          v-if="getEvmAccountName === ''"
+          label="CONNECT TO METAMASK"
+          @click="connectWeb3()"
+          class="hover-accent"
+          color="positive"
+          outline
+          no-shadow
+          no-caps
+        />
+        <div
+          class="evm-account col ellipsis cursor-pointer vertical-center"
+          style="max-width: 200px"
+          v-if="getEvmAccountName !== ''"
+        >
+          {{ getEvmAccountName }}
+        </div>
+      </div>
+    </div>
+    <div v-if="!hasClaimable" class="row justify-center content-center">
+      Nothing to reclaim
     </div>
   </div>
 </template>
@@ -44,10 +49,19 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     ...mapGetters("blockchains", ["currentChain"]),
-    ...mapGetters("xchain", ["getEvmAccountName"]),
+    ...mapGetters("xchain", ["getEvmAccountName", "getReclaimableTokens"]),
+
+    hasClaimable() {
+      if (this.getReclaimableTokens) {
+        return this.getReclaimableTokens.length > 0;        
+      } else {
+        return false;
+      }
+    },
   },
 
   methods: {
+    ...mapActions("xchain", ["updateReclaimableTokens"]),
     async reclaimTokens() {
       const actions = [
         {
@@ -74,6 +88,10 @@ export default {
         this.$errorNotification(error);
       }
     },
+  },
+
+  mounted() {
+    this.updateReclaimableTokens(this.accountName);
   },
 };
 </script>

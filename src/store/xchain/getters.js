@@ -40,3 +40,5 @@ export const getEvmNetworkByName =
   };
 
 export const getVaultContractAddr = (state) =>  state.networkList.find((el) => el.chainId === state.chainId).vaultContract;
+
+export const getReclaimableTokens = ({ reclaimableTokens }) => reclaimableTokens;

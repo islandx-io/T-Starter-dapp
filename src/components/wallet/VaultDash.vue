@@ -1,5 +1,5 @@
 <template>
-  <q-card>
+  <div>
     <!-- <div
       class="evm-account col ellipsis cursor-pointer"
       style="max-width: 200px"
@@ -129,7 +129,7 @@
         </div>
       </div>
     </q-slide-transition>
-  </q-card>
+  </div>
 </template>
 
 <script>
