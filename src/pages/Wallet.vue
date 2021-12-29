@@ -176,7 +176,7 @@
                             </q-td>
                           </q-tr>
                         </template>
-                        <template v-slot:bottom> * Bold texts indicates ready to be claimed  </template>
+                        <template v-slot:bottom> * Bold text indicates ready to be claimed  </template>
                       </q-table>
                     </div>
                   </q-td>
