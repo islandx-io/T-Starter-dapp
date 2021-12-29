@@ -28,6 +28,7 @@ export const setWalletToken = (state, { token_sym, token_contract }) => {
     unstaking: 0,
     decimals: 0,
     locked: 0,
+    claimable: 0,
     ids: [],
     avatar: "",
     stake_maturities: []
@@ -60,13 +61,25 @@ export const setWalletTokenUnstaking = (state, { token_sym, amount }) => {
 
 export const setWalletTokenLocked = (state, { token_sym, amount }) => {
   let token = state.wallet.find(a => a.token_sym === token_sym);
-  token.locked = amount;
+  console.log("setWalletTokenLocked", token, token_sym, amount);
+  if (token) {
+    token.locked = amount;
+  }
+};
+
+export const setWalletTokenClaimable = (state, { token_sym, amount }) => {
+  let token = state.wallet.find(a => a.token_sym === token_sym);
+  if (token) {
+    token.claimable = amount;    
+  }
 };
 
 export const setWalletTokenIds = (state, { token_sym, ids }) => {
   let token = state.wallet.find(a => a.token_sym === token_sym);
-  token.ids = ids;
-  state.wallet = [...state.wallet]
+  if (token) {
+    token.ids = ids;    
+    state.wallet = [...state.wallet]
+  }
 };
 
 export const setWalletTokenAvatar = (state, { token_sym, avatar }) => {

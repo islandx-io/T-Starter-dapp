@@ -1,3 +1,5 @@
+import { date } from "quasar";
+
 export const login = async function (
   { commit, dispatch },
   { idx, account, returnUrl }
@@ -213,7 +215,7 @@ export const setWalletPoolTokens = async function (
             });
           }
           // check vested lockup
-          await dispatch("setVestedTokens", {
+          await dispatch("updateVestedTokens", {
             account: account,
             token_sym: sym,
           });
@@ -476,8 +478,8 @@ export const getChainSTART = async function (
 };
 
 // get personal allocation for pool
-export const setVestedTokens = async function (
-  { commit, getters, dispatch },
+export const updateVestedTokens = async function (
+  { commit, getters, dispatch, rootGetters },
   payload
 ) {
   try {
@@ -495,28 +497,78 @@ export const setVestedTokens = async function (
         show_payer: false, // Optional: Show ram payer
       });
 
-      const allocationTable = tableResults.rows.filter(
+      console.log(tableResults.rows);
+
+      const lockedTable = tableResults.rows.filter(
         (a) =>
           a.account === payload.account &&
           a.lockup_percent > 0 &&
           this.$chainToSym(a.allocation) === payload.token_sym &&
           this.$chainToQty(a.allocation) >= this.$chainToQty(a.distributed)
       );
-      // console.log("Allocation:");
-      // console.log(allocationTable);
+      console.log("lockedTable", lockedTable);
+
+      const claimableTable = tableResults.rows.filter(
+        (a) =>
+          a.account === payload.account &&
+          a.lockup_percent === 0 &&
+          this.$chainToSym(a.allocation) === payload.token_sym
+      );
+      console.log("claimableTable", claimableTable);
 
       let locked_total = 0;
+      let claimable_total = 0;
       let pool_ids = [];
-      for (const token_info of allocationTable) {
+      // Add locked tokens
+      for (const token_info of lockedTable) {
         let locked_amount =
           this.$chainToQty(token_info.allocation) -
           this.$chainToQty(token_info.distributed);
         locked_total += locked_amount;
+        let claimable_amount = 0;
+        let allocation = this.$chainToQty(token_info.allocation);
+        let distributed = this.$chainToQty(token_info.distributed);
+        if (token_info.lockup_percent !== 0) {
+          let now = Date.now();
+          let start = new Date(token_info.lockup_start + "Z").valueOf();
+          let percent = token_info.lockup_percent / 10000;
+          let period = token_info.lockup_period * 1000 * 60 * 60 * 24;
+          let end = start + period;
+          // console.log(
+          //   `Start: ${start}, Now: ${now}, End: ${end}, Percent: ${percent}, Period: ${period}`
+          // );
+          if (now < start) {
+            claimable_amount = allocation * (1 - percent) - distributed;
+          } else if (start <= now && now <= end) {
+            const f = (now - start) / period;
+            claimable_amount =
+              allocation * (1 + percent * (f - 1)) - distributed;
+          } else {
+            claimable_amount = allocation - distributed;
+          }
+        } else claimable_amount = allocation;
+        claimable_total += claimable_amount;
         pool_ids.push(token_info.pool_id);
+      }
+      // Add claimable tokens
+      for (const token_info of claimableTable) {
+        await dispatch("pools/getChainPoolByID", token_info.pool_id, {
+          root: true,
+        });
+        let pool = rootGetters["pools/getPoolByID"](token_info.pool_id);
+        if (pool.status === "success" || pool.status === "fail") {
+          let claimable_amount = this.$chainToQty(token_info.allocation);
+          claimable_total += claimable_amount;
+          pool_ids.push(token_info.pool_id);
+        }
       }
       commit("setWalletTokenLocked", {
         token_sym: payload.token_sym,
         amount: locked_total,
+      });
+      commit("setWalletTokenClaimable", {
+        token_sym: payload.token_sym,
+        amount: claimable_total,
       });
       commit("setWalletTokenIds", {
         token_sym: payload.token_sym,
@@ -524,6 +576,7 @@ export const setVestedTokens = async function (
       });
     }
   } catch (error) {
+    console.error("updateVestedTokens");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };

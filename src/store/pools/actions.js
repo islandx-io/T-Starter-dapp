@@ -54,6 +54,7 @@ export const getChainPoolByID = async function({ commit, dispatch }, id) {
     commit("updatePoolOnState", { poolTable });
     await dispatch("updatePoolSettings", { id, chain: poolTable.chain });
   } catch (error) {
+    console.log("getChainPoolByID");
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
 };

@@ -120,7 +120,7 @@
                   <!-- Contract, Balance, Liquid, Staked -->
                   <q-td
                     :props="props"
-                    v-for="col in props.cols.slice(1, 4)"
+                    v-for="col in props.cols.slice(1, 5)"
                     :key="col.name"
                   >
                     {{ $formatTableDecimals(col, props) }}
@@ -240,6 +240,13 @@ export default {
         { name: "balance", label: "Balance", field: "balance", align: "center", },
         { name: "liquid", label: "Liquid", field: "liquid", align: "center" },
         { name: "locked", label: "Locked", field: "locked", align: "center", format(val) {
+          if (val > 0) {
+            return val
+          } else {
+            return ""
+          }
+        }},
+        { name: "claimable", label: "Claimable", field: "claimable", align: "center", format(val) {
           if (val > 0) {
             return val
           } else {

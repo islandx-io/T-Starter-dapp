@@ -13,7 +13,7 @@
         v-if="isStart(props.row.token_sym) && props.row.liquid !== 0"
         class="hover-accent"
       >
-        <q-tooltip>Withdraw</q-tooltip>
+        <q-tooltip>Withdraw liquid to balance</q-tooltip>
       </q-btn>
       <!-- withdraw liquid -->
       <q-btn
@@ -25,7 +25,7 @@
         v-if="!isStart(props.row.token_sym) && props.row.liquid !== 0"
         class="hover-accent"
       >
-        <q-tooltip>Withdraw</q-tooltip>
+        <q-tooltip>Withdraw liquid to balance</q-tooltip>
       </q-btn>
       <!-- buy telos -->
       <q-btn
@@ -61,7 +61,7 @@
         outline
         flat
         :padding="actionButtonPadding"
-        icon="fas fa-thumbtack"
+        icon="fas fa-hand-holding-usd"
         @click.stop="tryUpdateStake(props)"
         v-if="isStart(props.row.token_sym) && canRelease"
         class="hover-accent"
@@ -73,12 +73,12 @@
         outline
         flat
         :padding="actionButtonPadding"
-        icon="fas fa-thumbtack"
+        icon="fas fa-hand-holding-usd"
         @click.stop="tryClaimTokens(props)"
-        v-if="!isStart(props.row.token_sym) && props.row.locked > 0"
+        v-if="!isStart(props.row.token_sym) && props.row.claimable > 0"
         class="hover-accent"
       >
-        <q-tooltip>Claim vested tokens</q-tooltip>
+        <q-tooltip>Claim tokens</q-tooltip>
       </q-btn>
       <!-- send tokens -->
       <q-btn
