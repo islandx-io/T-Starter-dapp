@@ -171,7 +171,7 @@ export const setWalletPoolTokens = async function (
       const getSymFromAsset = this.$getSymFromAsset;
       const chainToDecimals = this.$chainToDecimals;
       const chainToQty = this.$chainToQty;
-      // console.log(pooltokens);
+      console.log(pooltokens);
       for (const pooltoken of pooltokens) {
         (async function () {
           // Get decimal, symbol, contract, avatar
@@ -196,24 +196,22 @@ export const setWalletPoolTokens = async function (
 
           // if has balance, update store
           // Update wallet store
-          if (balance > 0 || isTportToken) {
-            commit("setWalletToken", {
-              token_sym: sym,
-              token_contract: contract,
-            });
-            commit("setWalletTokenDecimals", {
-              token_sym: sym,
-              amount: decimal,
-            });
-            commit("setWalletTokenAvatar", {
-              token_sym: sym,
-              avatar: avatar,
-            });
-            commit("setWalletTokenBalance", {
-              token_sym: sym,
-              amount: balance,
-            });
-          }
+          commit("setWalletToken", {
+            token_sym: sym,
+            token_contract: contract,
+          });
+          commit("setWalletTokenDecimals", {
+            token_sym: sym,
+            amount: decimal,
+          });
+          commit("setWalletTokenAvatar", {
+            token_sym: sym,
+            avatar: avatar,
+          });
+          commit("setWalletTokenBalance", {
+            token_sym: sym,
+            amount: balance,
+          });
           // check vested lockup
           await dispatch("updateVestedTokens", {
             account: account,
@@ -497,7 +495,7 @@ export const updateVestedTokens = async function (
         show_payer: false, // Optional: Show ram payer
       });
 
-      console.log(tableResults.rows);
+      // console.log(tableResults.rows);
 
       const lockedTable = tableResults.rows.filter(
         (a) =>
@@ -506,7 +504,7 @@ export const updateVestedTokens = async function (
           this.$chainToSym(a.allocation) === payload.token_sym &&
           this.$chainToQty(a.allocation) >= this.$chainToQty(a.distributed)
       );
-      console.log("lockedTable", lockedTable);
+      // console.log("lockedTable", lockedTable);
 
       const claimableTable = tableResults.rows.filter(
         (a) =>
@@ -514,7 +512,7 @@ export const updateVestedTokens = async function (
           a.lockup_percent === 0 &&
           this.$chainToSym(a.allocation) === payload.token_sym
       );
-      console.log("claimableTable", claimableTable);
+      // console.log("claimableTable", claimableTable);
 
       let locked_total = 0;
       let claimable_total = 0;
