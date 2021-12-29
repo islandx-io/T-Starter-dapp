@@ -61,7 +61,6 @@ export const setWalletTokenUnstaking = (state, { token_sym, amount }) => {
 
 export const setWalletTokenLocked = (state, { token_sym, amount }) => {
   let token = state.wallet.find(a => a.token_sym === token_sym);
-  console.log("setWalletTokenLocked", token, token_sym, amount);
   if (token) {
     token.locked = amount;
   }

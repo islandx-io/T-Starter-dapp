@@ -171,7 +171,7 @@ export const setWalletPoolTokens = async function (
       const getSymFromAsset = this.$getSymFromAsset;
       const chainToDecimals = this.$chainToDecimals;
       const chainToQty = this.$chainToQty;
-      console.log(pooltokens);
+      // console.log(pooltokens);
       for (const pooltoken of pooltokens) {
         (async function () {
           // Get decimal, symbol, contract, avatar
