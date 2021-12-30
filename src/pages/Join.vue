@@ -250,16 +250,21 @@
             <!------------>
             <q-item class="q-py-lg">
               <q-item-section>
+                <div class="q-pb-md" v-if="!hasApproved &&
+                    selectedNetwork !== currentChain.NETWORK_NAME">
+                  Before joining, we need your approval to access your tokens.
+                </div>
                 <q-btn
                   :label="`Approve`"
                   color="primary"
                   @click="approveToken()"
-                  :disable="approvingToken"
+                  :disable="approvingToken || wrongNetwork"
                   v-if="
-                    !hasAllowance &&
+                    !hasApproved &&
                     selectedNetwork !== currentChain.NETWORK_NAME
                   "
                 />
+                <!-- native join -->
                 <q-btn
                   label="Join Pool"
                   type="submit"
@@ -276,6 +281,7 @@
                   "
                   v-if="selectedNetwork === currentChain.NETWORK_NAME"
                 />
+                <!-- xchain join -->
                 <q-btn
                   label="Join Pool"
                   type="submit"
@@ -288,11 +294,12 @@
                       joining ||
                       !isWhitelisted ||
                       allocationReached) &&
-                    !hasHeadstart
+                    !hasHeadstart ||
+                    wrongNetwork
                   "
                   v-if="
                     selectedNetwork !== currentChain.NETWORK_NAME &&
-                    hasAllowance
+                    hasApproved
                   "
                 />
                 <div
@@ -334,6 +341,13 @@
                     Get here
                   </a>
                 </div>
+                <send-warnings
+                  :crossChain="
+                    selectedNetwork.toUpperCase() !==
+                    currentChain.NETWORK_NAME.toUpperCase()
+                  "
+                  :wrongNetwork="wrongNetwork"
+                />
               </q-item-section>
               <q-tooltip :offset="joinTooltipOffset" v-if="!isAuthenticated">
                 Connect wallet
@@ -604,14 +618,14 @@
             pool's allocations tab.
           </div>
           <div v-if="xchainProgress.confirmed === -1" style="color: red">
-            Failed to bridge transaction. Please review the transaction on the explorer
+            Failed to bridge transaction. Please review the transaction on the
+            explorer
           </div>
-          <div class="q-pt-sm text-center" v-if="xchainProgress.confirmed === -1">
-            <q-btn
-              label="Close"
-              color="primary"
-              v-close-popup
-            />
+          <div
+            class="q-pt-sm text-center"
+            v-if="xchainProgress.confirmed === -1"
+          >
+            <q-btn label="Close" color="primary" v-close-popup />
           </div>
           <div class="q-pt-sm text-center" v-if="xchainProgress.success !== 0">
             <q-btn
@@ -622,7 +636,9 @@
           </div>
           <div
             class="q-pt-sm text-grey-7 text-center"
-            v-if="xchainProgress.success === 0 && xchainProgress.confirmed !== 0"
+            v-if="
+              xchainProgress.success === 0 && xchainProgress.confirmed !== 0
+            "
           >
             Please wait. This could take up to several minutes
           </div>
@@ -642,6 +658,7 @@ import { copyToClipboard } from "quasar";
 import netSelector from "src/components/NetSelector";
 import TokenSelector from "src/components/TokenSelector.vue";
 import { ethers } from "ethers";
+import sendWarnings from "src/components/send/SendWarnings";
 
 export default {
   mixins: [metamask],
@@ -677,7 +694,7 @@ export default {
       selectedNetwork: "TELOS",
       xchainToken: {},
       possiblexchainTokens: [],
-      hasAllowance: false,
+      hasApproved: false,
       joinPoolTx: {},
       xchainProgress: {
         submitted: false,
@@ -688,7 +705,7 @@ export default {
       approvingToken: false,
     };
   },
-  components: { tokenAvatar, netSelector, TokenSelector },
+  components: { tokenAvatar, netSelector, TokenSelector, sendWarnings },
   computed: {
     ...mapGetters("pools", [
       "getAllPools",
@@ -698,7 +715,11 @@ export default {
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
-    ...mapGetters("xchain", ["getEvmRemoteId", "getVaultContractAddr"]),
+    ...mapGetters("xchain", [
+      "getEvmRemoteId",
+      "getVaultContractAddr",
+      "getEvmNetwork",
+    ]),
 
     externalTransactionId() {
       return this.accountName + "-" + this.currentUID;
@@ -857,6 +878,15 @@ export default {
       } else {
         return "";
       }
+    },
+
+    wrongNetwork() {
+      if (this.getEvmNetwork) {
+        return (
+          this.getEvmNetwork.name.toUpperCase() !==
+          this.selectedNetwork.toUpperCase()
+        );
+      } else return true;
     },
   },
 
@@ -1179,7 +1209,10 @@ export default {
       let tokenAddress = "0x" + this.xchainToken.remote_token_address;
       let thisChainID = 0; //TODO get dynamically eos,wax
       let decimals = this.xchainToken.remote_token_symbol.split(",")[0];
-      let tokenAmount = ethers.utils.parseUnits(this.amount.toString(), decimals);
+      let tokenAmount = ethers.utils.parseUnits(
+        this.amount.toString(),
+        decimals
+      );
 
       if (injectedWeb3) {
         try {
@@ -1259,9 +1292,9 @@ export default {
         console.log("Allowance:", BN(allowance).toString());
 
         if (BN(allowance).gte(BN("0xFFFFFFFFFFFFFFF"))) {
-          this.hasAllowance = true;
+          this.hasApproved = true;
         } else {
-          this.hasAllowance = false;
+          this.hasApproved = false;
         }
       }
     },

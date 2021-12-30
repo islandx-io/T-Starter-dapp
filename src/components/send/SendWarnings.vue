@@ -1,6 +1,6 @@
 <template>
   <div class="q-pt-md text-caption">
-    <div class="text-center text-red-7" v-if="wrongNetwork">
+    <div class="text-center text-red-7" v-if="wrongNetwork && crossChain">
       <q-icon name="fas fa-exclamation-triangle" class="q-pr-xs" />Wrong network
       selected in Ethereum wallet.
     </div>
