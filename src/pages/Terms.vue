@@ -1,8 +1,11 @@
 <template>
   <q-page>
-    <section class="header-bg row content-center justify-center">
-      <h3 class="text-white q-pt-xl">
+    <section class="header-bg fit column wrap justify-center items-center content-center">
+      <h3 class="text-white q-pt-xl"> 
         Terms and Conditions
+      </h3>
+      <h3 class="text-grey">
+        Last updated: 30 December 2021
       </h3>
     </section>
     <section class="body-container">
@@ -16,7 +19,7 @@
               constitutes a legally binding agreement between you and T-Starter
               (referred to herein as "T-Starter", "us" or "we") which owns and
               operates the website on the Internet and the Service at
-              www.T-Starter.com (the "Service"). You consent to adhering to all
+              app.tstarter.io (the "Service"). You consent to adhering to all
               the terms set forth in this Agreement when/if you are provided
               with an “I Agree” button and clicking on it.
             </h6>
@@ -27,7 +30,7 @@
                 non-transferable right to use the Service on your personal
                 computer or other device that accesses the Internet in order to
                 access and use the services available and described on the
-                T-Starter.com website (the website and all its functionality
+                app.tstarter.io website (the website and all its functionality
                 together being the "Service"), subject to the terms and
                 conditions contained herein.
               </li>
@@ -123,7 +126,7 @@
               </li>
               <li>
                 the telecommunications networks, blockchain networks (such as
-                Polkadot and Ethereum) and Internet access services required for
+                Telos and Ethereum) and Internet access services required for
                 you to access and use the Service are entirely beyond the
                 control of T-Starter and T-Starter shall have no liability
                 whatsoever for any outages, slowness, capacity constraints or
@@ -143,14 +146,14 @@
                 You warrant that should you discover a bug or error that may
                 lead to an exploit of the Service or other loss of funds from
                 T-Starter, you have the responsibility to notify T-Starter at
-                Support@T-Starter.com in a timely manner. Furthermore, any
+                https://t.me/tstarterio in a timely manner. Furthermore, any
                 attempt by you to use such a discovered exploit or bug for
                 illicit financial gain is illegal and strictly prohibited under
                 this Agreement. T-Starter reserves the right to prosecute to the
                 fullest extent of the law anyone who exploits or attempts to
                 exploit the Service in an unlawful manner. Such exploits or bugs
                 should be disclosed in a responsible manner and in strict
-                confidence with support@T-Starter.com and no other entity.
+                confidence with https://t.me/tstarterio and no other entity.
               </li>
             </ol>
             <h3>5. Prohibited Uses</h3>
@@ -202,7 +205,7 @@
               Policy
             </h3>
             <p>
-              T-Starter is a permissionless and fully decentralised platform for
+              T-Starter is a permissionless and decentralised platform for
               token sales, swaps, and decentralized exchange. As a software
               development company, T-Starter has no role in enforcing KYC by
               default, however we do provide such tools for fundraising entities
@@ -290,7 +293,7 @@
             <h3>9. Disputes</h3>
             <p>
               If a User wishes to make a complaint, please contact T-Starter's
-              customer service team at Support@T-Starter.com. Should any dispute
+              customer service team at https://t.me/tstarterio. Should any dispute
               not be resolved to your satisfaction you may pursue remedies in
               the governing law jurisdiction set forth below.
             </p>
@@ -384,8 +387,8 @@
             <h3>16. Fees and rewards</h3>
             <ul>
               <li>
-                A fee of 5% of the total amount of funds raised will be charged.
-                Of which 25% will be paid to the platform and 75% will be paid
+                Fees of the total amount of funds raised will be charged.
+                Of which some percentage will be paid to the platform and the rest will be paid
                 to the users with staked START as rewards.
                 These values and subject to change at any time.
               </li>
