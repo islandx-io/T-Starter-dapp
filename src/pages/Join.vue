@@ -41,7 +41,7 @@
                 @changeNetwork="changeNetwork($event)"
               >
               </net-selector>
-              <q-tooltip anchor="top middle" self="bottom middle">
+              <q-tooltip anchor="top middle" self="center middle">
                 From Network
               </q-tooltip>
             </div>
@@ -121,9 +121,9 @@
             <!-- From ETH -->
             <!---------------->
             <div v-if="selectedNetwork !== this.currentChain.NETWORK_NAME">
-              <div class="full-width row justify-center">
+              <div class="q-pb-md full-width row justify-center">
                 <div
-                  class="evm-account col ellipsis cursor-pointer"
+                  class="evm-account ellipsis cursor-pointer "
                   style="max-width: 200px"
                   v-if="getEvmAccountName !== ''"
                   @click="copyEvmAccount"
@@ -142,17 +142,6 @@
               </div>
               <q-card flat bordered class="inner-card row">
                 <div class="row q-gutter-x-md items-center">
-                  <!-- <q-btn
-                    v-if="getEvmAccountName === ''"
-                    label="CONNECT"
-                    @click="connectWeb3()"
-                    class="hover-accent"
-                    color="positive"
-                    outline
-                    no-shadow
-                    no-caps
-                  /> -->
-
                   <q-input
                     class="col input-amount q-my-sm"
                     color="primary"
@@ -255,6 +244,7 @@
                   Before joining, we need your approval to access your tokens.
                 </div>
                 <q-btn
+                  size="22px"
                   :label="`Approve`"
                   color="primary"
                   @click="approveToken()"
@@ -266,6 +256,7 @@
                 />
                 <!-- native join -->
                 <q-btn
+                  size="22px"
                   label="Join Pool"
                   type="submit"
                   color="primary"
@@ -283,6 +274,7 @@
                 />
                 <!-- xchain join -->
                 <q-btn
+                  size="22px"
                   label="Join Pool"
                   type="submit"
                   color="primary"

@@ -274,11 +274,6 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.evm-account {
-  &:hover {
-    color: $positive;
-  }
-}
 .input-outline {
   display: grid;
 }

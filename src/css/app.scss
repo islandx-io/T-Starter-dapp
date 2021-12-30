@@ -209,3 +209,9 @@ h6 {
   border-radius: 10px;
   padding: 8px 12px;
 }
+
+.evm-account {
+  &:hover {
+    color: $positive;
+  }
+}

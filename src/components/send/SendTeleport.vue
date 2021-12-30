@@ -356,9 +356,4 @@ export default {
     color: $accent;
   }
 }
-.evm-account {
-  &:hover {
-    color: $positive;
-  }
-}
 </style>
