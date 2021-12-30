@@ -39,12 +39,12 @@
           </q-tooltip>
         </q-btn>
       </q-btn-group>
-      <div
+      <!-- <div
         class="self-center text-center text-black q-px-sm"
         style="min-width: 130px; font-weight: 500"
       >
         {{ balanceSTR }}
-      </div>
+      </div> -->
     </q-btn-group>
     <q-dialog v-model="showLogin" content-style="background-color: #000000aa">
       <div style="box-shadow: none">
