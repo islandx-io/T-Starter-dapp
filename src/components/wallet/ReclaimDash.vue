@@ -14,13 +14,36 @@
           hide-pagination
           style="width: 300px"
         >
+          <template v-slot:body="props">
+            <q-tr :props="props" :key="props.row.id">
+              <!-- Chain -->
+              <q-td :key="props.cols[0].name">
+                <div class="row justify-start items-center">
+                  <token-avatar
+                    :token="chainIdToName(props.row.chain_id)"
+                    :avatarSize="20"
+                    class="q-mr-sm"
+                  />
+                  <div>{{ chainIdToName(props.row.chain_id) }}</div>
+                </div>
+              </q-td>
+              <!-- Balance -->
+              <q-td :props="props" :key="props.cols[1].name">
+                {{ props.row.balance }}
+              </q-td>
+            </q-tr>
+          </template>
         </q-table>
       </div>
 
-      <div v-if="getEvmAccountName !== ''" class="q-pa-md fit column wrap justify-center items-center ">
+      <div
+        v-if="getEvmAccountName !== ''"
+        class="q-pa-md fit column wrap justify-center items-center"
+      >
         <div>The refunds will be sent to:</div>
         <div
           class="evm-account ellipsis cursor-pointer vertical-center justify-center"
+          style="max-width: 200px"
         >
           {{ getEvmAccountName }}
         </div>
@@ -55,9 +78,13 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import metamask from "src/components/Metamask";
+import tokenAvatar from "src/components/TokenAvatar";
 
 export default {
   // name: 'ComponentName',
+  components: {
+    tokenAvatar,
+  },
   mixins: [metamask],
   data() {
     return {
@@ -112,6 +139,24 @@ export default {
 
   methods: {
     ...mapActions("xchain", ["updateReclaimableTokens"]),
+
+    chainIdToName(chainId) {
+      switch (chainId) {
+        case 1:
+          return "ETH";
+          break;
+        case 2:
+          return "BSC";
+          break;
+        case 3:
+          return "TELOS";
+          break;
+        default:
+          return chainId;
+          break;
+      }
+    },
+
     async reclaimTokens() {
       const actions = [
         {
