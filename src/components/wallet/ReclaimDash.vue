@@ -17,7 +17,7 @@
         </q-table>
       </div>
 
-      <div v-if="getEvmAccountName !== ''" class="q-pa-md row justify-center">
+      <div v-if="getEvmAccountName !== ''" class="q-pa-md fit column wrap justify-center items-center ">
         <div>The refunds will be sent to:</div>
         <div
           class="evm-account ellipsis cursor-pointer vertical-center justify-center"
@@ -140,8 +140,8 @@ export default {
     },
   },
 
-  mounted() {
-    this.updateReclaimableTokens(this.accountName);
+  async mounted() {
+    await this.updateReclaimableTokens(this.accountName);
   },
 };
 </script>

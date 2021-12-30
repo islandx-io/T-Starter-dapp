@@ -229,8 +229,6 @@ export default {
   data() {
     return {
       tab: "tokens",
-      hasRefunds: false,
-      hasReclaims: false,
       // prettier-ignore
       columns: [
         { name: "token", label: "Token", field: "token_sym", align: "left" },
@@ -266,11 +264,42 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
+    ...mapGetters("xchain", ["getEvmAccountName","getTeleports", "getReclaimableTokens"]),
+
+    hasReclaims() {
+      if (this.getReclaimableTokens !== undefined) {
+        return this.getReclaimableTokens.length > 0;
+      } else {
+        return false;
+      }
+    },
+
+    hasRefunds() {
+      if (this.getEvmAccountName !== undefined) {
+        return this.getTeleports.filter(
+          (el) => !el.claimed && this.correctAccount(el.to_address)
+        ).length > 0;
+      } else {
+        return false;
+      }
+    },
+
   },
 
   methods: {
     ...mapActions("pools", ["getBalanceFromChain", "getBaseTokens"]),
     ...mapActions("account", ["resetLiquid", "reloadWallet"]),
+
+    ethAddressFull(val) {
+      return "0x" + val.substr(0, 40);
+    },
+
+    correctAccount(account) {
+      return (
+        this.getEvmAccountName.toUpperCase() ===
+        this.ethAddressFull(account).toUpperCase()
+      );
+    },
 
     async reloadWalletInfo() {
       // await this.resetLiquid();

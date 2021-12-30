@@ -8,7 +8,7 @@
       {{ getEvmAccountName }}
     </div> -->
     <div class="row justify-center">
-      <div class="text-h6 text-center q-pr-sm">Refunds</div>      
+      <div class="text-h6 text-center q-pr-sm">Refunds</div>
       <q-btn
         padding="sm"
         class="hover-accent"
@@ -19,7 +19,7 @@
         @click="refreshTeleports()"
       />
     </div>
-    
+
     <!-- Connect button -->
     <div class="row justify-center">
       <q-btn
@@ -33,8 +33,8 @@
         no-caps
       />
     </div>
-    
-    <div class="column">      
+
+    <div class="column">
       <div
         class="row justify-center items-center q-py-xs"
         v-for="t in unclaimedTeleports"
@@ -167,6 +167,7 @@ export default {
       "getTeleports",
       "getVaultContractAddr",
     ]),
+
     unclaimedTeleports() {
       if (this.getEvmAccountName !== undefined) {
         return this.getTeleports.filter(
