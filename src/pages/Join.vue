@@ -545,69 +545,73 @@
 
       <!-- Processing xchain tx -->
       <q-dialog persistent v-model="xchainProgress.submitted">
-        <q-card class="column wrap content-center">
+        <q-card class="wrap content-center">
           <div class="text-h6 text-center">
-            Transaction Progress
+            Join Pool Progress
             <!-- <div class="col text-overline q-ml-sm"> eta: 2 min</div> -->
           </div>
-          <div class="text-center">
-            Transaction submitted
-            <q-icon
-              v-if="xchainProgress.submitted"
-              name="fas fa-check-circle"
-              size="xs"
-              class="q-pr-sm"
-              color="positive"
-            />
-            <q-spinner v-else />
-          </div>
-          <div class="text-center">
-            Transaction confirmed
-            <q-icon
-              v-if="xchainProgress.confirmed === 1"
-              name="fas fa-check-circle"
-              size="xs"
-              class="q-pr-sm"
-              color="positive"
-            />
-            <q-icon
-              v-else-if="xchainProgress.confirmed === -1"
-              name="fas fa-times-circle"
-              size="xs"
-              class="q-pr-sm"
-              color="negative"
-            />
-            <q-spinner v-else />
-          </div>
-          <div class="text-center">
-            Reporters confirmed
-            <q-icon
-              v-if="xchainProgress.reported"
-              name="fas fa-check-circle"
-              size="xs"
-              class="q-pr-sm"
-              color="positive"
-            />
-            <q-spinner v-else />
-          </div>
-          <!-- <div class="text-center">Allocation confirmed <q-spinner /></div> -->
-          <div v-if="xchainProgress.success === 1" class="text-center">
-            Success
-            <q-icon
-              name="fas fa-check-circle"
-              size="xs"
-              class="q-pr-sm"
-              color="positive"
-            />
-          </div>
-          <div v-if="xchainProgress.success === -1" class="text-center">
-            Failed
-            <q-icon
-              name="fas fa-times-circle"
-              size="xs"
-              class="q-pr-sm"
-              color="negative"
-            />
+          <div style="text-align: center">
+            <div style="display: inline-block; text-align: left">
+              <div>
+                Submitted
+                <q-icon
+                  v-if="xchainProgress.submitted"
+                  name="fas fa-check-circle"
+                  size="xs"
+                  class="q-pr-sm"
+                  color="positive"
+                />
+                <q-spinner v-else />
+              </div>
+              <div v-if="xchainProgress.submitted">
+                Confirmed
+                <q-icon
+                  v-if="xchainProgress.confirmed === 1"
+                  name="fas fa-check-circle"
+                  size="xs"
+                  class="q-pr-sm"
+                  color="positive"
+                />
+                <q-icon
+                  v-else-if="xchainProgress.confirmed === -1"
+                  name="fas fa-times-circle"
+                  size="xs"
+                  class="q-pr-sm"
+                  color="negative"
+                />
+                <q-spinner v-else />
+              </div>
+              <div v-if="xchainProgress.confirmed !== 0">
+                Reported
+                <q-icon
+                  v-if="xchainProgress.reported"
+                  name="fas fa-check-circle"
+                  size="xs"
+                  class="q-pr-sm"
+                  color="positive"
+                />
+                <q-spinner v-else />
+              </div>
+              <!-- <div class="text-center">Allocation confirmed <q-spinner /></div> -->
+              <div v-if="xchainProgress.success === 1" class="text-center">
+                Success
+                <q-icon
+                  name="fas fa-check-circle"
+                  size="xs"
+                  class="q-pr-sm"
+                  color="positive"
+                />
+              </div>
+              <div v-if="xchainProgress.success === -1" class="text-center">
+                Failed
+                <q-icon
+                  name="fas fa-times-circle"
+                  size="xs"
+                  class="q-pr-sm"
+                  color="negative"
+                />
+              </div>
+            </div>
           </div>
           <div v-if="xchainProgress.success === -1" style="color: red">
             Failed to bridge transaction. Please claim your refund from the
@@ -933,7 +937,7 @@ export default {
       return (
         (val >= this.$chainToQty(this.pool.minimum_swap) &&
           val <= this.$chainToQty(this.availableBuy)) ||
-        `Must be between minimum and buyable`
+        `Must be between minimum and maximum`
       );
     },
 
