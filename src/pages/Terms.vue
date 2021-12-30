@@ -2,7 +2,7 @@
   <q-page>
     <section class="header-bg row content-center justify-center">
       <h3 class="text-white q-pt-xl">
-        Terms and Conditions (Under development)
+        Terms and Conditions
       </h3>
     </section>
     <section class="body-container">

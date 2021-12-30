@@ -53,7 +53,7 @@
           />
         </div>
         <div side>
-          <q-btn class="hover-accent" v-if="t.processing" color="grey">
+          <q-btn class="hover-accent" v-if="t.processing || claiming === t.id" color="grey">
             Processing
           </q-btn>
           <q-btn
@@ -153,6 +153,7 @@ export default {
     return {
       expanded: false,
       pollTeleport: null,
+      claiming: -1,
     };
   },
   computed: {
@@ -254,6 +255,7 @@ export default {
       };
     },
     async claimEvm(teleport) {
+      this.claiming = teleport.id;
       console.log("Claiming teleport:", teleport);
       const { injectedWeb3, web3 } = await this.$web3();
 
@@ -275,13 +277,10 @@ export default {
             .send({ from: this.getEvmAccountName });
           // console.log(resp);
 
-          // this.showOverlay = true;
-
-          // this.updateTportState();
           this.updateTeleports(this.accountName);
-          // this.loadTeleports();
-          // TODO Do a proper refresh?
+          this.claiming = -1;
         } catch (error) {
+          this.claiming = -1;
           this.$errorNotification(error);
         }
       }

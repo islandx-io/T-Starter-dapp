@@ -31,15 +31,19 @@
           />
         </div>
         <div side>
-          <q-btn class="hover-accent" v-if="t.processing" color="grey">
+          <q-btn
+            class="hover-accent"
+            v-if="t.processing || claiming === t.id"
+            color="grey"
+          >
             Processing
           </q-btn>
           <q-btn
             class="hover-accent"
             v-else-if="
               !t.claimed &&
-                correctNetwork(t.chain_id) &&
-                correctAccount(t.eth_address)
+              correctNetwork(t.chain_id) &&
+              correctAccount(t.eth_address)
             "
             color="positive"
             @click="claimEvm(t)"
@@ -116,22 +120,23 @@ import { Api, JsonRpc, Serialize } from "eosjs";
 import tokenAvatar from "src/components/TokenAvatar";
 import metamask from "src/components/Metamask";
 
-const fromHexString = hexString =>
-  new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+const fromHexString = (hexString) =>
+  new Uint8Array(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
 
-const toHexString = bytes =>
+const toHexString = (bytes) =>
   bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
 
 export default {
   props: ["selectedTokenSym"],
   components: {
-    tokenAvatar
+    tokenAvatar,
   },
   mixins: [metamask],
   data() {
     return {
       expanded: false,
-      pollTeleport: null
+      pollTeleport: null,
+      claiming: -1,
     };
   },
   computed: {
@@ -143,12 +148,12 @@ export default {
       "getEvmRemoteId",
       "getEvmNetworkList",
       "getTPortTokensBySym",
-      "getTeleports"
+      "getTeleports",
     ]),
     unclaimedTeleports() {
       if (this.getEvmAccountName !== undefined) {
         return this.getTeleports.filter(
-          el =>
+          (el) =>
             !el.claimed &&
             this.$chainToSym(el.quantity) === this.selectedTokenSym &&
             this.correctAccount(el.eth_address)
@@ -160,7 +165,7 @@ export default {
     claimedTeleports() {
       if (this.getEvmAccountName !== undefined) {
         return this.getTeleports.filter(
-          el =>
+          (el) =>
             el.claimed &&
             this.$chainToSym(el.quantity) === this.selectedTokenSym &&
             this.correctAccount(el.eth_address)
@@ -168,7 +173,7 @@ export default {
       } else {
         return [];
       }
-    }
+    },
   },
   methods: {
     correctNetwork(remoteId) {
@@ -183,7 +188,7 @@ export default {
       );
     },
     networkNameFromId(remoteId) {
-      const net = this.getEvmNetworkList.find(el => el.remoteId === remoteId);
+      const net = this.getEvmNetworkList.find((el) => el.remoteId === remoteId);
       return net ? net.name : "";
     },
     ethAddressShort(val) {
@@ -193,7 +198,7 @@ export default {
       return "0x" + val.substr(0, 40);
     },
     evmNetworkNameById(remoteId) {
-      const net = this.getEvmNetworkList.find(el => el.remoteId === remoteId);
+      const net = this.getEvmNetworkList.find((el) => el.remoteId === remoteId);
       if (net) return net.name;
       else return "";
     },
@@ -204,7 +209,7 @@ export default {
         table: "teleports",
         lower_bound: teleportId,
         upper_bound: teleportId,
-        limit: 1
+        limit: 1,
       });
 
       if (!res.rows.length) {
@@ -219,7 +224,7 @@ export default {
       // logteleport(uint64_t id, uint32_t timestamp, name from, asset quantity, uint8_t chain_id, checksum256 eth_address)
       const sb = new Serialize.SerialBuffer({
         textEncoder: new TextEncoder(),
-        textDecoder: new TextDecoder()
+        textDecoder: new TextDecoder(),
       });
       sb.pushNumberAsUint64(teleportData.id);
       sb.pushUint32(teleportData.time);
@@ -231,45 +236,47 @@ export default {
       return {
         claimAccount: "0x" + teleportData.eth_address,
         data: "0x" + toHexString(sb.array.slice(0, 69)),
-        signatures: teleportData.signatures
+        signatures: teleportData.signatures,
       };
     },
     async claimEvm(teleport) {
+      this.claiming = teleport.id;
       console.log("Claiming teleport:", teleport);
       const { injectedWeb3, web3 } = await this.$web3();
 
       if (injectedWeb3) {
-        const signData = await this.getSignData(teleport.id);
-        console.log(JSON.stringify(signData));
+        try {
+          const signData = await this.getSignData(teleport.id);
+          // console.log(JSON.stringify(signData));
 
-        const token = this.getTPortTokensBySym(
-          this.$chainToSym(teleport.quantity)
-        );
-        const remoteContractAddress = token.remote_contracts.find(
-          el => el.key === this.getEvmRemoteId
-        ).value;
-        const remoteInstance = new web3.eth.Contract(
-          this.$erc20Abi,
-          remoteContractAddress
-        ); // TODO Add check to validate abi
-        // TODO Add try catch
-        const resp = await remoteInstance.methods
-          .claim(signData.data, signData.signatures)
-          .send({ from: this.getEvmAccountName });
-        console.log(resp);
+          const token = this.getTPortTokensBySym(
+            this.$chainToSym(teleport.quantity)
+          );
+          const remoteContractAddress = token.remote_contracts.find(
+            (el) => el.key === this.getEvmRemoteId
+          ).value;
+          const remoteInstance = new web3.eth.Contract(
+            this.$erc20Abi,
+            remoteContractAddress
+          ); // TODO Add check to validate abi
+          // TODO Add try catch
+          const resp = await remoteInstance.methods
+            .claim(signData.data, signData.signatures)
+            .send({ from: this.getEvmAccountName });
+          // console.log(resp);
 
-        // await this.$store.commit("global/setInfo", $t("dialog.tlm_claimed"));
-        // this.showOverlay = true;
-
-        // this.updateTportState();
-        this.$store.dispatch("tport/setTeleports", this.accountName);
-        // this.loadTeleports();
-        // TODO Do a proper refresh
+          this.$store.dispatch("tport/setTeleports", this.accountName);
+          this.claiming = -1;
+          // TODO Do a proper refresh
+        } catch (error) {
+          this.claiming = -1;
+          this.$errorNotification(error);
+        }
       }
     },
     async refreshTeleports() {
       this.$store.dispatch("tport/setTeleports", this.accountName);
-    }
+    },
   },
   mounted() {
     // Poll teleports
@@ -279,6 +286,6 @@ export default {
   },
   destroyed() {
     clearInterval(this.pollTeleport);
-  }
+  },
 };
 </script>
