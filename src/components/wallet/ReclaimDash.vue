@@ -1,26 +1,42 @@
 <template>
   <div>
     <div v-if="hasClaimable">
-      <q-table
-        class="wallet-table q-pa-md"
-        :data="getReclaimableTokens"
-        row-key="id"
-        hide-pagination
-      >
-      </q-table>
-
-      <div class="q-pa-md q-gutter-sm row justify-center">
-        <q-btn
-          v-if="getEvmAccountName !== ''"
-          label="Reclaim Tokens"
-          @click="tryReclaimTokens()"
-          color="primary"
-        />
+      <div class="row justify-center">
+        Reclaiming tokens will create refunds to the connected address.
       </div>
-      <div class="q-pa-md q-gutter-sm row justify-center">
+      <div class="row justify-center">
+        <q-table
+          class="wallet-table q-pa-md row justify-center"
+          :data="getReclaimableTokens"
+          :columns="columns"
+          :visible-columns="visibleColumns"
+          row-key="id"
+          hide-pagination
+          style="width: 300px"
+        >
+        </q-table>
+      </div>
+
+      <div v-if="getEvmAccountName !== ''" class="q-pa-md row justify-center">
+        <div>The refunds will be sent to:</div>
+        <div
+          class="evm-account ellipsis cursor-pointer vertical-center justify-center"
+        >
+          {{ getEvmAccountName }}
+        </div>
+
+        <div class="q-pt-md">
+          <q-btn
+            label="Reclaim Tokens"
+            @click="tryReclaimTokens()"
+            color="primary"
+          />
+        </div>
+      </div>
+
+      <div v-if="getEvmAccountName === ''" class="q-pa-md row justify-center">
         <q-btn
-          v-if="getEvmAccountName === ''"
-          label="CONNECT TO METAMASK"
+          label="CONNECT WALLET"
           @click="connectWeb3()"
           class="hover-accent"
           color="positive"
@@ -28,13 +44,6 @@
           no-shadow
           no-caps
         />
-        <div
-          class="evm-account col ellipsis cursor-pointer vertical-center"
-          style="max-width: 200px"
-          v-if="getEvmAccountName !== ''"
-        >
-          {{ getEvmAccountName }}
-        </div>
       </div>
     </div>
     <div v-if="!hasClaimable" class="row justify-center content-center">
@@ -51,7 +60,40 @@ export default {
   // name: 'ComponentName',
   mixins: [metamask],
   data() {
-    return {};
+    return {
+      visibleColumns: ["chain_id", "balance"],
+      columns: [
+        {
+          name: "id",
+          field: "id",
+          label: "ID",
+          align: "center",
+        },
+        {
+          name: "chain_id",
+          field: "chain_id",
+          label: "Chain",
+          align: "center",
+          headerStyle: "max-width: 50px",
+          style: "max-width: 50px",
+        },
+        {
+          name: "token_address",
+          field: "token_address",
+          label: "Chain",
+          align: "center",
+        },
+        {
+          name: "balance",
+          field: "balance",
+          label: "Amount",
+          align: "right",
+          headerStyle: "max-width: 50px",
+          sortable: true,
+          sort: "desc",
+        },
+      ],
+    };
   },
 
   computed: {
@@ -61,9 +103,9 @@ export default {
 
     hasClaimable() {
       if (this.getReclaimableTokens !== undefined) {
-        return this.getReclaimableTokens.length > 0;     
+        return this.getReclaimableTokens.length > 0;
       } else {
-        return false;   
+        return false;
       }
     },
   },

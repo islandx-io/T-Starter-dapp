@@ -290,6 +290,7 @@ export default {
     },
   },
   mounted() {
+    this.refreshTeleports();
     // Poll teleports
     this.pollTeleport = setInterval(async () => {
       this.refreshTeleports();
