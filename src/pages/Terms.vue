@@ -390,7 +390,7 @@
                 Fees of the total amount of funds raised will be charged.
                 Of which some percentage will be paid to the platform and the rest will be paid
                 to the users with staked START as rewards.
-                These values and subject to change at any time.
+                These values are subject to change at any time.
               </li>
             </ul>
           </div>
