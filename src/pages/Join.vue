@@ -98,13 +98,13 @@
                   Max:
                   {{
                     this.$toFixedDown(
-                      maxAllocation,
+                      availableBuy,
                       this.$getDecimalFromAsset(this.pool.base_token)
                     )
                   }}
                   {{ BaseTokenSymbol }}
                 </div>
-                <div>
+                <!-- <div>
                   Buyable:
                   {{
                     this.$toFixedDown(
@@ -113,7 +113,7 @@
                     )
                   }}
                   {{ BaseTokenSymbol }}
-                </div>
+                </div> -->
               </div>
             </div>
 
@@ -123,7 +123,7 @@
             <div v-if="selectedNetwork !== this.currentChain.NETWORK_NAME">
               <div class="q-pb-md full-width row justify-center">
                 <div
-                  class="evm-account ellipsis cursor-pointer "
+                  class="evm-account ellipsis cursor-pointer"
                   style="max-width: 200px"
                   v-if="getEvmAccountName !== ''"
                   @click="copyEvmAccount"
@@ -182,13 +182,13 @@
                   Max:
                   {{
                     this.$toFixedDown(
-                      maxAllocation,
+                      availableBuy,
                       this.$getDecimalFromAsset(this.pool.base_token)
                     )
                   }}
                   {{ xchainTokenSymbol }}
                 </div>
-                <div>
+                <!-- <div>
                   Buyable:
                   {{
                     this.$toFixedDown(
@@ -197,7 +197,7 @@
                     )
                   }}
                   {{ xchainTokenSymbol }}
-                </div>
+                </div> -->
               </div>
             </div>
 
@@ -239,8 +239,13 @@
             <!------------>
             <q-item class="q-py-lg">
               <q-item-section>
-                <div class="q-pb-md" v-if="!hasApproved &&
-                    selectedNetwork !== currentChain.NETWORK_NAME">
+                <div
+                  class="q-pb-md"
+                  v-if="
+                    !hasApproved &&
+                    selectedNetwork !== currentChain.NETWORK_NAME
+                  "
+                >
                   Before joining, we need your approval to access your tokens.
                 </div>
                 <q-btn
@@ -279,19 +284,18 @@
                   type="submit"
                   color="primary"
                   :disable="
-                    (!isAuthenticated ||
+                    ((!isAuthenticated ||
                       pool.pool_status !== `open` ||
                       balance <= $chainToQty(pool.minimum_swap) ||
                       not_enough_start ||
                       joining ||
                       !isWhitelisted ||
                       allocationReached) &&
-                    !hasHeadstart ||
+                      !hasHeadstart) ||
                     wrongNetwork
                   "
                   v-if="
-                    selectedNetwork !== currentChain.NETWORK_NAME &&
-                    hasApproved
+                    selectedNetwork !== currentChain.NETWORK_NAME && hasApproved
                   "
                 />
                 <div
@@ -831,9 +835,17 @@ export default {
         if (this.$chainToQty(this.allocation.allocation) > this.maxAllocation) {
           return 0;
         } else {
-          return (
-            this.maxAllocation - this.$chainToQty(this.allocation.allocation)
-          );
+          let buyable =
+            this.maxAllocation - this.$chainToQty(this.allocation.allocation);
+          if (
+            this.zeroNaN(this.$chainToQty(this.pool.remaining_offer) < buyable)
+          ) {
+            return this.zeroNaN(this.$chainToQty(this.pool.remaining_offer));
+          } else {
+            return (
+              this.maxAllocation - this.$chainToQty(this.allocation.allocation)
+            );
+          }
         }
       } else {
         return this.maxAllocation;
