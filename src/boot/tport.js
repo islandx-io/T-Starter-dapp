@@ -56,7 +56,7 @@ const testnetList = [
       decimals: 18
     },
     blockExplorerUrls: ["https://testnet.bscscan.com"],
-    vaultContract: ""
+    vaultContract: "0x4D77047b9D2A246aF60815eD3D6886b397319Fc8"
   },
   {
     name: "Telos EVM",
