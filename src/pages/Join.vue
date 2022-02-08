@@ -6,7 +6,7 @@
       <q-card
         v-if="pool.pool_status !== 'open' && !hasHeadstart"
         style="min-height: 100px"
-        class="row justify-center content-center "
+        class="row justify-center content-center"
       >
         <div
           v-if="
@@ -25,7 +25,7 @@
           round
           class="self-start"
         >
-          <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px;" />
+          <q-icon name="fas fa-chevron-circle-left" style="font-size: 50px" />
         </q-btn>
         <q-form @submit="onSubmit" ref="joinForm">
           <div>
@@ -47,7 +47,7 @@
                 Balance: {{ balance }} {{ BaseTokenSymbol }}
               </div>
             </div>
-            <q-card flat bordered class="inner-card row ">
+            <q-card flat bordered class="inner-card row">
               <div class="row q-gutter-x-md items-center">
                 <q-input
                   class="col input-amount q-my-sm"
@@ -111,8 +111,8 @@
             <!-- To -->
             <!-------->
             <q-item dense class="text-h6">To</q-item>
-            <q-card flat bordered class="inner-card row ">
-              <div class="col row justify-between items-center ">
+            <q-card flat bordered class="inner-card row">
+              <div class="col row justify-between items-center">
                 <div class="col input-amount q-pr-lg">
                   {{ tokenToAmount }}
                 </div>
@@ -154,12 +154,12 @@
                       joining ||
                       !isWhitelisted ||
                       allocationReached) &&
-                      !hasHeadstart
+                    !hasHeadstart
                   "
                 />
                 <div
                   v-if="canBuyWithUSD"
-                  style="text-align: center;"
+                  style="text-align: center"
                   class="q-py-xs"
                 >
                   OR
@@ -305,12 +305,12 @@
               <q-avatar color="primary" text-color="secondary" class="q-mr-sm">
                 <q-icon name="fas fa-coins" size="28px" />
               </q-avatar>
-              <span class="text-h6">Confirm stake</span>
+              <span class="text-h6">Confirm premium stake</span>
             </q-card-section>
             <q-card-section>
               <span>
-                Confirm staking additional
-                {{ this.$chainStrReformat(this.premium_access_fee) }} tokens for
+                Confirm staking
+                {{ this.$chainStrReformat(this.premium_access_fee) }} for
                 premium access?
               </span>
             </q-card-section>
@@ -345,9 +345,7 @@
                 color="primary"
                 text-color="white"
               />
-              <span class="text-h6">
-                Transaction placed
-              </span>
+              <span class="text-h6"> Transaction placed </span>
             </q-card-section>
             <q-card-section>
               <q-item>
@@ -381,15 +379,13 @@
         <q-dialog v-model="moonpayDialog">
           <div
             class="bg-white"
-            style="border-radius: 10px; overflow: hidden; text-align:center;"
+            style="border-radius: 10px; overflow: hidden; text-align: center"
           >
             <iframe
               allow="accelerometer; autoplay; camera; gyroscope; payment"
               height="600"
               width="350"
-              :src="
-                `https://buy-staging.moonpay.com?baseCurrencyCode=usd&apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}`
-              "
+              :src="`https://buy-staging.moonpay.com?baseCurrencyCode=usd&apiKey=${moonpayKey}&baseCurrencyAmount=${this.amountUSD}&externalCustomerId=${this.accountName}&externalTransactionId=${this.externalTransactionId}`"
               allowfullscreen
               frameBorder="0"
             >
@@ -437,7 +433,7 @@ export default {
       moonpayTx: {},
       currentUID: uid(),
       pollingMoonpay: null,
-      moonpayKey: process.env.MOONPAY_KEY
+      moonpayKey: process.env.MOONPAY_KEY,
     };
   },
   components: { tokenAvatar },
@@ -446,7 +442,7 @@ export default {
       "getAllPools",
       "getPoolByID",
       "getAllPoolIDs",
-      "getPoolByIDChain"
+      "getPoolByIDChain",
     ]),
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
@@ -462,7 +458,7 @@ export default {
     },
 
     START_info() {
-      return this.wallet.find(el => (el.sym = "START"));
+      return this.wallet.find((el) => (el.sym = "START"));
     },
 
     explorerUrl() {
@@ -592,7 +588,7 @@ export default {
       } else {
         return true;
       }
-    }
+    },
   },
 
   methods: {
@@ -604,12 +600,12 @@ export default {
       "checkStakedChain",
       "getAllocationByPool",
       "getPlatformToken",
-      "getPoolsSettings"
+      "getPoolsSettings",
     ]),
     ...mapActions("account", [
       "getChainSTART",
       "getChainAccountStakeInfo",
-      "getChainTiersTable"
+      "getChainTiersTable",
     ]),
 
     restrictDecimal() {
@@ -655,7 +651,7 @@ export default {
       let payload = {
         address: this.pool.base_token.contract,
         sym: this.BaseTokenSymbol,
-        accountName: this.accountName
+        accountName: this.accountName,
       };
       // console.log(await this.getBalanceFromChain(payload));
       this.balance = this.$chainToQty(await this.getBalanceFromChain(payload));
@@ -703,8 +699,8 @@ export default {
               from: this.accountName,
               to: process.env.CONTRACT_ADDRESS,
               quantity: this.premium_access_fee,
-              memo: "Premium Pool Staking"
-            }
+              memo: "Premium Pool Staking",
+            },
           }
         );
       }
@@ -721,8 +717,8 @@ export default {
               this.BaseTokenDecimals,
               this.BaseTokenSymbol
             ),
-            memo: "Join pool"
-          }
+            memo: "Join pool",
+          },
         }
       );
       actions.push(
@@ -737,8 +733,8 @@ export default {
               this.amount,
               this.BaseTokenDecimals,
               this.BaseTokenSymbol
-            )
-          }
+            ),
+          },
         }
       );
       const transaction = await this.$store.$api.signTransaction(actions);
@@ -752,7 +748,7 @@ export default {
       this.$router.push({
         name: "pooldetails",
         params: { id: this.poolID },
-        query: { tab: "allocations" }
+        query: { tab: "allocations" },
       });
     },
 
@@ -766,7 +762,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Submitted"
+          message: "Submitted",
         });
         this.joining = false;
       } catch (error) {
@@ -782,7 +778,7 @@ export default {
           color: "red-5",
           textColor: "white",
           icon: "warning",
-          message: "You need to login first"
+          message: "You need to login first",
         });
       } else {
         // this.checkAllowed();
@@ -804,7 +800,7 @@ export default {
       // check stake if premium pool
       this.alreadyStaked = await this.checkStakedChain({
         account: this.accountName,
-        poolID: this.poolID
+        poolID: this.poolID,
       });
 
       // if START balance not enough and is premium pool, show dialog to buy
@@ -858,7 +854,7 @@ export default {
           }
         }, 10000);
       }
-    }
+    },
   },
 
   async mounted() {
@@ -884,12 +880,12 @@ export default {
         this.accountName
       );
       this.tiersTable = await this.getChainTiersTable();
-    }
+    },
   },
 
   beforeDestroy() {
     clearInterval(this.pollingMoonpay);
-  }
+  },
 };
 </script>
 
