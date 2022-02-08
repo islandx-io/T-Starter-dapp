@@ -275,12 +275,12 @@
                 class="q-pr-sm"
                 color="primary"
               />
-              <div class="text-h6">Premium pool</div>
+              <div class="text-h6">Insufficient START</div>
             </q-card-section>
 
             <q-card-section class="q-pt-none">
-              You don't have enough START tokens to participate in a premium
-              pool.
+              You need {{ this.$chainStrReformat(this.premium_access_fee) }} to
+              participate in premium pools.
             </q-card-section>
 
             <q-card-actions align="right">
