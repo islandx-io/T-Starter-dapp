@@ -967,8 +967,9 @@ export default {
             .balanceOf(this.getEvmAccountName)
             .call();
           this.balance = Number(
-            rawBalance /
-              10 ** this.xchainToken.remote_token_symbol.split(",")[0]
+            ethers.utils
+              .formatUnits(rawBalance, this.xchainToken.remote_precision)
+              .toString()
           );
         }
       } else {
@@ -1216,7 +1217,7 @@ export default {
       const { injectedWeb3, web3 } = await this.$web3();
       let tokenAddress = "0x" + this.xchainToken.remote_token_address;
       let thisChainID = 0; //TODO get dynamically eos,wax
-      let decimals = this.xchainToken.remote_token_symbol.split(",")[0];
+      let decimals = this.xchainToken.remote_precision;
       let tokenAmount = ethers.utils.parseUnits(
         this.amount.toString(),
         decimals
