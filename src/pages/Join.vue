@@ -34,7 +34,7 @@
                 {{ pool.title }}
               </h2>
             </div>
-            <div class="row justify-center">
+            <div v-if="canxChain" class="row justify-center">
               <net-selector
                 :selectedNetwork="selectedNetwork"
                 :networkOptions="networkOptions"
@@ -895,6 +895,19 @@ export default {
           this.selectedNetwork.toUpperCase()
         );
       } else return true;
+    },
+
+    canxChain() {
+      // TODO get dynamically
+      // if base token is one of the xchain tokens
+      if (
+        this.BaseTokenSymbol === "PUSDT" ||
+        this.BaseTokenSymbol === "PUSDC"
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 
