@@ -80,7 +80,7 @@
     <send-warnings
       :crossChain="
         selectedNetwork.toUpperCase() !==
-          currentChain.NETWORK_NAME.toUpperCase()
+        currentChain.NETWORK_NAME.toUpperCase()
       "
       :tokenNotFound="selectedToken === undefined"
       :wrongNetwork="wrongNetwork"
@@ -101,6 +101,7 @@ import sendTxDialog from "src/components/send/SendTxDialog";
 import sendWarnings from "src/components/send/SendWarnings";
 import metamask from "src/components/Metamask";
 import { copyToClipboard } from "quasar";
+import { ethers } from "ethers";
 
 export default {
   components: { netSelector, amountInput, sendTxDialog, sendWarnings },
@@ -109,14 +110,15 @@ export default {
     "selectedTokenSym",
     "selectedNetwork",
     "networkOptions",
-    "supportedEvmChains"
+    "supportedEvmChains",
   ],
   data() {
     return {
       amount: null,
       showTransaction: false,
       transaction: null,
-      remoteBalance: 0
+      remoteBalance: 0,
+      remoteContractInstance: null,
     };
   },
   computed: {
@@ -129,15 +131,15 @@ export default {
       "getEvmNetworkList",
       "getTPortTokensBySym",
       "getEvmNetworkByName",
-      "getTeleports"
+      "getTeleports",
     ]),
     ...mapGetters("blockchains", [
       "currentChain",
       "getNetworkByName",
-      "getBridgeTokens"
+      "getBridgeTokens",
     ]),
     selectedToken() {
-      return this.wallet.find(a => a.token_sym === this.selectedTokenSym);
+      return this.wallet.find((a) => a.token_sym === this.selectedTokenSym);
     },
 
     token_contract() {
@@ -165,7 +167,7 @@ export default {
           this.selectedNetwork.toUpperCase()
         );
       } else return true;
-    }
+    },
 
     // shortEvmAccount() {
     //   const address = this.getEvmAccountName;
@@ -195,19 +197,25 @@ export default {
               console.error("TPort Token not found");
             } else {
               const remoteContractAddress = token.remote_contracts.find(
-                el => el.key === this.getEvmRemoteId
+                (el) => el.key === this.getEvmRemoteId
               ).value;
               // console.log("remoteContractAddress:", remoteContractAddress);
-              const remoteInstance = new web3.eth.Contract(
+              this.remoteContractInstance = new web3.eth.Contract(
                 this.$erc20Abi,
                 remoteContractAddress
               ); // TODO Add check to validate abi
-              // console.log("remoteInstance:", remoteInstance);
-              const balance = await remoteInstance.methods
+              //   console.log("remoteInstance:", remoteInstance);
+              const balance = await this.remoteContractInstance.methods
                 .balanceOf(this.getEvmAccountName)
                 .call();
-              // console.log("Balance is:", balance);
-              this.remoteBalance = Number(balance / 10000);
+              this.remoteBalance = Number(
+                ethers.utils
+                  .formatUnits(
+                    balance,
+                    await this.remoteContractInstance.methods.decimals().call()
+                  )
+                  .toString()
+              );
             }
           }
         }
@@ -221,7 +229,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Sent"
+          message: "Sent",
         });
       } catch (error) {
         this.$errorNotification(error);
@@ -239,8 +247,8 @@ export default {
           authorization: [
             {
               actor: this.accountName,
-              permission: "active"
-            }
+              permission: "active",
+            },
           ],
           data: {
             from: this.accountName,
@@ -248,8 +256,8 @@ export default {
             quantity: `${parseFloat(this.amount).toFixed(
               this.token_decimals
             )} ${this.selectedTokenSym}`,
-            memo: "Teleport"
-          }
+            memo: "Teleport",
+          },
         },
         {
           account: process.env.TPORT_ADDRESS,
@@ -257,8 +265,8 @@ export default {
           authorization: [
             {
               actor: this.accountName,
-              permission: "active"
-            }
+              permission: "active",
+            },
           ],
           data: {
             from: this.accountName,
@@ -268,9 +276,9 @@ export default {
             chain_id: this.getEvmRemoteId,
             eth_address:
               this.getEvmAccountName.replace("0x", "") +
-              "000000000000000000000000"
-          }
-        }
+              "000000000000000000000000",
+          },
+        },
       ];
       console.log("Actions: ", actions);
 
@@ -296,11 +304,9 @@ export default {
         console.error("TPort Token not found");
       } else {
         tokenAddress = token.remote_contracts.find(
-          el => el.key === this.getEvmRemoteId
+          (el) => el.key === this.getEvmRemoteId
         ).value;
       }
-      const tokenSymbol = this.selectedTokenSym;
-      const tokenDecimals = this.token_decimals;
 
       try {
         // wasAdded is a boolean. Like any RPC method, an error may be thrown.
@@ -310,11 +316,13 @@ export default {
             type: "ERC20", // Initially only supports ERC20, but eventually more!
             options: {
               address: tokenAddress, // The address that the token is at.
-              symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
-              decimals: tokenDecimals // The number of decimals in the token
+              symbol: this.selectedTokenSym, // A ticker symbol or shorthand, up to 5 chars.
+              decimals: await this.remoteContractInstance.methods
+                .decimals()
+                .call(), // The number of decimals in the token
               // image: tokenImage // A string url of the token logo
-            }
-          }
+            },
+          },
         });
       } catch (error) {
         console.log(error);
@@ -327,13 +335,13 @@ export default {
           color: "green-4",
           textColor: "secondary",
           message: "Copied address to clipboard",
-          timeout: 1000
+          timeout: 1000,
         });
       });
-    }
+    },
   },
   async mounted() {
-    this.updateBalance()
+    this.updateBalance();
   },
   watch: {
     async getEvmChainId() {
@@ -341,8 +349,8 @@ export default {
     },
     async getEvmAccountName() {
       this.updateBalance();
-    }
-  }
+    },
+  },
 };
 </script>
 
