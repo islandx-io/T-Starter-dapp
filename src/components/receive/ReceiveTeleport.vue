@@ -34,7 +34,7 @@
           {{ getEvmAccountName }}
         </div>
       </div>
-      <div class="row justify-between q-px-sm  q-gutter-x-sm">
+      <div class="row justify-between q-px-sm q-gutter-x-sm">
         <div>
           {{ selectedNetwork }} balance: {{ remoteBalance }}
           {{ selectedTokenSym }}
@@ -65,7 +65,7 @@
     <send-warnings
       :crossChain="
         selectedNetwork.toUpperCase() !==
-          currentChain.NETWORK_NAME.toUpperCase()
+        currentChain.NETWORK_NAME.toUpperCase()
       "
       :tokenNotFound="selectedToken === undefined"
       :wrongNetwork="wrongNetwork"
@@ -86,6 +86,7 @@ import sendTxDialog from "src/components/send/SendTxDialog";
 import sendWarnings from "src/components/send/SendWarnings";
 import metamask from "src/components/Metamask";
 import { copyToClipboard } from "quasar";
+import { ethers } from "ethers";
 
 export default {
   components: { amountInput, sendTxDialog, sendWarnings },
@@ -96,7 +97,7 @@ export default {
       amount: null,
       showTransaction: false,
       transaction: null,
-      remoteBalance: 0
+      remoteBalance: 0,
     };
   },
   computed: {
@@ -109,15 +110,15 @@ export default {
       "getEvmNetworkList",
       "getTPortTokensBySym",
       "getEvmNetworkByName",
-      "getTeleports"
+      "getTeleports",
     ]),
     ...mapGetters("blockchains", [
       "currentChain",
       "getNetworkByName",
-      "getBridgeTokens"
+      "getBridgeTokens",
     ]),
     selectedToken() {
-      return this.wallet.find(a => a.token_sym === this.selectedTokenSym);
+      return this.wallet.find((a) => a.token_sym === this.selectedTokenSym);
     },
 
     token_contract() {
@@ -145,7 +146,7 @@ export default {
           this.selectedNetwork.toUpperCase()
         );
       } else return true;
-    }
+    },
   },
   methods: {
     ...mapActions("account", ["setWalletBalances"]),
@@ -168,7 +169,7 @@ export default {
               console.error("TPort Token not found");
             } else {
               const remoteContractAddress = token.remote_contracts.find(
-                el => el.key === this.getEvmRemoteId
+                (el) => el.key === this.getEvmRemoteId
               ).value;
               // console.log("remoteContractAddress:", remoteContractAddress);
               const remoteInstance = new web3.eth.Contract(
@@ -180,7 +181,16 @@ export default {
                 .balanceOf(this.getEvmAccountName)
                 .call();
               // console.log("Balance is:", balance);
-              this.remoteBalance = Number(balance / 10000);
+              this.remoteBalance = Number(
+                parseFloat(
+                  ethers.utils
+                    .formatUnits(
+                      balance,
+                      await remoteInstance.methods.decimals().call()
+                    )
+                    .toString()
+                ).toFixed(token.token.decimals)
+              );
             }
           }
         }
@@ -194,7 +204,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Sent"
+          message: "Sent",
         });
       } catch (error) {
         this.$errorNotification(error);
@@ -211,15 +221,22 @@ export default {
             console.error("TPort Token not found");
           } else {
             const remoteContractAddress = token.remote_contracts.find(
-              el => el.key === this.getEvmRemoteId
+              (el) => el.key === this.getEvmRemoteId
             ).value;
             const remoteInstance = new web3.eth.Contract(
               this.$erc20Abi,
               remoteContractAddress
             );
+            let weiAmount = ethers.utils
+              .parseUnits(
+                String(this.amount),
+                await remoteInstance.methods.decimals().call()
+              )
+              .toString();
+            console.log("weiAmount:", weiAmount);
             try {
               const resp = await remoteInstance.methods
-                .teleport(this.accountName, this.amount * 10000, 0)
+                .teleport(this.accountName, weiAmount, 0)
                 .send({ from: this.getEvmAccountName });
               // console.log(resp);
               this.amount = null;
@@ -240,10 +257,10 @@ export default {
           color: "green-4",
           textColor: "secondary",
           message: "Copied address to clipboard",
-          timeout: 1000
+          timeout: 1000,
         });
       });
-    }
+    },
   },
   async mounted() {
     await this.connectWeb3();
@@ -262,8 +279,8 @@ export default {
     },
     async getEvmAccountName() {
       this.updateBalance();
-    }
-  }
+    },
+  },
 };
 </script>
 

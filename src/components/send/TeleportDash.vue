@@ -119,6 +119,7 @@ import { mapGetters, mapActions } from "vuex";
 import { Api, JsonRpc, Serialize } from "eosjs";
 import tokenAvatar from "src/components/TokenAvatar";
 import metamask from "src/components/Metamask";
+import { ethers } from "ethers";
 
 const fromHexString = (hexString) =>
   new Uint8Array(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
@@ -137,6 +138,12 @@ export default {
       expanded: false,
       pollTeleport: null,
       claiming: -1,
+      remoteContractAddress: "",
+      v1Teleports: [
+        "0x39Ae6D231d831756079ec23589D2D37A739F2E89",
+        "0xA4ba34334b6De2fe6C6F3c9d4b1765d92C96d859",
+        "0xA4ba34334b6De2fe6C6F3c9d4b1765d92C96d859",
+      ],
     };
   },
   computed: {
@@ -202,7 +209,7 @@ export default {
       if (net) return net.name;
       else return "";
     },
-    async getSignData(teleportId) {
+    async getSignData(teleportId, remoteContractAddress) {
       const res = await this.$store.$api.getTableRows({
         code: process.env.TPORT_ADDRESS,
         scope: process.env.TPORT_ADDRESS,
@@ -233,9 +240,24 @@ export default {
       sb.push(teleportData.chain_id);
       sb.pushArray(fromHexString(teleportData.eth_address));
 
+      // Check if old teleport contract
+      let data = "";
+      if (
+        this.v1Teleports.some(
+          (addr) => addr.toLowerCase() == remoteContractAddress.toLowerCase()
+        )
+      ) {
+        data = "0x" + toHexString(sb.array.slice(0, 69));
+        console.log("Old Teleport Contract");
+      } else {
+        sb.push(this.$chainToDecimals(teleportData.quantity));
+        data = "0x" + toHexString(sb.array.slice(0, 71));
+      }
+
+      console.log("signData:", "0x" + toHexString(sb.array.slice(0, 71)));
       return {
         claimAccount: "0x" + teleportData.eth_address,
-        data: "0x" + toHexString(sb.array.slice(0, 69)),
+        data: data,
         signatures: teleportData.signatures,
       };
     },
@@ -246,15 +268,19 @@ export default {
 
       if (injectedWeb3) {
         try {
-          const signData = await this.getSignData(teleport.id);
-          // console.log(JSON.stringify(signData));
-
           const token = this.getTPortTokensBySym(
             this.$chainToSym(teleport.quantity)
           );
           const remoteContractAddress = token.remote_contracts.find(
             (el) => el.key === this.getEvmRemoteId
           ).value;
+
+          const signData = await this.getSignData(
+            teleport.id,
+            remoteContractAddress
+          );
+          // console.log(JSON.stringify(signData));
+
           const remoteInstance = new web3.eth.Contract(
             this.$erc20Abi,
             remoteContractAddress
