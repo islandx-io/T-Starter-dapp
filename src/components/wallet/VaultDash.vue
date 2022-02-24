@@ -8,7 +8,7 @@
       {{ getEvmAccountName }}
     </div> -->
     <div class="row justify-center">
-      <div class="text-h6 text-center q-pr-sm">Refunds</div>
+      <div class="text-h6 text-center q-pr-sm">Cross-Chain Sale Refunds</div>
       <q-btn
         padding="sm"
         class="hover-accent"
@@ -32,6 +32,13 @@
         no-shadow
         no-caps
       />
+    </div>
+
+    <div
+      class="text-center text-grey-7 q-pt-sm"
+      v-if="unclaimedTeleports.length == 0 && getEvmAccountName != ''"
+    >
+      Nothing to refund at the moment.
     </div>
 
     <div class="column">
@@ -91,7 +98,10 @@
         </div>
       </div>
     </div>
-    <q-card-actions class="row justify-center">
+    <q-card-actions
+      class="row justify-center"
+      v-if="claimedTeleports.length > 0"
+    >
       <div>{{ expanded ? "Hide" : "Show" }} Claimed</div>
       <q-btn
         color="grey"
@@ -103,9 +113,9 @@
       />
     </q-card-actions>
 
-    <q-slide-transition>
+    <q-slide-transition v-if="claimedTeleports.length > 0">
       <div v-show="expanded">
-        <q-separator />
+        <!-- <q-separator /> -->
         <div class="text-subitle2">
           <div class="column">
             <div

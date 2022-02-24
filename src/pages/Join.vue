@@ -948,11 +948,12 @@ export default {
     },
 
     validateInput(val) {
-      return (
-        (val >= this.$chainToQty(this.pool.minimum_swap) &&
-          val <= this.$chainToQty(this.availableBuy)) ||
-        `Must be between minimum and maximum`
-      );
+      // return (
+      //   (val >= this.$chainToQty(this.pool.minimum_swap) &&
+      //     val <= this.$chainToQty(this.availableBuy)) ||
+      //   `Must be between minimum and maximum`
+      // );
+      return true || `Must be between minimum and maximum`;
     },
 
     async getAllocations() {

@@ -21,13 +21,13 @@
           <q-tab
             name="refunds"
             label="Refunds"
-            :alert="hasRefunds ? 'accent' : hasRefunds"
+            :alert="hasRefunds || hasReclaims ? 'accent' : hasRefunds"
           />
-          <q-tab
+          <!-- <q-tab
             name="reclaim"
             label="Reclaim"
             :alert="hasReclaims ? 'accent' : hasReclaims"
-          />
+          /> -->
         </q-tabs>
 
         <q-separator />
@@ -176,7 +176,9 @@
                             </q-td>
                           </q-tr>
                         </template>
-                        <template v-slot:bottom> * Bold text indicates ready to be claimed  </template>
+                        <template v-slot:bottom>
+                          * Bold text indicates ready to be claimed
+                        </template>
                       </q-table>
                     </div>
                   </q-td>
@@ -187,10 +189,11 @@
           <!-- Refund and reclaim tabs -->
           <q-tab-panel name="refunds" @mousedown.stop>
             <vault-dash />
-          </q-tab-panel>
-          <q-tab-panel name="reclaim" @mousedown.stop>
+            <q-separator class="q-mt-md"></q-separator>
             <reclaim-dash />
           </q-tab-panel>
+          <!-- <q-tab-panel name="reclaim" @mousedown.stop>
+          </q-tab-panel> -->
         </q-tab-panels>
       </q-card>
       <q-card
@@ -264,7 +267,11 @@ export default {
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "wallet"]),
     ...mapGetters("blockchains", ["currentChain"]),
-    ...mapGetters("xchain", ["getEvmAccountName","getTeleports", "getReclaimableTokens"]),
+    ...mapGetters("xchain", [
+      "getEvmAccountName",
+      "getTeleports",
+      "getReclaimableTokens",
+    ]),
 
     hasReclaims() {
       if (this.getReclaimableTokens !== undefined) {
@@ -276,14 +283,15 @@ export default {
 
     hasRefunds() {
       if (this.getEvmAccountName !== undefined) {
-        return this.getTeleports.filter(
-          (el) => !el.claimed && this.correctAccount(el.to_address)
-        ).length > 0;
+        return (
+          this.getTeleports.filter(
+            (el) => !el.claimed && this.correctAccount(el.to_address)
+          ).length > 0
+        );
       } else {
         return false;
       }
     },
-
   },
 
   methods: {

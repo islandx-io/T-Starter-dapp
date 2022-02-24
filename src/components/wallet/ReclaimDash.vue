@@ -1,8 +1,11 @@
 <template>
   <div>
+    <div class="text-h6 text-center q-pa-sm q-pt-md">
+      {{ currentChain.NETWORK_DISPLAY_NAME }} Refunds
+    </div>
     <div v-if="hasClaimable">
       <div class="row justify-center">
-        Reclaiming tokens will create refunds to the connected address.
+        Refunds will be created to the connected addresses when called.
       </div>
       <div class="row justify-center">
         <q-table
@@ -50,7 +53,7 @@
 
         <div class="q-pt-md">
           <q-btn
-            label="Reclaim Tokens"
+            label="Refund Tokens"
             @click="tryReclaimTokens()"
             color="primary"
           />
@@ -69,8 +72,11 @@
         />
       </div>
     </div>
-    <div v-if="!hasClaimable" class="row justify-center content-center">
-      Nothing to reclaim
+    <div
+      v-if="!hasClaimable"
+      class="row justify-center content-center text-grey-7"
+    >
+      Nothing to refund at the moment.
     </div>
   </div>
 </template>
@@ -144,16 +150,12 @@ export default {
       switch (chainId) {
         case 1:
           return "ETH";
-          break;
         case 2:
           return "BSC";
-          break;
         case 3:
           return "TELOS";
-          break;
         default:
           return chainId;
-          break;
       }
     },
 
@@ -177,7 +179,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Tokens reclaimed",
+          message: "Tokens refunded",
         });
       } catch (error) {
         this.$errorNotification(error);
