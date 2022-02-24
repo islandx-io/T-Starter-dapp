@@ -53,7 +53,11 @@
           />
         </div>
         <div side>
-          <q-btn class="hover-accent" v-if="t.processing || claiming === t.id" color="grey">
+          <q-btn
+            class="hover-accent"
+            v-if="t.processing || claiming === t.id"
+            color="grey"
+          >
             Processing
           </q-btn>
           <q-btn
@@ -245,12 +249,13 @@ export default {
       sb.pushName(teleportData.account);
       sb.pushAsset(teleportData.token_amount);
       sb.push(teleportData.chain_id);
+      sb.push(this.$chainToDecimals(teleportData.token_amount));
       sb.pushArray(fromHexString(teleportData.to_address));
       sb.pushArray(fromHexString(teleportData.token_address));
 
       return {
         claimAccount: "0x" + teleportData.to_address,
-        data: "0x" + toHexString(sb.array.slice(0, 77)),
+        data: "0x" + toHexString(sb.array.slice(0, 78)),
         signatures: teleportData.signatures,
       };
     },

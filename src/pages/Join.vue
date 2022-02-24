@@ -146,7 +146,6 @@
                     class="col input-amount q-my-sm"
                     color="primary"
                     v-model="amount"
-                    :rules="[validateInput]"
                     borderless
                     @input="restrictDecimal"
                     placeholder="0"
@@ -902,7 +901,8 @@ export default {
       // if base token is one of the xchain tokens
       if (
         this.BaseTokenSymbol === "PUSDT" ||
-        this.BaseTokenSymbol === "PUSDC"
+        this.BaseTokenSymbol === "PUSDC" ||
+        this.BaseTokenSymbol === "USDT"
       ) {
         return true;
       } else {
@@ -1287,7 +1287,10 @@ export default {
           );
 
           const approve = await tokenContract.methods
-            .approve(this.getVaultContractAddr, "0xFFFFFFFFFFFFFFFF")
+            .approve(
+              this.getVaultContractAddr,
+              "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+            )
             .send({ from: this.getEvmAccountName });
           console.log(approve);
         } catch (error) {
@@ -1313,7 +1316,7 @@ export default {
           .call();
         console.log("Allowance:", BN(allowance).toString());
 
-        if (BN(allowance).gte(BN("0xFFFFFFFFFFFFFFF"))) {
+        if (BN(allowance).gte(BN("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"))) {
           this.hasApproved = true;
         } else {
           this.hasApproved = false;
