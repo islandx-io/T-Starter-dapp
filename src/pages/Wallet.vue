@@ -331,6 +331,12 @@ export default {
   },
 
   async mounted() {
+    // if rerouting with tab
+    if (this.$route.query.tab == "refunds") {
+      this.tab = "refunds";
+    } else {
+      this.tab = "tokens";
+    }
     await this.reloadWalletInfo();
     this.$store.dispatch("tport/setTPortTokens");
     this.showZeroBalance =

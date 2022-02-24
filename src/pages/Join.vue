@@ -545,7 +545,7 @@
 
       <!-- Processing xchain tx -->
       <q-dialog persistent v-model="xchainProgress.submitted">
-        <q-card class="wrap content-center">
+        <q-card class="joinProgressCard wrap content-center">
           <div class="text-h6 text-center">
             Join Pool Progress
             <!-- <div class="col text-overline q-ml-sm"> eta: 2 min</div> -->
@@ -613,11 +613,19 @@
               </div>
             </div>
           </div>
-          <div v-if="xchainProgress.success === -1" style="color: red">
-            Failed to bridge transaction. Please claim your refund from the
-            pool's allocations tab.
+          <div
+            v-if="xchainProgress.success === -1"
+            style="color: red"
+            class="text-center"
+          >
+            Failed to bridge transaction. Please claim your refund on the wallet
+            page.
           </div>
-          <div v-if="xchainProgress.confirmed === -1" style="color: red">
+          <div
+            v-if="xchainProgress.confirmed === -1"
+            style="color: red"
+            class="text-center"
+          >
             Failed to bridge transaction. Please review the transaction on the
             explorer
           </div>
@@ -627,11 +635,18 @@
           >
             <q-btn label="Close" color="primary" v-close-popup />
           </div>
-          <div class="q-pt-sm text-center" v-if="xchainProgress.success !== 0">
+          <div class="q-pt-sm text-center" v-if="xchainProgress.success === 1">
             <q-btn
               label="View Allocation"
               color="primary"
               @click="toAllocationsPage()"
+            />
+          </div>
+          <div class="q-pt-sm text-center" v-if="xchainProgress.success === -1">
+            <q-btn
+              label="View Refunds"
+              color="primary"
+              @click="toRefundsPage()"
             />
           </div>
           <div
@@ -640,7 +655,7 @@
               xchainProgress.success === 0 && xchainProgress.confirmed !== 0
             "
           >
-            Please wait. This could take up to several minutes
+            Please wait. This could take up to several minutes.
           </div>
         </q-card>
       </q-dialog>
@@ -948,12 +963,11 @@ export default {
     },
 
     validateInput(val) {
-      // return (
-      //   (val >= this.$chainToQty(this.pool.minimum_swap) &&
-      //     val <= this.$chainToQty(this.availableBuy)) ||
-      //   `Must be between minimum and maximum`
-      // );
-      return true || `Must be between minimum and maximum`;
+      return (
+        (val >= this.$chainToQty(this.pool.minimum_swap) &&
+          val <= this.$chainToQty(this.availableBuy)) ||
+        `Must be between minimum and maximum`
+      );
     },
 
     async getAllocations() {
@@ -1092,6 +1106,13 @@ export default {
         name: "pooldetails",
         params: { id: this.poolID },
         query: { tab: "allocations" },
+      });
+    },
+    toRefundsPage() {
+      this.$router.push({
+        name: "wallet",
+        params: { accountName: this.accountName },
+        query: { tab: "refunds" },
       });
     },
 
@@ -1463,6 +1484,10 @@ a {
 }
 .warning {
   color: $negative;
+}
+
+.joinProgressCard {
+  flex-basis: 45ch;
 }
 @media only screen and (max-width: 650px) {
   .q-form {
