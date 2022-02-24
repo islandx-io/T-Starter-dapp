@@ -146,6 +146,7 @@
                     class="col input-amount q-my-sm"
                     color="primary"
                     v-model="amount"
+                    :rules="[validateInput]"
                     borderless
                     @input="restrictDecimal"
                     placeholder="0"
