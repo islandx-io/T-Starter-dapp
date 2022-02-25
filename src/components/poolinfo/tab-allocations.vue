@@ -1,8 +1,10 @@
 <template>
   <div class="column justify-between">
-    <div class="row justify-between" v-if="hasAllocation">
+    <div class="row justify-between" v-if="hasBid">
       <h6>Bid:</h6>
-      <h5>{{ this.$chainStrReformat(allocationData.bid) }}</h5>
+      <h5>
+        {{ this.$chainStrReformat(allocationData.bid) }}
+      </h5>
     </div>
     <div class="row justify-between" v-if="hasAllocation">
       <h6>Allocation:</h6>
@@ -38,10 +40,10 @@
       class="text-left q-pt-md text-caption text-grey-7"
     >
       <q-icon name="fas fa-info-circle" class="q-pr-xs" />Your tokens will be
-      sent as soon as the project owner closes the pool. In the event that the number of
-      participating accounts become too big for the Telos blockchain to send all
-      tokens in a single transaction, you will be able to claim your allocation
-      from this tab once available.
+      sent as soon as the project owner closes the pool. In the event that the
+      number of participating accounts become too big for the Telos blockchain
+      to send all tokens in a single transaction, you will be able to claim your
+      allocation from this tab once available.
     </div>
     <!-- <q-btn
       outline
@@ -75,14 +77,14 @@ export default {
   name: "tab-allocations",
   props: {
     pool: {
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       loadingData: true,
       allocationData: {},
-      poolCloseDelay: 86400000 //24 hours to miliseconds
+      poolCloseDelay: 86400000, //24 hours to miliseconds
       // poolCloseDelay: 0 //24 hours to miliseconds
     };
   },
@@ -91,6 +93,9 @@ export default {
     ...mapGetters("account", ["isAuthenticated", "accountName"]),
     hasAllocation() {
       return Object.keys(this.allocationData).length > 0;
+    },
+    hasBid() {
+      return this.allocationData.bid == 0;
     },
     canRelease() {
       return (
@@ -149,7 +154,7 @@ export default {
     },
     tokenDecimals() {
       return this.$chainToDecimals(this.allocationData.allocation);
-    }
+    },
   },
 
   methods: {
@@ -162,9 +167,9 @@ export default {
           name: "claim",
           data: {
             account: this.accountName,
-            pool_id: this.pool.id
-          }
-        }
+            pool_id: this.pool.id,
+          },
+        },
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
@@ -176,9 +181,9 @@ export default {
           name: "closepool",
           data: {
             pool_id: this.pool.id,
-            send_tokens: false
-          }
-        }
+            send_tokens: false,
+          },
+        },
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
@@ -190,7 +195,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Tokens claimed"
+          message: "Tokens claimed",
         });
         await this.$listeners.loadChainData();
         await this.$listeners.getPoolInfo();
@@ -207,7 +212,7 @@ export default {
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
-          message: "Pool completed"
+          message: "Pool completed",
         });
         await this.$listeners.loadChainData();
         await this.$listeners.getPoolInfo();
@@ -216,7 +221,7 @@ export default {
       } catch (error) {
         this.$errorNotification(error);
       }
-    }
+    },
   },
   async mounted() {
     let payload = { account: this.accountName, poolID: this.pool.id };
@@ -230,7 +235,7 @@ export default {
       this.loadingData = true;
       this.allocationData = await this.getAllocationByPool(payload);
       this.loadingData = false;
-    }
-  }
+    },
+  },
 };
 </script>
