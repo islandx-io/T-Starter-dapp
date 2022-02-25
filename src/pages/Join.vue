@@ -34,16 +34,17 @@
                 {{ pool.title }}
               </h2>
             </div>
-            <div v-if="canxChain" class="row justify-center">
+            <div v-if="canxChain" class="row items-center justify-center">
+              <div class="q-mr-sm">From Network:</div>
               <net-selector
                 :selectedNetwork="selectedNetwork"
                 :networkOptions="networkOptions"
                 @changeNetwork="changeNetwork($event)"
               >
               </net-selector>
-              <q-tooltip anchor="top middle" self="center middle">
+              <!-- <q-tooltip anchor="top middle" self="center middle">
                 From Network
-              </q-tooltip>
+              </q-tooltip> -->
             </div>
 
             <!---------------->
@@ -121,7 +122,7 @@
             <!-- From ETH -->
             <!---------------->
             <div v-if="selectedNetwork !== this.currentChain.NETWORK_NAME">
-              <div class="q-pb-md full-width row justify-center">
+              <div class="q-pb-md q-pt-sm full-width row justify-center">
                 <div
                   class="evm-account ellipsis cursor-pointer"
                   style="max-width: 200px"
@@ -130,6 +131,16 @@
                 >
                   {{ getEvmAccountName }}
                 </div>
+                <q-btn
+                  v-else
+                  label="CONNECT"
+                  @click="connectWeb3()"
+                  class="hover-accent"
+                  color="positive"
+                  outline
+                  no-shadow
+                  no-caps
+                />
               </div>
               <div
                 class="row justify-between items-end"
@@ -240,7 +251,7 @@
             <q-item class="q-py-lg">
               <q-item-section>
                 <div
-                  class="q-pb-md"
+                  class="q-pb-md text-center"
                   v-if="
                     !hasApproved &&
                     selectedNetwork !== currentChain.NETWORK_NAME
@@ -1427,6 +1438,8 @@ export default {
     },
     async selectedNetwork() {},
     async getEvmAccountName() {
+      await this.switchMetamaskNetwork(this.selectedNetwork);
+        this.updatePossibleXchainTokens();
       this.checkAllowance();
       await this.getBalance();
     },

@@ -1,18 +1,16 @@
 <template>
   <q-btn-dropdown
     no-caps
-    flat
-    class="bg-secondary"
+    class="bg-secondary text-grey-6"
     padding="sm"
     style="margin: 0px"
-    color="black"
     outline
   >
     <template v-slot:label>
       <div class="flex items-center justify-center wrap">
         <div class="row items-center justify-center">
           <token-avatar :token="selectedNetwork" :avatarSize="23" />
-          <div class="text-subtitle1 q-pl-xs">
+          <div class="text-subtitle1 q-pl-xs text-black">
             {{ selectedNetwork }}
           </div>
         </div>
@@ -54,7 +52,9 @@ export default {
   },
   props: {
     selectedNetwork: String,
-    networkOptions: Array
-  }
+    networkOptions: Array,
+  },
 };
 </script>
+
+<style lang="scss" scoped></style>
