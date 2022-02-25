@@ -42,7 +42,7 @@ const testnetList = [
             decimals: 18
         },
         blockExplorerUrls: ["https://ropsten.etherscan.io"],
-        vaultContract: "0xbaF26318fECd5D2A0C6C8A60322cD5346BBA3F2c"
+        vaultContract: "0x02289E8B9d13C02a853620eff978821b3f0193F6"
     },
     {
         name: "BSC",
