@@ -591,6 +591,7 @@ export default {
       } else {
         return this.pool_open;
       }
+      // return this.public_end;
     },
 
     admin_address() {
@@ -763,6 +764,10 @@ export default {
       this.pool_open.date = this.toDateStringLocal(this.pool.pool_open);
       this.private_end.date = this.toDateStringLocal(this.pool.private_end);
       this.public_end.date = this.toDateStringLocal(this.pool.public_end);
+
+      let goal  = Math.abs(this.pool.pool_open - this.pool.private_end) / 36e5;
+      this.premiumDuration = this.premiumDurationOptions.reduce((prev, curr) => Math.abs(curr - goal) < Math.abs(prev - goal) ? curr : prev); // nearest premiumDuration
+
 
       if (this.pool.whitelist.length > 0) {
         this.haveWhitelist = true;
