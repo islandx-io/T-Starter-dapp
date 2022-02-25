@@ -716,8 +716,9 @@ export default {
       currentUID: uid(),
       pollingMoonpay: null,
       moonpayKey: process.env.MOONPAY_KEY,
-      networkOptions: ["TELOS", "ETHEREUM", "BSC"],
-      selectedNetwork: "TELOS",
+      networkOptions: ["TELOS", "BSC"],
+      // networkOptions: ["TELOS", "ETHEREUM", "BSC"],  // TODO Enable Ethereum once launched
+      selectedNetwork: "BSC", // TODO Set Telos as the default option when Fortis is done
       xchainToken: {},
       possiblexchainTokens: [],
       hasApproved: false,
