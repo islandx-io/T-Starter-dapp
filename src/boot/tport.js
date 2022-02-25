@@ -25,7 +25,7 @@ const mainnetList = [
             decimals: 18
         },
         blockExplorerUrls: ["https://bscscan.com"],
-        vaultContract: ""
+        vaultContract: "0x60f20815aa24B07b3Ec7B64624B65e338aaA85e5"
     }
 ];
 
