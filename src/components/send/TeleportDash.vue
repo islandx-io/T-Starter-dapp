@@ -66,6 +66,15 @@
           >
             Switch Account
           </q-btn>
+          <q-btn
+            class="hover-accent q-ml-sm"
+            icon="fa fa-trash"
+            color="negative"
+            v-if="Math.round(Date.now() / 1000) - t.time > 30 * 24 * 60 * 60"
+            @click="tryCancelTP(t)"
+          >
+            <q-tooltip>Cancel and refund teleport</q-tooltip>
+          </q-btn>
         </div>
       </div>
     </div>
@@ -254,7 +263,7 @@ export default {
         data = "0x" + toHexString(sb.array.slice(0, 71));
       }
 
-      console.log("signData:", "0x" + toHexString(sb.array.slice(0, 71)));
+      //   console.log("signData:", "0x" + toHexString(sb.array.slice(0, 71)));
       return {
         claimAccount: "0x" + teleportData.eth_address,
         data: data,
@@ -300,6 +309,35 @@ export default {
         }
       }
     },
+    async tryCancelTP(teleport) {
+      try {
+        await this.cancelTP(teleport);
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Refunded",
+        });
+        this.refreshTeleports();
+      } catch (error) {
+        this.$errorNotification(error);
+      }
+    },
+
+    async cancelTP(teleport) {
+      let transaction;
+      const actions = [
+        {
+          account: process.env.TPORT_ADDRESS,
+          name: "cancel",
+          data: {
+            id: teleport.id,
+          },
+        },
+      ];
+      transaction = await this.$store.$api.signTransaction(actions);
+    },
+
     async refreshTeleports() {
       this.$store.dispatch("tport/setTeleports", this.accountName);
     },
