@@ -194,6 +194,14 @@ export default {
             send_tokens: false,
           },
         },
+        {
+          account: process.env.XCHAIN_ADDRESS,
+          name: "closepool",
+          data: {
+            pool_id: this.pool,
+            send_tokens: false,
+          },
+        },
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
     },
