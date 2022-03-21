@@ -517,8 +517,8 @@
               <q-btn
                 type="a"
                 target="_blank"
-                :href="`${explorerUrl}/transaction/${transaction}`"
-                label="Bloks.io"
+                :href="`${explorerUrl}/transaction/${transaction}?network=${explorerTag}`"
+                label="Explorer"
                 color="primary"
                 flat
               />
@@ -718,7 +718,7 @@ export default {
       moonpayKey: process.env.MOONPAY_KEY,
       networkOptions: ["TELOS", "BSC"],
       // networkOptions: ["TELOS", "ETHEREUM", "BSC"],  // TODO Enable Ethereum once launched
-      selectedNetwork: "BSC", // TODO Set Telos as the default option when Fortis is done
+      selectedNetwork: "TELOS", // TODO Set Telos as the default option when Fortis is done
       xchainToken: {},
       possiblexchainTokens: [],
       hasApproved: false,
@@ -764,6 +764,10 @@ export default {
 
     explorerUrl() {
       return this.currentChain.NETWORK_EXPLORER;
+    },
+
+    explorerTag() {
+      return this.currentChain.NETWORK_EXPLORER_TAG;
     },
 
     isWhitelisted() {

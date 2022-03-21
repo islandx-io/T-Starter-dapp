@@ -12,16 +12,14 @@
           text-color="white"
           class="q-mr-sm"
         />
-        <div class="text-h6 q-pa-sm">
-          Transaction Sent
-        </div>
+        <div class="text-h6 q-pa-sm">Transaction Sent</div>
       </q-card-section>
       <q-card-section>
         Transaction ID:
         <a
-          :href="`${explorerUrl}/transaction/${transaction}`"
+          :href="`${explorerUrl}/transaction/${transaction}?network=${tag}`"
           target="_blank"
-          style="word-wrap: break-word;"
+          style="word-wrap: break-word"
         >
           {{ transaction }}
         </a>
@@ -41,7 +39,10 @@ export default {
     ...mapGetters("blockchains", ["currentChain"]),
     explorerUrl() {
       return this.currentChain.NETWORK_EXPLORER;
-    }
-  }
+    },
+    tag() {
+      return this.currentChain.NETWORK_EXPLORER_TAG;
+    },
+  },
 };
 </script>

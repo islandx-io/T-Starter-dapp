@@ -22,16 +22,10 @@
         maxlength="12"
       >
       </q-input>
-      <q-input
-        outlined
-        bottom-slots
-        v-model="memo"
-        label="Memo"
-        counter
-      />
+      <q-input outlined bottom-slots v-model="memo" label="Memo" counter />
       <q-btn size="xl" round dense flat icon="send" @click="send" />
       <q-dialog v-model="showTransaction" confirm>
-        <q-card >
+        <q-card>
           <q-card-section class="row">
             <q-avatar icon="arrow_forward" color="primary" text-color="white" />
             <span class="q-ml-sm">
@@ -41,7 +35,7 @@
               clickable
               tag="a"
               target="_blank"
-              :href="`${explorerUrl}/transaction/${transaction}`"
+              :href="`${explorerUrl}/transaction/${transaction}?network=${explorerTag}`"
               class="q-ml-sm"
               >{{ transaction }}</q-item
             >
@@ -67,7 +61,6 @@ export default {
       memo: null,
       showTransaction: null,
       transaction: null,
-      // explorerUrl: process.env.NETWORK_EXPLORER
     };
   },
   computed: {
@@ -75,9 +68,12 @@ export default {
     ...mapGetters("blockchains", ["currentChain"]),
 
     explorerUrl() {
-      return this.currentChain.NETWORK_EXPLORER
+      return this.currentChain.NETWORK_EXPLORER;
     },
 
+    explorerTag() {
+      return this.currentChain.NETWORK_EXPLORER_TAG;
+    },
   },
   methods: {
     ...mapActions("account", ["accountExists"]),
@@ -85,7 +81,7 @@ export default {
       if (!(await this.accountExists(this.to))) {
         this.$q.notify({
           type: "negative",
-          message: `Account ${this.to} does not exist`
+          message: `Account ${this.to} does not exist`,
         });
         return;
       }
@@ -98,16 +94,16 @@ export default {
             from: this.accountName.toLowerCase(),
             to: this.to,
             quantity: `${parseFloat(this.amount).toFixed(4)} TLOS`,
-            memo: this.memo
-          }
-        }
+            memo: this.memo,
+          },
+        },
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
       if (transaction) {
         this.showTransaction = true;
         this.transaction = transaction.transactionId;
       }
-    }
-  }
+    },
+  },
 };
 </script>
