@@ -68,14 +68,13 @@
         type="submit"
         :disabled="selectedToken === undefined || wrongNetwork"
       />
-      <q-icon
-        size="16px"
-        name="fas fa-external-link-alt"
+      <q-img
+        width="20px"
+        src="~/assets/logo/metamask.svg"
         class="addtoken"
         @click="addTokenToMetamask()"
+        ><q-tooltip>Add Token To Metamask</q-tooltip></q-img
       >
-        <q-tooltip>Add Token To Metamask</q-tooltip>
-      </q-icon>
     </div>
     <send-warnings
       :crossChain="
