@@ -259,11 +259,12 @@ export default {
         data = "0x" + toHexString(sb.array.slice(0, 69));
         console.log("Old Teleport Contract");
       } else {
+        sb.pushArray(fromHexString(remoteContractAddress));
         sb.push(this.$chainToDecimals(teleportData.quantity));
-        data = "0x" + toHexString(sb.array.slice(0, 71));
+        data = "0x" + toHexString(sb.array.slice(0, 91));
       }
 
-      //   console.log("signData:", "0x" + toHexString(sb.array.slice(0, 71)));
+      //   console.log("signData:", "0x" + toHexString(sb.array.slice(0, 91)));
       return {
         claimAccount: "0x" + teleportData.eth_address,
         data: data,
