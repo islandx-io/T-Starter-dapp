@@ -70,7 +70,7 @@
             class="hover-accent q-ml-sm"
             icon="fa fa-trash"
             color="negative"
-            v-if="Math.round(Date.now() / 1000) - t.time > 30 * 24 * 60 * 60"
+            v-if="Math.round(Date.now() / 1000) - t.time > 32 * 24 * 60 * 60"
             @click="tryCancelTP(t)"
           >
             <q-tooltip>Cancel and refund teleport</q-tooltip>
