@@ -309,13 +309,13 @@
                     selectedNetwork !== currentChain.NETWORK_NAME && hasApproved
                   "
                 />
-                <div
+                <!-- <div
                   v-if="canBuyWithUSD"
                   style="text-align: center"
                   class="q-py-xs"
                 >
                   OR
-                </div>
+                </div> -->
                 <!-- Moonpay button -->
                 <!-- <q-btn
                   v-if="canBuyWithUSD"
@@ -1416,6 +1416,7 @@ export default {
   },
 
   async mounted() {
+    this.selectedNetwork = this.currentChain.NETWORK_NAME;
     await this.loadChainData();
     await this.getPoolInfo();
     await this.getAllocations();

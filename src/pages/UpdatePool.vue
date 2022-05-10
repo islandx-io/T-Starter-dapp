@@ -571,7 +571,8 @@ export default {
       premiumDurationOptions: [1, 3, 6, 12, 24],
       vesting: false,
       lockup_fraction: 0.5,
-      lockup_period: 30
+      lockup_period: 30,
+      xchainTokens: ["PUSDT", "PUSDC", "USDT"] // TODO - get from xchain, make dynamic per chain
     };
   },
   computed: {
@@ -927,7 +928,7 @@ export default {
     },
 
     async closePool(send_tokens) {
-      const actions = [
+      let actions = [
         {
           account: process.env.CONTRACT_ADDRESS,
           name: "closepool",
@@ -935,16 +936,19 @@ export default {
             pool_id: this.poolID,
             send_tokens: send_tokens
           }
-        },
-        {
-          account: process.env.XCHAIN_ADDRESS,
-          name: "closepool",
-          data: {
-            pool_id: this.poolID,
-            send_tokens: send_tokens
-          }
         }
       ];
+      if (this.xchainTokens.includes(this.base_token_symbol)) {
+        actions.push(
+            {
+            account: process.env.XCHAIN_ADDRESS,
+            name: "closepool",
+            data: {
+                pool_id: this.poolID,
+                send_tokens: send_tokens
+            }
+            });
+      }
       const transaction = await this.$store.$api.signTransaction(actions);
     },
 
