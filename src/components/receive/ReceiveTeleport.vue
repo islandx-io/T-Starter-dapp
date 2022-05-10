@@ -98,6 +98,7 @@ export default {
       showTransaction: false,
       transaction: null,
       remoteBalance: 0,
+      eosioChainList: ['TELOS', 'WAX', 'EOS']
     };
   },
   computed: {
@@ -235,8 +236,9 @@ export default {
               .toString();
             console.log("weiAmount:", weiAmount);
             try {
+              let toChainId = this.eosioChainList.indexOf(this.currentChain.NETWORK_NAME);
               const resp = await remoteInstance.methods
-                .teleport(this.accountName, weiAmount, 0)
+                .teleport(this.accountName, weiAmount, toChainId)
                 .send({ from: this.getEvmAccountName });
               // console.log(resp);
               this.amount = null;
