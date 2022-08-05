@@ -34,7 +34,8 @@ module.exports = function(/* ctx */) {
       "tport",
       "web3",
       "erc20",
-      "vault"
+      "vault",
+      "newrelic"
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
